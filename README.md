@@ -5,6 +5,10 @@ open-receipt collaboration. It publishes versioned requirements, executable
 examples, decision forecasts, acceptance contracts, and the lock coordinates
 used to compare the active implementation with the simulated final state.
 
+The current planned program release is `spec-v0.2.0`. It consumes governance
+schema `1.0.0`; its release and governance commit coordinates receive observed
+commit and tree identities during promotion.
+
 The repository describes what collaborators can verify. Running-system truth
 comes from the active implementation and observed receipt manifests. The
 simulation supplies an executable counterfactual whose assumptions remain
@@ -53,12 +57,27 @@ observed receipts.
 
 ```sh
 python3 scripts/validate_program.py
+python3 scripts/scan_secret_shapes.py
 python3 -m unittest discover -s tests -v
 ```
 
 The validator uses the Python standard library and checks stable identifiers,
 cross-file references, forecast coordinates, receipt ownership, and required
 collaboration surfaces.
+
+## Runtime configuration and protected values
+
+AWS Systems Manager Parameter Store carries environment-scoped non-secret
+configuration. AWS Secrets Manager carries vendor credentials and other secret
+material under the approved KMS key. Workload identities receive the narrow
+read actions and resource paths required by their environment. Rotation,
+version-stage handling, bounded caches, CloudTrail evidence, and redacted
+retrieval telemetry form one testable lifecycle.
+
+Repositories, build artifacts, Terraform state, logs, fixtures, and telemetry
+carry governed references or redacted metadata. The open receipt
+`RCP-SECR-001` advances after production-bound retrieval, rotation, policy, KMS,
+cache, audit, and secret-shape probes complete accountable review.
 
 ## Language posture
 
@@ -69,4 +88,3 @@ distinction materially assists future collaborators.
 
 Source guidance:
 [Semantic Attractor Design — Negation-Aware Instructions](https://app.notion.com/p/abcb29b960a842ce8f1a409408a29257).
-

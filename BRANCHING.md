@@ -7,14 +7,16 @@
 
 ## Supporting branches
 
-- `feature/SPEC-####-short-name` begins from `develop` and returns to `develop`.
-- `release/vX.Y.Z` begins from `develop`, receives release-only stabilization,
+- `feature/spec-####-short-name` begins from `develop` and returns to `develop`.
+- `fix/spec-####-short-name` carries a behavior repair toward `develop`.
+- `chore/spec-####-short-name` carries maintenance with stable external behavior.
+- `release/<semver>` begins from `develop`, receives release-only stabilization,
   lands in `main`, and merges forward into `develop`.
-- `hotfix/SPEC-####-short-name` begins from `main`, lands in `main`, and merges
+- `hotfix/spec-####-short-name` begins from `main`, lands in `main`, and merges
   forward into `develop`.
-- `forecast/YYYY-QN-rN` freezes a preregistered forecast from `develop`; its
+- `forecast/YYYY-qN-rN` freezes a preregistered forecast from `develop`; its
   release tag remains immutable.
-- `evidence/RCP-####-short-name` carries redacted receipt-link changes toward
+- `evidence/rcp-####-short-name` carries redacted receipt-link changes toward
   `develop`.
 
 ## Review contract
@@ -30,4 +32,3 @@ Every pull request states:
 
 Release and hotfix branches preserve semantic-version compatibility and
 generate a new constellation lock coordinate.
-

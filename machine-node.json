@@ -2,7 +2,7 @@
   "@id": "@driftframe/lims-eln/program-specification",
   "type": "ComparativeProgramControlPlane",
   "name": "LIMS/ELN Program Specification",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "evidence_mode": "planned",
   "assurance_stage": "specified",
   "contract": "Every material claim resolves to a versioned rule, representative example, executable scenario, bounded receipt, and accountable decision role.",
@@ -27,4 +27,3 @@
     "scientific_quality_regulatory_acceptance"
   ]
 }
-
