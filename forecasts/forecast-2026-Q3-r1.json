@@ -1,0 +1,42 @@
+{
+  "forecast_id": "FORECAST-2026-Q3-R1",
+  "released_before_observation": true,
+  "as_of": "2026-07-28",
+  "simulation_authority": "advisory_only",
+  "predictions": [
+    {
+      "id": "PRED-001",
+      "question": "Can a shared receipt grammar qualify all three vendor adapters?",
+      "selected_option": "Use one common observation envelope with vendor-specific semantic probes.",
+      "probability": 0.76,
+      "range": [0.62, 0.86],
+      "scenario_ids": ["SCN-SAPIO-001", "SCN-BENCH-001", "SCN-LABKEY-001"],
+      "assumptions": ["configured environments arrive with stable service identities", "each vendor exposes independent readback"],
+      "falsifiers": ["a vendor requires a materially different evidence lifecycle", "tenant configuration blocks stable readback"],
+      "status": "unexamined"
+    },
+    {
+      "id": "PRED-002",
+      "question": "Will representative restore expose a material gap beyond backup verification?",
+      "selected_option": "Exercise clean restore with an alternate trained operator and full artifact evidence.",
+      "probability": 0.68,
+      "range": [0.52, 0.80],
+      "scenario_ids": ["SCN-REST-001"],
+      "assumptions": ["representative infrastructure and approved objectives are available"],
+      "falsifiers": ["ordinary backup verification predicts every observed restore outcome"],
+      "status": "unexamined"
+    },
+    {
+      "id": "PRED-003",
+      "question": "Will the independent simulation surface a material mismatch before production authorization?",
+      "selected_option": "Use preregistered forecasts, holdout fixtures, state-machine exploration, and multidomain adjudication.",
+      "probability": 0.81,
+      "range": [0.68, 0.89],
+      "scenario_ids": ["SCN-IDEM-001", "SCN-MIGR-001", "SCN-SECU-001", "SCN-ACPT-001"],
+      "assumptions": ["comparison drift remains within one sprint", "reviewers classify simulation corrections openly"],
+      "falsifiers": ["the simulation copies actual source", "material differences consistently escape the scenario universe"],
+      "status": "unexamined"
+    }
+  ]
+}
+

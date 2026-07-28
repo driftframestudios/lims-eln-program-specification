@@ -1,0 +1,150 @@
+{
+  "version": "0.1.0",
+  "scenarios": [
+    {
+      "id": "SCN-LIFE-001",
+      "requirement_id": "SPEC-LIFE-001",
+      "rule_id": "RULE-LIFE-001",
+      "title": "Released result correction preserves the original",
+      "given": ["a released result with a reviewer signature"],
+      "when": ["an authorized correction supplies a reason and successor revision"],
+      "then": ["the original remains visible", "the successor links to the original", "downstream consumers receive the correction event"],
+      "failure_twin": "a correction omits its reason or reviewer authority",
+      "recovery": "route the correction to accountable review with its original evidence intact",
+      "acceptance_roles": ["scientific_owner", "quality_owner"]
+    },
+    {
+      "id": "SCN-IDEM-001",
+      "requirement_id": "SPEC-LIFE-001",
+      "rule_id": "RULE-LIFE-002",
+      "title": "Ambiguous vendor write reconciles before resubmission",
+      "given": ["a stable request identity and canonical content digest"],
+      "when": ["the vendor commits and the client receives a timeout"],
+      "then": ["readback locates one matching effect", "the request resolves as converged"],
+      "failure_twin": "changed content reuses the stable request identity",
+      "recovery": "classify the collision and preserve both content digests for review",
+      "acceptance_roles": ["platform_owner", "scientific_data_owner"]
+    },
+    {
+      "id": "SCN-CUST-001",
+      "requirement_id": "SPEC-CUST-001",
+      "rule_id": "RULE-CUST-001",
+      "title": "Concurrent custody transfer reloads current position",
+      "given": ["a specimen at a versioned source location"],
+      "when": ["a transfer proposes an earlier version"],
+      "then": ["the current position remains authoritative", "the requester receives the current revision"],
+      "failure_twin": "two transfers share the same expected revision",
+      "recovery": "reload current custody and construct a new attributable transfer",
+      "acceptance_roles": ["laboratory_operations_owner"]
+    },
+    {
+      "id": "SCN-INST-001",
+      "requirement_id": "SPEC-INST-001",
+      "rule_id": "RULE-INST-001",
+      "title": "Partial instrument artifact enters quarantine",
+      "given": ["an expected artifact identity and transfer manifest"],
+      "when": ["received bytes produce a divergent content digest"],
+      "then": ["the artifact enters quarantine", "the original bytes and digest remain linked", "a recovery owner is assigned"],
+      "failure_twin": "a replay carries the same identity and changed bytes",
+      "recovery": "request a complete transfer and reconcile against the preserved receipt",
+      "acceptance_roles": ["scientific_owner", "instrument_integration_owner"]
+    },
+    {
+      "id": "SCN-SAPIO-001",
+      "requirement_id": "SPEC-VEND-001",
+      "rule_id": "RULE-VEND-001",
+      "title": "Sapio specimen graph matches scientific readback",
+      "given": ["an approved tenant and SDK compatibility tuple", "a synthetic specimen aliquot and plate graph"],
+      "when": ["the adapter commits the graph"],
+      "then": ["independent readback preserves identity and every relationship", "the UI-facing plate semantics match the graph"],
+      "failure_twin": "records exist while the plate relationship remains semantically incomplete",
+      "recovery": "retain the fixture namespace and route the mapping to compatibility review",
+      "acceptance_roles": ["vendor_platform_owner", "scientific_data_owner", "quality_owner"]
+    },
+    {
+      "id": "SCN-BENCH-001",
+      "requirement_id": "SPEC-VEND-001",
+      "rule_id": "RULE-VEND-002",
+      "title": "Benchling duplicate and late events converge",
+      "given": ["a verified webhook envelope and durable inbox"],
+      "when": ["duplicate events arrive after a newer event"],
+      "then": ["one refresh job remains active", "authoritative API state drives reconciliation"],
+      "failure_twin": "an event payload omits properties required for scientific meaning",
+      "recovery": "retrieve the current resource and record the event as a work signal",
+      "acceptance_roles": ["vendor_platform_owner", "security_owner"]
+    },
+    {
+      "id": "SCN-LABKEY-001",
+      "requirement_id": "SPEC-VEND-001",
+      "rule_id": "RULE-VEND-003",
+      "title": "LabKey validates and commits an atomic batch",
+      "given": ["a staging server with versioned modules and restricted API identity"],
+      "when": ["validate-only succeeds and the batch commits with an audit reason"],
+      "then": ["normalized readback matches canonical content", "audit and artifact digests reconcile"],
+      "failure_twin": "one command in the batch carries an invalid value",
+      "recovery": "preserve zero committed effects and return the validation evidence",
+      "acceptance_roles": ["vendor_platform_owner", "data_migration_owner"]
+    },
+    {
+      "id": "SCN-MIGR-001",
+      "requirement_id": "SPEC-MIGR-001",
+      "rule_id": "RULE-MIGR-001",
+      "title": "Representative migration preserves meaning",
+      "given": ["a frozen source inventory and representative corpus"],
+      "when": ["snapshot load and delta catch-up complete"],
+      "then": ["identity content relationships audit signatures and artifacts reach approved parity", "exceptions carry accountable disposition"],
+      "failure_twin": "an attachment digest or signature relationship diverges",
+      "recovery": "close the cutover gate and resume from the last accepted checkpoint",
+      "acceptance_roles": ["data_migration_owner", "business_process_owner", "quality_owner"]
+    },
+    {
+      "id": "SCN-REST-001",
+      "requirement_id": "SPEC-MIGR-001",
+      "rule_id": "RULE-REST-001",
+      "title": "Second operator completes clean restore",
+      "given": ["approved RTO and RPO", "base backup journals artifacts configuration and identity dependencies"],
+      "when": ["an alternate trained operator restores into a clean environment"],
+      "then": ["acceptance probes pass within objectives", "records and evidence remain reconstructable"],
+      "failure_twin": "the newest backup or a journal segment is unavailable",
+      "recovery": "select the newest restore-proven recovery point and record the observed RPO",
+      "acceptance_roles": ["operations_owner", "quality_owner", "business_process_owner"]
+    },
+    {
+      "id": "SCN-SECU-001",
+      "requirement_id": "SPEC-SECO-001",
+      "rule_id": "RULE-SECU-001",
+      "title": "Revoked identity loses tenant access within target",
+      "given": ["a tenant-scoped service identity and approved revocation objective"],
+      "when": ["the identity is revoked"],
+      "then": ["subsequent requests receive the approved authorization response", "audit evidence records the decision and time"],
+      "failure_twin": "a cached credential remains effective beyond the objective",
+      "recovery": "expire the cache path and verify each affected authorization surface",
+      "acceptance_roles": ["security_owner", "privacy_owner", "system_owner"]
+    },
+    {
+      "id": "SCN-OBS-001",
+      "requirement_id": "SPEC-SECO-001",
+      "rule_id": "RULE-OBS-001",
+      "title": "Telemetry failure preserves service and evidence accounting",
+      "given": ["a bounded queue and a defined good-event denominator"],
+      "when": ["the telemetry destination becomes unavailable"],
+      "then": ["service behavior follows the resilience policy", "queued and dropped events remain measurable", "an actionable alert reaches the owner"],
+      "failure_twin": "a redaction processor becomes unavailable",
+      "recovery": "route telemetry through the privacy-preserving fallback and record the affected window",
+      "acceptance_roles": ["platform_owner", "security_owner", "operations_owner"]
+    },
+    {
+      "id": "SCN-ACPT-001",
+      "requirement_id": "SPEC-ACPT-001",
+      "rule_id": "RULE-ACPT-001",
+      "title": "Accountable release records distinct decisions",
+      "given": ["complete bounded receipts and a named intended-use profile"],
+      "when": ["scientific Quality Regulatory Security Operations and business reviews complete"],
+      "then": ["each role records its decision scope and meaning", "residual risks and requalification triggers remain visible"],
+      "failure_twin": "one accountable domain remains pending",
+      "recovery": "preserve the release as qualification-ready and route the open domain to its named owner",
+      "acceptance_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "security_owner", "operations_owner", "business_owner"]
+    }
+  ]
+}
+
