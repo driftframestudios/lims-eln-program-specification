@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "receipts": [
     {
       "id": "RCP-VEND-SAPIO-001",
@@ -50,6 +50,14 @@
       "accountable_roles": ["security_owner", "privacy_owner", "system_owner"]
     },
     {
+      "id": "RCP-SECR-001",
+      "proof_class": "production_security_and_observability",
+      "component": "aws_configuration_secret_lifecycle",
+      "status": "open",
+      "success_event": "Production-bound workloads resolve non-secret configuration from AWS Systems Manager Parameter Store and rotating secret material from AWS Secrets Manager with environment-scoped identity KMS protection bounded caching redacted retrieval telemetry and clean repository build state log and fixture scans.",
+      "accountable_roles": ["security_owner", "platform_owner", "system_owner", "vendor_platform_owner"]
+    },
+    {
       "id": "RCP-OBS-001",
       "proof_class": "production_security_and_observability",
       "component": "observability_support",
@@ -67,4 +75,3 @@
     }
   ]
 }
-

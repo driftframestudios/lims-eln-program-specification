@@ -1,5 +1,5 @@
 name: LIMS/ELN Program Specification
-version: 0.1.1
+version: 0.2.0
 status: active
 evidence_mode: planned
 assurance_stage: specified
@@ -13,4 +13,8 @@ source_seed:
   merge_commit: 613f524821a25389748a9cd98d1bb0d303de87cf
 released_baseline: spec-v0.1.0
 released_commit: 3a1098e45a335bc06793465f8e94c8cdf878ec9f
-next_release: spec-v0.1.1
+planned_release: spec-v0.2.0
+governance_contract: governance-v1.0.0
+receipt_schema: 1.0.0
+release_coordinate_status: pending_release_commit
+governance_coordinate_status: pinned
