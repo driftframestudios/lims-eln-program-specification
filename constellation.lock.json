@@ -1,11 +1,12 @@
 {
-  "constellation_version": "0.1.1",
+  "constellation_version": "0.2.0",
   "recorded_at": "2026-07-28",
   "content_identity": "Git tree SHA-1 identifies the exact released repository tree; domain artifacts retain their declared SHA-256 digests.",
   "specification": {
-    "release": "spec-v0.1.0",
-    "commit": "3a1098e45a335bc06793465f8e94c8cdf878ec9f",
-    "digest": "git-tree-sha1:f9cf1ef4a8871c8d1533f77d0399c61c4ad25589"
+    "release": "spec-v0.2.0",
+    "commit": "0000000000000000000000000000000000000000",
+    "digest": "git-tree-sha1:0000000000000000000000000000000000000000",
+    "coordinate_status": "pending_release_commit"
   },
   "simulation": {
     "release": "forecast-2026-Q3-r1",
@@ -24,12 +25,13 @@
     "commit": "35a1bbd926a34e7c885c3b4fd4d1e2baa044cf82",
     "digest": "git-tree-sha1:06e9c43bcebd85776e4404432ada40acd08c5832",
     "fixture_digest": "sha256:7209fa2621e186e76ef1fa7a3113f4782eb71ef6b7178685f2f0a36db1357159",
-    "receipt_schema": "0.1.0"
+    "receipt_schema": "1.0.0"
   },
   "governance": {
-    "release": "governance-v0.1.0",
-    "commit": "3b071d15b08184fcad29d91dda7807e4823c827a",
-    "digest": "git-tree-sha1:d9157121498b446cef6b63556d53a2210ec456d0"
+    "release": "governance-v1.0.0",
+    "commit": "716d4581d723a5c1b56f16efdbcd25790549ae33",
+    "digest": "git-tree-sha1:fd87ca3aedd0c42f2c03152ec3f1f799660fa1b5",
+    "coordinate_status": "pinned"
   },
   "seed": {
     "repository": "driftframestudios/prototype-exemplars",

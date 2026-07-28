@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "rules": [
     {
       "id": "RULE-LIFE-001",
@@ -42,6 +42,10 @@
       "statement": "Identity, authorization, tenant, retention, and redaction decisions remain attributable and testable."
     },
     {
+      "id": "RULE-SECR-001",
+      "statement": "Environment-scoped workload identities resolve non-secret configuration from AWS Systems Manager Parameter Store and rotating secret material from AWS Secrets Manager; KMS context, version stage, cache bounds, redacted retrieval telemetry, and repository build state log and fixture reference posture remain testable."
+    },
+    {
       "id": "RULE-OBS-001",
       "statement": "Operational measures preserve numerator, denominator, threshold, window, and evidence locator."
     },
@@ -51,4 +55,3 @@
     }
   ]
 }
-

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "roles": [
     {
       "id": "scientific_owner",
@@ -19,7 +19,7 @@
     },
     {
       "id": "security_owner",
-      "authority": "identity authorization threat treatment telemetry and incident posture"
+      "authority": "identity authorization credential lifecycle KMS threat treatment telemetry and incident posture"
     },
     {
       "id": "privacy_owner",
@@ -31,7 +31,7 @@
     },
     {
       "id": "platform_owner",
-      "authority": "runtime reliability observability deployment and integration operation"
+      "authority": "runtime reliability observability deployment configuration and secret retrieval and integration operation"
     },
     {
       "id": "system_owner",
@@ -63,4 +63,3 @@
     }
   ]
 }
-

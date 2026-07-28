@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "proof_classes": [
     {
       "id": "configured_vendor_environments",
@@ -13,7 +13,7 @@
     },
     {
       "id": "production_security_and_observability",
-      "success_state": "Production-bound identity privacy telemetry support and incident controls produce measurable and attributable operating evidence.",
+      "success_state": "Production-bound identity privacy telemetry support incident configuration and secret-lifecycle controls produce measurable and attributable operating evidence.",
       "required_roles": ["security_owner", "privacy_owner", "platform_owner", "operations_owner", "system_owner"]
     },
     {
@@ -23,4 +23,3 @@
     }
   ]
 }
-

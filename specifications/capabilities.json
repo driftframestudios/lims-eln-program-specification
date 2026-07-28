@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "requirements": [
     {
       "id": "SPEC-LIFE-001",
@@ -38,6 +38,12 @@
       "material_effect": "Owners can operate the service with attributable access, protected telemetry, and measurable recovery."
     },
     {
+      "id": "SPEC-SECR-001",
+      "name": "Workload-bound configuration and secret lifecycle",
+      "rule_ids": ["RULE-SECR-001"],
+      "material_effect": "Operators can rotate vendor credentials and change non-secret configuration through governed runtime stores while repositories, build artifacts, state, logs, fixtures, and telemetry preserve references or redacted metadata."
+    },
+    {
       "id": "SPEC-ACPT-001",
       "name": "Accountable multidomain acceptance",
       "rule_ids": ["RULE-ACPT-001"],
@@ -45,4 +51,3 @@
     }
   ]
 }
-

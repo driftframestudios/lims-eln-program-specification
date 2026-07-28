@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scenarios": [
     {
       "id": "SCN-LIFE-001",
@@ -122,6 +122,18 @@
       "acceptance_roles": ["security_owner", "privacy_owner", "system_owner"]
     },
     {
+      "id": "SCN-SECR-001",
+      "requirement_id": "SPEC-SECR-001",
+      "rule_id": "RULE-SECR-001",
+      "title": "Rotated vendor credential advances through a bounded runtime cache",
+      "given": ["an environment-scoped workload role", "non-secret endpoint and feature configuration in AWS Systems Manager Parameter Store", "a vendor credential in AWS Secrets Manager protected by the approved KMS key"],
+      "when": ["the secret rotation workflow advances the active version stage"],
+      "then": ["the adapter resolves configuration and secret references with least privilege", "the active secret version reaches the runtime within the approved cache bound", "the application artifact identity remains stable", "telemetry records reference version stage duration and outcome with the value redacted"],
+      "failure_twin": "the workload role retrieves a value outside its environment path or protected material reaches a repository build state log fixture or telemetry surface",
+      "recovery": "revoke the active session quarantine affected artifacts rotate the value narrow the policies and replay the retrieval and redaction probes",
+      "acceptance_roles": ["security_owner", "platform_owner", "system_owner", "vendor_platform_owner"]
+    },
+    {
       "id": "SCN-OBS-001",
       "requirement_id": "SPEC-SECO-001",
       "rule_id": "RULE-OBS-001",
@@ -147,4 +159,3 @@
     }
   ]
 }
-

@@ -1,6 +1,6 @@
 {
   "constellation_id": "lims-eln-open-receipts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repositories": [
     {
       "role": "program",
@@ -31,4 +31,3 @@
   "dependency_rule": "program releases flow to both implementations; comparison consumes pinned releases",
   "learning_rule": "adjudicated differences create successor decisions and forecasts"
 }
-
