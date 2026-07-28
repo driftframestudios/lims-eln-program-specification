@@ -15,7 +15,22 @@ Every contribution:
 8. preserves distinct simulated and observed receipt states;
 9. updates the Coordination Horizon when active dependencies or re-entry
    instructions materially change;
-10. passes the local validator and unit tests.
+10. passes program, language, pinned-coordinate, secret-shape, and unit-test
+    validation.
+
+For an ordinary candidate:
+
+```sh
+python3 scripts/validate_program.py
+python3 scripts/validate_pinned_sources.py --allow-pending
+python3 scripts/check_language.py
+python3 scripts/scan_secret_shapes.py
+python3 -m unittest discover -s tests -v
+```
+
+Release settlement supplies each external `ROLE=PATH` checkout to
+`scripts/validate_pinned_sources.py`. The default command requires pinned
+coordinates; `--allow-pending` is an explicit candidate-only posture.
 
 Automated maintenance follows the exact branch, bot-identity, and target
 contract in `BRANCHING.md` and retains the same validation and review path.

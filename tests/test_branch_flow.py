@@ -39,7 +39,7 @@ class BranchFlowTests(unittest.TestCase):
         output = StringIO()
         with redirect_stdout(output):
             result = check_branch_flow.main(
-                ["--base", "main", "--head", "release/0.3.0"]
+                ["--base", "main", "--head", "release/0.3.1"]
             )
         self.assertEqual(2, result)
 
@@ -49,7 +49,7 @@ class BranchFlowTests(unittest.TestCase):
         self.assertEqual(0, result)
         self.assertIn("Dependabot branch", output)
         self.assertEqual(1, self.invoke("main", head, "contributor")[0])
-        self.assertEqual(1, self.invoke("release/0.3.0", head, "dependabot[bot]")[0])
+        self.assertEqual(1, self.invoke("release/0.3.1", head, "dependabot[bot]")[0])
 
     def test_renovate_requires_bot_identity(self) -> None:
         result, output = self.invoke(

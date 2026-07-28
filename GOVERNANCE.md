@@ -56,3 +56,23 @@ The actual and simulated implementations share released specifications,
 scenario identifiers, and fixture contracts. Their runtime source histories
 remain independent. The comparator owns normalization and classification, with
 independent review for fixture and expected-result changes.
+
+## Release settlement
+
+A candidate carries explicit zero provenance, a settling Coordination Horizon
+item, and the open promotion receipt
+`RCP-PROGRAM-PROMOTION-003`. A released record carries material commit and tree
+coordinates, observed ruleset and CODEOWNER evidence, completed promotion
+work, and the stable `branch-policy` and `program-validation` check contexts.
+
+Release and hotfix validation resolves every external repository from its
+nonzero 40-hex lock coordinate before checkout. A fine-grained
+`CONSTELLATION_READ_TOKEN` repository secret supplies read access to the four
+private sibling repositories. The token receives repository-contents read
+access only and follows the repository secret-rotation policy.
+
+The pinned governance validator applies the released Machine Node, first
+receipt, and Coordination Horizon schemas to this repository. The settlement
+gate also compares canonical bundle bytes, simulation result content,
+governance closure, and aggregate artifact digests across the program,
+simulation, and comparison repositories.

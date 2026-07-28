@@ -2,7 +2,7 @@
   "aggregate_artifacts": [
     {
       "artifact_id": "ARTIFACT-SIM-SUBSTANTIVE-CLOSURE-2028-V1",
-      "digest": "sha256:9ca1cba1efb73cd3c0bdede1d98f995835d4a3d7eaccbc1b87b4f4188591a9ad",
+      "digest": "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61",
       "locator": "evidence://simulation/closures/substantive-2028-v1",
       "media_type": "application/json",
       "retention_class": "simulation-baseline",
@@ -138,7 +138,7 @@
       "artifacts": [
         {
           "artifact_id": "ARTIFACT-SIM-VENDOR-CONFORMANCE-2028-V1",
-          "digest": "sha256:5ef6952316d627943e448ab7164c106724021f76764f8f607c7f67036ec39585",
+          "digest": "sha256:b63b7b0f5a48add8d7eb2f103e4a95d1f77b0892621aa94d7151ce966e8ec11e",
           "locator": "evidence://simulation/closures/configured-vendors-2028-v1",
           "media_type": "application/json",
           "retention_class": "simulation-baseline",
@@ -181,7 +181,7 @@
       "artifacts": [
         {
           "artifact_id": "ARTIFACT-SIM-MIGRATION-RESTORE-2028-V1",
-          "digest": "sha256:2efa82199469d42328a8a2f788ab558adccf5c30025358369f529f34415f513d",
+          "digest": "sha256:15d96330f69e4ca49df9aad6ae557eabf48ccc242f4720a3b81fd81ee479737d",
           "locator": "evidence://simulation/closures/migration-restore-2028-v1",
           "media_type": "application/json",
           "retention_class": "simulation-baseline",
@@ -207,7 +207,7 @@
       "scope": "A representative synthetic laboratory corpus with scientific results, lineage, artifacts, and explicit failure twins.",
       "simulated_environment": {
         "class": "qualification",
-        "configuration_digest": "sha256:bac923f373f8c0dd276ebd9b640cbf222901e1aaeca8bad77c41fe6956603b2e",
+        "configuration_digest": "sha256:157dff2cc178c49a257c8a8c8f38f1937477f3464b6782b8f01bf060b94cbf5c",
         "environment_id": "ENV-SIM-MIGRATION-2028-V1",
         "region": "synthetic-us-east",
         "schema_version": "migration-contract-3.0"
@@ -223,7 +223,7 @@
       "artifacts": [
         {
           "artifact_id": "ARTIFACT-SIM-SECURITY-OBSERVABILITY-2028-V1",
-          "digest": "sha256:b44870fb0aecf1f585e1f8b3c42e5b8b13a6e4481a3917f7dca4fa8ea8f7dae4",
+          "digest": "sha256:4fe426f279579302afdc606b8d5aba8121a2b16f9104181aab39e664713ccfaf",
           "locator": "evidence://simulation/closures/security-observability-2028-v1",
           "media_type": "application/json",
           "retention_class": "simulation-baseline",
@@ -249,7 +249,7 @@
       "scope": "Synthetic tenant workloads, AWS Parameter Store and Secrets Manager references, protected traces, vendor readback signals, and failure twins.",
       "simulated_environment": {
         "class": "production",
-        "configuration_digest": "sha256:7ae195b9cae1481a0d2cc23c27f0f6af7455331a1ec14bff4efcf677aed80e48",
+        "configuration_digest": "sha256:d7f29dc59dd68efe589f3ab2f3d7f1ae48760e8273290d87c0a9cbc7c58161a4",
         "environment_id": "ENV-SIM-PRODUCTION-2028-V1",
         "region": "synthetic-us-east",
         "schema_version": "runtime-control-profile-3.0"
@@ -265,7 +265,7 @@
       "artifacts": [
         {
           "artifact_id": "ARTIFACT-SIM-ACCOUNTABLE-ACCEPTANCE-2028-V1",
-          "digest": "sha256:70cdf5e03a798d718f79a941b587ef3e14a3cc1f3a29b314ab59c10a54b6b550",
+          "digest": "sha256:d4544b91410af54043b8227b02d4ef72eb07731793435e5f504a896b96377aac",
           "locator": "evidence://simulation/closures/accountable-acceptance-2028-v1",
           "media_type": "application/json",
           "retention_class": "simulation-baseline",
@@ -292,7 +292,7 @@
       "scope": "The selected future research-use lifecycle, vendor integrations, migration, recovery, security, observability, and retained evidence.",
       "simulated_environment": {
         "class": "qualification",
-        "configuration_digest": "sha256:94b7301905c14df4940caa61c75c3505ac8b8638af1ee0462309db46713cdf79",
+        "configuration_digest": "sha256:93967f795e1420f28ac66f7f4f737da9f81182f2180c1d41c6f2a6ee8a0cac90",
         "environment_id": "ENV-SIM-ACCEPTANCE-2028-V1",
         "region": "synthetic-us-east",
         "schema_version": "acceptance-packet-3.0"

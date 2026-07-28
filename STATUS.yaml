@@ -1,5 +1,5 @@
 name: LIMS/ELN Program Specification
-version: 0.3.0
+version: 0.3.1
 status: settling
 evidence_mode: planned
 assurance_stage: specified
@@ -11,13 +11,13 @@ source_seed:
   pull_request: 3
   source_commit: 8be1e2c2ce239e51dcd5d1e19d1ff52e9d080b72
   merge_commit: 613f524821a25389748a9cd98d1bb0d303de87cf
-released_baseline: spec-v0.2.0
-released_commit: fc7707134b58ed12ad349bf649d2af1c3689bd01
-planned_release: spec-v0.3.0
-governance_contract: governance-v2.0.0
+released_baseline: spec-v0.3.0
+released_commit: 895b7a02ebddc9f7c2b63a2d03432775a120c119
+planned_release: spec-v0.3.1
+governance_contract: governance-v2.0.1
 governance_profile: Control Plane Profile 0.3.0
-governance_schema: 2.0.0
-receipt_schema: 2.0.0
+governance_schema: 2.0.1
+receipt_schema: 2.0.1
 release_coordinate_status: pending_release_commit
 governance_coordinate_status: pending_release_commit
 coordination_horizon: COORD-HORIZON-2026-Q3-R1

@@ -5,15 +5,28 @@ import json
 import math
 import re
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROGRAM_RELEASE = "0.3.0"
-GOVERNANCE_RELEASE = "2.0.0"
+PROGRAM_RELEASE = "0.3.1"
+PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
+GOVERNANCE_RELEASE = "2.0.1"
+GOVERNANCE_TAG = f"governance-v{GOVERNANCE_RELEASE}"
+CONTROL_PLANE_PROFILE = "0.3.0"
 RECEIPT_VOCABULARY_RELEASE = "1.0.0"
 PROMOTION_RECEIPT_ID = "RCP-PROGRAM-PROMOTION-003"
 CANONICAL_CLOSURE_DIGEST = (
-    "sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9"
+    "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb"
+)
+CANONICAL_RESULT_DIGEST = (
+    "sha256:9d42b972c77764c81ff32fefe8f02367a27406e9ba082a704587cc9b5a9da860"
+)
+CANONICAL_AGGREGATE_ARTIFACT_DIGEST = (
+    "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61"
+)
+CANONICAL_BUNDLE_FILE_DIGEST = (
+    "sha256:b868604412039c3705d4b60e649c43da2f51592ca0215d22ebe4477b75016ef4"
 )
 PENDING_COMMIT = "0" * 40
 PENDING_TREE_DIGEST = "git-tree-sha1:" + ("0" * 40)
@@ -23,9 +36,147 @@ RELEASE_PATTERNS = {
         r"^forecast-(?:[0-9]{4}-Q[1-4]-r[1-9][0-9]*|"
         r"[0-9]{4}-FR-v[1-9][0-9]*)$"
     ),
-    "implementation": re.compile(r"^candidate-v[0-9]+\.[0-9]+\.[0-9]+$"),
+    "implementation": re.compile(
+        r"^implementation-v[0-9]+\.[0-9]+\.[0-9]+$"
+    ),
     "comparison": re.compile(r"^comparison-v[0-9]+\.[0-9]+\.[0-9]+$"),
     "governance": re.compile(r"^governance-v[0-9]+\.[0-9]+\.[0-9]+$"),
+}
+COMMIT_PATTERN = re.compile(r"^[a-f0-9]{40}$")
+MATERIAL_COMMIT_PATTERN = re.compile(r"^(?!0{40}$)[a-f0-9]{40}$")
+TREE_DIGEST_PATTERN = re.compile(r"^git-tree-sha1:[a-f0-9]{40}$")
+MATERIAL_TREE_DIGEST_PATTERN = re.compile(
+    r"^git-tree-sha1:(?!0{40}$)[a-f0-9]{40}$"
+)
+SHA256_PATTERN = re.compile(r"^sha256:[a-f0-9]{64}$")
+MATERIAL_SHA256_PATTERN = re.compile(r"^sha256:(?!0{64}$)[a-f0-9]{64}$")
+
+CORE_ROOT_KEYS = {
+    "constellation": {
+        "constellation_id",
+        "version",
+        "repositories",
+        "dependency_rule",
+        "learning_rule",
+    },
+    "constellation_lock": {
+        "constellation_version",
+        "recorded_at",
+        "content_identity",
+        "specification",
+        "simulation",
+        "implementation",
+        "comparison",
+        "governance",
+        "seed_lineage",
+        "seed",
+    },
+    "release_role": {
+        "manifest_version",
+        "repository_role",
+        "repository_release",
+        "external_release",
+        "release_state",
+        "authority_posture",
+        "canonical_closure",
+        "advisory_design",
+        "contract_bindings",
+        "orientation_surfaces",
+        "seed_lineage",
+        "release_coordinates",
+        "promotion_coordinates",
+    },
+    "machine_node": {
+        "machine_node_id",
+        "canonical_identity",
+        "title",
+        "purpose",
+        "control_plane_profile",
+        "schema_release",
+        "repository_role",
+        "authority",
+        "lifecycle_state",
+        "coordination_horizon_id",
+        "contracts",
+        "campaigns",
+        "seed_lineage",
+        "current_provenance",
+        "first_receipt_contract_id",
+        "open_receipts",
+        "invalidation_conditions",
+        "downstream_consumers",
+        "source_boundaries",
+        "metadata",
+    },
+    "first_receipt": {
+        "first_receipt_id",
+        "machine_node_id",
+        "as_of",
+        "orientation_purpose",
+        "authority_posture",
+        "contract_state",
+        "evidence_posture",
+        "coordination_horizon_id",
+        "current_horizon_summary",
+        "open_receipts",
+        "invalidation_conditions",
+        "source_permissions",
+        "handoff",
+        "metadata",
+    },
+    "coordination_horizon": {
+        "horizon_id",
+        "title",
+        "objective",
+        "as_of",
+        "current_item_ids",
+        "work_items",
+        "reentry_capsule",
+        "retained_effects",
+        "consequential_questions",
+        "metadata",
+    },
+}
+STATUS_KEYS = {
+    "name",
+    "version",
+    "status",
+    "evidence_mode",
+    "assurance_stage",
+    "default_branch",
+    "integration_branch",
+    "as_of",
+    "source_seed",
+    "released_baseline",
+    "released_commit",
+    "planned_release",
+    "governance_contract",
+    "governance_profile",
+    "governance_schema",
+    "receipt_schema",
+    "release_coordinate_status",
+    "governance_coordinate_status",
+    "coordination_horizon",
+    "bounded_caller_contract",
+    "practitioner_probe_catalog",
+    "advisory_future_reality_design",
+    "canonical_simulated_closure",
+    "receipt_vocabulary_map",
+    "simulated_receipt_classes_closed",
+    "future_observed_receipt_classes_open",
+}
+PROMOTION_RECEIPT_KEYS = {
+    "promotion_receipt_id",
+    "repository",
+    "target_release",
+    "promotion_state",
+    "evidence_mode",
+    "assurance_stage",
+    "candidate_coordinate",
+    "release_coordinate",
+    "required_evidence",
+    "accountable_role",
+    "metadata",
 }
 
 
@@ -74,6 +225,588 @@ def load_json(relative_path: str) -> dict:
         )
 
 
+def parse_status_scalar(value: str) -> str | int | bool | None:
+    if value == "null":
+        return None
+    if value == "true":
+        return True
+    if value == "false":
+        return False
+    if re.fullmatch(r"(?:0|[1-9][0-9]*)", value):
+        return int(value)
+    return value
+
+
+def load_status(relative_path: str = "STATUS.yaml") -> dict[str, Any]:
+    """Parse the deliberately restricted two-level status mapping."""
+    path = ROOT / relative_path
+    result: dict[str, Any] = {}
+    active_section: str | None = None
+    for number, raw_line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(),
+        start=1,
+    ):
+        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+            continue
+        indentation = len(raw_line) - len(raw_line.lstrip(" "))
+        if indentation not in {0, 2}:
+            raise ValueError(
+                f"{relative_path}:{number} uses an unsupported indentation depth"
+            )
+        key, separator, raw_value = raw_line.strip().partition(":")
+        if not separator or not key:
+            raise ValueError(f"{relative_path}:{number} requires key: value syntax")
+        value = raw_value.strip()
+        if indentation == 0:
+            if key in result:
+                raise DuplicateObjectKeyError(
+                    f"{relative_path} key {key!r} appears more than once"
+                )
+            if value:
+                result[key] = parse_status_scalar(value)
+                active_section = None
+            else:
+                result[key] = {}
+                active_section = key
+            continue
+        if active_section is None:
+            raise ValueError(
+                f"{relative_path}:{number} nested value lacks a parent mapping"
+            )
+        section = result[active_section]
+        if not isinstance(section, dict):
+            raise ValueError(
+                f"{relative_path}:{number} parent {active_section!r} is scalar"
+            )
+        if key in section:
+            raise DuplicateObjectKeyError(
+                f"{relative_path} key {active_section}.{key} appears more than once"
+            )
+        if not value:
+            raise ValueError(
+                f"{relative_path}:{number} supports two mapping levels only"
+            )
+        section[key] = parse_status_scalar(value)
+    return result
+
+
+def require_exact_object(
+    value: Any,
+    expected_keys: set[str],
+    label: str,
+) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be an object")
+    actual_keys = set(value)
+    if actual_keys != expected_keys:
+        raise ValueError(
+            f"{label} fields differ: missing={sorted(expected_keys - actual_keys)}, "
+            f"undeclared={sorted(actual_keys - expected_keys)}"
+        )
+    return value
+
+
+def require_string(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{label} must be a non-empty string")
+    return value
+
+
+def require_string_list(value: Any, label: str, *, minimum: int = 0) -> list[str]:
+    if (
+        not isinstance(value, list)
+        or len(value) < minimum
+        or any(not isinstance(item, str) or not item for item in value)
+    ):
+        raise ValueError(
+            f"{label} must contain at least {minimum} non-empty strings"
+        )
+    if len(value) != len(set(value)):
+        raise ValueError(f"{label} must contain unique strings")
+    return value
+
+
+def validate_core_shapes(
+    *,
+    constellation: dict,
+    constellation_lock: dict,
+    release_role: dict,
+    machine_node: dict,
+    first_receipt: dict,
+    coordination_horizon: dict,
+    promotion_receipt: dict,
+    status_document: dict,
+) -> None:
+    """Reject undeclared fields and type drift at the release control boundary."""
+    records = {
+        "constellation": constellation,
+        "constellation_lock": constellation_lock,
+        "release_role": release_role,
+        "machine_node": machine_node,
+        "first_receipt": first_receipt,
+        "coordination_horizon": coordination_horizon,
+    }
+    for label, record in records.items():
+        require_exact_object(record, CORE_ROOT_KEYS[label], label)
+
+    require_exact_object(status_document, STATUS_KEYS, "STATUS.yaml")
+    require_exact_object(
+        status_document["source_seed"],
+        {"repository", "pull_request", "source_commit", "merge_commit"},
+        "STATUS.yaml.source_seed",
+    )
+    for key in STATUS_KEYS - {
+        "source_seed",
+        "simulated_receipt_classes_closed",
+        "future_observed_receipt_classes_open",
+    }:
+        require_string(status_document[key], f"STATUS.yaml.{key}")
+    for key in {
+        "simulated_receipt_classes_closed",
+        "future_observed_receipt_classes_open",
+    }:
+        if type(status_document[key]) is not int or status_document[key] < 0:
+            raise ValueError(f"STATUS.yaml.{key} must be a non-negative integer")
+
+    coordinate_keys = {
+        "specification": {
+            "release",
+            "commit",
+            "digest",
+            "coordinate_status",
+        },
+        "simulation": {
+            "release",
+            "commit",
+            "digest",
+            "coordinate_status",
+            "canonical_closure_digest",
+            "reference_result_digest",
+            "aggregate_artifact_digest",
+            "canonical_bundle_file_digest",
+        },
+        "implementation": {
+            "release",
+            "commit",
+            "digest",
+            "coordinate_status",
+            "source_binding_status",
+        },
+        "comparison": {
+            "release",
+            "commit",
+            "digest",
+            "coordinate_status",
+            "canonical_closure_digest",
+            "aggregate_artifact_digest",
+            "receipt_schema",
+        },
+        "governance": {
+            "release",
+            "profile",
+            "schema_version",
+            "commit",
+            "digest",
+            "coordinate_status",
+        },
+    }
+    for role, expected_keys in coordinate_keys.items():
+        coordinate = require_exact_object(
+            constellation_lock[role],
+            expected_keys,
+            f"constellation_lock.{role}",
+        )
+        for key in expected_keys:
+            require_string(coordinate[key], f"constellation_lock.{role}.{key}")
+    require_string_list(
+        [
+            item.get("repository_role", "")
+            for item in constellation_lock["seed_lineage"]
+            if isinstance(item, dict)
+        ],
+        "constellation_lock.seed_lineage repository roles",
+        minimum=5,
+    )
+
+    require_exact_object(
+        release_role["release_coordinates"],
+        {"commit", "tree_digest", "coordinate_status"},
+        "release_role.release_coordinates",
+    )
+    require_exact_object(
+        release_role["promotion_coordinates"],
+        {"status", "receipt_id", "receipt_path", "required_roles"},
+        "release_role.promotion_coordinates",
+    )
+    require_string_list(
+        release_role["promotion_coordinates"]["required_roles"],
+        "release_role.promotion_coordinates.required_roles",
+        minimum=5,
+    )
+    for key in {
+        "manifest_version",
+        "repository_role",
+        "repository_release",
+        "external_release",
+        "release_state",
+        "authority_posture",
+    }:
+        require_string(release_role[key], f"release_role.{key}")
+    canonical_closure = require_exact_object(
+        release_role["canonical_closure"],
+        {
+            "closure_id",
+            "future_reality_id",
+            "digest",
+            "reference_result_digest",
+            "aggregate_artifact_digest",
+            "bundle_path",
+            "bundle_file_digest",
+            "authority",
+            "production_authorization_effect",
+        },
+        "release_role.canonical_closure",
+    )
+    advisory_design = require_exact_object(
+        release_role["advisory_design"],
+        {"simulation_id", "future_reality_id", "digest", "authority"},
+        "release_role.advisory_design",
+    )
+    contract_bindings = require_exact_object(
+        release_role["contract_bindings"],
+        {
+            "governance_schema",
+            "control_plane_profile",
+            "bounded_caller_contract",
+            "practitioner_probe_catalog",
+            "proof_class_registry",
+            "receipt_vocabulary_map",
+        },
+        "release_role.contract_bindings",
+    )
+    receipt_binding = require_exact_object(
+        contract_bindings["receipt_vocabulary_map"],
+        {"contract_id", "version", "digest"},
+        "release_role.contract_bindings.receipt_vocabulary_map",
+    )
+    require_exact_object(
+        release_role["orientation_surfaces"],
+        {
+            "machine_node",
+            "first_receipt",
+            "coordination_horizon",
+            "constellation_lock",
+        },
+        "release_role.orientation_surfaces",
+    )
+    require_exact_object(
+        release_role["seed_lineage"],
+        {"release", "commit", "digest", "digest_scope"},
+        "release_role.seed_lineage",
+    )
+    for label, mapping in (
+        ("release_role.canonical_closure", canonical_closure),
+        ("release_role.advisory_design", advisory_design),
+        ("release_role.contract_bindings", contract_bindings),
+        (
+            "release_role.contract_bindings.receipt_vocabulary_map",
+            receipt_binding,
+        ),
+        ("release_role.orientation_surfaces", release_role["orientation_surfaces"]),
+        ("release_role.seed_lineage", release_role["seed_lineage"]),
+        ("release_role.release_coordinates", release_role["release_coordinates"]),
+    ):
+        for key, value in mapping.items():
+            if isinstance(value, dict):
+                continue
+            require_string(value, f"{label}.{key}")
+
+    require_exact_object(
+        constellation_lock["seed"],
+        {"repository", "source_commit", "merge_commit"},
+        "constellation_lock.seed",
+    )
+    if not isinstance(constellation_lock["seed_lineage"], list):
+        raise ValueError("constellation_lock.seed_lineage must be a list")
+    for index, item in enumerate(constellation_lock["seed_lineage"]):
+        if not isinstance(item, dict):
+            raise ValueError(
+                f"constellation_lock.seed_lineage[{index}] must be an object"
+            )
+        expected_keys = (
+            {"repository_role", "release", "commit", "digest", "digest_scope"}
+            if "digest" in item
+            else {"repository_role", "release", "commit", "coordinate_status"}
+        )
+        require_exact_object(
+            item,
+            expected_keys,
+            f"constellation_lock.seed_lineage[{index}]",
+        )
+        for key, value in item.items():
+            require_string(
+                value,
+                f"constellation_lock.seed_lineage[{index}].{key}",
+            )
+
+    require_exact_object(
+        promotion_receipt,
+        PROMOTION_RECEIPT_KEYS,
+        "promotion_receipt",
+    )
+    candidate_coordinate = require_exact_object(
+        promotion_receipt["candidate_coordinate"],
+        {"release", "commit", "digest"},
+        "promotion_receipt.candidate_coordinate",
+    )
+    for key in candidate_coordinate:
+        require_string(
+            candidate_coordinate[key],
+            f"promotion_receipt.candidate_coordinate.{key}",
+        )
+    release_coordinate = promotion_receipt["release_coordinate"]
+    if release_coordinate is not None:
+        release_coordinate = require_exact_object(
+            release_coordinate,
+            {
+                "tag",
+                "commit",
+                "digest",
+                "promoted_at",
+                "check_contexts",
+                "ruleset_receipt",
+                "codeowner_resolution",
+            },
+            "promotion_receipt.release_coordinate",
+        )
+        require_string_list(
+            release_coordinate["check_contexts"],
+            "promotion_receipt.release_coordinate.check_contexts",
+            minimum=2,
+        )
+        for key in {
+            "tag",
+            "commit",
+            "digest",
+            "promoted_at",
+            "ruleset_receipt",
+            "codeowner_resolution",
+        }:
+            require_string(
+                release_coordinate[key],
+                f"promotion_receipt.release_coordinate.{key}",
+            )
+    require_string_list(
+        promotion_receipt["required_evidence"],
+        "promotion_receipt.required_evidence",
+        minimum=4,
+    )
+    require_string(
+        promotion_receipt["accountable_role"],
+        "promotion_receipt.accountable_role",
+    )
+    promotion_metadata = require_exact_object(
+        promotion_receipt["metadata"],
+        {"schema_version", "created_at", "updated_at", "owner"},
+        "promotion_receipt.metadata",
+    )
+    promotion_owner = require_exact_object(
+        promotion_metadata["owner"],
+        {"actor_id", "display_name", "role"},
+        "promotion_receipt.metadata.owner",
+    )
+    for key in {"schema_version", "created_at", "updated_at"}:
+        require_string(
+            promotion_metadata[key],
+            f"promotion_receipt.metadata.{key}",
+        )
+    for key, value in promotion_owner.items():
+        require_string(value, f"promotion_receipt.metadata.owner.{key}")
+
+    repositories = constellation["repositories"]
+    if not isinstance(repositories, list) or not repositories:
+        raise ValueError("constellation.repositories must be a populated list")
+    for index, repository in enumerate(repositories):
+        require_exact_object(
+            repository,
+            {"role", "repository", "authority"},
+            f"constellation.repositories[{index}]",
+        )
+        for key in repository:
+            require_string(
+                repository[key],
+                f"constellation.repositories[{index}].{key}",
+            )
+
+
+def validate_release_lifecycle(
+    *,
+    release_role: dict,
+    machine_node: dict,
+    first_receipt: dict,
+    coordination_horizon: dict,
+    promotion_receipt: dict,
+    constellation_lock: dict,
+    status_document: dict,
+    substantive_receipt_ids: set[str],
+) -> None:
+    """Validate both candidate and settled release states without mixed evidence."""
+    state = release_role["release_state"]
+    release_coordinates = release_role["release_coordinates"]
+    promotion_coordinates = release_role["promotion_coordinates"]
+    provenance = machine_node["current_provenance"]
+    promotion_id = promotion_receipt["promotion_receipt_id"]
+    promotion_items = [
+        item
+        for item in coordination_horizon["work_items"]
+        if "promotion"
+        in " ".join(
+            str(item.get(field, ""))
+            for field in ("item_id", "horizon_label", "desired_state")
+        ).lower()
+    ]
+    if (
+        promotion_id != PROMOTION_RECEIPT_ID
+        or promotion_receipt["repository"]
+        != "driftframestudios/lims-eln-program-specification"
+        or promotion_receipt["target_release"] != PROGRAM_TAG
+        or promotion_coordinates["receipt_id"] != promotion_id
+        or promotion_coordinates["receipt_path"]
+        != "receipts/promotion-receipt.json"
+    ):
+        raise ValueError("promotion receipt identity or manifest locator differs")
+    if promotion_receipt["candidate_coordinate"] != {
+        "release": f"candidate-{PROGRAM_TAG}",
+        "commit": PENDING_COMMIT,
+        "digest": "sha256:" + ("0" * 64),
+    }:
+        raise ValueError("promotion receipt candidate coordinate differs")
+
+    node_receipts = set(machine_node["open_receipts"])
+    first_receipts = set(first_receipt["open_receipts"])
+    if node_receipts != first_receipts:
+        raise ValueError("Machine Node and first receipt open sets differ")
+
+    if state == "candidate_pending_promotion":
+        expected_open = substantive_receipt_ids | {PROMOTION_RECEIPT_ID}
+        if node_receipts != expected_open:
+            raise ValueError(
+                "candidate orientation must include substantive and promotion receipts"
+            )
+        if (
+            release_coordinates
+            != {
+                "commit": PENDING_COMMIT,
+                "tree_digest": PENDING_TREE_DIGEST,
+                "coordinate_status": "pending_release_commit",
+            }
+            or constellation_lock["specification"]["coordinate_status"]
+            != "pending_release_commit"
+            or constellation_lock["specification"]["commit"] != PENDING_COMMIT
+            or constellation_lock["specification"]["digest"]
+            != PENDING_TREE_DIGEST
+        ):
+            raise ValueError("candidate release coordinates require zero placeholders")
+        if (
+            machine_node["lifecycle_state"] != "settling"
+            or provenance["commit"] != PENDING_COMMIT
+            or provenance["digest"] != "sha256:" + ("0" * 64)
+            or provenance["release"] != f"candidate-{PROGRAM_TAG}"
+            or "seed_lineage" not in machine_node
+        ):
+            raise ValueError(
+                "candidate Machine Node requires settling placeholder provenance"
+            )
+        if (
+            promotion_receipt["promotion_state"] != "candidate_pending"
+            or promotion_receipt["evidence_mode"] != "planned"
+            or promotion_receipt["assurance_stage"] != "specified"
+            or promotion_receipt["candidate_coordinate"] != provenance
+            or promotion_receipt["release_coordinate"] is not None
+            or promotion_coordinates["status"]
+            != "pending_cross_repository_settlement"
+        ):
+            raise ValueError("candidate promotion receipt posture differs")
+        current_ids = set(coordination_horizon["current_item_ids"])
+        if not any(
+            item.get("item_id") in current_ids
+            and item.get("state") == "settling"
+            for item in promotion_items
+        ):
+            raise ValueError(
+                "candidate lifecycle requires a current settling promotion item"
+            )
+        if (
+            status_document["status"] != "settling"
+            or status_document["release_coordinate_status"]
+            != "pending_release_commit"
+        ):
+            raise ValueError("candidate STATUS lifecycle differs")
+        return
+
+    if state != "released":
+        raise ValueError(
+            "release_state must be candidate_pending_promotion or released"
+        )
+    expected_open = substantive_receipt_ids
+    if node_receipts != expected_open:
+        raise ValueError("released orientation must close the promotion receipt")
+    if (
+        release_coordinates["coordinate_status"] != "pinned"
+        or MATERIAL_COMMIT_PATTERN.fullmatch(release_coordinates["commit"]) is None
+        or MATERIAL_TREE_DIGEST_PATTERN.fullmatch(
+            release_coordinates["tree_digest"]
+        )
+        is None
+        or constellation_lock["specification"]["coordinate_status"] != "pinned"
+        or constellation_lock["specification"]["commit"]
+        != release_coordinates["commit"]
+        or constellation_lock["specification"]["digest"]
+        != release_coordinates["tree_digest"]
+        or provenance["commit"] != release_coordinates["commit"]
+    ):
+        raise ValueError("released specification coordinates must be pinned and equal")
+    for role in RELEASE_PATTERNS:
+        if constellation_lock[role]["coordinate_status"] != "pinned":
+            raise ValueError(
+                "released program state requires every constellation coordinate pinned"
+            )
+    release_coordinate = promotion_receipt["release_coordinate"]
+    if (
+        machine_node["lifecycle_state"] not in {"reference_ready", "active"}
+        or provenance["release"] != PROGRAM_TAG
+        or MATERIAL_COMMIT_PATTERN.fullmatch(provenance["commit"]) is None
+        or MATERIAL_SHA256_PATTERN.fullmatch(provenance["digest"]) is None
+        or promotion_receipt["promotion_state"] != "released"
+        or promotion_receipt["evidence_mode"] != "observed"
+        or promotion_receipt["assurance_stage"] == "specified"
+        or not isinstance(release_coordinate, dict)
+        or release_coordinate.get("tag") != PROGRAM_TAG
+        or release_coordinate.get("commit") != provenance["commit"]
+        or release_coordinate.get("digest") != provenance["digest"]
+        or set(release_coordinate.get("check_contexts", []))
+        != {"branch-policy", "program-validation"}
+        or promotion_coordinates["status"] != "settled"
+    ):
+        raise ValueError("released promotion evidence or Machine Node posture differs")
+    for locator in {
+        release_coordinate["ruleset_receipt"],
+        release_coordinate["codeowner_resolution"],
+    }:
+        if re.fullmatch(r"(?:governed|evidence)://[a-z0-9][a-z0-9._/-]*", locator) is None:
+            raise ValueError("released promotion evidence locator is malformed")
+    if not promotion_items or any(
+        item.get("state") != "complete" for item in promotion_items
+    ):
+        raise ValueError("released lifecycle requires completed promotion work")
+    if (
+        status_document["status"] != "released"
+        or status_document["release_coordinate_status"] != "pinned"
+        or status_document["governance_coordinate_status"] != "pinned"
+    ):
+        raise ValueError("released STATUS lifecycle differs")
+
+
 def sha256_digest(relative_path: str) -> str:
     return "sha256:" + hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest()
 
@@ -116,6 +849,9 @@ def validate() -> dict[str, int]:
     governance_closure = load_json(
         "simulations/simulated-receipt-closure.v2.json"
     )
+    canonical_bundle = load_json(
+        "simulations/future-reality-2028-06-30-v1.json"
+    )
     receipt_vocabulary = load_json(
         "specifications/receipt-vocabulary-map.v1.json"
     )
@@ -125,6 +861,19 @@ def validate() -> dict[str, int]:
     machine_node = load_json("machine-node.json")
     first_receipt = load_json("first-receipt.json")
     release_role = load_json("release/repository-role.json")
+    promotion_receipt = load_json("receipts/promotion-receipt.json")
+    status_document = load_status()
+
+    validate_core_shapes(
+        constellation=constellation,
+        constellation_lock=constellation_lock,
+        release_role=release_role,
+        machine_node=machine_node,
+        first_receipt=first_receipt,
+        coordination_horizon=coordination_horizon,
+        promotion_receipt=promotion_receipt,
+        status_document=status_document,
+    )
 
     requirement_ids = unique_ids(capabilities, "requirement")
     rule_ids = unique_ids(invariants, "rule")
@@ -132,7 +881,6 @@ def validate() -> dict[str, int]:
     role_ids = unique_ids(roles, "role")
     proof_class_ids = unique_ids(proof_classes, "proof class")
     receipt_ids = unique_ids(receipts, "receipt")
-    orientation_receipt_ids = receipt_ids | {PROMOTION_RECEIPT_ID}
     operation_ids = unique_ids(operations, "operation")
     probe_ids = unique_ids(probes, "probe")
     closure_ids = unique_ids(simulated_closures, "simulated closure")
@@ -313,6 +1061,25 @@ def validate() -> dict[str, int]:
 
     canonical_successor = future_reality.get("canonical_execution_successor", {})
     canonical_future = governance_closure.get("future_reality", {})
+    aggregate_artifacts = governance_closure.get("aggregate_artifacts", [])
+    if (
+        canonical_bundle.get("bundle_version") != GOVERNANCE_RELEASE
+        or canonical_bundle.get("source_result_digest")
+        != CANONICAL_RESULT_DIGEST
+        or canonical_bundle.get("governance_closure") != governance_closure
+        or canonical_bundle.get("governance_closure_digest")
+        != CANONICAL_CLOSURE_DIGEST
+        or canonical_json_digest(governance_closure)
+        != CANONICAL_CLOSURE_DIGEST
+        or len(aggregate_artifacts) != 1
+        or aggregate_artifacts[0].get("digest")
+        != CANONICAL_AGGREGATE_ARTIFACT_DIGEST
+        or sha256_digest("simulations/future-reality-2028-06-30-v1.json")
+        != CANONICAL_BUNDLE_FILE_DIGEST
+    ):
+        raise ValueError(
+            "canonical bundle, closure, aggregate artifact, or byte identity differs"
+        )
     if (
         future_reality.get("evidence_mode") != "simulated"
         or future_reality.get("authority") != "advisory_design_only"
@@ -523,9 +1290,17 @@ def validate() -> dict[str, int]:
     if (
         release_role.get("repository_role") != "program_specification"
         or release_role.get("repository_release") != PROGRAM_RELEASE
-        or release_role.get("release_state") != "candidate_pending_promotion"
+        or release_role.get("external_release") != PROGRAM_TAG
         or release_role["canonical_closure"]["digest"]
         != CANONICAL_CLOSURE_DIGEST
+        or release_role["canonical_closure"]["reference_result_digest"]
+        != CANONICAL_RESULT_DIGEST
+        or release_role["canonical_closure"]["aggregate_artifact_digest"]
+        != CANONICAL_AGGREGATE_ARTIFACT_DIGEST
+        or release_role["canonical_closure"]["bundle_path"]
+        != "simulations/future-reality-2028-06-30-v1.json"
+        or release_role["canonical_closure"]["bundle_file_digest"]
+        != CANONICAL_BUNDLE_FILE_DIGEST
         or release_role["canonical_closure"]["authority"]
         != "definitive_within_selected_future_reality"
         or release_role["canonical_closure"]["production_authorization_effect"]
@@ -538,12 +1313,6 @@ def validate() -> dict[str, int]:
         != "advisory_design_only"
         or release_role["contract_bindings"]["receipt_vocabulary_map"]["digest"]
         != sha256_digest("specifications/receipt-vocabulary-map.v1.json")
-        or release_role["release_coordinates"]["candidate_commit"]
-        != PENDING_COMMIT
-        or release_role["release_coordinates"]["candidate_tree_digest"]
-        != PENDING_TREE_DIGEST
-        or release_role["release_coordinates"]["candidate_coordinate_status"]
-        != "pending_release_promotion"
     ):
         raise ValueError("repository release role collapses design and execution")
 
@@ -577,27 +1346,36 @@ def validate() -> dict[str, int]:
             f"expected={sorted(expected_roles)}, actual={sorted(repository_roles)}"
         )
 
-    if set(machine_node["open_receipts"]) != orientation_receipt_ids:
-        raise ValueError(
-            "Machine Node open receipts differ from the substantive receipt "
-            "registry plus candidate-promotion receipt"
-        )
     if (
         machine_node["schema_release"] != GOVERNANCE_RELEASE
-        or machine_node["control_plane_profile"] != "0.3.0"
+        or machine_node["control_plane_profile"] != CONTROL_PLANE_PROFILE
         or machine_node["repository_role"] != "program_specification"
     ):
         raise ValueError("Machine Node governance schema binding differs")
+    program_seed = next(
+        item
+        for item in constellation_lock["seed_lineage"]
+        if item["repository_role"] == "program_specification"
+    )
+    expected_seed = {
+        "release": "spec-v0.3.0",
+        "commit": "895b7a02ebddc9f7c2b63a2d03432775a120c119",
+        "digest": "sha256:a73935fcd6bd2cd5e8aeda48739f74f90c2d5b0faec50d8341d7315378ef5ff2",
+        "digest_scope": "seed Machine Node",
+    }
     if (
-        machine_node["lifecycle_state"] != "settling"
-        or machine_node["current_provenance"]["commit"] != PENDING_COMMIT
-        or machine_node["current_provenance"]["digest"]
-        != "sha256:" + ("0" * 64)
-        or "seed_lineage" not in machine_node
+        release_role["seed_lineage"] != expected_seed
+        or machine_node["seed_lineage"]
+        != {key: expected_seed[key] for key in {"release", "commit", "digest"}}
+        or {
+            key: program_seed[key]
+            for key in {"release", "commit", "digest", "digest_scope"}
+        }
+        != expected_seed
+        or status_document["released_baseline"] != expected_seed["release"]
+        or status_document["released_commit"] != expected_seed["commit"]
     ):
-        raise ValueError(
-            "Machine Node must expose settling candidate provenance and seed lineage"
-        )
+        raise ValueError("program 0.3.0 seed lineage differs across control surfaces")
     if (
         machine_node["coordination_horizon_id"]
         != coordination_horizon["horizon_id"]
@@ -614,31 +1392,8 @@ def validate() -> dict[str, int]:
         raise ValueError("First receipt orientation coordinates differ")
     if (
         first_receipt["authority_posture"]["mode"] != "orientation_only"
-        or set(first_receipt["open_receipts"]) != orientation_receipt_ids
     ):
         raise ValueError("First receipt authority or open-receipt posture differs")
-
-    current_horizon_items = [
-        item
-        for item in coordination_horizon["work_items"]
-        if item["item_id"] in coordination_horizon["current_item_ids"]
-    ]
-    promotion_horizon_items = [
-        item
-        for item in current_horizon_items
-        if "promotion"
-        in " ".join(
-            str(item.get(field, ""))
-            for field in ("item_id", "horizon_label", "desired_state")
-        ).lower()
-    ]
-    if not any(
-        item.get("state") == "settling" for item in promotion_horizon_items
-    ):
-        raise ValueError(
-            "pending candidate provenance requires a current settling "
-            "promotion item"
-        )
 
     promotion_coordinates = release_role.get("promotion_coordinates", {})
     expected_promotion_roles = {
@@ -648,18 +1403,22 @@ def validate() -> dict[str, int]:
         "simulated_final_state",
         "comparative_evidence",
     }
-    if (
-        promotion_coordinates.get("status")
-        != "pending_cross_repository_settlement"
-        or promotion_coordinates.get("open_receipt_id")
-        != PROMOTION_RECEIPT_ID
-        or set(promotion_coordinates.get("required_roles", []))
-        != expected_promotion_roles
-    ):
+    if set(promotion_coordinates.get("required_roles", [])) != expected_promotion_roles:
         raise ValueError(
             "release manifest promotion coordinates differ from the "
             "candidate-promotion receipt"
         )
+
+    validate_release_lifecycle(
+        release_role=release_role,
+        machine_node=machine_node,
+        first_receipt=first_receipt,
+        coordination_horizon=coordination_horizon,
+        promotion_receipt=promotion_receipt,
+        constellation_lock=constellation_lock,
+        status_document=status_document,
+        substantive_receipt_ids=receipt_ids,
+    )
 
     contract_paths = {
         "CALLER-CONTRACT-001": (
@@ -748,27 +1507,49 @@ def validate() -> dict[str, int]:
         raise ValueError(
             "constellation lock version differs from the planned program release"
         )
-    if constellation_lock["specification"]["release"] != "spec-v0.3.0":
+    if constellation_lock["specification"]["release"] != PROGRAM_TAG:
         raise ValueError(
-            "specification lock release differs from planned spec-v0.3.0"
+            f"specification lock release differs from planned {PROGRAM_TAG}"
         )
-    if constellation_lock["governance"]["release"] != "governance-v2.0.0":
+    if constellation_lock["governance"]["release"] != GOVERNANCE_TAG:
         raise ValueError(
-            "governance lock release differs from governance-v2.0.0"
+            f"governance lock release differs from {GOVERNANCE_TAG}"
+        )
+    if (
+        constellation_lock["implementation"]["release"]
+        != f"implementation-v{PROGRAM_RELEASE}"
+    ):
+        raise ValueError(
+            "implementation lock release differs from the canonical external candidate"
         )
     if (
         constellation_lock["governance"].get("schema_version")
         != GOVERNANCE_RELEASE
         or constellation_lock["governance"].get("profile")
-        != "Control Plane Profile 0.3.0"
+        != f"Control Plane Profile {CONTROL_PLANE_PROFILE}"
     ):
         raise ValueError(
-            "governance lock binding differs from Control Plane Profile 0.3.0"
+            "governance lock binding differs from the selected control-plane profile"
         )
     if constellation_lock["comparison"]["receipt_schema"] != GOVERNANCE_RELEASE:
         raise ValueError(
             f"receipt schema differs from governance {GOVERNANCE_RELEASE}"
         )
+    if (
+        constellation_lock["simulation"]["canonical_closure_digest"]
+        != CANONICAL_CLOSURE_DIGEST
+        or constellation_lock["simulation"]["reference_result_digest"]
+        != CANONICAL_RESULT_DIGEST
+        or constellation_lock["simulation"]["aggregate_artifact_digest"]
+        != CANONICAL_AGGREGATE_ARTIFACT_DIGEST
+        or constellation_lock["simulation"]["canonical_bundle_file_digest"]
+        != CANONICAL_BUNDLE_FILE_DIGEST
+        or constellation_lock["comparison"]["canonical_closure_digest"]
+        != CANONICAL_CLOSURE_DIGEST
+        or constellation_lock["comparison"]["aggregate_artifact_digest"]
+        != CANONICAL_AGGREGATE_ARTIFACT_DIGEST
+    ):
+        raise ValueError("constellation canonical artifact bindings differ")
 
     for role in RELEASE_PATTERNS:
         coordinate = constellation_lock[role]
@@ -784,8 +1565,11 @@ def validate() -> dict[str, int]:
                 )
         elif status == "pinned":
             if (
-                coordinate.get("commit") == PENDING_COMMIT
-                or coordinate.get("digest") == PENDING_TREE_DIGEST
+                not isinstance(coordinate.get("commit"), str)
+                or MATERIAL_COMMIT_PATTERN.fullmatch(coordinate["commit"]) is None
+                or not isinstance(coordinate.get("digest"), str)
+                or MATERIAL_TREE_DIGEST_PATTERN.fullmatch(coordinate["digest"])
+                is None
             ):
                 raise ValueError(
                     f"{role} pinned coordinate requires observed commit and tree"
@@ -795,7 +1579,25 @@ def validate() -> dict[str, int]:
                 f"{role} coordinate status must be pending_release_commit or pinned"
             )
 
+    if (
+        release_role["manifest_version"] != GOVERNANCE_RELEASE
+        or release_role["contract_bindings"]["governance_schema"]
+        != GOVERNANCE_RELEASE
+        or release_role["contract_bindings"]["control_plane_profile"]
+        != CONTROL_PLANE_PROFILE
+        or promotion_receipt["metadata"]["schema_version"] != "1.0.0"
+        or status_document["version"] != PROGRAM_RELEASE
+        or status_document["planned_release"] != PROGRAM_TAG
+        or status_document["governance_contract"] != GOVERNANCE_TAG
+        or status_document["governance_schema"] != GOVERNANCE_RELEASE
+        or status_document["receipt_schema"] != GOVERNANCE_RELEASE
+        or status_document["governance_profile"]
+        != f"Control Plane Profile {CONTROL_PLANE_PROFILE}"
+    ):
+        raise ValueError("release, promotion, or status version binding differs")
+
     required_paths = [
+        "CHANGELOG.md",
         "README.md",
         "BRANCHING.md",
         "GOVERNANCE.md",
@@ -804,16 +1606,22 @@ def validate() -> dict[str, int]:
         "coordination-horizon.json",
         "first-receipt.json",
         "release/repository-role.json",
+        "receipts/promotion-receipt.json",
+        "schemas/promotion-receipt.schema.json",
         "specifications/bounded-caller.json",
         "specifications/receipt-vocabulary-map.v1.json",
         "probes/catalog.json",
         "simulations/future-reality-closure-v0.3.json",
+        "simulations/future-reality-2028-06-30-v1.json",
         "simulations/simulated-receipt-closure.v2.json",
         ".github/workflows/validate.yml",
         ".github/workflows/branch-policy.yml",
         ".github/dependabot.yml",
         ".github/pull_request_template.md",
         "scripts/check_branch_flow.py",
+        "scripts/check_language.py",
+        "scripts/validate_pinned_sources.py",
+        "docs/migrations/0.3.0-to-0.3.1.md",
         "tests/test_branch_flow.py",
     ]
     missing = [path for path in required_paths if not (ROOT / path).exists()]
@@ -832,7 +1640,9 @@ def validate() -> dict[str, int]:
         "roles": len(role_ids),
         "proof_classes": len(proof_class_ids),
         "open_receipts": len(receipts),
-        "promotion_receipts": 1,
+        "promotion_receipts": int(
+            promotion_receipt["promotion_receipt_id"] == PROMOTION_RECEIPT_ID
+        ),
         "repositories": len(repository_roles),
     }
 

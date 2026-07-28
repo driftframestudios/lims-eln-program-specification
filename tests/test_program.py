@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import importlib.util
 import json
 import sys
@@ -22,6 +23,20 @@ assert SECRET_SPEC and SECRET_SPEC.loader
 SECRET_SHAPES = importlib.util.module_from_spec(SECRET_SPEC)
 sys.modules["scan_secret_shapes"] = SECRET_SHAPES
 SECRET_SPEC.loader.exec_module(SECRET_SHAPES)
+LANGUAGE_SPEC = importlib.util.spec_from_file_location(
+    "check_language", ROOT / "scripts" / "check_language.py"
+)
+assert LANGUAGE_SPEC and LANGUAGE_SPEC.loader
+LANGUAGE = importlib.util.module_from_spec(LANGUAGE_SPEC)
+sys.modules["check_language"] = LANGUAGE
+LANGUAGE_SPEC.loader.exec_module(LANGUAGE)
+PINNED_SPEC = importlib.util.spec_from_file_location(
+    "validate_pinned_sources", ROOT / "scripts" / "validate_pinned_sources.py"
+)
+assert PINNED_SPEC and PINNED_SPEC.loader
+PINNED = importlib.util.module_from_spec(PINNED_SPEC)
+sys.modules["validate_pinned_sources"] = PINNED
+PINNED_SPEC.loader.exec_module(PINNED)
 
 
 class ProgramValidationTests(unittest.TestCase):
@@ -59,14 +74,34 @@ class ProgramValidationTests(unittest.TestCase):
 
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
         self.assertEqual(MODULE.PROGRAM_RELEASE, lock["constellation_version"])
-        self.assertEqual("spec-v0.3.0", lock["specification"]["release"])
-        self.assertEqual("governance-v2.0.0", lock["governance"]["release"])
-        self.assertEqual("2.0.0", lock["governance"]["schema_version"])
+        self.assertEqual("spec-v0.3.1", lock["specification"]["release"])
+        self.assertEqual("governance-v2.0.1", lock["governance"]["release"])
+        self.assertEqual(
+            "implementation-v0.3.1",
+            lock["implementation"]["release"],
+        )
+        self.assertEqual("2.0.1", lock["governance"]["schema_version"])
         self.assertEqual(
             "Control Plane Profile 0.3.0",
             lock["governance"]["profile"],
         )
-        self.assertEqual("2.0.0", lock["comparison"]["receipt_schema"])
+        self.assertEqual("2.0.1", lock["comparison"]["receipt_schema"])
+        self.assertEqual(
+            MODULE.CANONICAL_RESULT_DIGEST,
+            lock["simulation"]["reference_result_digest"],
+        )
+        self.assertEqual(
+            MODULE.CANONICAL_CLOSURE_DIGEST,
+            lock["simulation"]["canonical_closure_digest"],
+        )
+        self.assertEqual(
+            MODULE.CANONICAL_AGGREGATE_ARTIFACT_DIGEST,
+            lock["simulation"]["aggregate_artifact_digest"],
+        )
+        self.assertEqual(
+            MODULE.CANONICAL_BUNDLE_FILE_DIGEST,
+            lock["simulation"]["canonical_bundle_file_digest"],
+        )
         for role in MODULE.RELEASE_PATTERNS:
             status = lock[role]["coordinate_status"]
             self.assertIn(status, {"pending_release_commit", "pinned"})
@@ -80,13 +115,13 @@ class ProgramValidationTests(unittest.TestCase):
                     lock[role]["digest"],
                 )
 
-        status = (ROOT / "STATUS.yaml").read_text()
-        self.assertIn("version: 0.3.0", status)
-        self.assertIn("planned_release: spec-v0.3.0", status)
-        self.assertIn("governance_contract: governance-v2.0.0", status)
-        self.assertIn("governance_schema: 2.0.0", status)
-        self.assertIn("receipt_schema: 2.0.0", status)
-        self.assertIn('version = "0.3.0"', (ROOT / "pyproject.toml").read_text())
+        status = MODULE.load_status()
+        self.assertEqual("0.3.1", status["version"])
+        self.assertEqual("spec-v0.3.1", status["planned_release"])
+        self.assertEqual("governance-v2.0.1", status["governance_contract"])
+        self.assertEqual("2.0.1", status["governance_schema"])
+        self.assertEqual("2.0.1", status["receipt_schema"])
+        self.assertIn('version = "0.3.1"', (ROOT / "pyproject.toml").read_text())
 
     def test_every_open_receipt_has_accountable_roles(self) -> None:
         data = json.loads((ROOT / "receipts" / "open-receipts.json").read_text())
@@ -173,18 +208,30 @@ class ProgramValidationTests(unittest.TestCase):
             MODULE.CANONICAL_CLOSURE_DIGEST,
             MODULE.canonical_json_digest(projection),
         )
-        canonical_source_path = (
-            ROOT.parent
-            / "lims-eln-simulated-final-state"
-            / "build"
-            / "simulation"
-            / "simulated-receipt-closure.json"
+        bundle_path = (
+            ROOT / "simulations" / "future-reality-2028-06-30-v1.json"
         )
-        if canonical_source_path.exists():
-            self.assertEqual(
-                json.loads(canonical_source_path.read_text()),
-                projection,
-            )
+        bundle = json.loads(bundle_path.read_text())
+        self.assertEqual("2.0.1", bundle["bundle_version"])
+        self.assertEqual(
+            MODULE.CANONICAL_RESULT_DIGEST,
+            bundle["source_result_digest"],
+        )
+        self.assertEqual(projection, bundle["governance_closure"])
+        self.assertEqual(
+            MODULE.CANONICAL_CLOSURE_DIGEST,
+            bundle["governance_closure_digest"],
+        )
+        self.assertEqual(
+            MODULE.CANONICAL_AGGREGATE_ARTIFACT_DIGEST,
+            projection["aggregate_artifacts"][0]["digest"],
+        )
+        self.assertEqual(
+            MODULE.CANONICAL_BUNDLE_FILE_DIGEST,
+            MODULE.sha256_digest(
+                "simulations/future-reality-2028-06-30-v1.json"
+            ),
+        )
 
     def test_receipt_vocabulary_maps_each_layer_explicitly(self) -> None:
         vocabulary = json.loads(
@@ -268,10 +315,10 @@ class ProgramValidationTests(unittest.TestCase):
             machine_node["authority"]["mode"],
         )
         self.assertEqual("0.3.0", machine_node["control_plane_profile"])
-        self.assertEqual("2.0.0", machine_node["schema_release"])
+        self.assertEqual("2.0.1", machine_node["schema_release"])
         self.assertEqual("settling", machine_node["lifecycle_state"])
         self.assertEqual(
-            "spec-v0.2.0",
+            "spec-v0.3.0",
             machine_node["seed_lineage"]["release"],
         )
         self.assertEqual(
@@ -337,13 +384,294 @@ class ProgramValidationTests(unittest.TestCase):
             manifest["canonical_closure"]["digest"],
         )
         self.assertEqual(
+            MODULE.CANONICAL_RESULT_DIGEST,
+            manifest["canonical_closure"]["reference_result_digest"],
+        )
+        self.assertEqual(
+            MODULE.CANONICAL_AGGREGATE_ARTIFACT_DIGEST,
+            manifest["canonical_closure"]["aggregate_artifact_digest"],
+        )
+        self.assertEqual(
             "none",
             manifest["canonical_closure"]["production_authorization_effect"],
         )
         self.assertEqual(
             MODULE.PROMOTION_RECEIPT_ID,
-            manifest["promotion_coordinates"]["open_receipt_id"],
+            manifest["promotion_coordinates"]["receipt_id"],
         )
+
+    def test_release_lifecycle_accepts_complete_settlement(self) -> None:
+        release_role = json.loads(
+            (ROOT / "release" / "repository-role.json").read_text()
+        )
+        machine_node = json.loads((ROOT / "machine-node.json").read_text())
+        first_receipt = json.loads((ROOT / "first-receipt.json").read_text())
+        horizon = json.loads((ROOT / "coordination-horizon.json").read_text())
+        promotion = json.loads(
+            (ROOT / "receipts" / "promotion-receipt.json").read_text()
+        )
+        lock = json.loads((ROOT / "constellation.lock.json").read_text())
+        status = MODULE.load_status()
+        receipts = json.loads(
+            (ROOT / "receipts" / "open-receipts.json").read_text()
+        )["receipts"]
+        substantive_ids = {item["id"] for item in receipts}
+
+        release_role = deepcopy(release_role)
+        machine_node = deepcopy(machine_node)
+        first_receipt = deepcopy(first_receipt)
+        horizon = deepcopy(horizon)
+        promotion = deepcopy(promotion)
+        lock = deepcopy(lock)
+        status = deepcopy(status)
+        commit = "a" * 40
+        tree = "git-tree-sha1:" + ("b" * 40)
+        content_digest = "sha256:" + ("c" * 64)
+
+        for coordinate in (
+            lock["specification"],
+            lock["simulation"],
+            lock["implementation"],
+            lock["comparison"],
+            lock["governance"],
+        ):
+            coordinate["coordinate_status"] = "pinned"
+            coordinate["commit"] = commit
+            coordinate["digest"] = tree
+        release_role["release_state"] = "released"
+        release_role["release_coordinates"] = {
+            "commit": commit,
+            "tree_digest": tree,
+            "coordinate_status": "pinned",
+        }
+        release_role["promotion_coordinates"]["status"] = "settled"
+        machine_node["lifecycle_state"] = "reference_ready"
+        machine_node["current_provenance"] = {
+            "release": MODULE.PROGRAM_TAG,
+            "commit": commit,
+            "digest": content_digest,
+        }
+        machine_node["open_receipts"].remove(MODULE.PROMOTION_RECEIPT_ID)
+        first_receipt["open_receipts"].remove(MODULE.PROMOTION_RECEIPT_ID)
+        promotion["promotion_state"] = "released"
+        promotion["evidence_mode"] = "observed"
+        promotion["assurance_stage"] = "verified"
+        promotion["release_coordinate"] = {
+            "tag": MODULE.PROGRAM_TAG,
+            "commit": commit,
+            "digest": content_digest,
+            "promoted_at": "2026-07-29T12:00:00Z",
+            "check_contexts": ["branch-policy", "program-validation"],
+            "ruleset_receipt": "governed://github/rulesets/program-main",
+            "codeowner_resolution": "evidence://github/codeowners/program-main",
+        }
+        for item in horizon["work_items"]:
+            if "promotion" in item["horizon_label"].lower():
+                item["state"] = "complete"
+        status["status"] = "released"
+        status["release_coordinate_status"] = "pinned"
+        status["governance_coordinate_status"] = "pinned"
+
+        MODULE.validate_release_lifecycle(
+            release_role=release_role,
+            machine_node=machine_node,
+            first_receipt=first_receipt,
+            coordination_horizon=horizon,
+            promotion_receipt=promotion,
+            constellation_lock=lock,
+            status_document=status,
+            substantive_receipt_ids=substantive_ids,
+        )
+
+        machine_node["current_provenance"]["commit"] = "d" * 40
+        with self.assertRaisesRegex(ValueError, "pinned and equal"):
+            MODULE.validate_release_lifecycle(
+                release_role=release_role,
+                machine_node=machine_node,
+                first_receipt=first_receipt,
+                coordination_horizon=horizon,
+                promotion_receipt=promotion,
+                constellation_lock=lock,
+                status_document=status,
+                substantive_receipt_ids=substantive_ids,
+            )
+
+    def test_core_shapes_reject_undeclared_fields(self) -> None:
+        records = {
+            "constellation": json.loads((ROOT / "constellation.json").read_text()),
+            "constellation_lock": json.loads(
+                (ROOT / "constellation.lock.json").read_text()
+            ),
+            "release_role": json.loads(
+                (ROOT / "release" / "repository-role.json").read_text()
+            ),
+            "machine_node": json.loads((ROOT / "machine-node.json").read_text()),
+            "first_receipt": json.loads(
+                (ROOT / "first-receipt.json").read_text()
+            ),
+            "coordination_horizon": json.loads(
+                (ROOT / "coordination-horizon.json").read_text()
+            ),
+            "promotion_receipt": json.loads(
+                (ROOT / "receipts" / "promotion-receipt.json").read_text()
+            ),
+            "status_document": MODULE.load_status(),
+        }
+        records["constellation_lock"]["undeclared"] = "field"
+        with self.assertRaisesRegex(ValueError, "undeclared"):
+            MODULE.validate_core_shapes(**records)
+
+    def test_status_parser_rejects_duplicate_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            fixture = Path(temporary_directory) / "STATUS.yaml"
+            fixture.write_text("name: first\nname: second\n", encoding="utf-8")
+            original_root = MODULE.ROOT
+            MODULE.ROOT = Path(temporary_directory)
+            try:
+                with self.assertRaises(MODULE.DuplicateObjectKeyError):
+                    MODULE.load_status()
+            finally:
+                MODULE.ROOT = original_root
+
+    def test_promotion_receipt_schema_is_closed(self) -> None:
+        schema = json.loads(
+            (ROOT / "schemas" / "promotion-receipt.schema.json").read_text()
+        )
+        receipt = json.loads(
+            (ROOT / "receipts" / "promotion-receipt.json").read_text()
+        )
+        self.assertFalse(schema["additionalProperties"])
+        self.assertEqual(set(schema["required"]), set(receipt))
+        self.assertEqual(MODULE.PROMOTION_RECEIPT_ID, receipt["promotion_receipt_id"])
+        self.assertEqual("candidate_pending", receipt["promotion_state"])
+        self.assertIsNone(receipt["release_coordinate"])
+        candidate_contract = schema["allOf"][0]["then"]["properties"][
+            "candidate_coordinate"
+        ]["properties"]
+        self.assertEqual(MODULE.PENDING_COMMIT, candidate_contract["commit"]["const"])
+        self.assertEqual(
+            "sha256:" + ("0" * 64),
+            candidate_contract["digest"]["const"],
+        )
+
+    def test_pinned_source_gate_is_fail_closed(self) -> None:
+        lock = json.loads((ROOT / "constellation.lock.json").read_text())
+        self.assertEqual(
+            [],
+            PINNED.validate_sources(lock, {}, allow_pending=True),
+        )
+        findings = PINNED.validate_sources(lock, {}, allow_pending=False)
+        self.assertEqual(5, sum("requires a pinned" in item for item in findings))
+
+        pinned = deepcopy(lock)
+        pinned["simulation"]["coordinate_status"] = "pinned"
+        pinned["simulation"]["commit"] = "a" * 40
+        pinned["simulation"]["digest"] = "git-tree-sha1:" + ("b" * 40)
+        findings = PINNED.validate_sources(pinned, {}, allow_pending=True)
+        self.assertIn(
+            "simulation pinned coordinate requires a checked-out source",
+            findings,
+        )
+        preflight = PINNED.validate_external_preflight(lock)
+        self.assertTrue(preflight)
+        for role in PINNED.EXTERNAL_ROLES:
+            pinned[role]["coordinate_status"] = "pinned"
+            pinned[role]["commit"] = "a" * 40
+            pinned[role]["digest"] = "git-tree-sha1:" + ("b" * 40)
+        self.assertEqual([], PINNED.validate_external_preflight(pinned))
+
+    def test_cross_repository_artifact_checks_are_operational(self) -> None:
+        lock = json.loads((ROOT / "constellation.lock.json").read_text())
+        closure = json.loads(
+            (
+                ROOT / "simulations" / "simulated-receipt-closure.v2.json"
+            ).read_text()
+        )
+        bundle = json.loads(
+            (
+                ROOT / "simulations" / "future-reality-2028-06-30-v1.json"
+            ).read_text()
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary_root = Path(temporary_directory)
+            simulation = temporary_root / "simulation"
+            (simulation / "build" / "simulation").mkdir(parents=True)
+            (simulation / "release").mkdir()
+            (
+                simulation
+                / "build"
+                / "simulation"
+                / "simulated-receipt-closure.json"
+            ).write_text(json.dumps(closure), encoding="utf-8")
+            (
+                simulation / "build" / "simulation" / "result.json"
+            ).write_text(
+                json.dumps({"content_digest": "sha256:" + ("0" * 64)}),
+                encoding="utf-8",
+            )
+            (simulation / "release" / "repository-role.json").write_text(
+                json.dumps(
+                    {
+                        "reference_result_digest": MODULE.CANONICAL_RESULT_DIGEST,
+                        "reference_closure_digest": (
+                            MODULE.CANONICAL_CLOSURE_DIGEST
+                        ),
+                    }
+                ),
+                encoding="utf-8",
+            )
+            findings = PINNED.validate_sources(
+                lock,
+                {"simulation": simulation},
+                allow_pending=True,
+            )
+            self.assertIn(
+                "simulation result content digest differs from canonical bundle",
+                findings,
+            )
+
+            comparison = temporary_root / "comparison"
+            fixture = (
+                comparison
+                / "fixtures"
+                / "simulated-closures"
+                / "future-reality-2028-06-30-v1.json"
+            )
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text(json.dumps(bundle), encoding="utf-8")
+            findings = PINNED.validate_sources(
+                lock,
+                {"comparison": comparison},
+                allow_pending=True,
+            )
+            self.assertIn(
+                "comparison canonical bundle bytes differ from program",
+                findings,
+            )
+
+    def test_negation_aware_language_check_passes(self) -> None:
+        self.assertEqual([], LANGUAGE.check_repository())
+
+    def test_workflow_exposes_stable_aggregate_context(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
+        self.assertIn("program-validation:\n    name: program-validation", workflow)
+        self.assertIn("cross-repository-contracts:", workflow)
+        self.assertIn("github.ref == 'refs/heads/main'", workflow)
+        self.assertIn("github.ref != 'refs/heads/main'", workflow)
+        self.assertIn("secrets.CONSTELLATION_READ_TOKEN", workflow)
+        self.assertIn("scripts/check_language.py", workflow)
+        self.assertIn("scripts/validate_pinned_sources.py", workflow)
+        self.assertIn("--preflight-external", workflow)
+        self.assertLess(
+            workflow.index("--preflight-external"),
+            workflow.index("Resolve immutable external coordinates"),
+        )
+        for document in (
+            "machine-node.json",
+            "first-receipt.json",
+            "coordination-horizon.json",
+        ):
+            self.assertIn(f"--document-path {document}", workflow)
 
     def test_forecast_precedes_observation(self) -> None:
         data = json.loads(

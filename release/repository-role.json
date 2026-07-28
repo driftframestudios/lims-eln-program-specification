@@ -1,25 +1,29 @@
 {
-  "manifest_version": "2.0.0",
+  "manifest_version": "2.0.1",
   "repository_role": "program_specification",
-  "repository_release": "0.3.0",
-  "external_release": "spec-v0.3.0",
+  "repository_release": "0.3.1",
+  "external_release": "spec-v0.3.1",
   "release_state": "candidate_pending_promotion",
   "authority_posture": "specification_and_orientation_only",
   "canonical_closure": {
     "closure_id": "CLOSURE-SIM-SUBSTANTIVE-2028-V1",
     "future_reality_id": "FUTURE-REALITY-LIMS-2028-001",
-    "digest": "sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9",
+    "digest": "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb",
+    "reference_result_digest": "sha256:9d42b972c77764c81ff32fefe8f02367a27406e9ba082a704587cc9b5a9da860",
+    "aggregate_artifact_digest": "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61",
+    "bundle_path": "simulations/future-reality-2028-06-30-v1.json",
+    "bundle_file_digest": "sha256:b868604412039c3705d4b60e649c43da2f51592ca0215d22ebe4477b75016ef4",
     "authority": "definitive_within_selected_future_reality",
     "production_authorization_effect": "none"
   },
   "advisory_design": {
     "simulation_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
     "future_reality_id": "FUTURE-REALITY-DESIGN-LIMS-2028-001",
-    "digest": "sha256:4789521c6c6729683512214fba544b3672f5e0c8f4ea1887f09d2afec17d8a1a",
+    "digest": "sha256:e2048a4754a699a1af62c8f50757d419da8b5553fc1fb3ada566fbe177f9fa98",
     "authority": "advisory_design_only"
   },
   "contract_bindings": {
-    "governance_schema": "2.0.0",
+    "governance_schema": "2.0.1",
     "control_plane_profile": "0.3.0",
     "bounded_caller_contract": "CALLER-CONTRACT-001",
     "practitioner_probe_catalog": "LIMS-ELN-PRACTITIONER-PROBES-001",
@@ -27,7 +31,7 @@
     "receipt_vocabulary_map": {
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
       "version": "1.0.0",
-      "digest": "sha256:a2752fb31914e24a025738bfc3d5bd12e035a076934be8c27c11a5df8701f9cd"
+      "digest": "sha256:0f3be9ab956877281f9261c69a5f099547b048c1c878541a7c9c47edc5e03280"
     }
   },
   "orientation_surfaces": {
@@ -37,19 +41,20 @@
     "constellation_lock": "constellation.lock.json"
   },
   "seed_lineage": {
-    "release": "spec-v0.2.0",
-    "commit": "fc7707134b58ed12ad349bf649d2af1c3689bd01",
-    "digest": "sha256:9e8c2e4980cfef4824b2f8f57914ab5b81eadac5d7a077b2186cbae541bfd2b1",
+    "release": "spec-v0.3.0",
+    "commit": "895b7a02ebddc9f7c2b63a2d03432775a120c119",
+    "digest": "sha256:a73935fcd6bd2cd5e8aeda48739f74f90c2d5b0faec50d8341d7315378ef5ff2",
     "digest_scope": "seed Machine Node"
   },
   "release_coordinates": {
-    "candidate_commit": "0000000000000000000000000000000000000000",
-    "candidate_tree_digest": "git-tree-sha1:0000000000000000000000000000000000000000",
-    "candidate_coordinate_status": "pending_release_promotion"
+    "commit": "0000000000000000000000000000000000000000",
+    "tree_digest": "git-tree-sha1:0000000000000000000000000000000000000000",
+    "coordinate_status": "pending_release_commit"
   },
   "promotion_coordinates": {
     "status": "pending_cross_repository_settlement",
-    "open_receipt_id": "RCP-PROGRAM-PROMOTION-003",
+    "receipt_id": "RCP-PROGRAM-PROMOTION-003",
+    "receipt_path": "receipts/promotion-receipt.json",
     "required_roles": [
       "site_reading_governance",
       "program_specification",
