@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import hashlib
 import importlib.util
 import json
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -650,10 +652,336 @@ class ProgramValidationTests(unittest.TestCase):
             )
 
     def test_negation_aware_language_check_passes(self) -> None:
-        self.assertEqual([], LANGUAGE.check_repository())
+        self.assertEqual((), LANGUAGE.check_repository().findings)
+
+    def test_language_policy_release_is_bound_to_qualified_surfaces(self) -> None:
+        release = json.loads(
+            (ROOT / "release" / "repository-role.json").read_text()
+        )
+        corpus = json.loads(
+            (ROOT / "language-policy" / "corpus-v1.json").read_text()
+        )
+        exemptions = json.loads(
+            (ROOT / "language-policy" / "exemptions.json").read_text()
+        )
+        manifest_path = ROOT / "language-policy" / "manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        binding = release["contract_bindings"]["language_policy_manifest"]
+        self.assertEqual(
+            LANGUAGE.POLICY_RELEASE,
+            release["contract_bindings"]["language_policy_release"],
+        )
+        self.assertEqual(LANGUAGE.POLICY_RELEASE, corpus["policy_release"])
+        self.assertEqual(LANGUAGE.POLICY_RELEASE, exemptions["policy_release"])
+        self.assertEqual(LANGUAGE.POLICY_RELEASE, manifest["policy_release"])
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            binding["digest"],
+        )
+        self.assertEqual(
+            "sha256:"
+            + hashlib.sha256(
+                (ROOT / "scripts" / "language_policy_core.py").read_bytes()
+            ).hexdigest(),
+            binding["core_digest"],
+        )
+        self.assertEqual(
+            "sha256:"
+            + hashlib.sha256(
+                (ROOT / "language-policy" / "corpus-v1.json").read_bytes()
+            ).hexdigest(),
+            binding["corpus_digest"],
+        )
+        self.assertTrue(all(
+            metadata["severity"] == "error"
+            for metadata in LANGUAGE.RULES.values()
+        ))
+
+    def test_language_policy_projection_gate_proves_local_and_governance_bytes(
+        self,
+    ) -> None:
+        self.assertEqual([], PINNED.validate_language_policy_projection())
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary_root = Path(temporary_directory)
+            program = temporary_root / "program"
+            governance = temporary_root / "governance"
+            for relative in (
+                "language-policy/manifest.json",
+                "language-policy/corpus-v1.json",
+                "language-policy/exemptions.json",
+                "scripts/language_policy_core.py",
+            ):
+                destination = program / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes((ROOT / relative).read_bytes())
+            for mapping in PINNED.LANGUAGE_POLICY_ASSETS.values():
+                source = ROOT / mapping["projection_path"]
+                destination = governance / mapping["governance_path"]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(source.read_bytes())
+            for relative in ("language-policy/manifest.json",):
+                destination = governance / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes((ROOT / relative).read_bytes())
+
+            original_root = PINNED.ROOT
+            PINNED.ROOT = program
+            try:
+                self.assertEqual(
+                    [],
+                    PINNED.validate_language_policy_projection(governance),
+                )
+                original_read_bytes = Path.read_bytes
+
+                def deny_manifest(path: Path, *args, **kwargs):
+                    if path == program / "language-policy" / "manifest.json":
+                        raise PermissionError(
+                            f"host-specific manifest path: {path}"
+                        )
+                    return original_read_bytes(path, *args, **kwargs)
+
+                with mock.patch.object(
+                    Path,
+                    "read_bytes",
+                    new=deny_manifest,
+                ):
+                    manifest_findings = (
+                        PINNED.validate_language_policy_projection(governance)
+                    )
+                self.assertEqual(
+                    [
+                        "LANGUAGE_POLICY_MANIFEST_UNREADABLE: "
+                        "language-policy projection manifest could not be loaded"
+                    ],
+                    manifest_findings,
+                )
+                self.assertNotIn(str(temporary_root), str(manifest_findings))
+
+                def deny_projected_core(path: Path, *args, **kwargs):
+                    if path == program / "scripts" / "language_policy_core.py":
+                        raise PermissionError(
+                            f"host-specific projected asset path: {path}"
+                        )
+                    return original_read_bytes(path, *args, **kwargs)
+
+                with mock.patch.object(
+                    Path,
+                    "read_bytes",
+                    new=deny_projected_core,
+                ):
+                    asset_findings = (
+                        PINNED.validate_language_policy_projection(governance)
+                    )
+                self.assertIn(
+                    "LANGUAGE_POLICY_ASSET_UNREADABLE: projected asset "
+                    "language-policy-core could not be loaded",
+                    asset_findings,
+                )
+                self.assertNotIn(str(temporary_root), str(asset_findings))
+
+                governed_core = (
+                    governance / "tools" / "language_policy_core.py"
+                )
+                governed_core.write_bytes(governed_core.read_bytes() + b"\n")
+                self.assertIn(
+                    "language-policy projected bytes differ from governance "
+                    "for language-policy-core",
+                    PINNED.validate_language_policy_projection(governance),
+                )
+                governed_core.write_bytes(
+                    (program / "scripts" / "language_policy_core.py").read_bytes()
+                )
+                projected_corpus = (
+                    program / "language-policy" / "corpus-v1.json"
+                )
+                projected_corpus.write_bytes(projected_corpus.read_bytes() + b"\n")
+                self.assertIn(
+                    "language-policy projected asset digest differs for "
+                    "language-policy-qualification-corpus",
+                    PINNED.validate_language_policy_projection(governance),
+                )
+            finally:
+                PINNED.ROOT = original_root
+
+    def test_pinned_source_identity_failure_uses_a_stable_diagnostic(
+        self,
+    ) -> None:
+        lock = json.loads((ROOT / "constellation.lock.json").read_text())
+        lock["implementation"].update(
+            {
+                "coordinate_status": "pinned",
+                "commit": "a" * 40,
+                "digest": "git-tree-sha1:" + ("b" * 40),
+            }
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source = Path(temporary_directory) / "implementation"
+            source.mkdir()
+            error = PINNED.subprocess.CalledProcessError(
+                128,
+                ["git", "-C", str(source), "rev-parse", "HEAD"],
+            )
+            with mock.patch.object(
+                PINNED,
+                "git_identity",
+                side_effect=error,
+            ):
+                findings = PINNED.validate_sources(
+                    lock,
+                    {"implementation": source},
+                    allow_pending=True,
+                )
+        self.assertIn(
+            "SOURCE_IDENTITY_UNREADABLE: implementation source identity "
+            "could not be read",
+            findings,
+        )
+        self.assertNotIn(temporary_directory, str(findings))
+
+    def test_pinned_source_artifact_failures_are_typed_and_path_safe(
+        self,
+    ) -> None:
+        lock = json.loads((ROOT / "constellation.lock.json").read_text())
+        original_read_bytes = Path.read_bytes
+        canonical_path = (
+            ROOT / "simulations" / "simulated-receipt-closure.v2.json"
+        )
+
+        def deny_canonical(path: Path, *args, **kwargs):
+            if path == canonical_path:
+                raise PermissionError(f"host-specific canonical path: {path}")
+            return original_read_bytes(path, *args, **kwargs)
+
+        with mock.patch.object(
+            Path,
+            "read_bytes",
+            new=deny_canonical,
+        ):
+            findings = PINNED.validate_sources(
+                lock,
+                {},
+                allow_pending=True,
+            )
+        self.assertIn(
+            "PROGRAM_CANONICAL_CLOSURE_UNREADABLE: "
+            "program canonical closure could not be loaded",
+            findings,
+        )
+        self.assertNotIn(str(ROOT), str(findings))
+
+        bundle_path = (
+            ROOT / "simulations" / "future-reality-2028-06-30-v1.json"
+        )
+        strict_cases = (
+            (
+                canonical_path,
+                b'{"identity": 1, "identity": 2}',
+                "PROGRAM_CANONICAL_CLOSURE_INVALID_JSON: "
+                "program canonical closure could not be loaded",
+            ),
+            (
+                canonical_path,
+                b'{"measurement": NaN}',
+                "PROGRAM_CANONICAL_CLOSURE_INVALID_JSON: "
+                "program canonical closure could not be loaded",
+            ),
+            (
+                bundle_path,
+                b"[]",
+                "PROGRAM_CANONICAL_BUNDLE_INVALID_SHAPE: "
+                "program canonical bundle requires a JSON object",
+            ),
+        )
+        for target, replacement, expected in strict_cases:
+            with self.subTest(strict_json=expected):
+                def replace_policy_json(path: Path, *args, **kwargs):
+                    if path == target:
+                        return replacement
+                    return original_read_bytes(path, *args, **kwargs)
+
+                with mock.patch.object(
+                    Path,
+                    "read_bytes",
+                    new=replace_policy_json,
+                ):
+                    strict_findings = PINNED.validate_sources(
+                        lock,
+                        {},
+                        allow_pending=True,
+                    )
+                self.assertIn(expected, strict_findings)
+                self.assertNotIn(str(ROOT), str(strict_findings))
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary_root = Path(temporary_directory)
+            simulation = temporary_root / "simulation"
+            closure = (
+                simulation
+                / "build"
+                / "simulation"
+                / "simulated-receipt-closure.json"
+            )
+            closure.parent.mkdir(parents=True)
+            closure.write_text("{malformed", encoding="utf-8")
+            manifest = simulation / "release" / "repository-role.json"
+            manifest.parent.mkdir()
+            manifest.write_text("{}", encoding="utf-8")
+
+            comparison = temporary_root / "comparison"
+            fixture = (
+                comparison
+                / "fixtures"
+                / "simulated-closures"
+                / "future-reality-2028-06-30-v1.json"
+            )
+            fixture.parent.mkdir(parents=True)
+            outside = temporary_root / "outside-bundle.json"
+            outside.write_text('{"private": "external-content-sentinel"}')
+            fixture.symlink_to(outside)
+
+            governance = temporary_root / "governance"
+            governance.mkdir()
+            (governance / "VERSION").write_bytes(b"\xff\xfe")
+
+            findings = PINNED.validate_sources(
+                lock,
+                {
+                    "simulation": simulation,
+                    "comparison": comparison,
+                    "governance": governance,
+                },
+                allow_pending=True,
+            )
+
+        self.assertIn(
+            "SIMULATION_CANONICAL_CLOSURE_INVALID_JSON: "
+            "simulation canonical closure could not be loaded",
+            findings,
+        )
+        self.assertIn(
+            "COMPARISON_CANONICAL_BUNDLE_SYMLINK: "
+            "comparison canonical bundle could not be loaded",
+            findings,
+        )
+        self.assertIn(
+            "GOVERNANCE_VERSION_ENCODING_INVALID: "
+            "governance VERSION record requires valid UTF-8 text",
+            findings,
+        )
+        self.assertNotIn(temporary_directory, str(findings))
+        self.assertNotIn("external-content-sentinel", str(findings))
 
     def test_workflow_exposes_stable_aggregate_context(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
+        author_job = workflow.split("  author-feedback:", 1)[1].split(
+            "\n  program:",
+            1,
+        )[0]
+        program_job = workflow.split("\n  program:", 1)[1].split(
+            "\n  candidate-coordinates:",
+            1,
+        )[0]
+        aggregate_job = workflow.split("\n  program-validation:", 1)[1]
         self.assertIn("program-validation:\n    name: program-validation", workflow)
         self.assertIn("cross-repository-contracts:", workflow)
         self.assertIn("github.ref == 'refs/heads/main'", workflow)
@@ -672,6 +1000,46 @@ class ProgramValidationTests(unittest.TestCase):
             "coordination-horizon.json",
         ):
             self.assertIn(f"--document-path {document}", workflow)
+        self.assertIn(
+            "if: ${{ github.event_name == 'pull_request' }}",
+            author_job,
+        )
+        self.assertIn("continue-on-error: true", author_job)
+        self.assertIn(
+            "VALE_ARCHIVE: vale_3.15.2_Linux_64-bit.tar.gz",
+            author_job,
+        )
+        self.assertIn(
+            "fc72e64454d6bd7af91905d4faebbf411bae3eec17bb572f4101311212bc0d9e",
+            author_job,
+        )
+        self.assertIn(
+            "https://github.com/vale-cli/vale/releases/download/"
+            "v3.15.2/$VALE_ARCHIVE",
+            author_job,
+        )
+        self.assertIn("sha256sum --check --strict", author_job)
+        self.assertIn("--config=.vale.ini --no-global --no-exit", author_job)
+        self.assertIn("--minAlertLevel=warning .", author_job)
+        self.assertNotIn("vale", program_job.lower())
+        self.assertNotIn("author-feedback", aggregate_job)
+        self.assertNotIn("vale-action", workflow.lower())
+        self.assertNotIn("reviewdog", workflow.lower())
+
+        configuration = (ROOT / ".vale.ini").read_text(encoding="utf-8")
+        documentation = (
+            ROOT / "docs" / "AUTHOR_FEEDBACK.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("MinAlertLevel = suggestion", configuration)
+        self.assertIn(
+            "default includes both warnings and suggestions",
+            documentation,
+        )
+        self.assertIn("CI requests `--minAlertLevel=warning`", documentation)
+        self.assertIn(
+            "vale --config=.vale.ini --no-global .",
+            documentation,
+        )
 
     def test_forecast_precedes_observation(self) -> None:
         data = json.loads(

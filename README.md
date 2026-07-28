@@ -156,6 +156,7 @@ the `closed_in_future_reality` → `closed_in_simulation` and observed
 ```sh
 python3 scripts/validate_program.py
 python3 scripts/check_language.py
+python3 scripts/check_language.py --format sarif
 python3 scripts/scan_secret_shapes.py
 python3 -m unittest discover -s tests -v
 ```
@@ -196,6 +197,18 @@ Guidance names desired states, stable invariants, and verifiable outcomes.
 Hard safety and privacy boundaries pair the boundary with the state that
 replaces it. Code comments use `TARGET`, `GUARD`, and `CONTRAST` where the
 distinction materially assists future collaborators.
+
+[`docs/AUTHOR_FEEDBACK.md`](docs/AUTHOR_FEEDBACK.md) defines the advisory,
+structure-aware Vale scope, rule severity, and checksum-verified tool
+coordinate. The deterministic program gate retains candidate authority.
+
+That gate projects `language-policy-v1.0.0` across authored Markdown, JSON,
+YAML, and Python surfaces. It emits stable text, JSON, or SARIF findings and
+qualifies behavior against a versioned golden corpus. Exact exemptions carry
+accountable ownership, review/expiry coordinates, and a
+rule–path–fingerprint binding. See
+[`docs/LANGUAGE_POLICY.md`](docs/LANGUAGE_POLICY.md) for the complete contract
+and its bounded authority.
 
 Source guidance:
 [Semantic Attractor Design — Negation-Aware Instructions](https://app.notion.com/p/abcb29b960a842ce8f1a409408a29257).

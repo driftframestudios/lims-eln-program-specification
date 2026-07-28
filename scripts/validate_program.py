@@ -15,6 +15,7 @@ GOVERNANCE_RELEASE = "2.0.1"
 GOVERNANCE_TAG = f"governance-v{GOVERNANCE_RELEASE}"
 CONTROL_PLANE_PROFILE = "0.3.0"
 RECEIPT_VOCABULARY_RELEASE = "1.0.0"
+LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
 PROMOTION_RECEIPT_ID = "RCP-PROGRAM-PROMOTION-003"
 CANONICAL_CLOSURE_DIGEST = (
     "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb"
@@ -477,6 +478,8 @@ def validate_core_shapes(
         {
             "governance_schema",
             "control_plane_profile",
+            "language_policy_release",
+            "language_policy_manifest",
             "bounded_caller_contract",
             "practitioner_probe_catalog",
             "proof_class_registry",
@@ -488,6 +491,11 @@ def validate_core_shapes(
         contract_bindings["receipt_vocabulary_map"],
         {"contract_id", "version", "digest"},
         "release_role.contract_bindings.receipt_vocabulary_map",
+    )
+    language_policy_binding = require_exact_object(
+        contract_bindings["language_policy_manifest"],
+        {"path", "digest", "core_digest", "corpus_digest"},
+        "release_role.contract_bindings.language_policy_manifest",
     )
     require_exact_object(
         release_role["orientation_surfaces"],
@@ -511,6 +519,10 @@ def validate_core_shapes(
         (
             "release_role.contract_bindings.receipt_vocabulary_map",
             receipt_binding,
+        ),
+        (
+            "release_role.contract_bindings.language_policy_manifest",
+            language_policy_binding,
         ),
         ("release_role.orientation_surfaces", release_role["orientation_surfaces"]),
         ("release_role.seed_lineage", release_role["seed_lineage"]),
@@ -1585,6 +1597,20 @@ def validate() -> dict[str, int]:
         != GOVERNANCE_RELEASE
         or release_role["contract_bindings"]["control_plane_profile"]
         != CONTROL_PLANE_PROFILE
+        or release_role["contract_bindings"]["language_policy_release"]
+        != LANGUAGE_POLICY_RELEASE
+        or release_role["contract_bindings"]["language_policy_manifest"]["path"]
+        != "language-policy/manifest.json"
+        or release_role["contract_bindings"]["language_policy_manifest"]["digest"]
+        != sha256_digest("language-policy/manifest.json")
+        or release_role["contract_bindings"]["language_policy_manifest"][
+            "core_digest"
+        ]
+        != sha256_digest("scripts/language_policy_core.py")
+        or release_role["contract_bindings"]["language_policy_manifest"][
+            "corpus_digest"
+        ]
+        != sha256_digest("language-policy/corpus-v1.json")
         or promotion_receipt["metadata"]["schema_version"] != "1.0.0"
         or status_document["version"] != PROGRAM_RELEASE
         or status_document["planned_release"] != PROGRAM_TAG
@@ -1620,9 +1646,15 @@ def validate() -> dict[str, int]:
         ".github/pull_request_template.md",
         "scripts/check_branch_flow.py",
         "scripts/check_language.py",
+        "scripts/language_policy_core.py",
+        "docs/LANGUAGE_POLICY.md",
+        "language-policy/corpus-v1.json",
+        "language-policy/exemptions.json",
+        "language-policy/manifest.json",
         "scripts/validate_pinned_sources.py",
         "docs/migrations/0.3.0-to-0.3.1.md",
         "tests/test_branch_flow.py",
+        "tests/test_language_policy.py",
     ]
     missing = [path for path in required_paths if not (ROOT / path).exists()]
     if missing:

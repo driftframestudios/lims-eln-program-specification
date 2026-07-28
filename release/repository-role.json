@@ -25,6 +25,13 @@
   "contract_bindings": {
     "governance_schema": "2.0.1",
     "control_plane_profile": "0.3.0",
+    "language_policy_release": "language-policy-v1.0.0",
+    "language_policy_manifest": {
+      "path": "language-policy/manifest.json",
+      "digest": "sha256:95087f281455c45608981152948f8909e74528706662625b6e8a4da9e5182a96",
+      "core_digest": "sha256:a5dbb90cf749c5e8d2d7fd235ebaae15887cb173e62a4a3aa70a29c3b3e90801",
+      "corpus_digest": "sha256:0886dba9f1938cb5fa192d0aedac925c6df794d2c0be9c2a6e85c1d0d456145c"
+    },
     "bounded_caller_contract": "CALLER-CONTRACT-001",
     "practitioner_probe_catalog": "LIMS-ELN-PRACTITIONER-PROBES-001",
     "proof_class_registry": "LIMS-ELN-PROOF-CLASSES-001",

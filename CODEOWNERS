@@ -10,6 +10,9 @@
 /coordination-horizon.json @driftframestudios
 /.github/dependabot.yml @driftframestudios
 /.github/workflows/ @driftframestudios
+/.vale.ini @driftframestudios
+/.vale/ @driftframestudios
+/language-policy/ @driftframestudios
 /scripts/check_branch_flow.py @driftframestudios
 /scripts/check_language.py @driftframestudios
 /scripts/validate_pinned_sources.py @driftframestudios
@@ -21,4 +24,7 @@
 /machine-node.json @driftframestudios
 /first-receipt.json @driftframestudios
 /release/ @driftframestudios
+/docs/AUTHOR_FEEDBACK.md @driftframestudios
+/docs/LANGUAGE_POLICY.md @driftframestudios
+/tests/test_language_policy.py @driftframestudios
 /CODEOWNERS @driftframestudios
