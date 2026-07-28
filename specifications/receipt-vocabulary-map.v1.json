@@ -1,0 +1,108 @@
+{
+  "contract_id": "RECEIPT-VOCABULARY-MAP-001",
+  "version": "1.0.0",
+  "title": "Individual receipt, program proof-class, and canonical closure vocabulary map",
+  "purpose": "Make every cross-repository vocabulary transition explicit so collaborators can compare individual assurance receipts, program proof classes, and the four grouped canonical closure families without treating similar labels as interchangeable by implication.",
+  "source_contracts": [
+    {
+      "contract": "site-reading-governance receipt schema",
+      "version": "2.0.0",
+      "vocabulary_scope": "individual_receipt_family"
+    },
+    {
+      "contract": "LIMS/ELN program proof-class registry",
+      "version": "0.3.0",
+      "vocabulary_scope": "program_proof_class"
+    },
+    {
+      "contract": "site-reading-governance simulated substantive receipt closure schema",
+      "version": "2.0.0",
+      "vocabulary_scope": "grouped_canonical_closure_family"
+    }
+  ],
+  "family_mappings": [
+    {
+      "individual_receipt_family": "configured_vendor",
+      "program_proof_class": "configured_vendor_environments",
+      "grouped_canonical_family": "configured_vendor_environments",
+      "aggregation_rule": "Aggregate version-pinned vendor receipts only when each receipt binds its environment, identity, fixture, operation, readback, limitation, and evidence locator."
+    },
+    {
+      "individual_receipt_family": "migration_restore",
+      "program_proof_class": "representative_migration_and_restore",
+      "grouped_canonical_family": "representative_migration_restore_rehearsals",
+      "aggregation_rule": "Aggregate migration, rollback, restore, continuity, and data-exit receipts against one declared representative corpus and recovery objective."
+    },
+    {
+      "individual_receipt_family": "security_observability",
+      "program_proof_class": "production_security_and_observability",
+      "grouped_canonical_family": "production_security_observability",
+      "aggregation_rule": "Aggregate identity, tenant isolation, configuration, credential lifecycle, privacy, telemetry, support, and incident receipts against one declared control profile."
+    },
+    {
+      "individual_receipt_family": "scientific_acceptance_support",
+      "program_proof_class": "scientific_quality_regulatory_acceptance",
+      "grouped_canonical_family": "accountable_scientific_quality_regulatory_acceptance",
+      "aggregation_rule": "Preserve the Scientific decision as a distinct role-bound decision over the shared immutable acceptance basis."
+    },
+    {
+      "individual_receipt_family": "quality_acceptance_support",
+      "program_proof_class": "scientific_quality_regulatory_acceptance",
+      "grouped_canonical_family": "accountable_scientific_quality_regulatory_acceptance",
+      "aggregation_rule": "Preserve the Quality decision as a distinct role-bound decision over the shared immutable acceptance basis."
+    },
+    {
+      "individual_receipt_family": "regulatory_acceptance_support",
+      "program_proof_class": "scientific_quality_regulatory_acceptance",
+      "grouped_canonical_family": "accountable_scientific_quality_regulatory_acceptance",
+      "aggregation_rule": "Preserve the Regulatory decision as a distinct role-bound decision over the shared immutable acceptance basis."
+    },
+    {
+      "individual_receipt_family": "engineering_verification",
+      "program_proof_class": "cross_cutting_support",
+      "grouped_canonical_family": "explicit_family_required",
+      "allowed_grouped_canonical_families": [
+        "configured_vendor_environments",
+        "representative_migration_restore_rehearsals",
+        "production_security_observability",
+        "accountable_scientific_quality_regulatory_acceptance"
+      ],
+      "aggregation_rule": "Bind each engineering verification receipt to one explicit grouped family through stable scenario and test identifiers; the category alone selects no family."
+    }
+  ],
+  "status_mappings": [
+    {
+      "source_scope": "program individual receipt simulation link",
+      "source_status": "closed_in_future_reality",
+      "target_scope": "canonical selected-future closure",
+      "target_status": "closed_in_simulation",
+      "relationship": "equivalent_closure_posture",
+      "condition": "The receipt and canonical closure bind the same future-reality identity, evidence mode, scope, and immutable evidence digest."
+    },
+    {
+      "source_scope": "future environment-observed individual receipt",
+      "source_status": "open",
+      "target_scope": "canonical environment-observed aggregate state",
+      "target_status": "separate_unasserted_state",
+      "relationship": "aggregate_open_posture",
+      "condition": "Every environment-observed successor remains outside the simulated closure and retains its own accountable evidence path."
+    }
+  ],
+  "semantic_invariants": [
+    "A family mapping preserves evidence mode, authority, intended use, limitations, and source coordinates.",
+    "A grouped canonical family closes only when every required constituent proof shape closes inside the same selected future reality.",
+    "A closed simulation status grants no production authorization and supplies no environment-observed acceptance.",
+    "An observed successor advances through its own evidence and accountable decision path.",
+    "Engineering verification supports a named family and never selects an assurance family by category alone."
+  ],
+  "metadata": {
+    "schema_version": "1.0.0",
+    "created_at": "2026-07-28T20:00:00Z",
+    "updated_at": "2026-07-28T20:00:00Z",
+    "owner": {
+      "actor_id": "ACTOR-PROGRAM-OWNERS",
+      "display_name": "Program repository owners",
+      "role": "program governance"
+    }
+  }
+}

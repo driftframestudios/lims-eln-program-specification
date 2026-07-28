@@ -19,13 +19,36 @@ body:
     id: success_event
     attributes:
       label: Success event
-      description: Describe the observed evidence that advances the receipt.
+      description: Describe the evidence event that closes the selected evidence mode.
+    validations:
+      required: true
+  - type: dropdown
+    id: evidence_mode
+    attributes:
+      label: Evidence mode
+      options:
+        - simulated
+        - observed
+    validations:
+      required: true
+  - type: textarea
+    id: paired_state
+    attributes:
+      label: Paired simulated and observed state
+      description: Identify the simulated closure or observed successor and state the other branch explicitly.
+    validations:
+      required: true
+  - type: textarea
+    id: artifact_locators
+    attributes:
+      label: Evidence artifact locators and limitations
+      description: List governed locators assumptions limitations and requalification triggers.
     validations:
       required: true
   - type: textarea
     id: accountable_roles
     attributes:
       label: Accountable roles
+      description: Name role identifiers. For simulated closure, identify role-bound synthetic decisions and preserve advisory authority.
     validations:
       required: true
-

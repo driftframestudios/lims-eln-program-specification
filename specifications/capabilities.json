@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "requirements": [
     {
       "id": "SPEC-LIFE-001",
@@ -48,6 +48,12 @@
       "name": "Accountable multidomain acceptance",
       "rule_ids": ["RULE-ACPT-001"],
       "material_effect": "Scientific, Quality, and Regulatory decisions remain distinct, bounded, and reviewable."
+    },
+    {
+      "id": "SPEC-CALL-001",
+      "name": "Bounded automation caller",
+      "rule_ids": ["RULE-CALL-001", "RULE-CALL-002", "RULE-CALL-003"],
+      "material_effect": "A human, service, workflow, or AI caller selects a released operation while the service boundary continues to determine identity, authority, scope, effect, evidence, and recovery."
     }
   ]
 }

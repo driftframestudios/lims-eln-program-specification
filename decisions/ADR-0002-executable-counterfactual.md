@@ -17,13 +17,20 @@ implementation while its runtime source remains independent.
 
 ## Evidence boundary
 
-Simulation receipts use `evidence_mode: simulated`. Configured-environment,
-representative-rehearsal, production, and accountable-acceptance stages advance
-through observed evidence.
+Simulation receipts use `evidence_mode: simulated`. A selected future reality
+can fully close configured-environment, representative-rehearsal, production,
+and accountable-acceptance stages inside that evidence mode. Synthetic
+environments, measures, evidence locators, and role-bound decisions remain
+explicit.
+
+Every simulated closure preserves `authority: advisory_only` and a distinct
+future observed successor. The observed successor can advance later through
+environment-bound evidence and accountable human decisions while the simulated
+closure remains a complete executable comparison baseline.
 
 ## Falsifiers
 
 - simulation behavior primarily mirrors copied actual code;
 - reference defects dominate material comparison findings;
 - scenario maintenance crowds out actual receipt closure.
-
+- evidence consumers collapse simulated and observed closure into one state.
