@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0",
+  "proof_classes": [
+    {
+      "id": "configured_vendor_environments",
+      "success_state": "Sapio Benchling and LabKey execute the shared conformance suite in named configured environments with exact version configuration permission fixture and readback evidence.",
+      "required_roles": ["vendor_platform_owner", "scientific_data_owner", "quality_owner"]
+    },
+    {
+      "id": "representative_migration_and_restore",
+      "success_state": "Representative migration rollback clean restore continuity and data exit meet approved semantic parity RTO and RPO objectives.",
+      "required_roles": ["data_migration_owner", "operations_owner", "business_process_owner", "quality_owner"]
+    },
+    {
+      "id": "production_security_and_observability",
+      "success_state": "Production-bound identity privacy telemetry support and incident controls produce measurable and attributable operating evidence.",
+      "required_roles": ["security_owner", "privacy_owner", "platform_owner", "operations_owner", "system_owner"]
+    },
+    {
+      "id": "scientific_quality_regulatory_acceptance",
+      "success_state": "Named scientific Quality and Regulatory owners record distinct bounded decisions for the selected intended-use profile.",
+      "required_roles": ["scientific_owner", "quality_owner", "regulatory_owner"]
+    }
+  ]
+}
+

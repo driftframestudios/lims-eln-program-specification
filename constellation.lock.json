@@ -1,0 +1,30 @@
+{
+  "constellation_version": "0.1.0",
+  "specification": {
+    "release": "spec-v0.1.0",
+    "commit": "first_release_pending",
+    "digest": "release_digest_pending"
+  },
+  "simulation": {
+    "release": "forecast-2026-Q3-r1",
+    "commit": "first_release_pending",
+    "digest": "release_digest_pending"
+  },
+  "implementation": {
+    "release": "candidate-v0.1.0",
+    "commit": "first_release_pending",
+    "digest": "release_digest_pending"
+  },
+  "comparison": {
+    "release": "comparison-v0.1.0",
+    "commit": "first_release_pending",
+    "fixture_digest": "release_digest_pending",
+    "receipt_schema": "0.1.0"
+  },
+  "seed": {
+    "repository": "driftframestudios/prototype-exemplars",
+    "source_commit": "8be1e2c2ce239e51dcd5d1e19d1ff52e9d080b72",
+    "merge_commit": "613f524821a25389748a9cd98d1bb0d303de87cf"
+  }
+}
+
