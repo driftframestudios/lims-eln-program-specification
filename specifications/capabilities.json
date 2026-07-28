@@ -1,0 +1,48 @@
+{
+  "version": "0.1.0",
+  "requirements": [
+    {
+      "id": "SPEC-LIFE-001",
+      "name": "Attributable specimen lifecycle",
+      "rule_ids": ["RULE-LIFE-001", "RULE-LIFE-002"],
+      "material_effect": "Scientists see one current state while the full decision history remains reconstructable."
+    },
+    {
+      "id": "SPEC-CUST-001",
+      "name": "Versioned custody transfer",
+      "rule_ids": ["RULE-CUST-001"],
+      "material_effect": "Laboratory operations can locate a specimen and resolve concurrent movement safely."
+    },
+    {
+      "id": "SPEC-INST-001",
+      "name": "Raw-artifact-preserving instrument ingress",
+      "rule_ids": ["RULE-INST-001"],
+      "material_effect": "Scientific reviewers can connect a reported observation to the exact received bytes."
+    },
+    {
+      "id": "SPEC-VEND-001",
+      "name": "Configured vendor conformance",
+      "rule_ids": ["RULE-VEND-001", "RULE-VEND-002", "RULE-VEND-003"],
+      "material_effect": "Evaluators can distinguish platform compatibility from adapter plausibility."
+    },
+    {
+      "id": "SPEC-MIGR-001",
+      "name": "Meaning-preserving migration and recovery",
+      "rule_ids": ["RULE-MIGR-001", "RULE-REST-001"],
+      "material_effect": "The organization can move and recover records while preserving identity, meaning, lineage, signatures, and artifacts."
+    },
+    {
+      "id": "SPEC-SECO-001",
+      "name": "Tenant security and observable operation",
+      "rule_ids": ["RULE-SECU-001", "RULE-OBS-001"],
+      "material_effect": "Owners can operate the service with attributable access, protected telemetry, and measurable recovery."
+    },
+    {
+      "id": "SPEC-ACPT-001",
+      "name": "Accountable multidomain acceptance",
+      "rule_ids": ["RULE-ACPT-001"],
+      "material_effect": "Scientific, Quality, and Regulatory decisions remain distinct, bounded, and reviewable."
+    }
+  ]
+}
+

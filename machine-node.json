@@ -1,0 +1,30 @@
+{
+  "@id": "@driftframe/lims-eln/program-specification",
+  "type": "ComparativeProgramControlPlane",
+  "name": "LIMS/ELN Program Specification",
+  "version": "0.1.0",
+  "evidence_mode": "planned",
+  "assurance_stage": "specified",
+  "contract": "Every material claim resolves to a versioned rule, representative example, executable scenario, bounded receipt, and accountable decision role.",
+  "campaigns": [
+    "LIMS/ELN Open Receipts",
+    "Comparative Literacy Collaboration Cycles",
+    "Site Reading System"
+  ],
+  "hands_to": [
+    "https://github.com/driftframestudios/lims-eln-enterprise-implementation",
+    "https://github.com/driftframestudios/lims-eln-simulated-final-state",
+    "https://github.com/driftframestudios/lims-eln-comparative-evidence",
+    "https://github.com/driftframestudios/site-reading-governance"
+  ],
+  "source_guidance": [
+    "https://app.notion.com/p/abcb29b960a842ce8f1a409408a29257"
+  ],
+  "open_receipt_classes": [
+    "configured_vendor_environments",
+    "representative_migration_and_restore",
+    "production_security_and_observability",
+    "scientific_quality_regulatory_acceptance"
+  ]
+}
+

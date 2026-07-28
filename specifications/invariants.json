@@ -1,0 +1,54 @@
+{
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "RULE-LIFE-001",
+      "statement": "Every accepted lifecycle transition records actor, reason, source revision, resulting revision, and event time."
+    },
+    {
+      "id": "RULE-LIFE-002",
+      "statement": "A stable request identity converges on one scientific effect when its content fingerprint remains identical."
+    },
+    {
+      "id": "RULE-CUST-001",
+      "statement": "Custody position, custody event, and pending integration message become visible through one transaction boundary."
+    },
+    {
+      "id": "RULE-INST-001",
+      "statement": "Raw bytes, content digest, parsed observation, disposition, and recovery owner remain linked."
+    },
+    {
+      "id": "RULE-VEND-001",
+      "statement": "Sapio qualification binds tenant release, SDK release, schema fingerprint, service identity, and independent readback."
+    },
+    {
+      "id": "RULE-VEND-002",
+      "statement": "Benchling event processing commits durable inbox work and retrieves authoritative resource state when freshness matters."
+    },
+    {
+      "id": "RULE-VEND-003",
+      "statement": "LabKey validation, commit, audit reason, normalized readback, lineage, and artifact parity form one conformance tranche."
+    },
+    {
+      "id": "RULE-MIGR-001",
+      "statement": "Migration gates evaluate identity, canonical content, relationships, audit, signatures, artifacts, exceptions, and rollback."
+    },
+    {
+      "id": "RULE-REST-001",
+      "statement": "A clean-environment restore reconstructs records, metadata, audit, signatures, artifacts, configuration, and approved recovery objectives."
+    },
+    {
+      "id": "RULE-SECU-001",
+      "statement": "Identity, authorization, tenant, retention, and redaction decisions remain attributable and testable."
+    },
+    {
+      "id": "RULE-OBS-001",
+      "statement": "Operational measures preserve numerator, denominator, threshold, window, and evidence locator."
+    },
+    {
+      "id": "RULE-ACPT-001",
+      "statement": "Scientific, Quality, Regulatory, Security, Operations, and business owners accept the scope governed by their authority."
+    }
+  ]
+}
+
