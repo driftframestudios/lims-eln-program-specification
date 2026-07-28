@@ -27,7 +27,7 @@ body:
   - type: textarea
     id: forecast
     attributes:
-      label: Prediction, probability, and falsifiers
+      label: Probability event, estimate, horizon, assumptions, and falsifiers
+      description: State exactly what event the probability estimates and when it can be recalibrated.
     validations:
       required: true
-

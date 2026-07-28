@@ -1,0 +1,93 @@
+{
+  "horizon_id": "COORD-HORIZON-2026-Q3-R1",
+  "title": "LIMS/ELN Coordination Horizon",
+  "objective": "Keep the collaboration surface legible and coordination-only while allowing sequence, scope, and release boundaries to adapt as contract, implementation, simulation, and comparison evidence arrives.",
+  "as_of": "2026-07-28T13:00:00Z",
+  "current_item_ids": ["HORIZON-CONTRACTS"],
+  "work_items": [
+    {
+      "item_id": "HORIZON-CONTRACTS",
+      "horizon_label": "Contract convergence and immutable program promotion",
+      "sequence": 1,
+      "state": "settling",
+      "desired_state": "Promote governance-bound bounded-caller Practitioner Probe receipt and simulated-closure contracts through one reviewed immutable program coordinate.",
+      "entry_evidence": [
+        "spec-v0.2.0 planning baseline",
+        "Enterprise Human-AI Practitioner Registry assessment"
+      ],
+      "completion_evidence": [
+        "program validator and tests pass",
+        "the program copy of the canonical closure has digest sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9",
+        "the advisory design and canonical executed simulation retain distinct identities and authority postures",
+        "governance schema release 2.0.0 validates the canonical closure",
+        "RCP-PROGRAM-PROMOTION-003 closes against the reviewed immutable coordinate"
+      ],
+      "owner_role": "program governance",
+      "dependency_ids": []
+    },
+    {
+      "item_id": "HORIZON-VERTICAL-SLICE",
+      "horizon_label": "Durable vendor and bounded-operation convergence",
+      "sequence": 2,
+      "state": "ready",
+      "desired_state": "Exercise a durable vendor path through read narrow idempotent write and approval-gated broad-write operation boundaries.",
+      "entry_evidence": [
+        "released bounded caller and operation contracts",
+        "released vendor conformance scenarios"
+      ],
+      "completion_evidence": [
+        "durable idempotency transaction outbox and recovery receipts",
+        "paired implementation and simulation evidence bundle",
+        "independent divergence classification"
+      ],
+      "owner_role": "platform owner",
+      "dependency_ids": ["HORIZON-CONTRACTS"]
+    },
+    {
+      "item_id": "HORIZON-EXTENSIONS",
+      "horizon_label": "Evidence-led extension options",
+      "sequence": 3,
+      "state": "waiting",
+      "desired_state": "Promote additional vendor adapters optional MCP projections and new probes only when encountered evidence supports their assurance cost.",
+      "entry_evidence": [
+        "settled comparison evidence",
+        "documented intended-use value"
+      ],
+      "completion_evidence": [
+        "successor decision names expected material effect probability event and falsifiers",
+        "new capability retains equal or narrower caller authority",
+        "requalification impact is explicit"
+      ],
+      "owner_role": "program governance",
+      "dependency_ids": ["HORIZON-VERTICAL-SLICE"]
+    }
+  ],
+  "reentry_capsule": {
+    "current_state": "Specification candidate 0.3.0 is settling with bounded-caller operations, ten Practitioner Probes, an explicit receipt vocabulary map, and the exact canonical four-family selected-future closure.",
+    "recent_decisions": ["ADR-0005", "ADR-0006"],
+    "next_safe_action": "Validate every contract, confirm canonical digest equality across program simulation and comparator, and promote release coordinates through the protected release path.",
+    "verification": "Run the program validator, unit tests, secret-shape scan, governance schema suite, and cross-repository canonical digest comparison."
+  },
+  "retained_effects": [
+    "Scientific Quality Regulatory Security Operations and business authority remains with accountable human roles.",
+    "The canonical closure remains definitive only inside its selected future reality, has no production authorization effect, and retains a separate future observed successor.",
+    "The richer program future-reality artifact remains an advisory design under a distinct identity.",
+    "Service-owned operations continue to determine caller scope budget approval effects evidence and recovery.",
+    "Forecast releases preserve their original probability event assumptions falsifiers and calibration history."
+  ],
+  "consequential_questions": [
+    "Which official vendor adapter provides the first durable paired evidence bundle?",
+    "Which observed divergence should revise the specification rather than the implementation or simulation?",
+    "Which optional AI-facing interface produces enough material value to justify its added qualification surface?"
+  ],
+  "metadata": {
+    "schema_version": "2.0.0",
+    "created_at": "2026-07-28T12:00:00Z",
+    "updated_at": "2026-07-28T20:00:00Z",
+    "owner": {
+      "actor_id": "ACTOR-PROGRAM-OWNERS",
+      "display_name": "Program repository owners",
+      "role": "program governance"
+    }
+  }
+}

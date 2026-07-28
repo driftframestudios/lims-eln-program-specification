@@ -1,6 +1,6 @@
 [project]
 name = "lims-eln-program-specification"
-version = "0.2.0"
+version = "0.3.0"
 description = "Executable specification and forecast control plane for comparative LIMS/ELN delivery"
 requires-python = ">=3.12"
 
