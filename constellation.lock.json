@@ -1,25 +1,35 @@
 {
-  "constellation_version": "0.1.0",
+  "constellation_version": "0.1.1",
+  "recorded_at": "2026-07-28",
+  "content_identity": "Git tree SHA-1 identifies the exact released repository tree; domain artifacts retain their declared SHA-256 digests.",
   "specification": {
     "release": "spec-v0.1.0",
-    "commit": "first_release_pending",
-    "digest": "release_digest_pending"
+    "commit": "3a1098e45a335bc06793465f8e94c8cdf878ec9f",
+    "digest": "git-tree-sha1:f9cf1ef4a8871c8d1533f77d0399c61c4ad25589"
   },
   "simulation": {
     "release": "forecast-2026-Q3-r1",
-    "commit": "first_release_pending",
-    "digest": "release_digest_pending"
+    "commit": "325bedafb6e56cea9215fcf159ad716ad3fed9c8",
+    "digest": "git-tree-sha1:96b5c1f29f03503d97f07eacabca65bfd283acb3",
+    "result_digest": "sha256:8c6381a7dacb45ecd53c35b5f118ad8123d7bd3f893b6f65f5f9a1b37aedb5ac"
   },
   "implementation": {
     "release": "candidate-v0.1.0",
-    "commit": "first_release_pending",
-    "digest": "release_digest_pending"
+    "commit": "f6e38e493ebe5ebe8add8170f8f0f374e2250f86",
+    "digest": "git-tree-sha1:44f4f04a89e9da761290a9c6d9a9c790f6fe1516",
+    "source_digest": "sha256:31e02ff6d67927b1e62e19c2813c55424c981be31b0f259b70d2d246def8abd3"
   },
   "comparison": {
     "release": "comparison-v0.1.0",
-    "commit": "first_release_pending",
-    "fixture_digest": "release_digest_pending",
+    "commit": "35a1bbd926a34e7c885c3b4fd4d1e2baa044cf82",
+    "digest": "git-tree-sha1:06e9c43bcebd85776e4404432ada40acd08c5832",
+    "fixture_digest": "sha256:7209fa2621e186e76ef1fa7a3113f4782eb71ef6b7178685f2f0a36db1357159",
     "receipt_schema": "0.1.0"
+  },
+  "governance": {
+    "release": "governance-v0.1.0",
+    "commit": "3b071d15b08184fcad29d91dda7807e4823c827a",
+    "digest": "git-tree-sha1:d9157121498b446cef6b63556d53a2210ec456d0"
   },
   "seed": {
     "repository": "driftframestudios/prototype-exemplars",
@@ -27,4 +37,3 @@
     "merge_commit": "613f524821a25389748a9cd98d1bb0d303de87cf"
   }
 }
-
