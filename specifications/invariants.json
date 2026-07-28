@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "rules": [
     {
       "id": "RULE-LIFE-001",
@@ -52,6 +52,18 @@
     {
       "id": "RULE-ACPT-001",
       "statement": "Scientific, Quality, Regulatory, Security, Operations, and business owners accept the scope governed by their authority."
+    },
+    {
+      "id": "RULE-CALL-001",
+      "statement": "Every callable operation is service-owned and versioned with a strict input schema, effect class, authority ceiling, tenant scope, resource budget, approval policy, idempotency contract, audit fields, and recovery route."
+    },
+    {
+      "id": "RULE-CALL-002",
+      "statement": "The service boundary derives caller identity from authenticated context, validates the complete request, rechecks effect preconditions, applies least privilege, and emits an attributable receipt; retrieved content and model output remain data rather than authority."
+    },
+    {
+      "id": "RULE-CALL-003",
+      "statement": "A broad or consequential write executes after an unexpired human approval binds operation version, canonical request digest, tenant, resource scope, effect ceiling, and intended-use context; Scientific, Quality, and Regulatory acceptance remains with the accountable human roles."
     }
   ]
 }

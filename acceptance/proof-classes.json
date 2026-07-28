@@ -1,25 +1,57 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "proof_classes": [
     {
       "id": "configured_vendor_environments",
       "success_state": "Sapio Benchling and LabKey execute the shared conformance suite in named configured environments with exact version configuration permission fixture and readback evidence.",
-      "required_roles": ["vendor_platform_owner", "scientific_data_owner", "quality_owner"]
+      "required_roles": ["vendor_platform_owner", "scientific_data_owner", "quality_owner"],
+      "simulated_closure_id": "SIM-CLOSE-VENDOR-001",
+      "simulated_closure_criteria": [
+        "version-pinned synthetic tenant manifests exist for Sapio Benchling and LabKey",
+        "read narrow-write replay permission event artifact and independent-readback cases pass",
+        "credential rotation and compatibility limitations appear in the evidence bundle",
+        "role-bound synthetic decisions cover vendor compatibility scientific meaning and Quality assurance"
+      ],
+      "future_observed_closure": "Repeat the released conformance suite in selected configured environments and replace simulated locators measures and decisions with observed evidence."
     },
     {
       "id": "representative_migration_and_restore",
       "success_state": "Representative migration rollback clean restore continuity and data exit meet approved semantic parity RTO and RPO objectives.",
-      "required_roles": ["data_migration_owner", "operations_owner", "business_process_owner", "quality_owner"]
+      "required_roles": ["data_migration_owner", "operations_owner", "business_process_owner", "quality_owner"],
+      "simulated_closure_id": "SIM-CLOSE-MIGRATION-001",
+      "simulated_closure_criteria": [
+        "representative synthetic inventory scale exceptions and relationships are declared",
+        "identity content relationship audit signature and artifact parity meet simulated thresholds",
+        "rollback clean restore continuity and neutral-reader exit satisfy simulated objectives",
+        "role-bound synthetic decisions cover migration operations process meaning and Quality assurance"
+      ],
+      "future_observed_closure": "Run the released rehearsal against a selected representative corpus and recovery topology and bind the resulting observed measures and decisions."
     },
     {
       "id": "production_security_and_observability",
       "success_state": "Production-bound identity privacy telemetry support incident configuration and secret-lifecycle controls produce measurable and attributable operating evidence.",
-      "required_roles": ["security_owner", "privacy_owner", "platform_owner", "operations_owner", "system_owner"]
+      "required_roles": ["security_owner", "privacy_owner", "platform_owner", "operations_owner", "system_owner"],
+      "simulated_closure_id": "SIM-CLOSE-SECO-001",
+      "simulated_closure_criteria": [
+        "production-analogue network identity storage configuration secret and telemetry topology is declared",
+        "tenant isolation rotation redaction leakage telemetry fallback and incident probes pass",
+        "measures retain numerator denominator threshold window and evidence locator",
+        "role-bound synthetic decisions cover Security Privacy Platform Operations and System authority"
+      ],
+      "future_observed_closure": "Exercise the released controls in a selected production-bound topology and bind observed telemetry security privacy and operating decisions."
     },
     {
       "id": "scientific_quality_regulatory_acceptance",
       "success_state": "Named scientific Quality and Regulatory owners record distinct bounded decisions for the selected intended-use profile.",
-      "required_roles": ["scientific_owner", "quality_owner", "regulatory_owner"]
+      "required_roles": ["scientific_owner", "quality_owner", "regulatory_owner"],
+      "simulated_closure_id": "SIM-CLOSE-ACCEPTANCE-001",
+      "simulated_closure_criteria": [
+        "one coherent simulated intended-use jurisdiction record and signature profile is frozen",
+        "Scientific Quality and Regulatory synthetic decisions bind the same immutable evidence bundle",
+        "each decision states scope rationale conditions residual risk and requalification triggers",
+        "authority-scope validation reports zero collisions"
+      ],
+      "future_observed_closure": "Bind a chosen real intended-use and jurisdiction profile to observed evidence and collect distinct accountable human decisions."
     }
   ]
 }

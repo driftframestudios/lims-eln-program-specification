@@ -1,0 +1,61 @@
+{
+  "manifest_version": "2.0.0",
+  "repository_role": "program_specification",
+  "repository_release": "0.3.0",
+  "external_release": "spec-v0.3.0",
+  "release_state": "candidate_pending_promotion",
+  "authority_posture": "specification_and_orientation_only",
+  "canonical_closure": {
+    "closure_id": "CLOSURE-SIM-SUBSTANTIVE-2028-V1",
+    "future_reality_id": "FUTURE-REALITY-LIMS-2028-001",
+    "digest": "sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9",
+    "authority": "definitive_within_selected_future_reality",
+    "production_authorization_effect": "none"
+  },
+  "advisory_design": {
+    "simulation_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
+    "future_reality_id": "FUTURE-REALITY-DESIGN-LIMS-2028-001",
+    "digest": "sha256:4789521c6c6729683512214fba544b3672f5e0c8f4ea1887f09d2afec17d8a1a",
+    "authority": "advisory_design_only"
+  },
+  "contract_bindings": {
+    "governance_schema": "2.0.0",
+    "control_plane_profile": "0.3.0",
+    "bounded_caller_contract": "CALLER-CONTRACT-001",
+    "practitioner_probe_catalog": "LIMS-ELN-PRACTITIONER-PROBES-001",
+    "proof_class_registry": "LIMS-ELN-PROOF-CLASSES-001",
+    "receipt_vocabulary_map": {
+      "contract_id": "RECEIPT-VOCABULARY-MAP-001",
+      "version": "1.0.0",
+      "digest": "sha256:a2752fb31914e24a025738bfc3d5bd12e035a076934be8c27c11a5df8701f9cd"
+    }
+  },
+  "orientation_surfaces": {
+    "machine_node": "machine-node.json",
+    "first_receipt": "first-receipt.json",
+    "coordination_horizon": "coordination-horizon.json",
+    "constellation_lock": "constellation.lock.json"
+  },
+  "seed_lineage": {
+    "release": "spec-v0.2.0",
+    "commit": "fc7707134b58ed12ad349bf649d2af1c3689bd01",
+    "digest": "sha256:9e8c2e4980cfef4824b2f8f57914ab5b81eadac5d7a077b2186cbae541bfd2b1",
+    "digest_scope": "seed Machine Node"
+  },
+  "release_coordinates": {
+    "candidate_commit": "0000000000000000000000000000000000000000",
+    "candidate_tree_digest": "git-tree-sha1:0000000000000000000000000000000000000000",
+    "candidate_coordinate_status": "pending_release_promotion"
+  },
+  "promotion_coordinates": {
+    "status": "pending_cross_repository_settlement",
+    "open_receipt_id": "RCP-PROGRAM-PROMOTION-003",
+    "required_roles": [
+      "site_reading_governance",
+      "program_specification",
+      "enterprise_implementation",
+      "simulated_final_state",
+      "comparative_evidence"
+    ]
+  }
+}

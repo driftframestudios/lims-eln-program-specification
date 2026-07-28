@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "scenarios": [
     {
       "id": "SCN-LIFE-001",
@@ -156,6 +156,78 @@
       "failure_twin": "one accountable domain remains pending",
       "recovery": "preserve the release as qualification-ready and route the open domain to its named owner",
       "acceptance_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "security_owner", "operations_owner", "business_owner"]
+    },
+    {
+      "id": "SCN-CALL-READ-001",
+      "requirement_id": "SPEC-CALL-001",
+      "rule_id": "RULE-CALL-002",
+      "operation_id": "OP-SPECIMEN-READ-001",
+      "effect_class": "read",
+      "title": "Bounded caller receives one authorized specimen projection",
+      "given": [
+        "an authenticated task-scoped caller identity linked to an initiating principal",
+        "a released read operation with tenant field projection rate and depth budgets",
+        "retrieved context treated as untrusted data"
+      ],
+      "when": [
+        "the caller supplies a strict request for one specimen projection"
+      ],
+      "then": [
+        "the service derives identity and tenant from authenticated context",
+        "the response contains only the authorized projection and field-level redaction decisions",
+        "the receipt records caller operation version purpose decision evidence locator and correlation identity"
+      ],
+      "failure_twin": "retrieved content requests a broader tenant query or a protected field",
+      "recovery": "return a typed bounded denial with zero record effects and preserve the attempted scope in redacted audit evidence",
+      "acceptance_roles": ["security_owner", "privacy_owner", "scientific_data_owner"]
+    },
+    {
+      "id": "SCN-CALL-NARROW-001",
+      "requirement_id": "SPEC-CALL-001",
+      "rule_id": "RULE-CALL-001",
+      "operation_id": "OP-METADATA-CORRECT-001",
+      "effect_class": "narrow_idempotent_write",
+      "title": "Bounded caller corrects one approved metadata field idempotently",
+      "given": [
+        "an authenticated caller authorized for the released correction operation",
+        "one specimen expected revision reason stable request identity and canonical patch digest",
+        "an effect ceiling of one record and the approved metadata field set"
+      ],
+      "when": [
+        "the caller submits the correction and retries after an ambiguous response"
+      ],
+      "then": [
+        "the service validates scope and content at the boundary",
+        "readback by stable request identity and content digest converges on one effect",
+        "the receipt reports the original and resulting revision with the accepted field set"
+      ],
+      "failure_twin": "changed patch content reuses the stable request identity or requests a scientific result field",
+      "recovery": "preserve the current record classify the collision or scope request and route it to accountable review",
+      "acceptance_roles": ["scientific_data_owner", "platform_owner", "quality_owner"]
+    },
+    {
+      "id": "SCN-CALL-BROAD-001",
+      "requirement_id": "SPEC-CALL-001",
+      "rule_id": "RULE-CALL-003",
+      "operation_id": "OP-MIGRATION-CUTOVER-001",
+      "effect_class": "approval_gated_broad_write",
+      "title": "Migration cutover executes within a digest-bound human approval",
+      "given": [
+        "a released cutover operation and reconciled representative rehearsal",
+        "an unexpired human approval bound to operation version tenant canonical request digest effect ceiling intended-use profile and rollback checkpoint",
+        "a service-owned preflight that can reconstruct the planned effect inventory"
+      ],
+      "when": [
+        "the workflow automation requests cutover"
+      ],
+      "then": [
+        "the service rechecks approval request digest effect count and safety preconditions",
+        "execution remains within the approved effect ceiling",
+        "the receipt links every effect batch checkpoint decision and recovery coordinate"
+      ],
+      "failure_twin": "approval expires or the source snapshot mapping digest planned effect count tenant or operation version changes",
+      "recovery": "keep the cutover gate closed preserve the last accepted checkpoint and route a refreshed decision packet to accountable humans",
+      "acceptance_roles": ["data_migration_owner", "business_process_owner", "quality_owner", "security_owner", "operations_owner"]
     }
   ]
 }

@@ -3,7 +3,17 @@
 /decisions/ @driftframestudios
 /examples/ @driftframestudios
 /forecasts/ @driftframestudios
+/probes/ @driftframestudios
 /receipts/ @driftframestudios
+/simulations/ @driftframestudios
 /specifications/ @driftframestudios
+/coordination-horizon.json @driftframestudios
+/.github/dependabot.yml @driftframestudios
 /.github/workflows/ @driftframestudios
-
+/scripts/check_branch_flow.py @driftframestudios
+/scripts/validate_program.py @driftframestudios
+/tests/test_branch_flow.py @driftframestudios
+/tests/test_program.py @driftframestudios
+/machine-node.json @driftframestudios
+/first-receipt.json @driftframestudios
+/release/ @driftframestudios

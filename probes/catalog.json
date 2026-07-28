@@ -1,0 +1,283 @@
+{
+  "version": "0.3.0",
+  "catalog_id": "LIMS-ELN-PRACTITIONER-PROBES-001",
+  "purpose": "Turn principal-level LIMS/ELN claims into inspectable questions, mechanisms, failure twins, evidence, and accountable handoffs.",
+  "level_contract": [
+    {
+      "level": 1,
+      "name": "surface",
+      "question": "Can the collaborator name the observable behavior and the people materially affected?"
+    },
+    {
+      "level": 2,
+      "name": "mechanism",
+      "question": "Can the collaborator explain the ownership, ordering, identity, and transaction mechanisms?"
+    },
+    {
+      "level": 3,
+      "name": "realistic_use",
+      "question": "Can the collaborator apply the mechanism to a representative scientific workflow?"
+    },
+    {
+      "level": 4,
+      "name": "edges_and_maintenance",
+      "question": "Can the collaborator reason through concurrency, replay, partial failure, version drift, privacy, and operations?"
+    },
+    {
+      "level": 5,
+      "name": "review_repair_and_handoff",
+      "question": "Can the collaborator challenge the claim, produce evidence, repair the design, and hand it to accountable owners?"
+    }
+  ],
+  "veracity_vocabulary": [
+    "verified",
+    "source_supported",
+    "source_specific",
+    "draft_probe",
+    "local_measurement_needed",
+    "correction_needed",
+    "hold_for_resilience_pass"
+  ],
+  "probes": [
+    {
+      "id": "PRB-LIFE-001",
+      "title": "Released-result correction and scientific lineage",
+      "question": "How does a correction preserve the released result, reviewer meaning, and downstream interpretation?",
+      "material_effect": "Scientists can distinguish the record that was relied upon from the justified successor.",
+      "veracity": {
+        "status": "source_supported",
+        "basis": "released invariant and specification-by-example scenario",
+        "measurement": "scenario execution and event-ledger inspection"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Describe original, successor, reason, actor, and downstream correction event."},
+        {"level": 2, "evaluation": "Explain immutable revision identity, optimistic concurrency, signature linkage, and event ownership."},
+        {"level": 3, "evaluation": "Trace one corrected result through review, release, reporting, and a downstream consumer."},
+        {"level": 4, "evaluation": "Resolve concurrent corrections, late consumers, replay, and a missing reviewer reason."},
+        {"level": 5, "evaluation": "Review the audit query, prove lineage completeness, repair a broken link, and route Scientific and Quality decisions."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-LIFE-001"],
+        "rule_ids": ["RULE-LIFE-001"],
+        "scenario_ids": ["SCN-LIFE-001"],
+        "receipt_ids": ["RCP-ACPT-001"]
+      }
+    },
+    {
+      "id": "PRB-CUST-001",
+      "title": "Concurrent custody transfer",
+      "question": "Where is current physical custody decided when two valid operators act on the same specimen revision?",
+      "material_effect": "Laboratory staff can locate material and recover from contested movement without inventing a location.",
+      "veracity": {
+        "status": "source_supported",
+        "basis": "released transaction and revision invariant",
+        "measurement": "concurrency scenario with custody and outbox inspection"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Name source, destination, expected revision, current revision, actor, and reason."},
+        {"level": 2, "evaluation": "Explain the transaction boundary joining custody position, custody event, and pending integration message."},
+        {"level": 3, "evaluation": "Execute two transfers from one revision and show one authoritative position."},
+        {"level": 4, "evaluation": "Handle scanner retry, network ambiguity, offline work, and out-of-order integration delivery."},
+        {"level": 5, "evaluation": "Review the conflict evidence, repair a stranded event, and hand the physical reconciliation to Laboratory Operations."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-CUST-001"],
+        "rule_ids": ["RULE-CUST-001"],
+        "scenario_ids": ["SCN-CUST-001"],
+        "receipt_ids": ["RCP-MIGR-001"]
+      }
+    },
+    {
+      "id": "PRB-INST-001",
+      "title": "Instrument bytes, parsing, and quarantine",
+      "question": "Can every interpreted observation be traced to the exact transferred bytes and a recoverable disposition?",
+      "material_effect": "A scientific reviewer can inspect provenance while Operations can recover a partial or divergent transfer.",
+      "veracity": {
+        "status": "source_supported",
+        "basis": "released raw-artifact invariant and failure-twin scenario",
+        "measurement": "digest, quarantine, and parser-version receipt inspection"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Identify raw artifact, digest, parser version, observation, disposition, and recovery owner."},
+        {"level": 2, "evaluation": "Explain immutable object identity, manifest-last transfer, quarantine, and parser determinism."},
+        {"level": 3, "evaluation": "Ingest a representative artifact and connect each observation to byte and parser evidence."},
+        {"level": 4, "evaluation": "Handle partial multipart transfer, duplicate identity with changed bytes, parser upgrade, and storage retry."},
+        {"level": 5, "evaluation": "Reparse a preserved artifact, compare outputs, disposition divergence, and hand evidence to Scientific and Integration owners."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-INST-001"],
+        "rule_ids": ["RULE-INST-001"],
+        "scenario_ids": ["SCN-INST-001"],
+        "receipt_ids": ["RCP-OBS-001"]
+      }
+    },
+    {
+      "id": "PRB-SAPIO-001",
+      "title": "Sapio version-banded specimen graph conformance",
+      "question": "Does an approved Sapio tenant preserve specimen, aliquot, container, plate, and relationship semantics across commit and independent readback?",
+      "material_effect": "Evaluators can distinguish a plausible adapter from a version-bound scientific conformance result.",
+      "veracity": {
+        "status": "source_specific",
+        "basis": "vendor-specific invariant awaiting configured-environment observation",
+        "measurement": "official-SDK conformance run and independent readback"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Name tenant release, SDK release, schema fingerprint, service identity, fixture, and readback."},
+        {"level": 2, "evaluation": "Explain adapter boundary, batch semantics, relationship construction, and compatibility band."},
+        {"level": 3, "evaluation": "Commit one synthetic aliquot and plate graph through the released adapter contract."},
+        {"level": 4, "evaluation": "Handle schema drift, partial relationship construction, permission change, timeout, and SDK mismatch."},
+        {"level": 5, "evaluation": "Compare canonical and vendor graphs, repair mapping, preserve limitations, and route Scientific Data and Quality acceptance."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-VEND-001"],
+        "rule_ids": ["RULE-VEND-001"],
+        "scenario_ids": ["SCN-SAPIO-001"],
+        "receipt_ids": ["RCP-VEND-SAPIO-001"]
+      }
+    },
+    {
+      "id": "PRB-EVENT-001",
+      "title": "Benchling event convergence",
+      "question": "How does a durable integration converge when authenticated events are duplicated, delayed, or semantically incomplete?",
+      "material_effect": "Operators can treat event delivery as a work signal while authoritative state preserves scientific meaning.",
+      "veracity": {
+        "status": "source_specific",
+        "basis": "vendor-specific event and readback contract awaiting configured-environment observation",
+        "measurement": "signed webhook, durable inbox, refresh, and reconciliation receipts"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Identify event identity, signature decision, inbox state, resource identity, and refresh outcome."},
+        {"level": 2, "evaluation": "Explain durable inbox insertion, deduplication, ordering posture, authoritative retrieval, and retry budget."},
+        {"level": 3, "evaluation": "Replay duplicate and late events and demonstrate one converged resource projection."},
+        {"level": 4, "evaluation": "Handle key rotation, missing payload fields, permission contraction, rate limiting, and poison work."},
+        {"level": 5, "evaluation": "Inspect trace and inbox evidence, repair reconciliation, and hand Security and Scientific Data decisions separately."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-VEND-001"],
+        "rule_ids": ["RULE-VEND-002"],
+        "scenario_ids": ["SCN-BENCH-001"],
+        "receipt_ids": ["RCP-VEND-BENCH-001"]
+      }
+    },
+    {
+      "id": "PRB-LABKEY-001",
+      "title": "LabKey validation, atomic batch, and audit",
+      "question": "Can a migration batch validate, commit atomically, preserve an audit reason, and reconcile through normalized readback?",
+      "material_effect": "Migration owners can prove that a batch either produced its intended scientific effect or preserved the prior state.",
+      "veracity": {
+        "status": "source_specific",
+        "basis": "vendor-specific validation and batch contract awaiting staging observation",
+        "measurement": "validate-only, commit, audit, lineage, artifact, and role receipts"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Name server release, module versions, API identity, batch, audit reason, and readback."},
+        {"level": 2, "evaluation": "Explain validation boundary, transaction scope, normalized comparison, and artifact identity."},
+        {"level": 3, "evaluation": "Validate and commit a representative batch with one audit reason and canonical readback."},
+        {"level": 4, "evaluation": "Handle invalid row, module drift, large batch, ambiguous response, and attachment divergence."},
+        {"level": 5, "evaluation": "Prove effect count and parity, repair mapping, and route Migration and Quality decisions."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-VEND-001"],
+        "rule_ids": ["RULE-VEND-003"],
+        "scenario_ids": ["SCN-LABKEY-001"],
+        "receipt_ids": ["RCP-VEND-LABKEY-001"]
+      }
+    },
+    {
+      "id": "PRB-MIGR-001",
+      "title": "Meaning-preserving migration and rollback",
+      "question": "Which evidence proves that identity, canonical content, relationships, audit, signatures, and artifacts retain meaning after migration?",
+      "material_effect": "Leadership can make a reversible cutover decision while scientists retain confidence in record interpretation.",
+      "veracity": {
+        "status": "local_measurement_needed",
+        "basis": "released parity contract and simulated future-reality evidence",
+        "measurement": "representative corpus rehearsal with exception and rollback receipts"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "State inventory, mapping, parity dimensions, exception classes, cutover gate, and rollback point."},
+        {"level": 2, "evaluation": "Explain snapshot and delta ownership, canonical comparison, signature treatment, and effect accounting."},
+        {"level": 3, "evaluation": "Migrate the representative corpus and reconcile every parity dimension and exception."},
+        {"level": 4, "evaluation": "Handle source change, delta race, orphan relationship, digest divergence, rollback, and resume."},
+        {"level": 5, "evaluation": "Challenge sampling adequacy, reproduce the decision packet, repair one defect, and route Business Process and Quality authority."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-MIGR-001"],
+        "rule_ids": ["RULE-MIGR-001"],
+        "scenario_ids": ["SCN-MIGR-001", "SCN-CALL-BROAD-001"],
+        "receipt_ids": ["RCP-MIGR-001"]
+      }
+    },
+    {
+      "id": "PRB-REST-001",
+      "title": "Clean restore, continuity, and neutral-reader exit",
+      "question": "Can an alternate trained operator reconstruct the service and scientific record from governed recovery materials within the declared objectives?",
+      "material_effect": "The organization can recover and exit while preserving evidence, meaning, and operating continuity.",
+      "veracity": {
+        "status": "local_measurement_needed",
+        "basis": "released restore contract and simulated future-reality evidence",
+        "measurement": "timed clean-environment restore and neutral-reader verification"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Name recovery point, RTO, RPO, backup, journal, artifacts, configuration, identity dependencies, and operator."},
+        {"level": 2, "evaluation": "Explain restore ordering, key access, configuration reconstruction, replay, and acceptance probes."},
+        {"level": 3, "evaluation": "Restore into a clean environment and verify representative records and artifacts."},
+        {"level": 4, "evaluation": "Handle unavailable newest backup, missing journal segment, expired credential, region loss, and neutral-reader mismatch."},
+        {"level": 5, "evaluation": "Repeat with an alternate operator, measure objectives, repair the runbook, and route Operations and Quality decisions."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-MIGR-001"],
+        "rule_ids": ["RULE-REST-001"],
+        "scenario_ids": ["SCN-REST-001"],
+        "receipt_ids": ["RCP-REST-001"]
+      }
+    },
+    {
+      "id": "PRB-CALL-001",
+      "title": "AI as bounded caller",
+      "question": "Can an AI caller select only a released operation while the service independently establishes identity, authority, scope, budgets, approval, effects, and evidence?",
+      "material_effect": "The team can gain automation leverage while preserving the same enforceable boundaries used for every caller.",
+      "veracity": {
+        "status": "source_supported",
+        "basis": "released operation contract and three specification-by-example scenarios",
+        "measurement": "contract validation, denial tests, replay tests, approval expiry, and audit inspection"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Distinguish caller intent, service-owned operation, authenticated identity, authority decision, effect class, and receipt."},
+        {"level": 2, "evaluation": "Explain strict schema validation, operation allowlist, tenant scope, resource budgets, idempotency, approval binding, and egress policy."},
+        {"level": 3, "evaluation": "Exercise a read, narrow idempotent write, and approval-gated broad write through one boundary."},
+        {"level": 4, "evaluation": "Handle injected instructions, scope expansion, digest collision, expired approval, recursion exhaustion, SSRF-shaped input, and ambiguous completion."},
+        {"level": 5, "evaluation": "Review the effect inventory, repair one policy defect, reproduce the audit trail, and hand domain acceptance to accountable humans."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-CALL-001"],
+        "rule_ids": ["RULE-CALL-001", "RULE-CALL-002", "RULE-CALL-003"],
+        "scenario_ids": ["SCN-CALL-READ-001", "SCN-CALL-NARROW-001", "SCN-CALL-BROAD-001"],
+        "receipt_ids": ["RCP-SECO-001"]
+      }
+    },
+    {
+      "id": "PRB-SECO-001",
+      "title": "Production security, observability, and multidomain acceptance",
+      "question": "Can operators prove tenant isolation, protected configuration, measurable service behavior, incident recovery, and distinct acceptance decisions?",
+      "material_effect": "Executives and evaluators can see the operating posture and the remaining authority boundaries in one evidence packet.",
+      "veracity": {
+        "status": "local_measurement_needed",
+        "basis": "released controls and simulated future-reality evidence",
+        "measurement": "production-bound rehearsal, leakage review, telemetry failure exercise, and role decisions"
+      },
+      "levels": [
+        {"level": 1, "evaluation": "Identify workload, tenant, configuration reference, secret reference, SLO, alert, incident owner, and acceptance domain."},
+        {"level": 2, "evaluation": "Explain least privilege, KMS context, rotation, bounded cache, redaction, correlation, metric cardinality, and evidence retention."},
+        {"level": 3, "evaluation": "Rotate a vendor credential, revoke an identity, interrupt telemetry, and assemble a redacted evidence packet."},
+        {"level": 4, "evaluation": "Handle cross-tenant attempt, stale cache, secret-shaped log, redaction failure, cardinality surge, and unavailable approver."},
+        {"level": 5, "evaluation": "Review leakage and observability evidence, repair a boundary, and record separate Scientific, Quality, Regulatory, Security, and Operations decisions."}
+      ],
+      "evidence_links": {
+        "requirement_ids": ["SPEC-SECO-001", "SPEC-SECR-001", "SPEC-ACPT-001"],
+        "rule_ids": ["RULE-SECU-001", "RULE-SECR-001", "RULE-OBS-001", "RULE-ACPT-001"],
+        "scenario_ids": ["SCN-SECU-001", "SCN-SECR-001", "SCN-OBS-001", "SCN-ACPT-001"],
+        "receipt_ids": ["RCP-SECO-001", "RCP-SECR-001", "RCP-OBS-001", "RCP-ACPT-001"]
+      }
+    }
+  ]
+}

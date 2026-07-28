@@ -5,14 +5,16 @@ open-receipt collaboration. It publishes versioned requirements, executable
 examples, decision forecasts, acceptance contracts, and the lock coordinates
 used to compare the active implementation with the simulated final state.
 
-The current planned program release is `spec-v0.2.0`. It consumes governance
-schema `1.0.0`; its release and governance commit coordinates receive observed
+The current planned program release is `spec-v0.3.0`. It consumes the
+`governance-v2.0.0` Control Plane Profile 0.3.0 and schema `2.0.0`; its release
+and governance commit coordinates receive observed
 commit and tree identities during promotion.
 
-The repository describes what collaborators can verify. Running-system truth
-comes from the active implementation and observed receipt manifests. The
-simulation supplies an executable counterfactual whose assumptions remain
-visible and revisable.
+The repository describes what collaborators can verify. The simulation supplies
+an executable future reality whose assumptions, synthetic decisions, and
+evidence mode remain visible and revisable. A complete simulated closure can
+therefore stand as a first-class result while a separately represented observed
+closure remains available for future running-system evidence.
 
 ## Constellation
 
@@ -43,15 +45,102 @@ merge commit, and content lineage.
 6. New evidence creates a new forecast release while the earlier forecast
    remains available for calibration.
 
+## Coordination Horizon
+
+[`coordination-horizon.json`](coordination-horizon.json) is the flexible
+coordination surface for active, queued, and exploratory work. It records
+entry evidence, exit evidence, dependencies, and re-entry instructions. Its
+authority is coordination-only; released contracts, runtime policy, and
+accountable domain roles continue to govern effects and acceptance.
+
+[`machine-node.json`](machine-node.json),
+[`first-receipt.json`](first-receipt.json), and the Coordination Horizon are
+strict projections of governance schema release `2.0.0`. Contract references
+carry SHA-256 digests that the program validator recalculates. The Machine Node
+orients; the first receipt supplies safe re-entry; neither grants production or
+domain authority.
+
+## Practitioner Probes
+
+[`probes/catalog.json`](probes/catalog.json) contains ten LIMS/ELN Practitioner
+Probes. Each probe progresses through:
+
+1. observable surface;
+2. mechanism;
+3. realistic scientific use;
+4. edges and maintenance;
+5. review, repair, evidence, and accountable handoff.
+
+Each probe declares a technical-veracity status and links requirements, rules,
+scenarios, and receipts. This makes principal-level claims inspectable rather
+than relying on prose confidence alone.
+
+## Bounded callers
+
+[`specifications/bounded-caller.json`](specifications/bounded-caller.json)
+defines one service-owned contract for humans, workloads, workflows, and
+task-scoped AI callers. The service derives identity from authenticated
+context, validates strict inputs, enforces tenant and resource scope, applies
+budgets, rechecks effect preconditions, and emits an attributable receipt.
+
+The specification-by-example suite covers:
+
+- one authorized read;
+- one narrow idempotent metadata correction;
+- one approval-gated migration cutover.
+
+An AI caller selects released operations through an allowlist. It gains no
+independent Scientific, Quality, Regulatory, Security, Operations, or business
+authority. Consequential approvals bind operation version, canonical request
+digest, tenant, effect ceiling, intended use, expiry, and recovery coordinates.
+
 ## Evidence ladder
 
 `specified → simulated → locally_verified → configured_environment_qualified
 → representative_rehearsal_completed → intended_use_validated
 → accountably_accepted`
 
-Each stage states its own evidence. Configured environments, representative
-rehearsals, production controls, and accountable acceptance advance through
-observed receipts.
+Each stage states its own evidence mode. A simulated future reality may
+exercise and close the full shape of any stage with synthetic environments,
+measurements, and role-bound decisions. That result remains
+`evidence_mode: simulated`. The program design carries
+`authority: advisory_design_only`; an executed canonical closure can be
+definitive inside its named selected future reality while retaining
+`production_authorization_effect: none`. Its separately tracked observed
+successor begins open and can advance later through environment-bound evidence
+and accountable human decisions.
+
+## Simulated closure of the four substantive receipt classes
+
+[`simulations/future-reality-closure-v0.3.json`](simulations/future-reality-closure-v0.3.json)
+is the advisory program design for a coherent 2028 future and fully specifies:
+
+- configured Sapio, Benchling, and LabKey environments;
+- representative migration, rollback, clean restore, continuity, and data exit;
+- production-bound security, privacy, AWS configuration and secret lifecycle,
+  observability, support, and incident operation;
+- distinct Scientific, Quality, and Regulatory acceptance.
+
+All nine underlying receipt records point to one of these four class-level
+closures. Every record preserves both `closed_in_future_reality` for the
+simulated branch and `open` for its future observed branch.
+
+[`simulations/simulated-receipt-closure.v2.json`](simulations/simulated-receipt-closure.v2.json)
+is the exact canonical governance-2.0.0 closure emitted by the executable
+simulation. Its identity is `FUTURE-REALITY-LIMS-2028-001`, and its canonical
+JSON digest is
+`sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9`.
+It contains exactly four receipt families, declares `closed_in_simulation`,
+preserves the environment-observed branch as `separate_unasserted_state`, and
+grants zero production-authorization effect. The advisory design uses the
+distinct identity `FUTURE-REALITY-DESIGN-LIMS-2028-001`; one identity therefore
+denotes one modeled reality and authority posture.
+
+[`specifications/receipt-vocabulary-map.v1.json`](specifications/receipt-vocabulary-map.v1.json)
+version-controls the mapping from individual governance receipt families to
+program proof classes and grouped canonical closure families. It also makes
+the `closed_in_future_reality` → `closed_in_simulation` and observed
+`open` → `separate_unasserted_state` transitions explicit.
 
 ## Validation
 
@@ -62,8 +151,11 @@ python3 -m unittest discover -s tests -v
 ```
 
 The validator uses the Python standard library and checks stable identifiers,
-cross-file references, forecast coordinates, receipt ownership, and required
-collaboration surfaces.
+cross-file references, bounded operation classes, probe levels and veracity,
+forecast coordinates, simulated and observed receipt-state separation,
+Coordination Horizon structure, Machine Node posture, receipt ownership, and
+required collaboration surfaces. Its JSON boundary requires unique object keys
+and finite numbers before identifiers or canonical digests enter validation.
 
 ## Runtime configuration and protected values
 
