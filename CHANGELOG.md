@@ -5,11 +5,18 @@
 - Added a 32-finding cross-repository database primitive ledger with stable
   identities, evidence locations, affirmative target states, and complete
   data- or migration-contract bindings.
+- Added a machine-verified 109-record constellation index that binds the program,
+  reference, and implementation ledgers to immutable source commits, raw digests,
+  record identities, counts, and explicit probability-event relationships.
 - Added five probability-framed database modernization plans, a synthesized
   seven-stage chain, and an evidence-driven interstitial after every stage.
-- Added canonical data-primitive and PostgreSQL/Alembic migration contracts,
-  nine reconciliation dimensions, seven release gates, and database-focused
-  requirements, invariants, and specification-by-example scenarios.
+- Added a canonical data-primitive contract and a tool-neutral PostgreSQL
+  schema-migration contract with Flyway Community 13.0.0 as the selected
+  implementation profile, four ownership boundaries, nine reconciliation
+  dimensions, seven release gates, and retained-test transition scenarios.
+- Added an explicit Flyway transition probability event and receipt evidence
+  that reuse end-to-end integration and parameterized migration tests while
+  retiring bespoke orchestration responsibilities.
 - Added eight future-observed database receipts and a digest-bound database
   release manifest with explicit implementation, rehearsal, recovery, and
   accountable-acceptance boundaries.

@@ -99,7 +99,7 @@
     },
     {
       "id": "RULE-DBMG-001",
-      "statement": "A supported PostgreSQL major, immutable Alembic revision graph, checksummed history, deployment lock, catalog projection, and predecessor upgrade evidence define database release state."
+      "statement": "A supported PostgreSQL major, immutable versioned SQL set, migration-product checksummed history, database-scoped coordination, catalog projection, and predecessor upgrade evidence define database release state; Flyway Community 13.0.0 is the selected implementation profile."
     },
     {
       "id": "RULE-DBMG-002",

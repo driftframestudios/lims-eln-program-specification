@@ -59,6 +59,11 @@ class ProgramValidationTests(unittest.TestCase):
             "ledger": json.loads(
                 (ROOT / "database" / "primitive-findings.json").read_text()
             ),
+            "constellation_index": json.loads(
+                (
+                    ROOT / "database" / "constellation-finding-index.json"
+                ).read_text()
+            ),
             "plan_set": json.loads(
                 (
                     ROOT / "plans" / "database-modernization-plans.json"
@@ -110,7 +115,11 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["governance_closure_families"], 4)
         self.assertEqual(summary["receipt_vocabulary_mappings"], 7)
         self.assertEqual(summary["database_findings"], 32)
+        self.assertEqual(summary["database_constellation_findings"], 109)
+        self.assertEqual(summary["database_constellation_sources"], 3)
         self.assertEqual(summary["database_plans"], 5)
+        self.assertEqual(summary["database_flyway_transition_estimates"], 1)
+        self.assertEqual(summary["database_ownership_boundaries"], 4)
         self.assertEqual(summary["database_stages"], 7)
         self.assertEqual(summary["data_primitive_policies"], 13)
         self.assertEqual(summary["database_reconciliation_dimensions"], 9)
@@ -144,6 +153,107 @@ class ProgramValidationTests(unittest.TestCase):
         )
         self.assertEqual(finding_ids, policy_findings | migration_findings)
 
+    def test_constellation_finding_index_binds_every_source_record(self) -> None:
+        arguments = self.database_validation_arguments()
+        index = arguments["constellation_index"]
+        sources = {item["source_id"]: item for item in index["sources"]}
+        self.assertEqual(
+            {
+                "PROGRAM-DISCOVERY-FINDINGS",
+                "REFERENCE-PACK-FINDINGS",
+                "ACTIVE-IMPLEMENTATION-FINDINGS",
+            },
+            set(sources),
+        )
+        self.assertEqual(
+            109,
+            sum(item["record_count"] for item in sources.values()),
+        )
+        self.assertEqual(
+            {
+                "PROGRAM-DISCOVERY-FINDINGS": 32,
+                "REFERENCE-PACK-FINDINGS": 53,
+                "ACTIVE-IMPLEMENTATION-FINDINGS": 24,
+            },
+            {
+                source_id: source["record_count"]
+                for source_id, source in sources.items()
+            },
+        )
+        self.assertTrue(
+            all(
+                item["record_count"] == len(item["record_ids"])
+                for item in sources.values()
+            )
+        )
+        self.assertTrue(
+            all(
+                MODULE.MATERIAL_COMMIT_PATTERN.fullmatch(item["source_commit"])
+                for item in sources.values()
+            )
+        )
+        self.assertEqual(
+            MODULE.sha256_digest("database/primitive-findings.json"),
+            sources["PROGRAM-DISCOVERY-FINDINGS"]["ledger_digest"],
+        )
+        self.assertEqual(
+            {
+                "PROGRAM-DISCOVERY-FINDINGS": (
+                    "4948b0b81d5c31e566292d265f001adf9d4c03eb"
+                ),
+                "REFERENCE-PACK-FINDINGS": (
+                    "ce90126cac4e769511e0886b1b55f2d58107d119"
+                ),
+                "ACTIVE-IMPLEMENTATION-FINDINGS": (
+                    "63306ebf0487d52f14aa352a4eeb99630a31c9a8"
+                ),
+            },
+            {
+                source_id: sources[source_id]["source_commit"]
+                for source_id in (
+                    "PROGRAM-DISCOVERY-FINDINGS",
+                    "REFERENCE-PACK-FINDINGS",
+                    "ACTIVE-IMPLEMENTATION-FINDINGS",
+                )
+            },
+        )
+        self.assertEqual(
+            "canonical",
+            sources["PROGRAM-DISCOVERY-FINDINGS"]["probability_relation"][
+                "kind"
+            ],
+        )
+        self.assertEqual(
+            MODULE.DATABASE_PROBABILITY_EVENT,
+            sources["PROGRAM-DISCOVERY-FINDINGS"]["probability_relation"][
+                "estimated_event"
+            ],
+        )
+        self.assertEqual(
+            2,
+            len(
+                {
+                    sources[source_id]["probability_relation"][
+                        "estimated_event"
+                    ]
+                    for source_id in (
+                        "REFERENCE-PACK-FINDINGS",
+                        "ACTIVE-IMPLEMENTATION-FINDINGS",
+                    )
+                }
+            ),
+        )
+        self.assertEqual(
+            {"conditional_derivative"},
+            {
+                sources[source_id]["probability_relation"]["kind"]
+                for source_id in (
+                    "REFERENCE-PACK-FINDINGS",
+                    "ACTIVE-IMPLEMENTATION-FINDINGS",
+                )
+            },
+        )
+
     def test_database_plan_set_declares_one_event_and_seven_interstitials(
         self,
     ) -> None:
@@ -158,6 +268,13 @@ class ProgramValidationTests(unittest.TestCase):
                 plan_set["estimation_posture"]["conditioning_assumptions"]
             ),
         )
+        transition = plan_set["flyway_transition_estimate"]
+        self.assertEqual(
+            MODULE.FLYWAY_TRANSITION_EVENT,
+            transition["probability_of"],
+        )
+        self.assertEqual(0.91, transition["estimated_probability"])
+        self.assertEqual([0.84, 0.96], transition["credible_range"])
         modernization_doc = (ROOT / "docs" / "DATABASE_MODERNIZATION.md").read_text(
             encoding="utf-8"
         )
@@ -172,6 +289,11 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertIn(
             normalized_event,
             " ".join(constellation_doc.replace("> ", "").split()),
+        )
+        normalized_transition = " ".join(MODULE.FLYWAY_TRANSITION_EVENT.split())
+        self.assertIn(
+            normalized_transition,
+            " ".join(modernization_doc.replace("> ", "").split()),
         )
         self.assertEqual(5, len(plan_set["plans"]))
         self.assertEqual(
@@ -201,6 +323,39 @@ class ProgramValidationTests(unittest.TestCase):
                 and item["interstitial"]["response"]
                 for item in stages
             )
+        )
+
+    def test_database_migration_contract_selects_flyway_with_owned_boundaries(
+        self,
+    ) -> None:
+        migration = self.database_validation_arguments()["migration_contract"]
+        self.assertEqual(
+            {
+                "DB-OWNER-PROGRAM-SCHEMA",
+                "DB-OWNER-VENDOR-LIFECYCLE",
+                "DB-OWNER-CROSS-VENDOR-MOVEMENT",
+                "DB-OWNER-RELEASE-EVIDENCE",
+            },
+            {
+                boundary["boundary_id"]
+                for boundary in migration["ownership_boundaries"]
+            },
+        )
+        profile = migration["selected_implementation_profile"]
+        self.assertEqual("Flyway Community", profile["product"])
+        self.assertEqual("13.0.0", profile["version"])
+        self.assertIn("baselineOnMigrate=false", profile["configuration_policy"])
+        self.assertEqual(
+            {
+                "flyway validate -outputType=json",
+                "flyway info -outputType=json",
+                "flyway migrate -outputType=json",
+            },
+            set(profile["commands"]),
+        )
+        self.assertEqual(
+            "FLYWAY-TRANSITION-EQUIVALENCE-001",
+            profile["transition_receipt"]["probability_event_id"],
         )
 
     def test_database_contract_references_resolve(self) -> None:
@@ -244,6 +399,18 @@ class ProgramValidationTests(unittest.TestCase):
             "pending_implementation_projection",
             manifest["migration_coordinate"]["status"],
         )
+        self.assertEqual(
+            "tool_neutral_capability_contract",
+            manifest["migration_coordinate"]["contract_posture"],
+        )
+        self.assertEqual(
+            "Flyway Community 13.0.0",
+            manifest["migration_coordinate"]["selected_profile"],
+        )
+        self.assertEqual(
+            "pending_observed_evidence",
+            manifest["migration_coordinate"]["executable_digest"],
+        )
         self.assertEqual(4, len(manifest["deferred_boundaries"]))
         for binding in manifest["artifact_bindings"]:
             self.assertEqual(
@@ -265,6 +432,7 @@ class ProgramValidationTests(unittest.TestCase):
         }
         for binding_name in (
             "data_primitive_finding_ledger",
+            "database_constellation_finding_index",
             "database_modernization_plan_set",
             "data_contract",
             "database_migration_contract",
@@ -303,6 +471,69 @@ class ProgramValidationTests(unittest.TestCase):
         ].append("RULE-UNPUBLISHED-001")
         with self.assertRaisesRegex(ValueError, "unknown rules"):
             MODULE.validate_database_program(**unknown_rule)
+
+        stale_source = self.database_validation_arguments()
+        stale_source["constellation_index"]["sources"][1]["source_commit"] = (
+            "0" * 40
+        )
+        with self.assertRaisesRegex(ValueError, "immutable commit"):
+            MODULE.validate_database_program(**stale_source)
+
+        stale_retrieval = self.database_validation_arguments()
+        stale_retrieval["constellation_index"]["sources"][1][
+            "retrieval_url"
+        ] = "https://raw.githubusercontent.com/example/repository/main/ledger.json"
+        with self.assertRaisesRegex(ValueError, "retrieval coordinate differs"):
+            MODULE.validate_database_program(**stale_retrieval)
+
+        future_dated_index = self.database_validation_arguments()
+        future_dated_index["constellation_index"]["metadata"]["created_at"] = (
+            "2099-01-01T00:00:00Z"
+        )
+        with self.assertRaisesRegex(ValueError, "observed finalization instant"):
+            MODULE.validate_database_program(**future_dated_index)
+
+        empty_external_digest = self.database_validation_arguments()
+        empty_external_digest["constellation_index"]["sources"][1][
+            "ledger_digest"
+        ] = "sha256:" + ("0" * 64)
+        with self.assertRaisesRegex(ValueError, "material digest"):
+            MODULE.validate_database_program(**empty_external_digest)
+
+        missing_external_record = self.database_validation_arguments()
+        missing_external_record["constellation_index"]["sources"][1][
+            "record_ids"
+        ].pop()
+        with self.assertRaisesRegex(ValueError, "record identities differ"):
+            MODULE.validate_database_program(**missing_external_record)
+
+        redistributed_source_count = self.database_validation_arguments()
+        redistributed_source_count["constellation_index"]["sources"][1][
+            "record_count"
+        ] -= 1
+        with self.assertRaisesRegex(ValueError, "released count differs"):
+            MODULE.validate_database_program(**redistributed_source_count)
+
+        wrong_flyway = self.database_validation_arguments()
+        wrong_flyway["migration_contract"]["selected_implementation_profile"][
+            "version"
+        ] = "12.0.0"
+        with self.assertRaisesRegex(ValueError, "Flyway implementation profile"):
+            MODULE.validate_database_program(**wrong_flyway)
+
+        automatic_baseline = self.database_validation_arguments()
+        automatic_baseline["migration_contract"]["selected_implementation_profile"][
+            "configuration_policy"
+        ].remove("baselineOnMigrate=false")
+        with self.assertRaisesRegex(ValueError, "explicit baseline adoption"):
+            MODULE.validate_database_program(**automatic_baseline)
+
+        wrong_transition_event = self.database_validation_arguments()
+        wrong_transition_event["plan_set"]["flyway_transition_estimate"][
+            "probability_of"
+        ] = "A different event."
+        with self.assertRaisesRegex(ValueError, "transition probability event"):
+            MODULE.validate_database_program(**wrong_transition_event)
 
     def test_program_and_governance_release_coordinates_are_explicit(self) -> None:
         versioned_paths = (

@@ -46,16 +46,17 @@
     },
     {
       "item_id": "HORIZON-DATABASE-IMPLEMENTATION",
-      "horizon_label": "PostgreSQL and Alembic implementation projection",
+      "horizon_label": "PostgreSQL schema evolution through the selected Flyway profile",
       "sequence": 3,
       "state": "ready",
       "desired_state": "Project DATA-CONTRACT-001 and DATABASE-MIGRATION-CONTRACT-001 into one canonical implementation with production-equivalent PostgreSQL tests.",
       "entry_evidence": [
         "settled database program contracts",
-        "canonical reference tree and engine-major decisions"
+        "canonical reference tree engine-major decision and Flyway transition test map"
       ],
       "completion_evidence": [
-        "immutable Alembic head and checksums",
+        "Flyway Community 13.0.0 executable coordinate resolved immutable artifact digest and checksummed head",
+        "existing end-to-end and parameterized migration scenarios pass through Flyway",
         "tenant row security and database privilege evidence",
         "concurrent event idempotency inbox and outbox contract tests",
         "implementation database release candidate manifest"

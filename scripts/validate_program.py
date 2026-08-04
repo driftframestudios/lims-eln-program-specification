@@ -4,6 +4,7 @@ import hashlib
 import json
 import math
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,15 @@ DATABASE_PROBABILITY_ASSUMPTIONS = (
     "Independent reviewers apply shared acceptance criteria, and accepted "
     "non-critical follow-up receives an owner and Coordination Horizon.",
 )
+FLYWAY_TRANSITION_EVENT = (
+    "Given the reviewed versioned PostgreSQL SQL, existing end-to-end integration "
+    "suite, parameterized migration scenarios, Flyway Community 13.0.0, and one "
+    "corrective tranche, the implementation replaces bespoke migration "
+    "orchestration while preserving clean installation, populated predecessor "
+    "upgrade, failure atomicity, replay, zero-pending-work, and clean-versus-upgrade "
+    "convergence evidence without a critical domain-contract regression."
+)
+DATABASE_CONSTELLATION_FINDING_TOTAL = 109
 PROMOTION_RECEIPT_ID = "RCP-PROGRAM-PROMOTION-003"
 CANONICAL_CLOSURE_DIGEST = (
     "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb"
@@ -512,6 +522,7 @@ def validate_core_shapes(
             "proof_class_registry",
             "receipt_vocabulary_map",
             "data_primitive_finding_ledger",
+            "database_constellation_finding_index",
             "database_modernization_plan_set",
             "data_contract",
             "database_migration_contract",
@@ -532,6 +543,7 @@ def validate_core_shapes(
     )
     for binding_name in (
         "data_primitive_finding_ledger",
+        "database_constellation_finding_index",
         "database_modernization_plan_set",
         "data_contract",
         "database_migration_contract",
@@ -895,6 +907,7 @@ def unique_ids(records: list[dict], label: str) -> set[str]:
 def validate_database_program(
     *,
     ledger: dict,
+    constellation_index: dict,
     plan_set: dict,
     data_contract: dict,
     migration_contract: dict,
@@ -1022,12 +1035,286 @@ def validate_database_program(
         raise ValueError("database finding ledger requires 32 stable findings")
 
     require_exact_object(
+        constellation_index,
+        {
+            "index_id",
+            "version",
+            "authority",
+            "counting_semantics",
+            "canonical_probability_event",
+            "sources",
+            "total_record_count",
+            "metadata",
+        },
+        "database constellation finding index",
+    )
+    if (
+        constellation_index["index_id"]
+        != "DATABASE-CONSTELLATION-FINDING-INDEX-001"
+        or constellation_index["version"] != "1.0.0"
+        or constellation_index["authority"]
+        != "cross_repository_discovery_index"
+    ):
+        raise ValueError("database constellation finding index identity differs")
+    require_string(
+        constellation_index["counting_semantics"],
+        "database constellation counting semantics",
+    )
+    probability_event = require_exact_object(
+        constellation_index["canonical_probability_event"],
+        {"event_id", "plan_set_id", "probability_of"},
+        "database constellation canonical probability event",
+    )
+    if probability_event != {
+        "event_id": "DATABASE-ENTERPRISE-RELEASE-CANDIDATE-001",
+        "plan_set_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
+        "probability_of": DATABASE_PROBABILITY_EVENT,
+    }:
+        raise ValueError("database constellation probability event differs")
+    constellation_metadata = require_exact_object(
+        constellation_index["metadata"],
+        {"created_at", "evidence_mode", "authority", "revalidation_trigger"},
+        "database constellation metadata",
+    )
+    if (
+        constellation_metadata["evidence_mode"] != "repository_observed"
+        or constellation_metadata["authority"] != "program_index_only"
+    ):
+        raise ValueError("database constellation evidence authority differs")
+    created_at = require_string(
+        constellation_metadata["created_at"],
+        "database constellation created_at",
+    )
+    try:
+        created_at_instant = datetime.strptime(
+            created_at, "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=timezone.utc)
+    except ValueError as error:
+        raise ValueError(
+            "database constellation created_at requires canonical RFC 3339 UTC"
+        ) from error
+    if created_at_instant > datetime.now(timezone.utc):
+        raise ValueError(
+            "database constellation created_at requires an observed finalization instant"
+        )
+    require_string(
+        constellation_metadata["revalidation_trigger"],
+        "database constellation revalidation trigger",
+    )
+    if not isinstance(constellation_index["sources"], list):
+        raise ValueError("database constellation sources require an array")
+
+    expected_sources = {
+        "PROGRAM-DISCOVERY-FINDINGS": {
+            "repository": "driftframestudios/lims-eln-program-specification",
+            "pull_request": (
+                "https://github.com/driftframestudios/"
+                "lims-eln-program-specification/pull/11"
+            ),
+            "head_ref": "feature/corrective-integrity-v0-3-1",
+            "source_commit": "4948b0b81d5c31e566292d265f001adf9d4c03eb",
+            "coordinate_kind": "same_release_artifact_digest",
+            "ledger_path": "database/primitive-findings.json",
+            "ledger_format": "json_findings",
+            "ledger_digest": sha256_digest("database/primitive-findings.json"),
+            "record_ids": finding_ids,
+            "probability_kind": "canonical",
+            "probability_event": DATABASE_PROBABILITY_EVENT,
+            "probability_surface": "plans/database-modernization-plans.json",
+        },
+        "REFERENCE-PACK-FINDINGS": {
+            "repository": "driftframestudios/prototype-exemplars",
+            "pull_request": (
+                "https://github.com/driftframestudios/"
+                "prototype-exemplars/pull/4"
+            ),
+            "head_ref": "agent/lims-eln-data-primitives-v0-2",
+            "source_commit": "ce90126cac4e769511e0886b1b55f2d58107d119",
+            "coordinate_kind": "pull_request_head",
+            "ledger_path": (
+                "lims-eln-enterprise-reference-v0.1/database/"
+                "data-primitive-ledger.json"
+            ),
+            "ledger_format": "json_findings",
+            "ledger_digest": (
+                "sha256:7b63c2fbff2e52e72ced9a298f90adb6a0c4475f08995a792"
+                "01e21383ebf6664"
+            ),
+            "record_count": 53,
+            "record_id_prefix": "DB-",
+            "probability_kind": "conditional_derivative",
+            "probability_event": (
+                "What is the probability that one implementation tranche reaches a "
+                "promotion-ready database-definition state in which every critical "
+                "and high primitive finding has an accepted disposition, clean "
+                "installation and every supported upgrade path converge to one "
+                "canonical semantic fingerprint, migration evidence retains its "
+                "independently computed fingerprint, representative migration and "
+                "restore rehearsals pass, and accountable reviewers bind their "
+                "decisions to the same evidence bundle?"
+            ),
+            "probability_surface": (
+                "lims-eln-enterprise-reference-v0.1/docs/"
+                "database-refactor-plan.md"
+            ),
+        },
+        "ACTIVE-IMPLEMENTATION-FINDINGS": {
+            "repository": "driftframestudios/lims-eln-enterprise-implementation",
+            "pull_request": (
+                "https://github.com/driftframestudios/"
+                "lims-eln-enterprise-implementation/pull/10"
+            ),
+            "head_ref": "feature/corrective-integrity-v0-3-1",
+            "source_commit": "63306ebf0487d52f14aa352a4eeb99630a31c9a8",
+            "coordinate_kind": "pull_request_head",
+            "ledger_path": "docs/data-primitive-corrective-ledger.md",
+            "ledger_format": "markdown_table",
+            "ledger_digest": (
+                "sha256:78b0708bbcb2217fb2b17693cf51094c361ddf9aca463da23b6"
+                "bd358246668ed"
+            ),
+            "record_count": 24,
+            "record_id_prefix": "DP-",
+            "probability_kind": "conditional_derivative",
+            "probability_event": (
+                "Given a capable delivery team, one release cycle, the stated gates, "
+                "and a representative PostgreSQL rehearsal, what is the probability "
+                "that the plan reaches a release candidate which passes independent "
+                "principal-engineer, database, security, operations, and scientific "
+                "review with only bounded follow-up?"
+            ),
+            "probability_surface": "docs/data-primitive-corrective-ledger.md",
+        },
+    }
+    observed_source_ids: set[str] = set()
+    aggregate_record_ids: set[tuple[str, str]] = set()
+    for index, source in enumerate(constellation_index["sources"]):
+        source = require_exact_object(
+            source,
+            {
+                "source_id",
+                "repository",
+                "pull_request",
+                "head_ref",
+                "source_commit",
+                "coordinate_kind",
+                "ledger_path",
+                "retrieval_url",
+                "ledger_format",
+                "ledger_digest",
+                "record_count",
+                "record_ids",
+                "probability_relation",
+            },
+            f"database constellation source[{index}]",
+        )
+        source_id = require_string(source["source_id"], f"source[{index}].id")
+        if source_id in observed_source_ids or source_id not in expected_sources:
+            raise ValueError(f"database constellation source {source_id!r} differs")
+        observed_source_ids.add(source_id)
+        expected = expected_sources[source_id]
+        coordinate_fields = [
+            "repository",
+            "pull_request",
+            "head_ref",
+            "coordinate_kind",
+            "ledger_path",
+            "ledger_format",
+        ]
+        coordinate_fields.extend(
+            field
+            for field in ("source_commit", "ledger_digest")
+            if field in expected
+        )
+        if MATERIAL_COMMIT_PATTERN.fullmatch(source["source_commit"]) is None:
+            raise ValueError(
+                f"database constellation source {source_id} requires an immutable commit"
+            )
+        if MATERIAL_SHA256_PATTERN.fullmatch(source["ledger_digest"]) is None:
+            raise ValueError(
+                f"database constellation source {source_id} requires a material digest"
+            )
+        for field in coordinate_fields:
+            if source[field] != expected[field]:
+                raise ValueError(
+                    f"database constellation source {source_id} {field} differs"
+                )
+        expected_retrieval_url = (
+            "https://raw.githubusercontent.com/"
+            f"{source['repository']}/{source['source_commit']}/"
+            f"{source['ledger_path']}"
+        )
+        if source["retrieval_url"] != expected_retrieval_url:
+            raise ValueError(
+                f"database constellation source {source_id} retrieval coordinate differs"
+            )
+        if type(source["record_count"]) is not int or source["record_count"] < 1:
+            raise ValueError(
+                f"database constellation source {source_id} requires a positive count"
+            )
+        if source["record_count"] != expected.get(
+            "record_count", len(expected.get("record_ids", ()))
+        ):
+            raise ValueError(
+                f"database constellation source {source_id} released count differs"
+            )
+        record_ids = require_string_list(
+            source["record_ids"], f"{source_id}.record_ids", minimum=1
+        )
+        if "record_ids" in expected:
+            expected_record_ids = expected["record_ids"]
+        else:
+            expected_record_ids = {
+                f"{expected['record_id_prefix']}{number:03d}"
+                for number in range(1, expected["record_count"] + 1)
+            }
+        if set(record_ids) != expected_record_ids:
+            raise ValueError(
+                f"database constellation source {source_id} record identities differ"
+            )
+        if source["record_count"] != len(record_ids):
+            raise ValueError(
+                f"database constellation source {source_id} record count differs"
+            )
+        aggregate_record_ids.update((source_id, item) for item in record_ids)
+        probability_relation = require_exact_object(
+            source["probability_relation"],
+            {"kind", "estimated_event", "surface", "interpretation"},
+            f"{source_id}.probability_relation",
+        )
+        if (
+            probability_relation["kind"] != expected["probability_kind"]
+            or probability_relation["estimated_event"]
+            != expected["probability_event"]
+            or probability_relation["surface"]
+            != expected["probability_surface"]
+        ):
+            raise ValueError(
+                f"database constellation source {source_id} probability relation differs"
+            )
+        require_string(
+            probability_relation["interpretation"],
+            f"{source_id}.probability_relation.interpretation",
+        )
+    if observed_source_ids != set(expected_sources):
+        raise ValueError("database constellation source inventory differs")
+    if (
+        constellation_index["total_record_count"]
+        != DATABASE_CONSTELLATION_FINDING_TOTAL
+        or len(aggregate_record_ids) != DATABASE_CONSTELLATION_FINDING_TOTAL
+    ):
+        raise ValueError(
+            "database constellation index requires the released bound-record total"
+        )
+
+    require_exact_object(
         plan_set,
         {
             "plan_set_id",
             "version",
             "probability_of",
             "estimation_posture",
+            "flyway_transition_estimate",
             "plans",
             "recommended_synthesis",
             "chain_of_action",
@@ -1071,6 +1358,42 @@ def validate_database_program(
         "database probability recalibration triggers",
         minimum=4,
     )
+    transition = require_exact_object(
+        plan_set["flyway_transition_estimate"],
+        {
+            "event_id",
+            "probability_of",
+            "estimated_probability",
+            "credible_range",
+            "relationship_to_canonical_event",
+            "basis",
+            "falsifiers",
+            "recalibration_triggers",
+        },
+        "Flyway transition estimate",
+    )
+    if (
+        transition["event_id"] != "FLYWAY-TRANSITION-EQUIVALENCE-001"
+        or transition["probability_of"] != FLYWAY_TRANSITION_EVENT
+    ):
+        raise ValueError("Flyway transition probability event differs")
+    transition_lower, transition_upper = transition["credible_range"]
+    if not (
+        0
+        <= transition_lower
+        <= transition["estimated_probability"]
+        <= transition_upper
+        <= 1
+    ):
+        raise ValueError("Flyway transition probability range differs")
+    require_string(
+        transition["relationship_to_canonical_event"],
+        "Flyway transition probability relationship",
+    )
+    for field in ("basis", "falsifiers", "recalibration_triggers"):
+        require_string_list(
+            transition[field], f"Flyway transition {field}", minimum=4
+        )
     if len(plan_set["plans"]) != 5:
         raise ValueError("database plan set requires five comparative routes")
     plan_ids: set[str] = set()
@@ -1260,7 +1583,9 @@ def validate_database_program(
             "data_contract_id",
             "finding_ids",
             "engine_contract",
-            "migration_mechanism",
+            "ownership_boundaries",
+            "schema_migration_requirements",
+            "selected_implementation_profile",
             "phases",
             "reconciliation_dimensions",
             "release_gates",
@@ -1297,6 +1622,138 @@ def validate_database_program(
         for finding_id in policy_finding_ids
     ):
         raise ValueError("data primitive policy finding bindings differ from ledger")
+    ownership_ids: set[str] = set()
+    for index, boundary in enumerate(migration_contract["ownership_boundaries"]):
+        boundary = require_exact_object(
+            boundary,
+            {
+                "boundary_id",
+                "scope",
+                "owner",
+                "responsibilities",
+                "evidence",
+            },
+            f"database ownership boundary[{index}]",
+        )
+        boundary_id = require_string(
+            boundary["boundary_id"], f"database ownership boundary[{index}].id"
+        )
+        ownership_ids.add(boundary_id)
+        require_string(boundary["scope"], f"{boundary_id}.scope")
+        require_string(boundary["owner"], f"{boundary_id}.owner")
+        require_string_list(
+            boundary["responsibilities"], f"{boundary_id}.responsibilities", minimum=3
+        )
+        require_string_list(boundary["evidence"], f"{boundary_id}.evidence", minimum=3)
+    if ownership_ids != {
+        "DB-OWNER-PROGRAM-SCHEMA",
+        "DB-OWNER-VENDOR-LIFECYCLE",
+        "DB-OWNER-CROSS-VENDOR-MOVEMENT",
+        "DB-OWNER-RELEASE-EVIDENCE",
+    }:
+        raise ValueError("database ownership boundary coverage differs")
+    migration_requirements = require_exact_object(
+        migration_contract["schema_migration_requirements"],
+        {
+            "tool_posture",
+            "required_capabilities",
+            "review_policy",
+            "catalog_gate",
+            "recovery_policy",
+            "scope_boundary",
+        },
+        "schema migration requirements",
+    )
+    for field in (
+        "tool_posture",
+        "review_policy",
+        "catalog_gate",
+        "recovery_policy",
+        "scope_boundary",
+    ):
+        require_string(migration_requirements[field], f"schema migration {field}")
+    required_capabilities = set(
+        require_string_list(
+            migration_requirements["required_capabilities"],
+            "schema migration required capabilities",
+            minimum=7,
+        )
+    )
+    if len(required_capabilities) != 7:
+        raise ValueError("schema migration capability inventory differs")
+    flyway_profile = require_exact_object(
+        migration_contract["selected_implementation_profile"],
+        {
+            "profile_id",
+            "product",
+            "version",
+            "release_date",
+            "selection_status",
+            "version_policy",
+            "migration_pattern",
+            "history_relation",
+            "commands",
+            "configuration_policy",
+            "baseline_policy",
+            "history_policy",
+            "transaction_policy",
+            "coordination_policy",
+            "community_boundary",
+            "transition_receipt",
+        },
+        "selected Flyway implementation profile",
+    )
+    if (
+        flyway_profile["profile_id"] != "FLYWAY-COMMUNITY-POSTGRESQL-001"
+        or flyway_profile["product"] != "Flyway Community"
+        or flyway_profile["version"] != "13.0.0"
+        or flyway_profile["release_date"] != "2026-07-20"
+        or flyway_profile["selection_status"]
+        != "selected_for_corrective_transition"
+    ):
+        raise ValueError("selected Flyway implementation profile differs")
+    for field in (
+        "version_policy",
+        "migration_pattern",
+        "history_relation",
+        "baseline_policy",
+        "history_policy",
+        "transaction_policy",
+        "coordination_policy",
+        "community_boundary",
+    ):
+        require_string(flyway_profile[field], f"Flyway profile {field}")
+    if set(flyway_profile["commands"]) != {
+        "flyway validate -outputType=json",
+        "flyway info -outputType=json",
+        "flyway migrate -outputType=json",
+    }:
+        raise ValueError("Flyway profile command surface differs")
+    configuration_policy = set(
+        require_string_list(
+            flyway_profile["configuration_policy"],
+            "Flyway configuration policy",
+            minimum=5,
+        )
+    )
+    if "baselineOnMigrate=false" not in configuration_policy:
+        raise ValueError("Flyway profile requires explicit baseline adoption")
+    transition_receipt = require_exact_object(
+        flyway_profile["transition_receipt"],
+        {"receipt_id", "probability_event_id", "required_evidence"},
+        "Flyway transition receipt",
+    )
+    if (
+        transition_receipt["receipt_id"] != "RCP-DB-MIGRATION-001"
+        or transition_receipt["probability_event_id"]
+        != transition["event_id"]
+    ):
+        raise ValueError("Flyway transition receipt binding differs")
+    require_string_list(
+        transition_receipt["required_evidence"],
+        "Flyway transition receipt evidence",
+        minimum=5,
+    )
     phases = migration_contract["phases"]
     if len(phases) != 5 or len({item["phase_id"] for item in phases}) != 5:
         raise ValueError("database migration phase coverage differs")
@@ -1409,8 +1866,39 @@ def validate_database_program(
         or database_manifest["authority"] != "program_specification_only"
     ):
         raise ValueError("database release manifest identity differs")
+    migration_coordinate = require_exact_object(
+        database_manifest["migration_coordinate"],
+        {
+            "contract_posture",
+            "selected_profile",
+            "engine_family",
+            "status",
+            "implementation_release",
+            "migration_head",
+            "catalog_digest",
+            "executable_digest",
+        },
+        "database release migration coordinate",
+    )
+    if (
+        migration_coordinate["contract_posture"]
+        != "tool_neutral_capability_contract"
+        or migration_coordinate["selected_profile"]
+        != "Flyway Community 13.0.0"
+        or migration_coordinate["engine_family"] != "PostgreSQL"
+        or migration_coordinate["status"] != "pending_implementation_projection"
+        or migration_coordinate["implementation_release"]
+        != "implementation-v0.3.1"
+    ):
+        raise ValueError("database release migration coordinate differs")
+    for field in ("migration_head", "catalog_digest", "executable_digest"):
+        if migration_coordinate[field] != "pending_observed_evidence":
+            raise ValueError(
+                f"database release migration {field} evidence posture differs"
+            )
     expected_artifacts = {
         "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001": "database/primitive-findings.json",
+        "DATABASE-CONSTELLATION-FINDING-INDEX-001": "database/constellation-finding-index.json",
         "DATABASE-MODERNIZATION-PLAN-SET-001": "plans/database-modernization-plans.json",
         "DATA-CONTRACT-001": "specifications/data-primitives.json",
         "DATABASE-MIGRATION-CONTRACT-001": "specifications/database-migration.json",
@@ -1449,6 +1937,10 @@ def validate_database_program(
         "data_primitive_finding_ledger": (
             ledger["ledger_id"],
             "database/primitive-findings.json",
+        ),
+        "database_constellation_finding_index": (
+            constellation_index["index_id"],
+            "database/constellation-finding-index.json",
         ),
         "database_modernization_plan_set": (
             plan_set["plan_set_id"],
@@ -1492,7 +1984,11 @@ def validate_database_program(
         raise ValueError("STATUS database bindings differ")
     return {
         "database_findings": len(finding_ids),
+        "database_constellation_findings": len(aggregate_record_ids),
+        "database_constellation_sources": len(observed_source_ids),
         "database_plans": len(plan_ids),
+        "database_flyway_transition_estimates": 1,
+        "database_ownership_boundaries": len(ownership_ids),
         "database_stages": len(stage_ids),
         "data_primitive_policies": len(policy_ids),
         "database_reconciliation_dimensions": len(dimension_ids),
@@ -1506,6 +2002,9 @@ def validate() -> dict[str, int]:
     invariants = load_json("specifications/invariants.json")["rules"]
     scenarios = load_json("examples/scenarios.json")["scenarios"]
     database_ledger = load_json("database/primitive-findings.json")
+    database_constellation_index = load_json(
+        "database/constellation-finding-index.json"
+    )
     database_plan_set = load_json("plans/database-modernization-plans.json")
     data_contract = load_json("specifications/data-primitives.json")
     database_migration_contract = load_json(
@@ -1573,6 +2072,7 @@ def validate() -> dict[str, int]:
 
     database_summary = validate_database_program(
         ledger=database_ledger,
+        constellation_index=database_constellation_index,
         plan_set=database_plan_set,
         data_contract=data_contract,
         migration_contract=database_migration_contract,
@@ -2151,6 +2651,10 @@ def validate() -> dict[str, int]:
             "database/primitive-findings.json",
             "file",
         ),
+        "DATABASE-CONSTELLATION-FINDING-INDEX-001": (
+            "database/constellation-finding-index.json",
+            "file",
+        ),
         "DATABASE-MODERNIZATION-PLAN-SET-001": (
             "plans/database-modernization-plans.json",
             "file",
@@ -2368,7 +2872,9 @@ def validate() -> dict[str, int]:
         "scripts/validate_pinned_sources.py",
         "docs/migrations/0.3.0-to-0.3.1.md",
         "docs/DATABASE_MODERNIZATION.md",
+        "docs/DATABASE_CONSTELLATION_LEDGER.md",
         "database/primitive-findings.json",
+        "database/constellation-finding-index.json",
         "plans/database-modernization-plans.json",
         "specifications/data-primitives.json",
         "specifications/database-migration.json",

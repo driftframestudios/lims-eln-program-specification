@@ -5,6 +5,7 @@
   "authority": "program_specification_only",
   "artifact_bindings": [
     {"artifact_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001", "version": "1.0.0", "path": "database/primitive-findings.json", "digest": "sha256:fa71851aab07a36537dec5532d13065c77b461e2c7d0af857d2354c1e9610d65"},
+    {"artifact_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001", "version": "1.0.0", "path": "database/constellation-finding-index.json", "digest": "sha256:f74d9faa2ed7da535a28ee5b7fbcce081b9b604010a01dd341234a6f70898262"},
     {"artifact_id": "DATABASE-MODERNIZATION-PLAN-SET-001", "version": "1.0.0", "path": "plans/database-modernization-plans.json", "digest": "sha256:44d3192aa3ec43632c38bd2cbad99de3f2baf83de705e6dc9a691b33c44ab034"},
     {"artifact_id": "DATA-CONTRACT-001", "version": "1.0.0", "path": "specifications/data-primitives.json", "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"},
     {"artifact_id": "DATABASE-MIGRATION-CONTRACT-001", "version": "1.0.0", "path": "specifications/database-migration.json", "digest": "sha256:280ca47f7e1bed40c49c35630ff549939188ed2a038d45ef4d238c5be2e7eb3a"},
@@ -14,12 +15,14 @@
     {"artifact_id": "PROGRAM-SCENARIOS-0.3.1", "version": "0.3.1", "path": "examples/scenarios.json", "digest": "sha256:be15ad3143d926317cd03a1a96a4cbe89fda0435bf6181d9fcf63ebe25cfa8e4"}
   ],
   "migration_coordinate": {
-    "framework": "Alembic",
+    "contract_posture": "tool_neutral_capability_contract",
+    "selected_profile": "Flyway Community 13.0.0",
     "engine_family": "PostgreSQL",
     "status": "pending_implementation_projection",
     "implementation_release": "implementation-v0.3.1",
     "migration_head": "pending_observed_evidence",
-    "catalog_digest": "pending_observed_evidence"
+    "catalog_digest": "pending_observed_evidence",
+    "executable_digest": "pending_observed_evidence"
   },
   "reconciliation_binding": {
     "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
@@ -73,7 +76,7 @@
   },
   "deferred_boundaries": [
     "Implementation selects and pins the supported PostgreSQL major.",
-    "Implementation publishes the Alembic revision graph and database catalog projection.",
+    "Implementation resolves and records the exact Flyway 13.0.0 executable artifact digest and publishes validate info migrate and database catalog evidence.",
     "Representative environments supply query plans, reconciliation, restore, rollback, security, and concurrency evidence.",
     "Accountable Scientific, Quality, Regulatory, Security, Operations, and business roles settle observed acceptance."
   ],

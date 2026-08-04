@@ -13,10 +13,35 @@
       "Independent reviewers apply shared acceptance criteria, and accepted non-critical follow-up receives an owner and Coordination Horizon."
     ],
     "recalibration_triggers": [
-      "The implementation team selects a database engine or migration framework.",
+      "The Flyway transition equivalence rehearsal changes the retained-test or migration-surface inventory.",
       "Representative record volume and query plans become available.",
       "The first predecessor-to-target migration rehearsal completes.",
       "Scientific mapping exceptions or row-security defects exceed a plan threshold."
+    ]
+  },
+  "flyway_transition_estimate": {
+    "event_id": "FLYWAY-TRANSITION-EQUIVALENCE-001",
+    "probability_of": "Given the reviewed versioned PostgreSQL SQL, existing end-to-end integration suite, parameterized migration scenarios, Flyway Community 13.0.0, and one corrective tranche, the implementation replaces bespoke migration orchestration while preserving clean installation, populated predecessor upgrade, failure atomicity, replay, zero-pending-work, and clean-versus-upgrade convergence evidence without a critical domain-contract regression.",
+    "estimated_probability": 0.91,
+    "credible_range": [0.84, 0.96],
+    "relationship_to_canonical_event": "This bounded transition estimate is a conditional derivative that informs DB-PLAN-02 delivery risk and remains numerically separate from the five canonical route estimates.",
+    "basis": [
+      "The versioned SQL already expresses the reviewed PostgreSQL domain changes.",
+      "The existing end-to-end suite asserts domain behavior independently of migration orchestration.",
+      "The parameterized migration suite already covers clean populated failure replay and convergence paths.",
+      "Flyway Community supplies ordered application checksummed history database coordination validation status and explicit baselining."
+    ],
+    "falsifiers": [
+      "A retained migration scenario depends on custom-runner behavior outside the tool-neutral capability contract.",
+      "A supported predecessor cannot be mapped to an explicit reviewed Flyway baseline coordinate.",
+      "Clean and upgraded catalogs diverge after the Flyway transition.",
+      "A retained domain integration test regresses on either supported PostgreSQL major."
+    ],
+    "recalibration_triggers": [
+      "The first Flyway validate info and migrate rehearsal completes.",
+      "The custom-to-Flyway test mapping changes.",
+      "The selected Flyway version or PostgreSQL support matrix changes.",
+      "A populated predecessor reveals an unmodeled migration state."
     ]
   },
   "plans": [
@@ -47,7 +72,7 @@
       "name": "Canonical relational model with migration spine",
       "probability": 0.83,
       "credible_range": [0.73, 0.9],
-      "route": "Define the canonical data contract, implement a PostgreSQL relational model, and make Alembic revisions plus database integration tests the release spine.",
+      "route": "Define the canonical data contract, implement a PostgreSQL relational model, and make Flyway Community versioned SQL plus database integration tests the release spine.",
       "strengths": [
         "Aligns domain, storage, migration, and release evidence.",
         "Makes tenant, temporal, numeric, unit, nullability, and audit semantics enforceable.",
@@ -157,7 +182,7 @@
       "completion_evidence": [
         "Canonical tree and supersession decision",
         "Owned finding dispositions",
-        "Approved target engine and migration framework decision"
+        "Approved target engine and Flyway Community implementation profile"
       ],
       "interstitial": {
         "question": "Do the selected engine, vendor-system-of-record boundaries, or accountable roles change the target model?",
@@ -190,19 +215,19 @@
       "sequence": 3,
       "name": "Establish the migration control plane",
       "actions": [
-        "Create the PostgreSQL baseline through Alembic and bind its revision graph to an immutable checksummed migration catalog.",
-        "Add advisory locking, transactional migration policy, timeouts, and offline SQL review.",
-        "Exercise empty, predecessor, repeated, interrupted, and forward-remediation paths."
+        "Adopt the reviewed PostgreSQL SQL as Flyway versioned migrations and preserve applied bytes through forward successor scripts.",
+        "Configure Flyway Community 13.0.0 validation info migration explicit baselining and PostgreSQL transactional behavior under the tool-neutral capability contract.",
+        "Reuse the existing end-to-end and parameterized suites for empty predecessor repeated failure replay and convergence paths."
       ],
       "completion_evidence": [
-        "Migration head and checksums",
-        "Ephemeral PostgreSQL receipts",
-        "Predecessor upgrade and recovery evidence"
+        "Flyway validate info and migrate JSON receipts",
+        "Retained end-to-end and parameterized PostgreSQL results",
+        "Predecessor upgrade failure replay and convergence evidence"
       ],
       "interstitial": {
-        "question": "Do migration duration, lock behavior, or predecessor drift exceed the approved change window?",
-        "signals": ["lock wait", "rewrite volume", "schema drift", "upgrade duration"],
-        "response": "Split revisions, introduce online expand-contract steps, or revise the release window."
+        "question": "Does Flyway transition evidence preserve the existing domain assertions and approved change-window posture?",
+        "signals": ["retained-test regression", "unexpected Flyway state", "lock wait", "clean-versus-upgrade catalog drift"],
+        "response": "Keep the transition candidate open, correct the SQL configuration or explicit baseline mapping, and replay the affected retained scenarios."
       }
     },
     {

@@ -294,11 +294,11 @@
       "requirement_id": "SPEC-DBMG-001",
       "rule_id": "RULE-DBMG-001",
       "title": "Supported predecessor reaches one reviewed database head",
-      "given": ["an immutable Alembic revision graph", "an empty database and every supported predecessor fixture", "reviewed offline SQL checksums and deployment lock policy"],
-      "when": ["the migration suite applies each route and exercises an interruption"],
-      "then": ["every route reaches the expected head and catalog projection", "preserved data satisfies the released contract", "the interrupted phase resumes or follows its forward-remediation receipt"],
-      "failure_twin": "an applied revision checksum catalog projection lock duration or preserved value differs from the release candidate",
-      "recovery": "retain candidate state split or correct the successor revision and repeat each affected predecessor route",
+      "given": ["an immutable versioned SQL set and Flyway Community 13.0.0 profile", "an empty database and every supported predecessor fixture", "reviewed SQL checksums explicit baseline mapping and database coordination policy"],
+      "when": ["Flyway validate info and migrate drive the existing parameterized migration suite through each route and a transactional failure"],
+      "then": ["every route reaches the expected head and catalog projection", "preserved data satisfies the released contract", "replay reports zero unexpected pending work and the failed route preserves its predecessor state"],
+      "failure_twin": "an applied migration checksum Flyway state catalog projection lock duration or preserved value differs from the release candidate",
+      "recovery": "retain candidate state correct the successor SQL configuration or explicit baseline mapping and repeat each affected retained scenario",
       "acceptance_roles": ["data_migration_owner", "platform_owner", "operations_owner", "quality_owner"]
     },
     {

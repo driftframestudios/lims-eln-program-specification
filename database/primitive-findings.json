@@ -34,7 +34,7 @@
       "observation": "The numbered bootstrap scripts carry no declared engine, migration graph, history table, checksum validation, or deployment lock.",
       "material_risk": "Environment state can diverge from repository intent and repeated deployment has no durable proof boundary.",
       "target_state": "A supported PostgreSQL major and a checksummed revision graph govern every schema and data transition.",
-      "correction": "Adopt Alembic with immutable revisions, a version table, advisory locking, transactional DDL, offline rendering, expand-contract phases, and rehearsal receipts.",
+      "correction": "Adopt the tool-neutral migration capability contract and implement it with Flyway Community 13.0.0 versioned SQL, checksummed history, database coordination, PostgreSQL transactional execution, explicit baselining, forward expand-contract scripts, and retained rehearsal tests.",
       "binding_ids": ["DATA-CONTRACT-001", "DATABASE-MIGRATION-CONTRACT-001"]
     },
     {
@@ -491,8 +491,10 @@
     {"source_id": "SRC-PG-JSON-001", "title": "PostgreSQL JSON types", "url": "https://www.postgresql.org/docs/current/datatype-json.html"},
     {"source_id": "SRC-PG-NUMERIC-001", "title": "PostgreSQL numeric types", "url": "https://www.postgresql.org/docs/current/datatype-numeric.html"},
     {"source_id": "SRC-PG-PARTITION-001", "title": "PostgreSQL table partitioning", "url": "https://www.postgresql.org/docs/current/ddl-partitioning.html"},
-    {"source_id": "SRC-ALEMBIC-001", "title": "Alembic migration documentation", "url": "https://alembic.sqlalchemy.org/en/latest/"},
-    {"source_id": "SRC-FLYWAY-001", "title": "Flyway schema history table", "url": "https://documentation.red-gate.com/fd/flyway-schema-history-table-273973417.html"}
+    {"source_id": "SRC-FLYWAY-001", "title": "Flyway schema history table", "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table"},
+    {"source_id": "SRC-FLYWAY-VALIDATE-001", "title": "Flyway validate command", "url": "https://documentation.red-gate.com/flyway/reference/commands/validate"},
+    {"source_id": "SRC-FLYWAY-BASELINE-001", "title": "Flyway baselineOnMigrate setting", "url": "https://documentation.red-gate.com/flyway/reference/configuration/flyway-namespace/flyway-baseline-on-migrate-setting"},
+    {"source_id": "SRC-AWS-DMS-SCHEMA-001", "title": "AWS DMS Schema Conversion", "url": "https://docs.aws.amazon.com/dms/latest/userguide/schema-conversion.html"}
   ],
   "metadata": {
     "created_at": "2026-08-04T14:00:00Z",

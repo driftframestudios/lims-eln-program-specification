@@ -102,14 +102,26 @@ digest, tenant, effect ceiling, intended use, expiry, and recovery coordinates.
 source locations, material effects, affirmative target states, and correction
 bindings. [`plans/database-modernization-plans.json`](plans/database-modernization-plans.json)
 compares five routes against one declared probability event and synthesizes a
-seven-stage chain with a recalibration interstitial after every stage.
+seven-stage chain with a recalibration interstitial after every stage. The
+reference and implementation probability tables are bounded local derivatives;
+the canonical program estimates remain the cross-route comparison surface.
+
+[`database/constellation-finding-index.json`](database/constellation-finding-index.json)
+binds all 109 intentionally overlapping program, reference, and implementation
+finding records to immutable source commits, raw ledger digests, record identities,
+counts, and each exact probability event's relationship to the canonical event.
 
 [`specifications/data-primitives.json`](specifications/data-primitives.json)
 defines canonical temporal, identifier, digest, measurement, unit, vocabulary,
 JSON, nullability, tenancy, event, idempotency, evidence, and access-path
 semantics. [`specifications/database-migration.json`](specifications/database-migration.json)
-defines PostgreSQL/Alembic evolution, nine reconciliation dimensions, seven
-release gates, and a ten-check verification matrix.
+defines a tool-neutral PostgreSQL schema-migration capability contract, the
+selected Flyway Community 13.0.0 profile, four ownership boundaries, nine
+reconciliation dimensions, seven release gates, and a retained-test
+verification matrix. Flyway owns ordering, checksummed history, coordination,
+and status. Program SQL owns PostgreSQL domain semantics; vendor-supported
+lifecycle paths, cross-vendor reconciliation, and accountable release evidence
+retain their separate owners.
 
 [`receipts/database-open-receipts.json`](receipts/database-open-receipts.json)
 preserves eight future-observed proof obligations. The digest-bound
@@ -118,11 +130,9 @@ joins those obligations to the contract artifacts and specification-by-example
 suite while implementation coordinates remain explicitly pending. See
 [`docs/DATABASE_MODERNIZATION.md`](docs/DATABASE_MODERNIZATION.md) for the
 probability posture, evidence boundaries, synthesized chain, and interstitials.
-The
-[`database constellation ledger`](docs/DATABASE_CONSTELLATION_LEDGER.md)
-indexes all 98 intentionally overlapping finding records and connects them to
-the governance, reference, implementation, simulation, and comparison proof
-surfaces.
+The [`database constellation ledger`](docs/DATABASE_CONSTELLATION_LEDGER.md)
+interprets that machine index and connects it to the governance, reference,
+implementation, simulation, and comparison proof surfaces.
 
 ## Evidence ladder
 

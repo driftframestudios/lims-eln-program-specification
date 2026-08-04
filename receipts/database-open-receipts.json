@@ -48,10 +48,10 @@
       "component": "migration_history_and_upgrade",
       "status": "open",
       "evidence_mode": "observed",
-      "success_event": "Empty and supported predecessor databases reach one expected Alembic head with stable checksums, controlled locks, preserved data, and exercised remediation.",
+      "success_event": "Empty and supported predecessor databases reach one expected Flyway head with stable checksums, database-scoped coordination, preserved data, and exercised forward remediation.",
       "accountable_roles": ["data_migration_owner", "platform_owner", "operations_owner", "quality_owner"],
-      "required_evidence": ["migration history", "offline reviewed SQL", "empty and predecessor upgrade receipts", "interruption and forward-remediation rehearsal"],
-      "requalification_triggers": ["migration head change", "engine major change", "predecessor support change", "locking or deployment policy change"]
+      "required_evidence": ["Flyway 13.0.0 executable coordinate and resolved immutable artifact digest", "Flyway validate and info JSON with reviewed versioned SQL", "empty and predecessor upgrade receipts from the retained parameterized suite", "transactional failure replay zero-pending-work and clean-versus-upgrade convergence results"],
+      "requalification_triggers": ["migration head change", "Flyway or engine-major change", "predecessor baseline support change", "coordination transaction or deployment policy change"]
     },
     {
       "id": "RCP-DB-RECON-001",

@@ -46,6 +46,12 @@
       "path": "database/primitive-findings.json",
       "digest": "sha256:fa71851aab07a36537dec5532d13065c77b461e2c7d0af857d2354c1e9610d65"
     },
+    "database_constellation_finding_index": {
+      "contract_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
+      "version": "1.0.0",
+      "path": "database/constellation-finding-index.json",
+      "digest": "sha256:f74d9faa2ed7da535a28ee5b7fbcce081b9b604010a01dd341234a6f70898262"
+    },
     "database_modernization_plan_set": {
       "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
       "version": "1.0.0",
@@ -74,7 +80,7 @@
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
       "path": "release/database-release-manifest.json",
-      "digest": "sha256:6b42cefa7fccaddbe7619ddb81bdee508e07a307e58e114e4f8c19c5b2825546"
+      "digest": "sha256:b1780dc4cbe59c02caf0b11b511633637d46205b687204f32fbf05213390482f"
     }
   },
   "orientation_surfaces": {

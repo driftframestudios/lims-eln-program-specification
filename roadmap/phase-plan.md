@@ -45,9 +45,11 @@ Exercise representative volumes, historical exceptions, delta catch-up,
 semantic parity, rollback, clean restore, continuity, and neutral-reader
 export.
 
-Execute the five-phase Alembic evolution contract, compare all nine
-reconciliation dimensions, exercise the seven database release gates, and bind
-results to the immutable migration catalog and release manifest.
+Execute the five-phase tool-neutral evolution contract through the selected
+Flyway Community 13.0.0 profile, reuse the end-to-end and parameterized
+migration suites, compare all nine reconciliation dimensions, exercise the
+seven database release gates, and bind results to the immutable migration
+catalog and release manifest.
 
 ## Phase 6 — Production controls
 
