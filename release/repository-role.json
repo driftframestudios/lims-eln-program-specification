@@ -1,33 +1,86 @@
 {
-  "manifest_version": "2.0.0",
+  "manifest_version": "2.0.1",
   "repository_role": "program_specification",
-  "repository_release": "0.3.0",
-  "external_release": "spec-v0.3.0",
+  "repository_release": "0.3.1",
+  "external_release": "spec-v0.3.1",
   "release_state": "candidate_pending_promotion",
   "authority_posture": "specification_and_orientation_only",
   "canonical_closure": {
     "closure_id": "CLOSURE-SIM-SUBSTANTIVE-2028-V1",
     "future_reality_id": "FUTURE-REALITY-LIMS-2028-001",
-    "digest": "sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9",
+    "digest": "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb",
+    "reference_result_digest": "sha256:9d42b972c77764c81ff32fefe8f02367a27406e9ba082a704587cc9b5a9da860",
+    "aggregate_artifact_digest": "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61",
+    "bundle_path": "simulations/future-reality-2028-06-30-v1.json",
+    "bundle_file_digest": "sha256:b868604412039c3705d4b60e649c43da2f51592ca0215d22ebe4477b75016ef4",
     "authority": "definitive_within_selected_future_reality",
     "production_authorization_effect": "none"
   },
   "advisory_design": {
     "simulation_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
     "future_reality_id": "FUTURE-REALITY-DESIGN-LIMS-2028-001",
-    "digest": "sha256:4789521c6c6729683512214fba544b3672f5e0c8f4ea1887f09d2afec17d8a1a",
+    "digest": "sha256:e2048a4754a699a1af62c8f50757d419da8b5553fc1fb3ada566fbe177f9fa98",
     "authority": "advisory_design_only"
   },
   "contract_bindings": {
-    "governance_schema": "2.0.0",
+    "governance_schema": "2.0.1",
     "control_plane_profile": "0.3.0",
+    "language_policy_release": "language-policy-v1.0.0",
+    "language_policy_manifest": {
+      "path": "language-policy/manifest.json",
+      "digest": "sha256:95087f281455c45608981152948f8909e74528706662625b6e8a4da9e5182a96",
+      "core_digest": "sha256:a5dbb90cf749c5e8d2d7fd235ebaae15887cb173e62a4a3aa70a29c3b3e90801",
+      "corpus_digest": "sha256:0886dba9f1938cb5fa192d0aedac925c6df794d2c0be9c2a6e85c1d0d456145c"
+    },
     "bounded_caller_contract": "CALLER-CONTRACT-001",
     "practitioner_probe_catalog": "LIMS-ELN-PRACTITIONER-PROBES-001",
     "proof_class_registry": "LIMS-ELN-PROOF-CLASSES-001",
     "receipt_vocabulary_map": {
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
       "version": "1.0.0",
-      "digest": "sha256:a2752fb31914e24a025738bfc3d5bd12e035a076934be8c27c11a5df8701f9cd"
+      "digest": "sha256:0f3be9ab956877281f9261c69a5f099547b048c1c878541a7c9c47edc5e03280"
+    },
+    "data_primitive_finding_ledger": {
+      "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
+      "version": "1.0.0",
+      "path": "database/primitive-findings.json",
+      "digest": "sha256:f3fc8fd047fc69a63801fbf294deaf39502855b441bb4cd80e23656e53f939e3"
+    },
+    "database_constellation_finding_index": {
+      "contract_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
+      "version": "1.0.0",
+      "path": "database/constellation-finding-index.json",
+      "digest": "sha256:52a753abf8d8cf4daadbd20ceedd7eb0b2052816fc537efe7621476b8b945da9"
+    },
+    "database_modernization_plan_set": {
+      "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
+      "version": "1.0.0",
+      "path": "plans/database-modernization-plans.json",
+      "digest": "sha256:7f55e85e0caf826acd407e48349a2cf9ddc0501c9f753067113d9321e880d21d"
+    },
+    "data_contract": {
+      "contract_id": "DATA-CONTRACT-001",
+      "version": "1.0.0",
+      "path": "specifications/data-primitives.json",
+      "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"
+    },
+    "database_migration_contract": {
+      "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
+      "version": "1.0.0",
+      "path": "specifications/database-migration.json",
+      "digest": "sha256:a7c2cb283981cf80bf963fe7b0b40419f2dc63acfb1962279c6ce7aea6354a15"
+    },
+    "database_open_receipts": {
+      "contract_id": "DATABASE-OPEN-RECEIPTS-001",
+      "version": "1.0.0",
+      "path": "receipts/database-open-receipts.json",
+      "digest": "sha256:725725876b92557b2158dc5f46aa918ea5f6a9d8e0d113b1960a927f15ead133"
+    },
+    "database_release_manifest": {
+      "contract_id": "DATABASE-RELEASE-MANIFEST-001",
+      "version": "1.0.0",
+      "path": "release/database-release-manifest.json",
+      "digest": "sha256:3901e92f414014c3f90d822e1c0dd06b218e11612f18dafc8308e5e99cfd0273"
     }
   },
   "orientation_surfaces": {
@@ -37,19 +90,20 @@
     "constellation_lock": "constellation.lock.json"
   },
   "seed_lineage": {
-    "release": "spec-v0.2.0",
-    "commit": "fc7707134b58ed12ad349bf649d2af1c3689bd01",
-    "digest": "sha256:9e8c2e4980cfef4824b2f8f57914ab5b81eadac5d7a077b2186cbae541bfd2b1",
+    "release": "spec-v0.3.0",
+    "commit": "895b7a02ebddc9f7c2b63a2d03432775a120c119",
+    "digest": "sha256:a73935fcd6bd2cd5e8aeda48739f74f90c2d5b0faec50d8341d7315378ef5ff2",
     "digest_scope": "seed Machine Node"
   },
   "release_coordinates": {
-    "candidate_commit": "0000000000000000000000000000000000000000",
-    "candidate_tree_digest": "git-tree-sha1:0000000000000000000000000000000000000000",
-    "candidate_coordinate_status": "pending_release_promotion"
+    "commit": "0000000000000000000000000000000000000000",
+    "tree_digest": "git-tree-sha1:0000000000000000000000000000000000000000",
+    "coordinate_status": "pending_release_commit"
   },
   "promotion_coordinates": {
     "status": "pending_cross_repository_settlement",
-    "open_receipt_id": "RCP-PROGRAM-PROMOTION-003",
+    "receipt_id": "RCP-PROGRAM-PROMOTION-003",
+    "receipt_path": "receipts/promotion-receipt.json",
     "required_roles": [
       "site_reading_governance",
       "program_specification",

@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "contract_id": "CALLER-CONTRACT-001",
   "title": "Bounded caller operation contract",
   "purpose": "Govern human, service, workflow, and AI callers through the same service-owned operation boundary while keeping domain acceptance with accountable people.",

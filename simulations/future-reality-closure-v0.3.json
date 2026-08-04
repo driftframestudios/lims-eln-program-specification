@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "simulation_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
   "design_future_reality_id": "FUTURE-REALITY-DESIGN-LIMS-2028-001",
   "artifact_role": "program_design_simulation",
@@ -9,15 +9,15 @@
   "authority": "advisory_design_only",
   "as_if_date": "2028-06-30",
   "source_state": {
-    "specification_release": "spec-v0.3.0",
-    "governance_release": "governance-v2.0.0",
+    "specification_release": "spec-v0.3.1",
+    "governance_release": "governance-v2.0.1",
     "seed_forecast_release": "forecast-2026-Q3-r1"
   },
   "canonical_execution_successor": {
     "closure_id": "CLOSURE-SIM-SUBSTANTIVE-2028-V1",
     "future_reality_id": "FUTURE-REALITY-LIMS-2028-001",
     "release": "forecast-2028-FR-v1",
-    "digest": "sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9",
+    "digest": "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb",
     "authority": "definitive_within_selected_future_reality",
     "production_authorization_effect": "none"
   },
