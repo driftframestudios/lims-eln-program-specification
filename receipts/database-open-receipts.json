@@ -1,6 +1,6 @@
 {
   "registry_id": "DATABASE-OPEN-RECEIPTS-001",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "evidence_posture": "future_observed_closure",
   "receipts": [
     {
@@ -10,7 +10,7 @@
       "evidence_mode": "observed",
       "success_event": "Scientific data, platform, security, Quality, and migration owners accept the canonical temporal identity digest quantity unit vocabulary JSON nullability and evidence semantics.",
       "accountable_roles": ["scientific_data_owner", "platform_owner", "security_owner", "quality_owner", "data_migration_owner"],
-      "required_evidence": ["DATA-CONTRACT-001", "complete entity-to-storage mapping", "primitive edge-case suite", "accepted vocabulary and unit decisions"],
+      "required_evidence": ["DATA-CONTRACT-001", "DATA-CONTRACT-CONCORDANCE-001", "complete entity-to-storage mapping", "primitive edge-case suite", "accepted identity digest numeric vocabulary unit measurement-provenance and decision-lifecycle profiles"],
       "requalification_triggers": ["database major change", "canonicalization profile change", "unit or vocabulary policy change", "qualified entity mapping change"]
     },
     {
@@ -30,7 +30,7 @@
       "evidence_mode": "observed",
       "success_event": "Lifecycle custody approval signature correction and evidence histories reconstruct from immutable events and controlled supersession paths.",
       "accountable_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "scientific_data_owner"],
-      "required_evidence": ["event envelope contract", "projection replay suite", "direct-DML control tests", "approval and correction history review"],
+      "required_evidence": ["event envelope contract", "projection replay suite", "direct-DML control tests", "approval condition closure supersession revocation and expiry history review"],
       "requalification_triggers": ["event schema change", "projection algorithm change", "signature meaning change", "retention or correction policy change"]
     },
     {
@@ -50,7 +50,7 @@
       "evidence_mode": "observed",
       "success_event": "Empty and supported predecessor databases reach one expected Flyway head with stable checksums, database-scoped coordination, preserved data, and exercised forward remediation.",
       "accountable_roles": ["data_migration_owner", "platform_owner", "operations_owner", "quality_owner"],
-      "required_evidence": ["Flyway 13.0.0 executable coordinate and resolved immutable artifact digest", "Flyway validate and info JSON with reviewed versioned SQL", "empty and predecessor upgrade receipts from the retained parameterized suite", "transactional failure replay zero-pending-work and clean-versus-upgrade convergence results"],
+      "required_evidence": ["current immutable hosted synthetic execution receipt superseding predecessor runner evidence", "repository commit tree PostgreSQL image Flyway image migration checksums predecessor and target catalog digests fixture identity command results and test results", "Flyway validate and info JSON with reviewed versioned SQL", "empty and predecessor upgrade receipts from the retained parameterized suite", "transactional failure replay zero-pending-work and clean-versus-upgrade convergence results"],
       "requalification_triggers": ["migration head change", "Flyway or engine-major change", "predecessor baseline support change", "coordination transaction or deployment policy change"]
     },
     {
@@ -70,7 +70,7 @@
       "evidence_mode": "observed",
       "success_event": "A clean environment restores database, objects, configuration references, audit evidence, migration head, and neutral-reader export within approved recovery objectives.",
       "accountable_roles": ["operations_owner", "platform_owner", "quality_owner", "business_process_owner"],
-      "required_evidence": ["clean restore receipt", "rollback rehearsal", "neutral-reader data exit", "observed RTO and RPO with reviewer decisions"],
+      "required_evidence": ["clean restore receipt covering database roles grants row policies Flyway history objects configuration references keys audit evidence and vendor projections", "rollback rehearsal", "neutral-reader data exit", "observed RTO and RPO with reviewer decisions"],
       "requalification_triggers": ["backup topology change", "object storage change", "recovery objective change", "encryption or key policy change"]
     },
     {
@@ -80,7 +80,7 @@
       "evidence_mode": "observed",
       "success_event": "The database release manifest binds contracts, migration head, catalog digest, reconciliation, tenant security, concurrency, recovery, accountable acceptance, and immutable release coordinates.",
       "accountable_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "security_owner", "operations_owner", "business_owner", "platform_owner"],
-      "required_evidence": ["DATABASE-RELEASE-MANIFEST-001", "closed database receipt registry", "accountable release decisions", "immutable implementation coordinate"],
+      "required_evidence": ["DATABASE-RELEASE-MANIFEST-001", "closed database receipt registry", "accountable release decisions with closed conditions one current effective decision per domain and complete supersession revocation and expiry history", "immutable implementation coordinate"],
       "requalification_triggers": ["contract digest change", "migration head change", "catalog drift", "approval expiry", "qualified environment change"]
     }
   ],
@@ -91,6 +91,7 @@
   },
   "metadata": {
     "created_at": "2026-08-04T14:00:00Z",
+    "supersedes_version": "1.0.0",
     "owner": "program governance",
     "coordination_horizon_id": "COORD-HORIZON-2026-Q3-R1"
   }

@@ -10,10 +10,11 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PROGRAM_RELEASE = "0.3.1"
+PROGRAM_RELEASE = "0.3.2"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
-GOVERNANCE_RELEASE = "2.0.1"
+GOVERNANCE_RELEASE = "2.0.2"
 GOVERNANCE_TAG = f"governance-v{GOVERNANCE_RELEASE}"
+CANONICAL_BUNDLE_SCHEMA_RELEASE = "2.0.1"
 CONTROL_PLANE_PROFILE = "0.3.0"
 RECEIPT_VOCABULARY_RELEASE = "1.0.0"
 LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
@@ -196,6 +197,7 @@ STATUS_KEYS = {
     "receipt_vocabulary_map",
     "database_finding_ledger",
     "data_contract",
+    "data_contract_concordance",
     "database_migration_contract",
     "database_release_manifest",
     "database_open_receipts",
@@ -525,6 +527,7 @@ def validate_core_shapes(
             "database_constellation_finding_index",
             "database_modernization_plan_set",
             "data_contract",
+            "data_contract_concordance",
             "database_migration_contract",
             "database_open_receipts",
             "database_release_manifest",
@@ -546,6 +549,7 @@ def validate_core_shapes(
         "database_constellation_finding_index",
         "database_modernization_plan_set",
         "data_contract",
+        "data_contract_concordance",
         "database_migration_contract",
         "database_open_receipts",
         "database_release_manifest",
@@ -910,6 +914,7 @@ def validate_database_program(
     constellation_index: dict,
     plan_set: dict,
     data_contract: dict,
+    data_concordance: dict,
     migration_contract: dict,
     database_receipts: dict,
     database_manifest: dict,
@@ -1043,6 +1048,7 @@ def validate_database_program(
             "counting_semantics",
             "canonical_probability_event",
             "sources",
+            "contract_concordance",
             "total_record_count",
             "metadata",
         },
@@ -1051,7 +1057,7 @@ def validate_database_program(
     if (
         constellation_index["index_id"]
         != "DATABASE-CONSTELLATION-FINDING-INDEX-001"
-        or constellation_index["version"] != "1.0.0"
+        or constellation_index["version"] != "1.1.0"
         or constellation_index["authority"]
         != "cross_repository_discovery_index"
     ):
@@ -1307,6 +1313,21 @@ def validate_database_program(
             "database constellation index requires the released bound-record total"
         )
 
+    index_concordance = require_exact_object(
+        constellation_index["contract_concordance"],
+        {"concordance_id", "version", "path", "digest", "representation_ids"},
+        "database constellation contract concordance",
+    )
+    if (
+        index_concordance["concordance_id"] != "DATA-CONTRACT-CONCORDANCE-001"
+        or index_concordance["version"] != "1.0.0"
+        or index_concordance["path"]
+        != "specifications/data-contract-concordance.json"
+        or index_concordance["digest"]
+        != sha256_digest("specifications/data-contract-concordance.json")
+    ):
+        raise ValueError("database constellation concordance binding differs")
+
     require_exact_object(
         plan_set,
         {
@@ -1503,7 +1524,7 @@ def validate_database_program(
     )
     if (
         data_contract["contract_id"] != "DATA-CONTRACT-001"
-        or data_contract["version"] != "1.0.0"
+        or data_contract["version"] != "1.1.0"
         or data_contract["status"] != "specified"
     ):
         raise ValueError("data primitive contract identity differs")
@@ -1527,6 +1548,18 @@ def validate_database_program(
     }
     if policy_ids != required_policy_ids:
         raise ValueError("data primitive policy coverage differs")
+    target_platform = data_contract["target_platform"]
+    if (
+        target_platform.get("qualified_major") != 17
+        or target_platform.get("supported_predecessor_major") != 16
+        or target_platform.get("forward_compatibility_rehearsal_major") != 18
+        or target_platform.get("digest_storage")
+        != "one SHA-256 semantic value represented as exactly 32-byte bytea or constrained lowercase 64-character hexadecimal text with algorithm canonicalization schema and scope metadata"
+        or not str(target_platform.get("decimal_envelope", "")).startswith(
+            "numeric(38,18)"
+        )
+    ):
+        raise ValueError("data contract engine or primitive target differs")
     policy_finding_ids: set[str] = set()
     for policy in data_contract["primitive_policies"]:
         require_exact_object(
@@ -1574,6 +1607,291 @@ def validate_database_program(
         raise ValueError("data contract references unknown scenarios")
 
     require_exact_object(
+        data_concordance,
+        {
+            "concordance_id",
+            "version",
+            "status",
+            "authority",
+            "canonical_contract",
+            "completion_claim",
+            "target_decisions",
+            "representations",
+            "accepted_divergences",
+            "release_gates",
+            "metadata",
+        },
+        "data contract concordance",
+    )
+    if (
+        data_concordance["concordance_id"]
+        != "DATA-CONTRACT-CONCORDANCE-001"
+        or data_concordance["version"] != "1.0.0"
+        or data_concordance["status"] != "specified"
+        or data_concordance["authority"] != "program_specification"
+    ):
+        raise ValueError("data contract concordance identity differs")
+    canonical_contract = require_exact_object(
+        data_concordance["canonical_contract"],
+        {"contract_id", "version", "path"},
+        "data contract concordance canonical contract",
+    )
+    if canonical_contract != {
+        "contract_id": data_contract["contract_id"],
+        "version": data_contract["version"],
+        "path": "specifications/data-primitives.json",
+    }:
+        raise ValueError("data contract concordance canonical binding differs")
+    completion_claim = require_exact_object(
+        data_concordance["completion_claim"],
+        {
+            "current_claim",
+            "current_evidence_stage",
+            "operational_claim_gate",
+            "production_authorization_effect",
+        },
+        "data contract concordance completion claim",
+    )
+    for field in ("current_claim", "current_evidence_stage", "operational_claim_gate"):
+        require_string(completion_claim[field], f"data concordance claim {field}")
+    if completion_claim["production_authorization_effect"] != "none":
+        raise ValueError("data concordance candidate grants production authority")
+
+    expected_decision_topics = {
+        "completion_claim",
+        "first_durable_environment",
+        "execution_receipt",
+        "release_promotion",
+        "semantic_crosswalk",
+        "identity",
+        "digest_representation",
+        "scientific_numeric_profiles",
+        "measurement_provenance",
+        "conditional_acceptance_and_supersession",
+        "vendor_release_scope",
+        "cutover_restore_and_data_exit",
+        "postgresql_support_and_evidence_authority",
+    }
+    decision_ids: set[str] = set()
+    decision_topics: set[str] = set()
+    for index, decision in enumerate(data_concordance["target_decisions"]):
+        decision = require_exact_object(
+            decision,
+            {"decision_id", "topic", "decision", "acceptance_criteria"},
+            f"data concordance decision[{index}]",
+        )
+        decision_id = require_string(
+            decision["decision_id"], f"data concordance decision[{index}].id"
+        )
+        if decision_id in decision_ids:
+            raise ValueError(f"data concordance decision {decision_id} repeats")
+        decision_ids.add(decision_id)
+        decision_topics.add(
+            require_string(decision["topic"], f"{decision_id}.topic")
+        )
+        require_string(decision["decision"], f"{decision_id}.decision")
+        require_string_list(
+            decision["acceptance_criteria"],
+            f"{decision_id}.acceptance_criteria",
+            minimum=3,
+        )
+    if (
+        decision_ids != {f"DCC-DECISION-{index:03d}" for index in range(1, 14)}
+        or decision_topics != expected_decision_topics
+    ):
+        raise ValueError("data concordance decision coverage differs")
+
+    expected_representations = {
+        "REP-PROGRAM-DATA-CONTRACT-001": (
+            "specification",
+            "canonical_program_contract",
+            "specified",
+            "program_specification",
+        ),
+        "REP-REFERENCE-DATABASE-RELEASE-001": (
+            "reference_pack",
+            "executable_reference_schema",
+            "repository_observed",
+            "reference_implementation",
+        ),
+        "REP-IMPLEMENTATION-DATABASE-RELEASE-001": (
+            "implementation",
+            "active_release_projection",
+            "observed_execution_synthetic_environment",
+            "implementation_execution",
+        ),
+        "REP-SIMULATION-DATABASE-ORACLE-V2": (
+            "simulation",
+            "simulated_oracle",
+            "simulated",
+            "simulation_only",
+        ),
+        "REP-GOVERNANCE-DATA-CONTRACT-001": (
+            "governance",
+            "generic_executable_contract_example",
+            "example",
+            "governance_schema_example",
+        ),
+    }
+    representation_ids: set[str] = set()
+    representation_divergences: dict[str, set[str]] = {}
+    for index, representation in enumerate(data_concordance["representations"]):
+        representation = require_exact_object(
+            representation,
+            {
+                "representation_id",
+                "repository",
+                "constellation_role",
+                "representation_kind",
+                "artifact_path",
+                "native_artifact_id",
+                "native_artifact_version",
+                "artifact_sha256",
+                "coordinate_status",
+                "coordinate_binding",
+                "conformance_state",
+                "evidence_mode",
+                "authority",
+                "actual_acceptance_required",
+                "policy_ids",
+                "accepted_divergence_ids",
+            },
+            f"data concordance representation[{index}]",
+        )
+        representation_id = require_string(
+            representation["representation_id"],
+            f"data concordance representation[{index}].id",
+        )
+        if (
+            representation_id in representation_ids
+            or representation_id not in expected_representations
+        ):
+            raise ValueError(
+                f"data concordance representation {representation_id!r} differs"
+            )
+        representation_ids.add(representation_id)
+        role, kind, evidence_mode, authority = expected_representations[
+            representation_id
+        ]
+        if (
+            representation["constellation_role"] != role
+            or representation["representation_kind"] != kind
+            or representation["evidence_mode"] != evidence_mode
+            or representation["authority"] != authority
+            or representation["actual_acceptance_required"] is not True
+            or set(representation["policy_ids"]) != policy_ids
+        ):
+            raise ValueError(
+                f"data concordance representation {representation_id} posture differs"
+            )
+        for field in (
+            "repository",
+            "artifact_path",
+            "native_artifact_id",
+            "native_artifact_version",
+            "coordinate_status",
+            "coordinate_binding",
+            "conformance_state",
+        ):
+            require_string(representation[field], f"{representation_id}.{field}")
+        if MATERIAL_SHA256_PATTERN.fullmatch(representation["artifact_sha256"]) is None:
+            raise ValueError(
+                f"data concordance representation {representation_id} requires a material artifact digest"
+            )
+        if (
+            representation_id == "REP-PROGRAM-DATA-CONTRACT-001"
+            and representation["artifact_sha256"]
+            != sha256_digest("specifications/data-primitives.json")
+        ):
+            raise ValueError("program data concordance artifact digest differs")
+        if (
+            representation_id == "REP-REFERENCE-DATABASE-RELEASE-001"
+            and representation["coordinate_binding"]
+            != "git:318161f2cbb8e80383662949cb9e36b2b1c9a61f"
+        ):
+            raise ValueError("reference data concordance coordinate differs")
+        representation_divergences[representation_id] = set(
+            representation["accepted_divergence_ids"]
+        )
+    if representation_ids != set(expected_representations):
+        raise ValueError("data concordance representation coverage differs")
+    if set(index_concordance["representation_ids"]) != representation_ids:
+        raise ValueError("database constellation representation coverage differs")
+
+    divergence_ids: set[str] = set()
+    reciprocal_divergences: dict[str, set[str]] = {
+        representation_id: set() for representation_id in representation_ids
+    }
+    for index, divergence in enumerate(data_concordance["accepted_divergences"]):
+        divergence = require_exact_object(
+            divergence,
+            {
+                "divergence_id",
+                "title",
+                "representation_ids",
+                "policy_ids",
+                "status",
+                "conditions",
+                "requalification_trigger",
+            },
+            f"data concordance divergence[{index}]",
+        )
+        divergence_id = require_string(
+            divergence["divergence_id"],
+            f"data concordance divergence[{index}].id",
+        )
+        if divergence_id in divergence_ids:
+            raise ValueError(f"data concordance divergence {divergence_id} repeats")
+        divergence_ids.add(divergence_id)
+        bound_representations = set(
+            require_string_list(
+                divergence["representation_ids"],
+                f"{divergence_id}.representation_ids",
+                minimum=1,
+            )
+        )
+        if not bound_representations <= representation_ids:
+            raise ValueError(f"{divergence_id} references an unknown representation")
+        if not set(divergence["policy_ids"]) <= policy_ids:
+            raise ValueError(f"{divergence_id} references an unknown policy")
+        require_string(divergence["title"], f"{divergence_id}.title")
+        require_string(divergence["status"], f"{divergence_id}.status")
+        require_string_list(
+            divergence["conditions"], f"{divergence_id}.conditions", minimum=3
+        )
+        require_string(
+            divergence["requalification_trigger"],
+            f"{divergence_id}.requalification_trigger",
+        )
+        for representation_id in bound_representations:
+            reciprocal_divergences[representation_id].add(divergence_id)
+    if divergence_ids != {
+        f"DCC-DIVERGENCE-{index:03d}" for index in range(1, 9)
+    }:
+        raise ValueError("data concordance divergence coverage differs")
+    if representation_divergences != reciprocal_divergences:
+        raise ValueError("data concordance divergence bindings are not reciprocal")
+
+    gate_ids = {
+        require_string(gate["gate_id"], "data concordance gate id")
+        for gate in data_concordance["release_gates"]
+        if require_exact_object(
+            gate,
+            {"gate_id", "criterion"},
+            f"data concordance gate {gate.get('gate_id', '<missing>')}",
+        )
+    }
+    if gate_ids != {
+        "DCC-GATE-COVERAGE",
+        "DCC-GATE-PINNED-BYTES",
+        "DCC-GATE-AUTHORITY",
+        "DCC-GATE-OBSERVED-RELEASE",
+    }:
+        raise ValueError("data concordance release gate coverage differs")
+    for gate in data_concordance["release_gates"]:
+        require_string(gate["criterion"], f"{gate['gate_id']}.criterion")
+
+    require_exact_object(
         migration_contract,
         {
             "migration_contract_id",
@@ -1598,10 +1916,19 @@ def validate_database_program(
     if (
         migration_contract["migration_contract_id"]
         != "DATABASE-MIGRATION-CONTRACT-001"
-        or migration_contract["version"] != "1.0.0"
+        or migration_contract["version"] != "1.1.0"
         or migration_contract["data_contract_id"] != data_contract["contract_id"]
     ):
         raise ValueError("database migration contract identity differs")
+    engine_contract = migration_contract["engine_contract"]
+    if (
+        engine_contract.get("family") != "PostgreSQL"
+        or engine_contract.get("qualified_major") != 17
+        or engine_contract.get("supported_predecessor_major") != 16
+        or engine_contract.get("forward_compatibility_rehearsal_major") != 18
+        or engine_contract.get("reference_majors") != [16, 17, 18]
+    ):
+        raise ValueError("database migration engine qualification matrix differs")
     migration_finding_ids = set(migration_contract["finding_ids"])
     if not migration_finding_ids <= finding_ids:
         raise ValueError("database migration contract references unknown findings")
@@ -1794,7 +2121,7 @@ def validate_database_program(
     )
     if (
         database_receipts["registry_id"] != "DATABASE-OPEN-RECEIPTS-001"
-        or database_receipts["version"] != "1.0.0"
+        or database_receipts["version"] != "1.1.0"
         or database_receipts["evidence_posture"] != "future_observed_closure"
     ):
         raise ValueError("database receipt registry identity differs")
@@ -1861,7 +2188,7 @@ def validate_database_program(
     )
     if (
         database_manifest["manifest_id"] != "DATABASE-RELEASE-MANIFEST-001"
-        or database_manifest["version"] != "1.0.0"
+        or database_manifest["version"] != "1.1.0"
         or database_manifest["release_state"] != "candidate_contract_surface"
         or database_manifest["authority"] != "program_specification_only"
     ):
@@ -1888,7 +2215,7 @@ def validate_database_program(
         or migration_coordinate["engine_family"] != "PostgreSQL"
         or migration_coordinate["status"] != "pending_implementation_projection"
         or migration_coordinate["implementation_release"]
-        != "implementation-v0.3.1"
+        != "implementation-v0.3.2"
     ):
         raise ValueError("database release migration coordinate differs")
     for field in ("migration_head", "catalog_digest", "executable_digest"):
@@ -1901,11 +2228,12 @@ def validate_database_program(
         "DATABASE-CONSTELLATION-FINDING-INDEX-001": "database/constellation-finding-index.json",
         "DATABASE-MODERNIZATION-PLAN-SET-001": "plans/database-modernization-plans.json",
         "DATA-CONTRACT-001": "specifications/data-primitives.json",
+        "DATA-CONTRACT-CONCORDANCE-001": "specifications/data-contract-concordance.json",
         "DATABASE-MIGRATION-CONTRACT-001": "specifications/database-migration.json",
         "DATABASE-OPEN-RECEIPTS-001": "receipts/database-open-receipts.json",
-        "PROGRAM-CAPABILITIES-0.3.1": "specifications/capabilities.json",
-        "PROGRAM-INVARIANTS-0.3.1": "specifications/invariants.json",
-        "PROGRAM-SCENARIOS-0.3.1": "examples/scenarios.json",
+        "PROGRAM-CAPABILITIES-0.3.2": "specifications/capabilities.json",
+        "PROGRAM-INVARIANTS-0.3.2": "specifications/invariants.json",
+        "PROGRAM-SCENARIOS-0.3.2": "examples/scenarios.json",
     }
     observed_artifacts: dict[str, str] = {}
     for index, binding in enumerate(database_manifest["artifact_bindings"]):
@@ -1936,38 +2264,50 @@ def validate_database_program(
     binding_map = {
         "data_primitive_finding_ledger": (
             ledger["ledger_id"],
+            ledger["version"],
             "database/primitive-findings.json",
         ),
         "database_constellation_finding_index": (
             constellation_index["index_id"],
+            constellation_index["version"],
             "database/constellation-finding-index.json",
         ),
         "database_modernization_plan_set": (
             plan_set["plan_set_id"],
+            plan_set["version"],
             "plans/database-modernization-plans.json",
         ),
         "data_contract": (
             data_contract["contract_id"],
+            data_contract["version"],
             "specifications/data-primitives.json",
+        ),
+        "data_contract_concordance": (
+            data_concordance["concordance_id"],
+            data_concordance["version"],
+            "specifications/data-contract-concordance.json",
         ),
         "database_migration_contract": (
             migration_contract["migration_contract_id"],
+            migration_contract["version"],
             "specifications/database-migration.json",
         ),
         "database_open_receipts": (
             database_receipts["registry_id"],
+            database_receipts["version"],
             "receipts/database-open-receipts.json",
         ),
         "database_release_manifest": (
             database_manifest["manifest_id"],
+            database_manifest["version"],
             "release/database-release-manifest.json",
         ),
     }
-    for binding_name, (contract_id, path) in binding_map.items():
+    for binding_name, (contract_id, contract_version, path) in binding_map.items():
         binding = release_bindings[binding_name]
         if (
             binding["contract_id"] != contract_id
-            or binding["version"] != "1.0.0"
+            or binding["version"] != contract_version
             or binding["path"] != path
             or binding["digest"] != sha256_digest(path)
         ):
@@ -1975,6 +2315,8 @@ def validate_database_program(
     if (
         status_document["database_finding_ledger"] != ledger["ledger_id"]
         or status_document["data_contract"] != data_contract["contract_id"]
+        or status_document["data_contract_concordance"]
+        != data_concordance["concordance_id"]
         or status_document["database_migration_contract"]
         != migration_contract["migration_contract_id"]
         or status_document["database_release_manifest"]
@@ -1986,6 +2328,9 @@ def validate_database_program(
         "database_findings": len(finding_ids),
         "database_constellation_findings": len(aggregate_record_ids),
         "database_constellation_sources": len(observed_source_ids),
+        "data_contract_decisions": len(decision_ids),
+        "data_contract_representations": len(representation_ids),
+        "data_contract_divergences": len(divergence_ids),
         "database_plans": len(plan_ids),
         "database_flyway_transition_estimates": 1,
         "database_ownership_boundaries": len(ownership_ids),
@@ -2007,6 +2352,9 @@ def validate() -> dict[str, int]:
     )
     database_plan_set = load_json("plans/database-modernization-plans.json")
     data_contract = load_json("specifications/data-primitives.json")
+    data_contract_concordance = load_json(
+        "specifications/data-contract-concordance.json"
+    )
     database_migration_contract = load_json(
         "specifications/database-migration.json"
     )
@@ -2075,6 +2423,7 @@ def validate() -> dict[str, int]:
         constellation_index=database_constellation_index,
         plan_set=database_plan_set,
         data_contract=data_contract,
+        data_concordance=data_contract_concordance,
         migration_contract=database_migration_contract,
         database_receipts=database_receipts,
         database_manifest=database_manifest,
@@ -2261,7 +2610,7 @@ def validate() -> dict[str, int]:
     canonical_future = governance_closure.get("future_reality", {})
     aggregate_artifacts = governance_closure.get("aggregate_artifacts", [])
     if (
-        canonical_bundle.get("bundle_version") != GOVERNANCE_RELEASE
+        canonical_bundle.get("bundle_version") != CANONICAL_BUNDLE_SCHEMA_RELEASE
         or canonical_bundle.get("source_result_digest")
         != CANONICAL_RESULT_DIGEST
         or canonical_bundle.get("governance_closure") != governance_closure
@@ -2663,6 +3012,10 @@ def validate() -> dict[str, int]:
             "specifications/data-primitives.json",
             "file",
         ),
+        "DATA-CONTRACT-CONCORDANCE-001": (
+            "specifications/data-contract-concordance.json",
+            "file",
+        ),
         "DATABASE-MIGRATION-CONTRACT-001": (
             "specifications/database-migration.json",
             "file",
@@ -2871,12 +3224,14 @@ def validate() -> dict[str, int]:
         "language-policy/manifest.json",
         "scripts/validate_pinned_sources.py",
         "docs/migrations/0.3.0-to-0.3.1.md",
+        "docs/migrations/0.3.1-to-0.3.2.md",
         "docs/DATABASE_MODERNIZATION.md",
         "docs/DATABASE_CONSTELLATION_LEDGER.md",
         "database/primitive-findings.json",
         "database/constellation-finding-index.json",
         "plans/database-modernization-plans.json",
         "specifications/data-primitives.json",
+        "specifications/data-contract-concordance.json",
         "specifications/database-migration.json",
         "receipts/database-open-receipts.json",
         "release/database-release-manifest.json",

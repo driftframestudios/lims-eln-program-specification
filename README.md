@@ -5,9 +5,9 @@ open-receipt collaboration. It publishes versioned requirements, executable
 examples, decision forecasts, acceptance contracts, and the lock coordinates
 used to compare the active implementation with the simulated final state.
 
-The current planned program release is `spec-v0.3.1`. It consumes the canonical
-governance release `governance-v2.0.1`, Control Plane Profile 0.3.0, and schema
-`2.0.1`; its release
+The current planned program release is `spec-v0.3.2`. It consumes the canonical
+governance release `governance-v2.0.2`, Control Plane Profile 0.3.0, and schema
+`2.0.2`; its release
 and governance commit coordinates receive observed
 commit and tree identities during promotion.
 
@@ -56,7 +56,7 @@ accountable domain roles continue to govern effects and acceptance.
 
 [`machine-node.json`](machine-node.json),
 [`first-receipt.json`](first-receipt.json), and the Coordination Horizon are
-strict projections of governance schema release `2.0.1`. Contract references
+strict projections of governance schema release `2.0.2`. Contract references
 carry SHA-256 digests that the program validator recalculates. The Machine Node
 orients; the first receipt supplies safe re-entry; neither grants production or
 domain authority.
@@ -114,7 +114,23 @@ counts, and each exact probability event's relationship to the canonical event.
 [`specifications/data-primitives.json`](specifications/data-primitives.json)
 defines canonical temporal, identifier, digest, measurement, unit, vocabulary,
 JSON, nullability, tenancy, event, idempotency, evidence, and access-path
-semantics. [`specifications/database-migration.json`](specifications/database-migration.json)
+semantics. The
+[`data-contract concordance`](specifications/data-contract-concordance.json)
+answers thirteen previously open design questions and maps every primitive
+policy to its program, reference, implementation, simulation, and governance
+representation. Accepted differences carry explicit conditions and
+requalification triggers. Pinned-source validation compares the exact
+simulation and governance representation bytes before release, while each
+artifact retains its own evidence authority.
+
+The first observed implementation release qualifies PostgreSQL 17. PostgreSQL
+16 is the supported predecessor upgrade path, and PostgreSQL 18 supplies
+forward-compatibility rehearsal evidence. Its executable vendor scope is the
+canonical PostgreSQL service and concrete LabKey adapter; Sapio and Benchling
+remain successor conformance targets until configured-environment receipts
+settle.
+
+[`specifications/database-migration.json`](specifications/database-migration.json)
 defines a tool-neutral PostgreSQL schema-migration capability contract, the
 selected Flyway Community 13.0.0 profile, four ownership boundaries, nine
 reconciliation dimensions, seven release gates, and a retained-test
@@ -167,7 +183,7 @@ simulated branch and `open` for its future observed branch.
 
 [`simulations/simulated-receipt-closure.v2.json`](simulations/simulated-receipt-closure.v2.json)
 is the exact canonical closure emitted by the executable simulation under its
-historical governance 2.0.0 record schema and validated by governance 2.0.1.
+historical governance 2.0.0 record schema and validated by governance 2.0.2.
 Its identity is `FUTURE-REALITY-LIMS-2028-001`, and its canonical
 JSON digest is
 `sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb`.
@@ -217,7 +233,7 @@ can advance without weakening the candidate boundary.
 
 Release changes and consumer migration notes are recorded in
 [`CHANGELOG.md`](CHANGELOG.md) and
-[`docs/migrations/0.3.0-to-0.3.1.md`](docs/migrations/0.3.0-to-0.3.1.md).
+[`docs/migrations/0.3.1-to-0.3.2.md`](docs/migrations/0.3.1-to-0.3.2.md).
 
 ## Runtime configuration and protected values
 

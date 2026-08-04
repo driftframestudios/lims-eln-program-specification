@@ -1,8 +1,8 @@
 {
-  "manifest_version": "2.0.1",
+  "manifest_version": "2.0.2",
   "repository_role": "program_specification",
-  "repository_release": "0.3.1",
-  "external_release": "spec-v0.3.1",
+  "repository_release": "0.3.2",
+  "external_release": "spec-v0.3.2",
   "release_state": "candidate_pending_promotion",
   "authority_posture": "specification_and_orientation_only",
   "canonical_closure": {
@@ -19,11 +19,11 @@
   "advisory_design": {
     "simulation_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
     "future_reality_id": "FUTURE-REALITY-DESIGN-LIMS-2028-001",
-    "digest": "sha256:e2048a4754a699a1af62c8f50757d419da8b5553fc1fb3ada566fbe177f9fa98",
+    "digest": "sha256:ab65b2d833aa63cb66f84bf329495fb54db2f7b6e33bba27837a6c0789b94aed",
     "authority": "advisory_design_only"
   },
   "contract_bindings": {
-    "governance_schema": "2.0.1",
+    "governance_schema": "2.0.2",
     "control_plane_profile": "0.3.0",
     "language_policy_release": "language-policy-v1.0.0",
     "language_policy_manifest": {
@@ -38,7 +38,7 @@
     "receipt_vocabulary_map": {
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
       "version": "1.0.0",
-      "digest": "sha256:0f3be9ab956877281f9261c69a5f099547b048c1c878541a7c9c47edc5e03280"
+      "digest": "sha256:e6666e10d9d283421f1ab9b8a2a181489edcd42e7e9f326baa6f87941cdaea10"
     },
     "data_primitive_finding_ledger": {
       "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
@@ -48,9 +48,9 @@
     },
     "database_constellation_finding_index": {
       "contract_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "path": "database/constellation-finding-index.json",
-      "digest": "sha256:52a753abf8d8cf4daadbd20ceedd7eb0b2052816fc537efe7621476b8b945da9"
+      "digest": "sha256:499277337ed3685a266165a86a35d2c4f09e99dcde16422307f254ca101bd57d"
     },
     "database_modernization_plan_set": {
       "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
@@ -60,27 +60,33 @@
     },
     "data_contract": {
       "contract_id": "DATA-CONTRACT-001",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "path": "specifications/data-primitives.json",
-      "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"
+      "digest": "sha256:8174a2e50ce338a86874c213abd792bf7b2cf1fdba156fc8d1a940ae3d155639"
+    },
+    "data_contract_concordance": {
+      "contract_id": "DATA-CONTRACT-CONCORDANCE-001",
+      "version": "1.0.0",
+      "path": "specifications/data-contract-concordance.json",
+      "digest": "sha256:9ec6581d961f3a0b818b551c35777a45cc1e219c778a736b9718ce9d8a2de890"
     },
     "database_migration_contract": {
       "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "path": "specifications/database-migration.json",
-      "digest": "sha256:a7c2cb283981cf80bf963fe7b0b40419f2dc63acfb1962279c6ce7aea6354a15"
+      "digest": "sha256:3137bdd3719ea4b62b4d2290d5bb8310deb7e6db34717d13e2eadb54d861a594"
     },
     "database_open_receipts": {
       "contract_id": "DATABASE-OPEN-RECEIPTS-001",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "path": "receipts/database-open-receipts.json",
-      "digest": "sha256:725725876b92557b2158dc5f46aa918ea5f6a9d8e0d113b1960a927f15ead133"
+      "digest": "sha256:d03c93cd256ec49136f4cf77d1087b298f93119af5bf6a7d3bb89ee391dfb0e5"
     },
     "database_release_manifest": {
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "path": "release/database-release-manifest.json",
-      "digest": "sha256:3901e92f414014c3f90d822e1c0dd06b218e11612f18dafc8308e5e99cfd0273"
+      "digest": "sha256:a535e6bbc7d70793ea0b5320a243448c459affcb7ee74b31537418e82abcea1e"
     }
   },
   "orientation_surfaces": {

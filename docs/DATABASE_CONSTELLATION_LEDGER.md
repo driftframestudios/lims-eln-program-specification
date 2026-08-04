@@ -17,6 +17,16 @@ each commit-addressed URL and recompute the raw digest. A newer reviewed source
 head receives a successor index coordinate, preserving the evidence represented by
 this release.
 
+[`DATA-CONTRACT-CONCORDANCE-001`](../specifications/data-contract-concordance.json)
+adds semantic convergence to that discovery index. It maps all thirteen
+canonical primitive policies across program, reference, implementation,
+simulation, and governance representations; records accepted physical,
+abstraction, scope, and authority differences; and gives each difference
+conditions and a requalification trigger. Protected settlement compares the
+exact simulated-oracle and governance-example bytes to the concordance. Digest
+equality proves representation identity while each artifact retains its stated
+evidence authority.
+
 The constellation currently contains **115 finding records**: 32 program-level
 discovery findings, 53 reference-pack findings, and 30 active-implementation
 findings. These records intentionally overlap. A source defect can appear once
@@ -76,12 +86,19 @@ it. Individual file and line coordinates remain in the detailed ledgers.
    PostgreSQL adversarial suite, retained end-to-end and parameterized tests,
    Flyway transition evidence, and hosted proof receipt.
 4. **Selected-future target:** the simulation repository's
-   `database/final-state-database-oracle-v1.json` and executable oracle model.
+   `database/final-state-database-oracle-v2.json` and executable oracle model.
 5. **Difference adjudication:** the comparative repository's typed
    database-release coordinate, observation envelope, comparison profile, and
    generated report.
 6. **Portable governance:** the governance repository's Draft 2020-12 schemas,
    examples, and conformance tests.
+
+The program qualifies PostgreSQL 17 as the first implementation runtime,
+PostgreSQL 16 as its supported predecessor upgrade path, and PostgreSQL 18 as
+forward-compatibility rehearsal evidence. The first executable vendor release
+contains the canonical PostgreSQL service and LabKey adapter. Sapio and
+Benchling remain successor conformance targets until their configured-
+environment receipts settle.
 
 The detailed reference baseline now lives under `database/legacy/v0.1`. That
 location makes its evidentiary role explicit: it is input to the supported

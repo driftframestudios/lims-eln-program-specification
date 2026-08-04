@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.2 — Candidate
+
+- Answered thirteen open database-design questions as explicit target decisions
+  with machine-verifiable acceptance criteria.
+- Added a five-representation data-contract concordance spanning the program,
+  reference pack, active implementation, simulated final state, and governance
+  example, including bounded accepted divergences and requalification triggers.
+- Qualified PostgreSQL 17 for the implementation release, PostgreSQL 16 for the
+  predecessor upgrade path, and PostgreSQL 18 for forward-compatibility
+  rehearsal evidence.
+- Defined UUID internal identity, tenant/source-scoped external text identity,
+  bytea and constrained lowercase-hex SHA-256 representations with complete
+  digest metadata,
+  assay-scoped numeric profiles, and full measurement provenance.
+- Made conditional acceptance release-blocking until conditions close and
+  specified append-only supersession, revocation, and expiry semantics.
+- Scoped the first executable vendor release to LabKey while retaining Sapio
+  and Benchling as successor configured-environment conformance targets.
+- Extended pinned-source validation so simulation-oracle and governance-example
+  byte drift fails protected release settlement.
+- Preserved synthetic migration evidence as synthetic and kept configured
+  environment, recovery, production operation, and accountable acceptance
+  receipts open for observed evidence.
+
 ## 0.3.1 — Candidate
 
 - Added a 32-finding cross-repository database primitive ledger with stable

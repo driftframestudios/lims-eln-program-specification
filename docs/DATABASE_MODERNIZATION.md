@@ -77,6 +77,26 @@ and active-implementation ledgers to immutable source commits, raw file digests,
 record identities, and counts. Its aggregate retains intentional overlap between
 discovery, reference correction, and implementation proof obligations.
 
+[`specifications/data-contract-concordance.json`](../specifications/data-contract-concordance.json)
+answers the thirteen design questions surfaced by the implementation audit. It
+sets one current completion claim, environment and execution-receipt boundaries,
+promotion protocol, identity and digest mappings, assay-scoped numeric and
+measurement provenance, conditional-acceptance lifecycle, vendor scope,
+cutover/recovery protocol, PostgreSQL support matrix, and evidence-authority
+model. Every reference, implementation, simulation, and governance projection
+covers the complete primitive-policy set. Accepted differences remain explicit
+and machine-checked.
+
+The target uses UUID for internal identity and tenant/source-scoped constrained
+text for external identity. SHA-256 uses one semantic value represented as an
+exactly 32-byte `bytea` domain or constrained lowercase hexadecimal text with
+algorithm, canonicalization, schema, and scope metadata. `numeric(38,18)` is the
+maximum decimal envelope, while each assay, analyte, and method profile declares
+its effective precision, scale, range, qualifier vocabulary, detection limits,
+and rounding policy. Every reportable measurement preserves raw and canonical
+values and units, mapping and conversion provenance, scientific context,
+occurrence and recording time, and source-artifact lineage.
+
 ## Comparative plans and probability event
 
 [`plans/database-modernization-plans.json`](../plans/database-modernization-plans.json)

@@ -4,7 +4,7 @@
   "title": "LIMS/ELN Program Specification",
   "purpose": "Orient collaborators to the versioned LIMS/ELN requirements, Practitioner Probes, bounded operations, canonical data primitives, database migration and release contracts, simulated receipt closures, evidence posture, and accountable handoffs.",
   "control_plane_profile": "0.3.0",
-  "schema_release": "2.0.1",
+  "schema_release": "2.0.2",
   "repository_role": "program_specification",
   "authority": {
     "mode": "orientation_only",
@@ -21,22 +21,22 @@
     {
       "contract_id": "CALLER-CONTRACT-001",
       "version": "1.0.0",
-      "digest": "sha256:9197c9d5b0d7bfab8eead4fa97b02eaaa5af0942425dc6306ac6d9168be4a7cb"
+      "digest": "sha256:36730cc0b8518c0ffc574b3ac5273aaec2cda635254f4930d214b7d2ab27f48a"
     },
     {
       "contract_id": "LIMS-ELN-PRACTITIONER-PROBES-001",
-      "version": "0.3.1",
-      "digest": "sha256:0592049ffb19b2edba60a74c1a544ab19bb9fbaafc9987c6bb16d8d773f4a345"
+      "version": "0.3.2",
+      "digest": "sha256:f34b4b605d7789cbb93d3d23f8a6e3a8f71c59d6af98f7902e9b1672268c419c"
     },
     {
       "contract_id": "LIMS-ELN-PROOF-CLASSES-001",
-      "version": "0.3.1",
-      "digest": "sha256:1e228859e27e431b39a6a321ea115ce5745b682c37005e5fe6c2c58c79ecf913"
+      "version": "0.3.2",
+      "digest": "sha256:3af73677a23b878a758f7fb8669383cdbc7e0f0baa69396797556fd0e7adbb97"
     },
     {
       "contract_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
-      "version": "0.3.1",
-      "digest": "sha256:e2048a4754a699a1af62c8f50757d419da8b5553fc1fb3ada566fbe177f9fa98"
+      "version": "0.3.2",
+      "digest": "sha256:ab65b2d833aa63cb66f84bf329495fb54db2f7b6e33bba27837a6c0789b94aed"
     },
     {
       "contract_id": "SIMULATED-SUBSTANTIVE-CLOSURE-2028-V1",
@@ -46,7 +46,7 @@
     {
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
       "version": "1.0.0",
-      "digest": "sha256:0f3be9ab956877281f9261c69a5f099547b048c1c878541a7c9c47edc5e03280"
+      "digest": "sha256:e6666e10d9d283421f1ab9b8a2a181489edcd42e7e9f326baa6f87941cdaea10"
     },
     {
       "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
@@ -55,8 +55,8 @@
     },
     {
       "contract_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
-      "version": "1.0.0",
-      "digest": "sha256:52a753abf8d8cf4daadbd20ceedd7eb0b2052816fc537efe7621476b8b945da9"
+      "version": "1.1.0",
+      "digest": "sha256:499277337ed3685a266165a86a35d2c4f09e99dcde16422307f254ca101bd57d"
     },
     {
       "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
@@ -65,39 +65,44 @@
     },
     {
       "contract_id": "DATA-CONTRACT-001",
+      "version": "1.1.0",
+      "digest": "sha256:8174a2e50ce338a86874c213abd792bf7b2cf1fdba156fc8d1a940ae3d155639"
+    },
+    {
+      "contract_id": "DATA-CONTRACT-CONCORDANCE-001",
       "version": "1.0.0",
-      "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"
+      "digest": "sha256:9ec6581d961f3a0b818b551c35777a45cc1e219c778a736b9718ce9d8a2de890"
     },
     {
       "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
-      "version": "1.0.0",
-      "digest": "sha256:a7c2cb283981cf80bf963fe7b0b40419f2dc63acfb1962279c6ce7aea6354a15"
+      "version": "1.1.0",
+      "digest": "sha256:3137bdd3719ea4b62b4d2290d5bb8310deb7e6db34717d13e2eadb54d861a594"
     },
     {
       "contract_id": "DATABASE-OPEN-RECEIPTS-001",
-      "version": "1.0.0",
-      "digest": "sha256:725725876b92557b2158dc5f46aa918ea5f6a9d8e0d113b1960a927f15ead133"
+      "version": "1.1.0",
+      "digest": "sha256:d03c93cd256ec49136f4cf77d1087b298f93119af5bf6a7d3bb89ee391dfb0e5"
     },
     {
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
-      "version": "1.0.0",
-      "digest": "sha256:3901e92f414014c3f90d822e1c0dd06b218e11612f18dafc8308e5e99cfd0273"
+      "version": "1.1.0",
+      "digest": "sha256:a535e6bbc7d70793ea0b5320a243448c459affcb7ee74b31537418e82abcea1e"
     }
   ],
   "campaigns": [
     {
       "campaign_id": "LIMS-ELN-OPEN-RECEIPTS",
-      "marking_schema_version": "2.0.1",
+      "marking_schema_version": "2.0.2",
       "status": "active"
     },
     {
       "campaign_id": "COMPARATIVE-LITERACY-COLLABORATION",
-      "marking_schema_version": "2.0.1",
+      "marking_schema_version": "2.0.2",
       "status": "active"
     },
     {
       "campaign_id": "SITE-READING-SYSTEM",
-      "marking_schema_version": "2.0.1",
+      "marking_schema_version": "2.0.2",
       "status": "active"
     }
   ],
@@ -107,7 +112,7 @@
     "digest": "sha256:a73935fcd6bd2cd5e8aeda48739f74f90c2d5b0faec50d8341d7315378ef5ff2"
   },
   "current_provenance": {
-    "release": "candidate-spec-v0.3.1",
+    "release": "candidate-spec-v0.3.2",
     "commit": "0000000000000000000000000000000000000000",
     "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -138,7 +143,7 @@
     "The canonical selected-future closure appears as environment-observed evidence or production authorization.",
     "The advisory program design and canonical selected-future closure share an identity or authority posture.",
     "A Scientific Quality or Regulatory decision appears outside its accountable human role.",
-    "A database contract binding migration head catalog identity reconciliation dimension or required database receipt changes.",
+    "A database contract concordance representation binding migration head catalog identity reconciliation dimension or required database receipt changes.",
     "The governance schema release or Control Plane Profile changes."
   ],
   "downstream_consumers": [
@@ -175,7 +180,7 @@
     }
   ],
   "metadata": {
-    "schema_version": "2.0.1",
+    "schema_version": "2.0.2",
     "created_at": "2026-07-28T12:00:00Z",
     "updated_at": "2026-08-04T14:00:00Z",
     "owner": {

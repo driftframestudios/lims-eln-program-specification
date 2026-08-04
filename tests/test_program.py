@@ -74,6 +74,13 @@ class ProgramValidationTests(unittest.TestCase):
                     ROOT / "specifications" / "data-primitives.json"
                 ).read_text()
             ),
+            "data_concordance": json.loads(
+                (
+                    ROOT
+                    / "specifications"
+                    / "data-contract-concordance.json"
+                ).read_text()
+            ),
             "migration_contract": json.loads(
                 (
                     ROOT / "specifications" / "database-migration.json"
@@ -117,6 +124,9 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["database_findings"], 32)
         self.assertEqual(summary["database_constellation_findings"], 115)
         self.assertEqual(summary["database_constellation_sources"], 3)
+        self.assertEqual(summary["data_contract_decisions"], 13)
+        self.assertEqual(summary["data_contract_representations"], 5)
+        self.assertEqual(summary["data_contract_divergences"], 8)
         self.assertEqual(summary["database_plans"], 5)
         self.assertEqual(summary["database_flyway_transition_estimates"], 1)
         self.assertEqual(summary["database_ownership_boundaries"], 4)
@@ -439,6 +449,7 @@ class ProgramValidationTests(unittest.TestCase):
             "database_constellation_finding_index",
             "database_modernization_plan_set",
             "data_contract",
+            "data_contract_concordance",
             "database_migration_contract",
             "database_open_receipts",
             "database_release_manifest",
@@ -559,18 +570,18 @@ class ProgramValidationTests(unittest.TestCase):
 
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
         self.assertEqual(MODULE.PROGRAM_RELEASE, lock["constellation_version"])
-        self.assertEqual("spec-v0.3.1", lock["specification"]["release"])
-        self.assertEqual("governance-v2.0.1", lock["governance"]["release"])
+        self.assertEqual("spec-v0.3.2", lock["specification"]["release"])
+        self.assertEqual("governance-v2.0.2", lock["governance"]["release"])
         self.assertEqual(
-            "implementation-v0.3.1",
+            "implementation-v0.3.2",
             lock["implementation"]["release"],
         )
-        self.assertEqual("2.0.1", lock["governance"]["schema_version"])
+        self.assertEqual("2.0.2", lock["governance"]["schema_version"])
         self.assertEqual(
             "Control Plane Profile 0.3.0",
             lock["governance"]["profile"],
         )
-        self.assertEqual("2.0.1", lock["comparison"]["receipt_schema"])
+        self.assertEqual("2.0.2", lock["comparison"]["receipt_schema"])
         self.assertEqual(
             MODULE.CANONICAL_RESULT_DIGEST,
             lock["simulation"]["reference_result_digest"],
@@ -601,12 +612,12 @@ class ProgramValidationTests(unittest.TestCase):
                 )
 
         status = MODULE.load_status()
-        self.assertEqual("0.3.1", status["version"])
-        self.assertEqual("spec-v0.3.1", status["planned_release"])
-        self.assertEqual("governance-v2.0.1", status["governance_contract"])
-        self.assertEqual("2.0.1", status["governance_schema"])
-        self.assertEqual("2.0.1", status["receipt_schema"])
-        self.assertIn('version = "0.3.1"', (ROOT / "pyproject.toml").read_text())
+        self.assertEqual("0.3.2", status["version"])
+        self.assertEqual("spec-v0.3.2", status["planned_release"])
+        self.assertEqual("governance-v2.0.2", status["governance_contract"])
+        self.assertEqual("2.0.2", status["governance_schema"])
+        self.assertEqual("2.0.2", status["receipt_schema"])
+        self.assertIn('version = "0.3.2"', (ROOT / "pyproject.toml").read_text())
 
     def test_every_open_receipt_has_accountable_roles(self) -> None:
         data = json.loads((ROOT / "receipts" / "open-receipts.json").read_text())
@@ -800,7 +811,7 @@ class ProgramValidationTests(unittest.TestCase):
             machine_node["authority"]["mode"],
         )
         self.assertEqual("0.3.0", machine_node["control_plane_profile"])
-        self.assertEqual("2.0.1", machine_node["schema_release"])
+        self.assertEqual("2.0.2", machine_node["schema_release"])
         self.assertEqual("settling", machine_node["lifecycle_state"])
         self.assertEqual(
             "spec-v0.3.0",
@@ -1073,6 +1084,37 @@ class ProgramValidationTests(unittest.TestCase):
             pinned[role]["commit"] = "a" * 40
             pinned[role]["digest"] = "git-tree-sha1:" + ("b" * 40)
         self.assertEqual([], PINNED.validate_external_preflight(pinned))
+
+    def test_data_concordance_artifact_binding_detects_drift(self) -> None:
+        content = b'{"oracle_id":"ORACLE-DATABASE-FINAL-STATE-002"}\n'
+        representation = {
+            "representation_id": "REP-SIMULATION-DATABASE-ORACLE-V2",
+            "artifact_path": "database/final-state-database-oracle-v2.json",
+            "artifact_sha256": PINNED.bytes_digest(content),
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source = Path(temporary_directory)
+            artifact = source / representation["artifact_path"]
+            artifact.parent.mkdir(parents=True)
+            artifact.write_bytes(content)
+            self.assertEqual(
+                [],
+                PINNED.validate_bound_representation_artifact(
+                    representation,
+                    source,
+                ),
+            )
+            artifact.write_bytes(b'{"oracle_id":"DRIFTED"}\n')
+            self.assertEqual(
+                [
+                    "data concordance artifact bytes differ for "
+                    "REP-SIMULATION-DATABASE-ORACLE-V2"
+                ],
+                PINNED.validate_bound_representation_artifact(
+                    representation,
+                    source,
+                ),
+            )
 
     def test_cross_repository_artifact_checks_are_operational(self) -> None:
         lock = json.loads((ROOT / "constellation.lock.json").read_text())

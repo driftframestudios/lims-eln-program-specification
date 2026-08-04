@@ -30,6 +30,7 @@ SHA256 = re.compile(r"^sha256:[a-f0-9]{64}$")
 LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
 LANGUAGE_POLICY_MANIFEST = Path("language-policy/manifest.json")
 LANGUAGE_POLICY_EXEMPTIONS = Path("language-policy/exemptions.json")
+DATA_CONCORDANCE_PATH = Path("specifications/data-contract-concordance.json")
 LANGUAGE_POLICY_MANIFEST_DIGEST = (
     "sha256:95087f281455c45608981152948f8909e74528706662625b6e8a4da9e5182a96"
 )
@@ -320,6 +321,96 @@ def validate_language_policy_projection(
     return findings
 
 
+def validate_bound_representation_artifact(
+    representation: dict,
+    source: Path,
+) -> list[str]:
+    """Compare one pinned repository representation with its program digest."""
+    representation_id = representation.get("representation_id", "UNKNOWN")
+    artifact_path = representation.get("artifact_path")
+    expected_digest = representation.get("artifact_sha256")
+    if not isinstance(artifact_path, str) or not artifact_path:
+        return [
+            projection_diagnostic(
+                "DATA_CONCORDANCE_ARTIFACT_PATH_INVALID",
+                f"representation {representation_id} requires an artifact path",
+            )
+        ]
+    if not isinstance(expected_digest, str) or SHA256.fullmatch(expected_digest) is None:
+        return [
+            projection_diagnostic(
+                "DATA_CONCORDANCE_ARTIFACT_DIGEST_INVALID",
+                f"representation {representation_id} requires a SHA-256 digest",
+            )
+        ]
+    content, failure = read_regular_bytes(source / artifact_path, root=source)
+    if failure is not None:
+        return [
+            projection_diagnostic(
+                f"DATA_CONCORDANCE_ARTIFACT_{failure}",
+                f"representation {representation_id} could not be loaded",
+            )
+        ]
+    assert content is not None
+    if bytes_digest(content) != expected_digest:
+        return [
+            f"data concordance artifact bytes differ for {representation_id}"
+        ]
+    return []
+
+
+def validate_data_concordance_projection(sources: dict[str, Path]) -> list[str]:
+    """Bind supplied implementation, simulation, and governance projections."""
+    concordance, _, failure = read_json_document(
+        ROOT / DATA_CONCORDANCE_PATH,
+        root=ROOT,
+    )
+    if failure is not None:
+        return [
+            projection_diagnostic(
+                f"DATA_CONCORDANCE_{failure}",
+                "program data-contract concordance could not be loaded",
+            )
+        ]
+    if not isinstance(concordance, dict) or not isinstance(
+        concordance.get("representations"), list
+    ):
+        return [
+            projection_diagnostic(
+                "DATA_CONCORDANCE_INVALID_SHAPE",
+                "program data-contract concordance requires representations",
+            )
+        ]
+    by_role: dict[str, list[dict]] = {}
+    for representation in concordance["representations"]:
+        if not isinstance(representation, dict):
+            return [
+                projection_diagnostic(
+                    "DATA_CONCORDANCE_REPRESENTATION_INVALID_SHAPE",
+                    "a data-contract representation requires one object",
+                )
+            ]
+        role = representation.get("constellation_role")
+        if isinstance(role, str):
+            by_role.setdefault(role, []).append(representation)
+
+    findings: list[str] = []
+    for role in ("implementation", "simulation", "governance"):
+        source = sources.get(role)
+        if source is None:
+            continue
+        representations = by_role.get(role, [])
+        if len(representations) != 1:
+            findings.append(
+                f"data concordance requires one {role} representation"
+            )
+            continue
+        findings.extend(
+            validate_bound_representation_artifact(representations[0], source)
+        )
+    return findings
+
+
 def git_identity(root: Path) -> tuple[str, str]:
     commit = subprocess.run(
         ["git", "-C", str(root), "rev-parse", "HEAD"],
@@ -343,6 +434,7 @@ def validate_sources(
     allow_pending: bool,
 ) -> list[str]:
     findings = validate_language_policy_projection(sources.get("governance"))
+    findings.extend(validate_data_concordance_projection(sources))
     unknown_sources = set(sources) - EXTERNAL_ROLES
     if unknown_sources:
         findings.append(
@@ -631,8 +723,8 @@ def validate_sources(
                     )
                 )
             else:
-                if version != "2.0.1":
-                    findings.append("governance VERSION differs from 2.0.1")
+                if version != "2.0.2":
+                    findings.append("governance VERSION differs from 2.0.2")
 
     return findings
 
@@ -655,10 +747,10 @@ def validate_external_preflight(lock: dict) -> list[str]:
             findings.append(f"{role} external tree digest must be nonzero 40-hex")
     governance = lock.get("governance", {})
     if (
-        governance.get("release") != "governance-v2.0.1"
-        or governance.get("schema_version") != "2.0.1"
+        governance.get("release") != "governance-v2.0.2"
+        or governance.get("schema_version") != "2.0.2"
     ):
-        findings.append("governance coordinate must bind governance-v2.0.1")
+        findings.append("governance coordinate must bind governance-v2.0.2")
     return findings
 
 

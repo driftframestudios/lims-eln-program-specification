@@ -1,6 +1,6 @@
 {
   "migration_contract_id": "DATABASE-MIGRATION-CONTRACT-001",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "specified",
   "authority": "program_specification",
   "data_contract_id": "DATA-CONTRACT-001",
@@ -21,8 +21,10 @@
   ],
   "engine_contract": {
     "family": "PostgreSQL",
-    "qualified_major": "selected_by_implementation_release",
-    "reference_majors": [17, 18],
+    "qualified_major": 17,
+    "supported_predecessor_major": 16,
+    "forward_compatibility_rehearsal_major": 18,
+    "reference_majors": [16, 17, 18],
     "timezone": "UTC",
     "encoding": "UTF8"
   },
@@ -169,14 +171,14 @@
       "name": "converge_and_shadow",
       "entry_evidence": ["accepted reconciliation", "delta capture active", "shadow comparison plan"],
       "actions": ["apply and reconcile deltas", "compare canonical reads events and query plans", "exercise restore rollback and data exit"],
-      "exit_evidence": ["shadow parity receipt", "restore receipt", "rollback and data-exit receipt"]
+      "exit_evidence": ["shadow parity receipt", "restore receipt with roles grants row policies Flyway history objects configuration references keys and audit evidence", "rollback and neutral-reader data-exit receipt"]
     },
     {
       "phase_id": "DB-MIG-PHASE-05",
       "name": "contract_and_release",
       "entry_evidence": ["observed migration gates accepted", "accountable cutover decisions", "rollback checkpoint current"],
-      "actions": ["move readers and writers to the canonical boundary", "retire compatibility paths through a successor migration", "settle the database release manifest"],
-      "exit_evidence": ["immutable migration head", "DATABASE-RELEASE-MANIFEST-001", "residual risk and requalification triggers"]
+      "actions": ["record the final source-write and first target-write authority boundary", "move readers and writers to the canonical boundary", "retire compatibility paths through a successor migration", "settle the database release manifest"],
+      "exit_evidence": ["immutable migration head", "write-authority transfer receipt", "DATABASE-RELEASE-MANIFEST-001", "residual risk and requalification triggers"]
     }
   ],
   "reconciliation_dimensions": [
@@ -213,7 +215,9 @@
     "Direct event and evidence mutation exercises database privilege boundaries.",
     "Equivalent instants decimals unit mappings JSON edge cases and status invariants exercise primitive contracts.",
     "Representative query plans exercise indexes retention and partition decisions.",
-    "Backup restore rollback and data exit reconstruct the accepted evidence boundary."
+    "Backup restore rollback and data exit reconstruct database data roles grants row policies Flyway history objects configuration references keys audit evidence and vendor projections.",
+    "A conditional acceptance remains release-blocking until owned conditions carry accepted closure evidence; supersession revocation and expiry preserve one current effective decision per domain.",
+    "PostgreSQL 17 qualifies the runtime PostgreSQL 16 exercises predecessor upgrade and PostgreSQL 18 supplies forward-compatibility rehearsal evidence."
   ],
   "program_bindings": {
     "requirement_ids": ["SPEC-DBMG-001"],
@@ -223,6 +227,8 @@
   },
   "metadata": {
     "created_at": "2026-08-04T14:00:00Z",
+    "supersedes_version": "1.0.0",
+    "concordance_id": "DATA-CONTRACT-CONCORDANCE-001",
     "source_ledger_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
     "next_review_trigger": "The engine major, selected Flyway release, tool-neutral capability contract, vendor lifecycle boundary, source snapshot mechanism, reconciliation threshold, or release topology changes."
   }

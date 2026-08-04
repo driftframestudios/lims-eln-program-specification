@@ -1,12 +1,12 @@
 {
   "promotion_receipt_id": "RCP-PROGRAM-PROMOTION-003",
   "repository": "driftframestudios/lims-eln-program-specification",
-  "target_release": "spec-v0.3.1",
+  "target_release": "spec-v0.3.2",
   "promotion_state": "candidate_pending",
   "evidence_mode": "planned",
   "assurance_stage": "specified",
   "candidate_coordinate": {
-    "release": "candidate-spec-v0.3.1",
+    "release": "candidate-spec-v0.3.2",
     "commit": "0000000000000000000000000000000000000000",
     "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
   },

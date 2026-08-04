@@ -1,5 +1,5 @@
 {
-  "version": "0.3.1",
+  "version": "0.3.2",
   "forecast_id": "FORECAST-2026-Q3-R2",
   "supersedes": "FORECAST-2026-Q3-R1",
   "released_before_observation": true,
@@ -58,7 +58,7 @@
       "probability": 0.69,
       "range": [0.60, 0.76],
       "scenario_ids": ["SCN-CALL-READ-001", "SCN-CALL-NARROW-001", "SCN-CALL-BROAD-001", "SCN-MIGR-001", "SCN-REST-001", "SCN-SECR-001", "SCN-OBS-001", "SCN-ACPT-001"],
-      "assumptions": ["each repository can release one compatible candidate", "governance schema 2.0.1 lands before settling", "simulated evidence uses representative synthetic shapes and scales"],
+      "assumptions": ["each repository can release one compatible candidate", "governance schema 2.0.2 lands before settling", "simulated evidence uses representative synthetic shapes and scales"],
       "falsifiers": ["cross-repository contract drift persists through two settling passes", "a P1 boundary defect remains unresolved", "one receipt class lacks executable evidence or a role-bound synthetic decision"],
       "recalibration_trigger": "end of each Coordination Horizon active focus band",
       "status": "unexamined"

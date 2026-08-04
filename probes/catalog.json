@@ -1,5 +1,5 @@
 {
-  "version": "0.3.1",
+  "version": "0.3.2",
   "catalog_id": "LIMS-ELN-PRACTITIONER-PROBES-001",
   "purpose": "Turn principal-level LIMS/ELN claims into inspectable questions, mechanisms, failure twins, evidence, and accountable handoffs.",
   "level_contract": [

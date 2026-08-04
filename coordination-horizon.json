@@ -19,7 +19,7 @@
         "program validator and tests pass",
         "the program copy of the canonical closure has digest sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb",
         "the advisory design and canonical executed simulation retain distinct identities and authority postures",
-        "governance schema release 2.0.1 validates the canonical closure",
+        "governance schema release 2.0.2 validates the canonical closure and data-contract example",
         "RCP-PROGRAM-PROMOTION-003 closes against the reviewed immutable coordinate"
       ],
       "owner_role": "program governance",
@@ -30,7 +30,7 @@
       "horizon_label": "Canonical data primitive and database contract settlement",
       "sequence": 2,
       "state": "settling",
-      "desired_state": "Settle the observed finding ledger probability-framed synthesis data primitive contract migration contract database scenarios open receipts and release manifest as one enforceable program surface.",
+      "desired_state": "Settle the observed finding ledger probability-framed synthesis data primitive contract cross-repository concordance migration contract database scenarios open receipts and release manifest as one enforceable program surface.",
       "entry_evidence": [
         "cross-repository database primitive audit",
         "approved principal and enterprise database modernization direction"
@@ -38,6 +38,7 @@
       "completion_evidence": [
         "32 critical or high findings validate with stable identities",
         "five plans and the recommended synthesis preserve one explicit probability event",
+        "data concordance maps all thirteen primitive policies across program reference implementation simulation and governance representations",
         "data and migration contract bindings resolve by path version and digest",
         "database requirements rules scenarios receipts and manifest pass the program suite"
       ],
@@ -49,7 +50,7 @@
       "horizon_label": "PostgreSQL schema evolution through the selected Flyway profile",
       "sequence": 3,
       "state": "ready",
-      "desired_state": "Project DATA-CONTRACT-001 and DATABASE-MIGRATION-CONTRACT-001 into one canonical implementation with production-equivalent PostgreSQL tests.",
+      "desired_state": "Project DATA-CONTRACT-001 and DATABASE-MIGRATION-CONTRACT-001 into one PostgreSQL 17 implementation with PostgreSQL 16 upgrade evidence and PostgreSQL 18 portability rehearsal evidence.",
       "entry_evidence": [
         "settled database program contracts",
         "canonical reference tree engine-major decision and Flyway transition test map"
@@ -59,6 +60,7 @@
         "existing end-to-end and parameterized migration scenarios pass through Flyway",
         "tenant row security and database privilege evidence",
         "concurrent event idempotency inbox and outbox contract tests",
+        "conditional acceptance and decision supersession tests",
         "implementation database release candidate manifest"
       ],
       "owner_role": "platform owner",
@@ -140,9 +142,9 @@
     }
   ],
   "reentry_capsule": {
-    "current_state": "Specification candidate 0.3.1 is settling with bounded-caller operations, ten Practitioner Probes, an explicit receipt vocabulary map, the exact canonical four-family selected-future closure, and an enforceable database modernization contract surface.",
+    "current_state": "Specification candidate 0.3.2 is settling with bounded-caller operations, ten Practitioner Probes, an explicit receipt vocabulary map, the exact canonical four-family selected-future closure, and an enforceable cross-repository database contract concordance.",
     "recent_decisions": ["ADR-0005", "ADR-0006"],
-    "next_safe_action": "Validate every contract and database artifact binding, confirm canonical digest equality across program simulation and comparator, and promote release coordinates through the protected release path.",
+    "next_safe_action": "Validate every contract and database artifact binding, compare simulation and governance representation bytes with the concordance, confirm canonical closure equality, and promote release coordinates through the protected release path.",
     "verification": "Run the program validator, unit tests, language and secret-shape scans, database binding checks, governance schema suite, and cross-repository canonical digest comparison."
   },
   "retained_effects": [
@@ -158,11 +160,11 @@
     "Which official vendor adapter provides the first durable paired evidence bundle?",
     "Which observed divergence should revise the specification rather than the implementation or simulation?",
     "Which optional AI-facing interface produces enough material value to justify its added qualification surface?",
-    "Which database engine-major mapping vocabulary and representative-distribution decisions remain open before implementation projection?",
+    "Which configured-environment receipts remain open after PostgreSQL 17 qualification and LabKey adapter projection?",
     "Which observed database divergence belongs in the specification implementation simulated twin or operating objective?"
   ],
   "metadata": {
-    "schema_version": "2.0.1",
+    "schema_version": "2.0.2",
     "created_at": "2026-07-28T12:00:00Z",
     "updated_at": "2026-08-04T14:00:00Z",
     "owner": {

@@ -1,6 +1,6 @@
 {
   "index_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "authority": "cross_repository_discovery_index",
   "counting_semantics": "Records preserve the perspective of each source ledger. The aggregate count includes intentional overlap and represents review coordinates rather than deduplicated defects.",
   "canonical_probability_event": {
@@ -188,6 +188,19 @@
       }
     }
   ],
+  "contract_concordance": {
+    "concordance_id": "DATA-CONTRACT-CONCORDANCE-001",
+    "version": "1.0.0",
+    "path": "specifications/data-contract-concordance.json",
+    "digest": "sha256:9ec6581d961f3a0b818b551c35777a45cc1e219c778a736b9718ce9d8a2de890",
+    "representation_ids": [
+      "REP-PROGRAM-DATA-CONTRACT-001",
+      "REP-REFERENCE-DATABASE-RELEASE-001",
+      "REP-IMPLEMENTATION-DATABASE-RELEASE-001",
+      "REP-SIMULATION-DATABASE-ORACLE-V2",
+      "REP-GOVERNANCE-DATA-CONTRACT-001"
+    ]
+  },
   "total_record_count": 115,
   "metadata": {
     "created_at": "2026-08-04T18:57:46Z",
