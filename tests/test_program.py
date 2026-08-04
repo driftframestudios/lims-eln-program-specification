@@ -152,6 +152,27 @@ class ProgramValidationTests(unittest.TestCase):
             MODULE.DATABASE_PROBABILITY_EVENT,
             plan_set["probability_of"],
         )
+        self.assertEqual(
+            MODULE.DATABASE_PROBABILITY_ASSUMPTIONS,
+            tuple(
+                plan_set["estimation_posture"]["conditioning_assumptions"]
+            ),
+        )
+        modernization_doc = (ROOT / "docs" / "DATABASE_MODERNIZATION.md").read_text(
+            encoding="utf-8"
+        )
+        constellation_doc = (
+            ROOT / "docs" / "DATABASE_CONSTELLATION_LEDGER.md"
+        ).read_text(encoding="utf-8")
+        normalized_event = " ".join(MODULE.DATABASE_PROBABILITY_EVENT.split())
+        self.assertIn(
+            normalized_event,
+            " ".join(modernization_doc.replace("> ", "").split()),
+        )
+        self.assertIn(
+            normalized_event,
+            " ".join(constellation_doc.replace("> ", "").split()),
+        )
         self.assertEqual(5, len(plan_set["plans"]))
         self.assertEqual(
             {

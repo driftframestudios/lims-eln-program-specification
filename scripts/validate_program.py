@@ -17,10 +17,25 @@ CONTROL_PLANE_PROFILE = "0.3.0"
 RECEIPT_VOCABULARY_RELEASE = "1.0.0"
 LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
 DATABASE_PROBABILITY_EVENT = (
-    "The plan produces a reviewable enterprise-grade database release "
-    "candidate within two implementation increments while preserving "
+    "Given a capable hybrid team, two implementation increments, the stated "
+    "gates, and a representative PostgreSQL rehearsal, the route yields a "
+    "reviewable enterprise-grade database release candidate that preserves "
     "qualified scientific semantics, tenant isolation, audit reconstruction, "
-    "and recoverability."
+    "and recoverability and passes independent principal-engineer, database, "
+    "security, operations, and scientific review with follow-up limited to "
+    "accepted non-critical items."
+)
+DATABASE_PROBABILITY_ASSUMPTIONS = (
+    "A capable hybrid team has named owners for scientific semantics, database "
+    "engineering, security, operations, and delivery coordination.",
+    "The delivery horizon contains two implementation increments with capacity "
+    "for implementation, independent review, and bounded remediation.",
+    "The stated contract and release gates remain stable through the estimation "
+    "horizon or trigger recalibration when they change.",
+    "A representative PostgreSQL rehearsal environment and representative data "
+    "are available early enough to inform the second increment.",
+    "Independent reviewers apply shared acceptance criteria, and accepted "
+    "non-critical follow-up receives an owner and Coordination Horizon.",
 )
 PROMOTION_RECEIPT_ID = "RCP-PROGRAM-PROMOTION-003"
 CANONICAL_CLOSURE_DIGEST = (
@@ -1027,6 +1042,35 @@ def validate_database_program(
         raise ValueError("database modernization plan set identity differs")
     if plan_set["probability_of"] != DATABASE_PROBABILITY_EVENT:
         raise ValueError("database plan set probability event differs")
+    estimation_posture = require_exact_object(
+        plan_set["estimation_posture"],
+        {
+            "method",
+            "interpretation",
+            "conditioning_assumptions",
+            "recalibration_triggers",
+        },
+        "database estimation posture",
+    )
+    require_string(estimation_posture["method"], "database estimation method")
+    require_string(
+        estimation_posture["interpretation"],
+        "database estimation interpretation",
+    )
+    assumptions = tuple(
+        require_string_list(
+            estimation_posture["conditioning_assumptions"],
+            "database probability assumptions",
+            minimum=5,
+        )
+    )
+    if assumptions != DATABASE_PROBABILITY_ASSUMPTIONS:
+        raise ValueError("database probability conditioning assumptions differ")
+    require_string_list(
+        estimation_posture["recalibration_triggers"],
+        "database probability recalibration triggers",
+        minimum=4,
+    )
     if len(plan_set["plans"]) != 5:
         raise ValueError("database plan set requires five comparative routes")
     plan_ids: set[str] = set()

@@ -50,7 +50,7 @@
       "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
       "version": "1.0.0",
       "path": "plans/database-modernization-plans.json",
-      "digest": "sha256:c18e5054c6f3efb8f9f1dec553850d589f4e131da5a2bfdb1842d765c8e242da"
+      "digest": "sha256:44d3192aa3ec43632c38bd2cbad99de3f2baf83de705e6dc9a691b33c44ab034"
     },
     "data_contract": {
       "contract_id": "DATA-CONTRACT-001",
@@ -74,7 +74,7 @@
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
       "path": "release/database-release-manifest.json",
-      "digest": "sha256:8a630199fcbcb9501ab27d2114c75fd6a082fddccba8d7fd1b2532e50c0169ab"
+      "digest": "sha256:6b42cefa7fccaddbe7619ddb81bdee508e07a307e58e114e4f8c19c5b2825546"
     }
   },
   "orientation_surfaces": {

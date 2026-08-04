@@ -1,10 +1,17 @@
 {
   "plan_set_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
   "version": "1.0.0",
-  "probability_of": "The plan produces a reviewable enterprise-grade database release candidate within two implementation increments while preserving qualified scientific semantics, tenant isolation, audit reconstruction, and recoverability.",
+  "probability_of": "Given a capable hybrid team, two implementation increments, the stated gates, and a representative PostgreSQL rehearsal, the route yields a reviewable enterprise-grade database release candidate that preserves qualified scientific semantics, tenant isolation, audit reconstruction, and recoverability and passes independent principal-engineer, database, security, operations, and scientific review with follow-up limited to accepted non-critical items.",
   "estimation_posture": {
     "method": "structured expert judgment over the observed reference artifacts, explicit dependency assumptions, and comparative delivery risk",
     "interpretation": "Probabilities compare routes under the same stated horizon and express planning belief rather than measured frequencies.",
+    "conditioning_assumptions": [
+      "A capable hybrid team has named owners for scientific semantics, database engineering, security, operations, and delivery coordination.",
+      "The delivery horizon contains two implementation increments with capacity for implementation, independent review, and bounded remediation.",
+      "The stated contract and release gates remain stable through the estimation horizon or trigger recalibration when they change.",
+      "A representative PostgreSQL rehearsal environment and representative data are available early enough to inform the second increment.",
+      "Independent reviewers apply shared acceptance criteria, and accepted non-critical follow-up receives an owner and Coordination Horizon."
+    ],
     "recalibration_triggers": [
       "The implementation team selects a database engine or migration framework.",
       "Representative record volume and query plans become available.",

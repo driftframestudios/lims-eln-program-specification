@@ -45,10 +45,15 @@ decisions remain program- and environment-specific evidence.
 ## Comparative plans and probability event
 
 [`plans/database-modernization-plans.json`](../plans/database-modernization-plans.json)
-defines one probability event: the probability that a route produces a
-reviewable enterprise-grade database release candidate within two
-implementation increments while preserving qualified scientific semantics,
-tenant isolation, audit reconstruction, and recoverability.
+defines one probability event:
+
+> Given a capable hybrid team, two implementation increments, the stated
+> gates, and a representative PostgreSQL rehearsal, the route yields a
+> reviewable enterprise-grade database release candidate that preserves
+> qualified scientific semantics, tenant isolation, audit reconstruction, and
+> recoverability and passes independent principal-engineer, database,
+> security, operations, and scientific review with follow-up limited to
+> accepted non-critical items.
 
 | Route | Estimate | Credible range | Most useful contribution |
 |---|---:|---:|---|
@@ -59,7 +64,11 @@ tenant isolation, audit reconstruction, and recoverability.
 | Simulated final-state database twin | 0.78 | 0.66–0.87 | Supplies an explicit comparison target |
 
 These are conditional planning estimates rather than frequencies observed
-from a shared trial population. Their intervals communicate uncertainty and
+from a shared trial population. The plan set separates five conditioning
+assumptions: named multidisciplinary ownership; a two-increment horizon with
+review and remediation capacity; stable gates or prompt recalibration;
+representative PostgreSQL and data access; and shared criteria with owned
+non-critical follow-up. Their intervals communicate uncertainty and
 recalibrate when schema inventory, data profiling, representative rehearsal,
 concurrency, recovery, or acceptance evidence changes the fit.
 

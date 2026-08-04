@@ -97,14 +97,20 @@ decision.
 
 ## Probability frame and selected route
 
-All route estimates answer one conditional question:
+All route estimates answer one conditional event:
 
 > Given a capable hybrid team, two implementation increments, the stated
-> gates, and a representative PostgreSQL rehearsal, what is the probability
-> that the route yields a reviewable database release candidate that preserves
+> gates, and a representative PostgreSQL rehearsal, the route yields a
+> reviewable enterprise-grade database release candidate that preserves
 > qualified scientific semantics, tenant isolation, audit reconstruction, and
-> recoverability, and passes independent principal-engineer, database,
-> security, operations, and scientific review with only bounded follow-up?
+> recoverability and passes independent principal-engineer, database,
+> security, operations, and scientific review with follow-up limited to
+> accepted non-critical items.
+
+The machine-readable plan set records the team, horizon, gate stability,
+representative rehearsal, and independent-review conditions as separate
+assumptions. Each reevaluation interstitial either retains those conditions or
+recalibrates the estimates before the next stage.
 
 The five program plans range from 0.54 to 0.89. The selected synthesis is 0.88
 with a 0.79–0.94 credible range. It combines a canonical relational core,
