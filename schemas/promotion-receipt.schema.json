@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.driftframe.org/lims-eln-program-specification/v0.3.1/promotion-receipt.schema.json",
+  "$id": "https://schemas.driftframestudios.org/lims-eln-program-specification/v0.3.1/promotion-receipt.schema.json",
   "title": "Program Specification Promotion Receipt",
   "type": "object",
   "additionalProperties": false,
