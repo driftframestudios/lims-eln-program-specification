@@ -5,7 +5,7 @@
   "authority": "program_specification_only",
   "artifact_bindings": [
     {"artifact_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001", "version": "1.0.0", "path": "database/primitive-findings.json", "digest": "sha256:f3fc8fd047fc69a63801fbf294deaf39502855b441bb4cd80e23656e53f939e3"},
-    {"artifact_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001", "version": "1.0.0", "path": "database/constellation-finding-index.json", "digest": "sha256:2d80dc8cd671331755cba73961091c691356da614806c7493a7760e5540ea97e"},
+    {"artifact_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001", "version": "1.0.0", "path": "database/constellation-finding-index.json", "digest": "sha256:8333d499179b1c493d3eff46fdacfa3cd3f05fc07f90b81229f7c581df75e50c"},
     {"artifact_id": "DATABASE-MODERNIZATION-PLAN-SET-001", "version": "1.0.0", "path": "plans/database-modernization-plans.json", "digest": "sha256:7f55e85e0caf826acd407e48349a2cf9ddc0501c9f753067113d9321e880d21d"},
     {"artifact_id": "DATA-CONTRACT-001", "version": "1.0.0", "path": "specifications/data-primitives.json", "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"},
     {"artifact_id": "DATABASE-MIGRATION-CONTRACT-001", "version": "1.0.0", "path": "specifications/database-migration.json", "digest": "sha256:a7c2cb283981cf80bf963fe7b0b40419f2dc63acfb1962279c6ce7aea6354a15"},

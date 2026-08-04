@@ -115,7 +115,7 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["governance_closure_families"], 4)
         self.assertEqual(summary["receipt_vocabulary_mappings"], 7)
         self.assertEqual(summary["database_findings"], 32)
-        self.assertEqual(summary["database_constellation_findings"], 109)
+        self.assertEqual(summary["database_constellation_findings"], 115)
         self.assertEqual(summary["database_constellation_sources"], 3)
         self.assertEqual(summary["database_plans"], 5)
         self.assertEqual(summary["database_flyway_transition_estimates"], 1)
@@ -166,14 +166,14 @@ class ProgramValidationTests(unittest.TestCase):
             set(sources),
         )
         self.assertEqual(
-            109,
+            115,
             sum(item["record_count"] for item in sources.values()),
         )
         self.assertEqual(
             {
                 "PROGRAM-DISCOVERY-FINDINGS": 32,
                 "REFERENCE-PACK-FINDINGS": 53,
-                "ACTIVE-IMPLEMENTATION-FINDINGS": 24,
+                "ACTIVE-IMPLEMENTATION-FINDINGS": 30,
             },
             {
                 source_id: source["record_count"]
@@ -202,10 +202,10 @@ class ProgramValidationTests(unittest.TestCase):
                     "fc1577a8886842c606ccbc3c115c7b812fd5dfca"
                 ),
                 "REFERENCE-PACK-FINDINGS": (
-                    "ce90126cac4e769511e0886b1b55f2d58107d119"
+                    "0ed46249247c8b1c7f69c385fe82bd2052eacd63"
                 ),
                 "ACTIVE-IMPLEMENTATION-FINDINGS": (
-                    "63306ebf0487d52f14aa352a4eeb99630a31c9a8"
+                    "ff13e8d9317d1415bf10da870260b79e6d5f3d6b"
                 ),
             },
             {

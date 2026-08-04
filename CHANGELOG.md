@@ -5,7 +5,7 @@
 - Added a 32-finding cross-repository database primitive ledger with stable
   identities, evidence locations, affirmative target states, and complete
   data- or migration-contract bindings.
-- Added a machine-verified 109-record constellation index that binds the program,
+- Added a machine-verified 115-record constellation index that binds the program,
   reference, and implementation ledgers to immutable source commits, raw digests,
   record identities, counts, and explicit probability-event relationships.
 - Added five probability-framed database modernization plans, a synthesized

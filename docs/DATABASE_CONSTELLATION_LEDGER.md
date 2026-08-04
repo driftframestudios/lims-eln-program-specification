@@ -17,8 +17,8 @@ each commit-addressed URL and recompute the raw digest. A newer reviewed source
 head receives a successor index coordinate, preserving the evidence represented by
 this release.
 
-The constellation currently contains **109 finding records**: 32 program-level
-discovery findings, 53 reference-pack findings, and 24 active-implementation
+The constellation currently contains **115 finding records**: 32 program-level
+discovery findings, 53 reference-pack findings, and 30 active-implementation
 findings. These records intentionally overlap. A source defect can appear once
 as a discovered contract gap, once as a reference correction, and once as an
 implementation proof obligation. The count therefore measures recorded review
@@ -31,7 +31,7 @@ perspectives rather than deduplicated defects.
 | [`site-reading-governance`](https://github.com/driftframestudios/site-reading-governance/pull/15) | Six database governance schemas with conforming examples | Defines portable finding, contract, migration-plan, migration-receipt, reconciliation, and release-manifest records. | Schema and validator evidence is repository-observed; environment and accountable acceptance remain separate receipts. |
 | This program specification | [32 discovery findings](../database/primitive-findings.json) | Names cross-repository defects and binds each correction to the data or migration contract. | Complete for the reviewed reference trees; successor reviews receive a new ledger version. |
 | [`prototype-exemplars`](https://github.com/driftframestudios/prototype-exemplars/pull/4) | 53 reference-pack findings | Preserves the original v0.1 SQL as an explicit legacy baseline and demonstrates a PostgreSQL expand/backfill/validate/cutover/contract path. | Static, clean-install, pre-populated adoption, contract, security, and catalog proofs are release gates; organization-owned representative rehearsal remains receipt-bound. |
-| [`lims-eln-enterprise-implementation`](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/10) | 24 implementation findings | Connects primitives to authenticated tenant authority, transactions, migrations, concurrency, recovery, and scientific semantics. | The ledger records corrected, strengthened, partially settled, and receipt-bound findings while preserving their distinct evidence stages. |
+| [`lims-eln-enterprise-implementation`](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/10) | 30 implementation findings | Connects primitives to authenticated tenant authority, transactions, migrations, concurrency, recovery, and scientific semantics. | The ledger records corrected, strengthened, partially settled, and receipt-bound findings while preserving their distinct evidence stages. |
 | [`lims-eln-simulated-final-state`](https://github.com/driftframestudios/lims-eln-simulated-final-state/pull/14) | One digest-bound database oracle | Supplies the selected-future comparison target: native primitives, phased migration, reconciliation, recovery, and role-bound acceptance. | Simulated evidence is definitive inside the named future reality and carries zero production-authorization effect. |
 | [`lims-eln-comparative-evidence`](https://github.com/driftframestudios/lims-eln-comparative-evidence/pull/12) | Typed database-release coordinates and exact JSON comparison | Compares active and simulated database releases without collapsing Boolean and numeric values or mutable input state. | Unit and report-concordance evidence is repository-observed; comparison to a configured release remains receipt-bound. |
 

@@ -56,7 +56,7 @@
     {
       "contract_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
       "version": "1.0.0",
-      "digest": "sha256:2d80dc8cd671331755cba73961091c691356da614806c7493a7760e5540ea97e"
+      "digest": "sha256:8333d499179b1c493d3eff46fdacfa3cd3f05fc07f90b81229f7c581df75e50c"
     },
     {
       "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
@@ -81,7 +81,7 @@
     {
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
-      "digest": "sha256:278bd38db08181987b488c089fb54079da199114be271cbaf197358fb15d235d"
+      "digest": "sha256:9c6bba14a18e5ef692c8ff4dc6b4725f0f27526ce3a7df7dd600fd579b286075"
     }
   ],
   "campaigns": [

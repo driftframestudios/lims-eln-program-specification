@@ -46,7 +46,7 @@ FLYWAY_TRANSITION_EVENT = (
     "upgrade, failure atomicity, replay, zero-pending-work, and clean-versus-upgrade "
     "convergence evidence without a critical domain-contract regression."
 )
-DATABASE_CONSTELLATION_FINDING_TOTAL = 109
+DATABASE_CONSTELLATION_FINDING_TOTAL = 115
 PROMOTION_RECEIPT_ID = "RCP-PROGRAM-PROMOTION-003"
 CANONICAL_CLOSURE_DIGEST = (
     "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb"
@@ -1129,7 +1129,7 @@ def validate_database_program(
                 "prototype-exemplars/pull/4"
             ),
             "head_ref": "agent/lims-eln-data-primitives-v0-2",
-            "source_commit": "ce90126cac4e769511e0886b1b55f2d58107d119",
+            "source_commit": "0ed46249247c8b1c7f69c385fe82bd2052eacd63",
             "coordinate_kind": "pull_request_head",
             "ledger_path": (
                 "lims-eln-enterprise-reference-v0.1/database/"
@@ -1137,8 +1137,8 @@ def validate_database_program(
             ),
             "ledger_format": "json_findings",
             "ledger_digest": (
-                "sha256:7b63c2fbff2e52e72ced9a298f90adb6a0c4475f08995a792"
-                "01e21383ebf6664"
+                "sha256:69d09afa87ff9e869f386d6b3ba666a8c765f910377146b327"
+                "a191fa640ea74f"
             ),
             "record_count": 53,
             "record_id_prefix": "DB-",
@@ -1165,15 +1165,15 @@ def validate_database_program(
                 "lims-eln-enterprise-implementation/pull/10"
             ),
             "head_ref": "feature/corrective-integrity-v0-3-1",
-            "source_commit": "63306ebf0487d52f14aa352a4eeb99630a31c9a8",
+            "source_commit": "ff13e8d9317d1415bf10da870260b79e6d5f3d6b",
             "coordinate_kind": "pull_request_head",
             "ledger_path": "docs/data-primitive-corrective-ledger.md",
             "ledger_format": "markdown_table",
             "ledger_digest": (
-                "sha256:78b0708bbcb2217fb2b17693cf51094c361ddf9aca463da23b6"
-                "bd358246668ed"
+                "sha256:638a47f38605d92dbb86ca4d224ba2e0bb3535c01dd087070404"
+                "7c652d5b03c3"
             ),
-            "record_count": 24,
+            "record_count": 30,
             "record_id_prefix": "DP-",
             "probability_kind": "conditional_derivative",
             "probability_event": (

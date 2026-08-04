@@ -107,7 +107,7 @@ reference and implementation probability tables are bounded local derivatives;
 the canonical program estimates remain the cross-route comparison surface.
 
 [`database/constellation-finding-index.json`](database/constellation-finding-index.json)
-binds all 109 intentionally overlapping program, reference, and implementation
+binds all 115 intentionally overlapping program, reference, and implementation
 finding records to immutable source commits, raw ledger digests, record identities,
 counts, and each exact probability event's relationship to the canonical event.
 

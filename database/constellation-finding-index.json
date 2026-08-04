@@ -67,12 +67,12 @@
       "repository": "driftframestudios/prototype-exemplars",
       "pull_request": "https://github.com/driftframestudios/prototype-exemplars/pull/4",
       "head_ref": "agent/lims-eln-data-primitives-v0-2",
-      "source_commit": "ce90126cac4e769511e0886b1b55f2d58107d119",
+      "source_commit": "0ed46249247c8b1c7f69c385fe82bd2052eacd63",
       "coordinate_kind": "pull_request_head",
       "ledger_path": "lims-eln-enterprise-reference-v0.1/database/data-primitive-ledger.json",
-      "retrieval_url": "https://raw.githubusercontent.com/driftframestudios/prototype-exemplars/ce90126cac4e769511e0886b1b55f2d58107d119/lims-eln-enterprise-reference-v0.1/database/data-primitive-ledger.json",
+      "retrieval_url": "https://raw.githubusercontent.com/driftframestudios/prototype-exemplars/0ed46249247c8b1c7f69c385fe82bd2052eacd63/lims-eln-enterprise-reference-v0.1/database/data-primitive-ledger.json",
       "ledger_format": "json_findings",
-      "ledger_digest": "sha256:7b63c2fbff2e52e72ced9a298f90adb6a0c4475f08995a79201e21383ebf6664",
+      "ledger_digest": "sha256:69d09afa87ff9e869f386d6b3ba666a8c765f910377146b327a191fa640ea74f",
       "record_count": 53,
       "record_ids": [
         "DB-001",
@@ -141,13 +141,13 @@
       "repository": "driftframestudios/lims-eln-enterprise-implementation",
       "pull_request": "https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/10",
       "head_ref": "feature/corrective-integrity-v0-3-1",
-      "source_commit": "63306ebf0487d52f14aa352a4eeb99630a31c9a8",
+      "source_commit": "ff13e8d9317d1415bf10da870260b79e6d5f3d6b",
       "coordinate_kind": "pull_request_head",
       "ledger_path": "docs/data-primitive-corrective-ledger.md",
-      "retrieval_url": "https://raw.githubusercontent.com/driftframestudios/lims-eln-enterprise-implementation/63306ebf0487d52f14aa352a4eeb99630a31c9a8/docs/data-primitive-corrective-ledger.md",
+      "retrieval_url": "https://raw.githubusercontent.com/driftframestudios/lims-eln-enterprise-implementation/ff13e8d9317d1415bf10da870260b79e6d5f3d6b/docs/data-primitive-corrective-ledger.md",
       "ledger_format": "markdown_table",
-      "ledger_digest": "sha256:78b0708bbcb2217fb2b17693cf51094c361ddf9aca463da23b6bd358246668ed",
-      "record_count": 24,
+      "ledger_digest": "sha256:638a47f38605d92dbb86ca4d224ba2e0bb3535c01dd0870704047c652d5b03c3",
+      "record_count": 30,
       "record_ids": [
         "DP-001",
         "DP-002",
@@ -172,7 +172,13 @@
         "DP-021",
         "DP-022",
         "DP-023",
-        "DP-024"
+        "DP-024",
+        "DP-025",
+        "DP-026",
+        "DP-027",
+        "DP-028",
+        "DP-029",
+        "DP-030"
       ],
       "probability_relation": {
         "kind": "conditional_derivative",
@@ -182,9 +188,9 @@
       }
     }
   ],
-  "total_record_count": 109,
+  "total_record_count": 115,
   "metadata": {
-    "created_at": "2026-08-04T16:40:00Z",
+    "created_at": "2026-08-04T18:57:46Z",
     "evidence_mode": "repository_observed",
     "authority": "program_index_only",
     "revalidation_trigger": "A bound source commit ledger digest record identity count or probability event changes."
