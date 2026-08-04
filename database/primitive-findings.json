@@ -26,9 +26,9 @@
       "severity": "critical",
       "category": "migration_lifecycle",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "1-41"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "1-38"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "1-42"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "1-41"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "1-38"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "1-42"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/pyproject.toml", "lines": "5-10"}
       ],
       "observation": "The numbered bootstrap scripts carry no declared engine, migration graph, history table, checksum validation, or deployment lock.",
@@ -42,9 +42,9 @@
       "severity": "critical",
       "category": "temporal_semantics",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "11,23"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "12,22,35"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "12"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "11,23"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "12,22,35"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "12"}
       ],
       "observation": "Seven database instants use text storage.",
       "material_risk": "Ordering, range predicates, retention, timezone arithmetic, and partition boundaries depend on caller formatting.",
@@ -57,9 +57,9 @@
       "severity": "critical",
       "category": "tenancy_rls",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "5-40"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "5-37"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "5-41"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "5-40"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "5-37"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "5-41"}
       ],
       "observation": "Tenant keys are free text, tenant references are implicit, row-level policies are absent, and evidence scope is implicit.",
       "material_risk": "One incomplete predicate can cross a tenant boundary and evidence ownership remains ambiguous.",
@@ -72,7 +72,7 @@
       "severity": "critical",
       "category": "model_concordance",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "5-40"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "5-40"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/domain.py", "lines": "41-76"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/instrument.py", "lines": "17-41"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/evidence.py", "lines": "9-36"}
@@ -88,8 +88,8 @@
       "severity": "critical",
       "category": "audit_immutability",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "15-30"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "5-41"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "15-30"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "5-41"}
       ],
       "observation": "Event and evidence rows accept ordinary updates and deletes, while current state and events can advance independently.",
       "material_risk": "Audit reconstruction and evidence integrity depend on application discipline.",
@@ -102,7 +102,7 @@
       "severity": "critical",
       "category": "approval_evidence",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "21-25"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "21-25"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/domain.py", "lines": "74-75"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/lifecycle.py", "lines": "133-165"}
       ],
@@ -203,8 +203,8 @@
       "severity": "high",
       "category": "identifiers",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "5-39"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "5-40"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "5-39"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "5-40"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/domain.py", "lines": "10-11"}
       ],
       "observation": "Internal, external, tenant, actor, command, and evidence identities share unrestricted text semantics; NewType adds static distinction only.",
@@ -218,9 +218,9 @@
       "severity": "high",
       "category": "digests",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "10,20"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "9,20"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "8"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "10,20"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "9,20"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "8"}
       ],
       "observation": "SHA-256 fields validate character count alone.",
       "material_risk": "Malformed values can masquerade as integrity evidence.",
@@ -233,9 +233,9 @@
       "severity": "high",
       "category": "controlled_vocabularies",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "8,22,24-25"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "7,10,18,21,29-30,34"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "9-11,36-40"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "8,22,24-25"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "7,10,18,21,29-30,34"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "9-11,36-40"}
       ],
       "observation": "Lifecycle, evidence, integration, reason, topic, scope, and qualification values use open strings or partial checks.",
       "material_risk": "Equivalent meaning fragments across spelling, casing, and release versions.",
@@ -248,8 +248,8 @@
       "severity": "high",
       "category": "json_contracts",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "11,31"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "14"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "11,31"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "14"}
       ],
       "observation": "Receipts, payloads, and limitations use text storage without structural or version checks.",
       "material_risk": "Malformed and incompatible envelopes enter durable state and query behavior remains opaque.",
@@ -262,8 +262,8 @@
       "severity": "high",
       "category": "numeric_constraints",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "18,36"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "32"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "18,36"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "32"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/evidence.py", "lines": "17-21"}
       ],
       "observation": "Versions, attempts, counts, and durations permit values outside their business domain.",
@@ -277,9 +277,9 @@
       "severity": "high",
       "category": "nullability_constraints",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "24-25"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "10-12,33-35"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "37-40"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "24-25"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "10-12,33-35"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "37-40"}
       ],
       "observation": "Status-dependent nullability and decision evidence relationships remain implicit.",
       "material_risk": "Rows can claim committed, delivered, quarantined, satisfied, released, skipped, or voided states with contradictory evidence.",
@@ -292,7 +292,7 @@
       "severity": "high",
       "category": "audit_immutability",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "15-30"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "15-30"}
       ],
       "observation": "The event row omits before and after state, recording time, correlation, causation, authorization decision, payload schema, and supersession.",
       "material_risk": "Event replay and incident reconstruction depend on context outside the event boundary.",
@@ -305,7 +305,7 @@
       "severity": "high",
       "category": "relational_integrity",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "32-40"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "32-40"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/custody.py", "lines": "18-26"}
       ],
       "observation": "Custody location is a slash-joined path rather than a referenced hierarchy.",
@@ -319,7 +319,7 @@
       "severity": "high",
       "category": "inbox_outbox",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "16-37"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "16-37"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/docs/operations-runbook.md", "lines": "24-28"}
       ],
       "observation": "Durable ingress and delivery omit claim lease, first and last attempt, recovery owner, terminal reason, confirmation time, schema version, and payload provenance described by the runbook.",
@@ -333,7 +333,7 @@
       "severity": "high",
       "category": "evidence_model",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "17-31"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "17-31"}
       ],
       "observation": "One trace row requires requirement, risk, control, and test together without referenced node versions.",
       "material_risk": "The shape can imply unsupported relationships; typed evidence edges with explicit provenance preserve asserted meaning.",
@@ -346,7 +346,7 @@
       "severity": "high",
       "category": "evidence_model",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "33-41"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "33-41"}
       ],
       "observation": "Open receipt rows omit scope, timestamps, due or review time, evidence link, version, decision history, and closure approver.",
       "material_risk": "Status mutation cannot demonstrate accountable closure.",
@@ -359,9 +359,9 @@
       "severity": "high",
       "category": "indexing_partitioning",
       "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/001_laboratory_core.sql", "lines": "5-40"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/002_inbox_outbox.sql", "lines": "5-37"},
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/003_evidence_ledger.sql", "lines": "5-41"}
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "5-40"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "5-37"},
+        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "5-41"}
       ],
       "observation": "The schema defines identity indexes while operational state, available work, event-time, location, open-receipt, and reverse-trace access paths remain unspecified.",
       "material_risk": "Growth can turn routine laboratory and recovery queries into broad scans.",

@@ -118,6 +118,11 @@ joins those obligations to the contract artifacts and specification-by-example
 suite while implementation coordinates remain explicitly pending. See
 [`docs/DATABASE_MODERNIZATION.md`](docs/DATABASE_MODERNIZATION.md) for the
 probability posture, evidence boundaries, synthesized chain, and interstitials.
+The
+[`database constellation ledger`](docs/DATABASE_CONSTELLATION_LEDGER.md)
+indexes all 85 intentionally overlapping finding records and connects them to
+the governance, reference, implementation, simulation, and comparison proof
+surfaces.
 
 ## Evidence ladder
 

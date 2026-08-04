@@ -51,7 +51,7 @@
     {
       "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
       "version": "1.0.0",
-      "digest": "sha256:b3ca176af037686103022e975397ebd7c1f78ac2a9fa427dfe9ef90a098a4864"
+      "digest": "sha256:fa71851aab07a36537dec5532d13065c77b461e2c7d0af857d2354c1e9610d65"
     },
     {
       "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
@@ -76,7 +76,7 @@
     {
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
-      "digest": "sha256:10b059c431ca2630616c6554f3a7383af54be58e93291c04f8003554a44457de"
+      "digest": "sha256:8a630199fcbcb9501ab27d2114c75fd6a082fddccba8d7fd1b2532e50c0169ab"
     }
   ],
   "campaigns": [
