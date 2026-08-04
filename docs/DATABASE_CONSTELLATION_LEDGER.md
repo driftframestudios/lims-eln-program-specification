@@ -8,8 +8,8 @@ surfaces that settle those findings. The detailed ledgers remain the source of
 record for individual coordinates, evidence, dispositions, and verification
 gates.
 
-The constellation currently contains **85 finding records**: 32 program-level
-discovery findings, 35 reference-pack findings, and 18 active-implementation
+The constellation currently contains **97 finding records**: 32 program-level
+discovery findings, 47 reference-pack findings, and 18 active-implementation
 findings. These records intentionally overlap. A source defect can appear once
 as a discovered contract gap, once as a reference correction, and once as an
 implementation proof obligation. The count therefore measures recorded review
@@ -21,7 +21,7 @@ perspectives rather than deduplicated defects.
 |---|---:|---|---|
 | [`site-reading-governance`](https://github.com/driftframestudios/site-reading-governance/pull/15) | Six database governance schemas with conforming examples | Defines portable finding, contract, migration-plan, migration-receipt, reconciliation, and release-manifest records. | Schema and validator evidence is repository-observed; environment and accountable acceptance remain separate receipts. |
 | This program specification | [32 discovery findings](../database/primitive-findings.json) | Names cross-repository defects and binds each correction to the data or migration contract. | Complete for the reviewed reference trees; successor reviews receive a new ledger version. |
-| [`prototype-exemplars`](https://github.com/driftframestudios/prototype-exemplars/pull/4) | 35 reference-pack findings | Preserves the original v0.1 SQL as an explicit legacy baseline and demonstrates a PostgreSQL expand/backfill/validate/cutover/contract path. | Static, clean-install, upgrade, security, and catalog proofs are release gates; representative populated rehearsal remains receipt-bound. |
+| [`prototype-exemplars`](https://github.com/driftframestudios/prototype-exemplars/pull/4) | 47 reference-pack findings | Preserves the original v0.1 SQL as an explicit legacy baseline and demonstrates a PostgreSQL expand/backfill/validate/cutover/contract path. | Static, clean-install, pre-populated adoption, contract, security, and catalog proofs are release gates; organization-owned representative rehearsal remains receipt-bound. |
 | [`lims-eln-enterprise-implementation`](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/10) | 18 implementation findings | Connects primitives to authenticated tenant authority, transactions, migrations, concurrency, recovery, and scientific semantics. | Eleven findings are corrected or strengthened, one is partially corrected, and six retain named environment or domain gates. |
 | [`lims-eln-simulated-final-state`](https://github.com/driftframestudios/lims-eln-simulated-final-state/pull/14) | One digest-bound database oracle | Supplies the selected-future comparison target: native primitives, phased migration, reconciliation, recovery, and role-bound acceptance. | Simulated evidence is definitive inside the named future reality and carries zero production-authorization effect. |
 | [`lims-eln-comparative-evidence`](https://github.com/driftframestudios/lims-eln-comparative-evidence/pull/12) | Typed database-release coordinates and exact JSON comparison | Compares active and simulated database releases without collapsing Boolean and numeric values or mutable input state. | Unit and report-concordance evidence is repository-observed; comparison to a configured release remains receipt-bound. |
@@ -76,6 +76,24 @@ The detailed reference baseline now lives under `database/legacy/v0.1`. That
 location makes its evidentiary role explicit: it is input to the supported
 upgrade path, while the versioned migration chain defines the current database
 state.
+
+## Explicit cross-repository decisions
+
+The ledgers also expose deliberate differences which require settlement before
+constellation promotion:
+
+| Decision | Current representations | Required settlement |
+|---|---|---|
+| Migration mechanism | The program and selected-future oracle name Alembic. The active implementation and reference pack demonstrate manifest-authenticated SQL runners with distinct history tables. | The promoted program either binds one Alembic release and head, or publishes a successor mechanism-neutral contract that binds engine name/version, runner digest, manifest digest, history relation, lock behavior, and transaction semantics. The comparator records the selected coordinate as a visible dimension. |
+| Canonical internal identity | The program contract and reference pack use UUID identities with scoped external natural keys. The active implementation retains bounded text identities in its first vertical slice. | `DP-013` settles the implementation identity inventory and migration; any retained text key receives explicit external-identity semantics and tenant-scoped uniqueness. |
+| Digest and JSON profile | The program and reference pack name binary SHA-256 and versioned canonicalization. The active implementation still contains application-governed JSON and text-encoded digest boundaries. | `DATA-CANON-001`, `DATA-JSON-001`, and `DP-015` bind one cross-runtime byte profile, schema corpus, typed projection decision, and forward migration. |
+| Baseline entry | A reconstructed synthetic v0.1 fixture and an already-populated v0.1 database represent different evidence events. | The reference runner keeps setup outside the adoption plan. Pre-populated adoption begins with a schema/source attestation and applies only forward migration artifacts; the receipt records its evidence mode and limitations. |
+| Migration evidence | Repository-hosted synthetic proofs exercise structure and adversarial behavior. Configured records, workload shape, lock budgets, restore topology, and accountable review remain environment-specific. | The four substantive receipt classes close through configured vendors, representative migration/restore, production security/observability, and separate Scientific, Quality, and Regulatory decisions. |
+
+These differences are visible design coordinates rather than silent
+equivalences. A local passing suite advances its named evidence stage; promotion
+also requires contract concordance or an explicitly accepted successor
+decision.
 
 ## Probability frame and selected route
 

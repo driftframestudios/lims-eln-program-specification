@@ -120,7 +120,7 @@ suite while implementation coordinates remain explicitly pending. See
 probability posture, evidence boundaries, synthesized chain, and interstitials.
 The
 [`database constellation ledger`](docs/DATABASE_CONSTELLATION_LEDGER.md)
-indexes all 85 intentionally overlapping finding records and connects them to
+indexes all 97 intentionally overlapping finding records and connects them to
 the governance, reference, implementation, simulation, and comparison proof
 surfaces.
 
