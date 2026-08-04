@@ -1165,13 +1165,13 @@ def validate_database_program(
                 "lims-eln-enterprise-implementation/pull/10"
             ),
             "head_ref": "feature/corrective-integrity-v0-3-1",
-            "source_commit": "ff13e8d9317d1415bf10da870260b79e6d5f3d6b",
+            "source_commit": "fc4b79dba989faeafff3f0fb871d292381fe2168",
             "coordinate_kind": "pull_request_head",
             "ledger_path": "docs/data-primitive-corrective-ledger.md",
             "ledger_format": "markdown_table",
             "ledger_digest": (
-                "sha256:638a47f38605d92dbb86ca4d224ba2e0bb3535c01dd087070404"
-                "7c652d5b03c3"
+                "sha256:f4537dc88317056b91376ff50721b009d571a2d2c747d8f6fe7"
+                "935a0266efb38"
             ),
             "record_count": 30,
             "record_id_prefix": "DP-",

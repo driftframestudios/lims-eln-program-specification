@@ -205,7 +205,7 @@ class ProgramValidationTests(unittest.TestCase):
                     "0ed46249247c8b1c7f69c385fe82bd2052eacd63"
                 ),
                 "ACTIVE-IMPLEMENTATION-FINDINGS": (
-                    "ff13e8d9317d1415bf10da870260b79e6d5f3d6b"
+                    "fc4b79dba989faeafff3f0fb871d292381fe2168"
                 ),
             },
             {
