@@ -1,33 +1,27 @@
 {
-  "constellation_id": "lims-eln-open-receipts",
-  "version": "0.3.2",
+  "constellation_id": "lims-eln-vendor-evaluation",
+  "version": "0.4.0",
   "repositories": [
     {
-      "role": "program",
       "repository": "driftframestudios/lims-eln-program-specification",
-      "authority": "intent_examples_decisions_acceptance"
+      "purpose": "Vendor-evaluation requirements, data contracts, and specification-by-example"
     },
     {
-      "role": "actual",
       "repository": "driftframestudios/lims-eln-enterprise-implementation",
-      "authority": "active_code_and_observed_execution"
+      "purpose": "Executable PostgreSQL, adapter, infrastructure, and integration reference"
     },
     {
-      "role": "simulation",
       "repository": "driftframestudios/lims-eln-simulated-final-state",
-      "authority": "executable_counterfactual"
+      "purpose": "Optional counterfactual implementation for comparison"
     },
     {
-      "role": "comparison",
       "repository": "driftframestudios/lims-eln-comparative-evidence",
-      "authority": "paired_runs_and_redacted_evidence"
+      "purpose": "Normalized factual comparison of caller-supplied evaluation records"
     },
     {
-      "role": "governance",
       "repository": "driftframestudios/site-reading-governance",
-      "authority": "shared_schemas_workflows_templates_rulesets"
+      "purpose": "Reusable collaboration guidance and documentary templates"
     }
   ],
-  "dependency_rule": "program releases flow to both implementations; comparison consumes pinned releases",
-  "learning_rule": "adjudicated differences create successor decisions and forecasts"
+  "working_rule": "Each repository owns one bounded concern and exchanges versioned contracts or caller-supplied evidence; Git and artifact registries supply release identity."
 }

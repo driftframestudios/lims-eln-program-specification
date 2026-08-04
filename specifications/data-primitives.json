@@ -2,14 +2,14 @@
   "contract_id": "DATA-CONTRACT-001",
   "version": "1.1.0",
   "status": "specified",
-  "authority": "program_specification",
+  "purpose": "Canonical data semantics for vendor evaluation and implementation",
   "target_platform": {
     "engine_family": "PostgreSQL",
     "supported_major_policy": "Qualify PostgreSQL 17 for the first implementation release, exercise PostgreSQL 16 as the supported predecessor upgrade path, and retain PostgreSQL 18 as forward-compatibility rehearsal evidence.",
     "qualified_major": 17,
     "supported_predecessor_major": 16,
     "forward_compatibility_rehearsal_major": 18,
-    "reference_majors": [17, 18],
+    "reference_majors": [16, 17, 18],
     "timezone": "UTC for canonical instants",
     "canonical_json_profile": "strict versioned RFC-8785-compatible profile",
     "digest_storage": "one SHA-256 semantic value represented as exactly 32-byte bytea or constrained lowercase 64-character hexadecimal text with algorithm canonicalization schema and scope metadata",
@@ -115,8 +115,8 @@
       "validation": [
         "Every nullable field has a documented semantic state.",
         "Status-dependent evidence fields form one valid combination.",
-        "Accepted, quarantined, delivered, released, satisfied, superseded, revoked, expired, and conditionally approved states carry their required evidence.",
-        "A conditional approval reaches release-ready only after each blocking condition carries accepted closure evidence."
+        "Quarantined, delivered, released, superseded, and expired states carry the data required to explain that state.",
+        "Discriminated unions and database checks keep state-specific fields coherent."
       ],
       "rule_ids": ["RULE-DATA-004"],
       "finding_ids": ["DBF-NULL-001"]
@@ -129,20 +129,19 @@
         "Authenticated context establishes one tenant scope.",
         "Every tenant-owned relation carries tenant identity and composite referential integrity.",
         "Default-deny row policies govern reads and writes.",
-        "Evidence records declare tenant or global program scope."
+        "Evaluation records declare tenant or deliberately de-identified program scope."
       ],
       "rule_ids": ["RULE-DBAS-001"],
       "finding_ids": ["DBF-TEN-001", "DBF-TEN-002"]
     },
     {
       "policy_id": "DATA-EVENT-001",
-      "primitive": "immutable_event_and_decision",
-      "storage": "append-only event and decision relations with versioned envelopes",
+      "primitive": "immutable_domain_event",
+      "storage": "append-only domain-event relations with versioned envelopes",
       "validation": [
-        "Business and recording time, actor, authorization decision, causality, schema version, and payload digest remain linked.",
-        "Corrections and decisions supersede prior meaning while preserving the original.",
-        "Exactly one current effective decision exists for each release and acceptance domain; revocation expiry return for evidence and open blocking conditions yield a pending state.",
-        "Current projections reconstruct from accepted events and snapshots.",
+        "Business and recording time, authenticated actor, causality, schema version, and payload digest remain linked.",
+        "Corrections supersede prior meaning while preserving the original event.",
+        "Current projections reconstruct from released domain events and snapshots.",
         "Application roles write through controlled version-guarded boundaries."
       ],
       "rule_ids": ["RULE-DBAS-002"],
@@ -151,28 +150,28 @@
     {
       "policy_id": "DATA-IO-001",
       "primitive": "idempotency_inbox_outbox",
-      "storage": "durable reservations, inbox arrivals, processing leases, outbox messages, attempts, and terminal dispositions",
+      "storage": "durable idempotency records, inbox arrivals, and a transactional outbox published through the Debezium Outbox Event Router",
       "validation": [
         "Idempotency binds tenant, operation scope, stable key, canonical request digest, and original result.",
         "Every arrival receives one ingress identity independent of extracted vendor identity.",
-        "Claims use bounded leases and recover after worker interruption.",
-        "Aggregate state, event, and outbox message commit through one transaction boundary."
+        "Aggregate state, event, and outbox message commit through one transaction boundary.",
+        "Debezium owns change-data capture and event routing; the application owns event meaning, idempotent consumers, and observable publication lag."
       ],
       "rule_ids": ["RULE-DBAS-003"],
       "finding_ids": ["DBF-IDEM-001", "DBF-IO-001", "DBF-INGRESS-001", "DBF-ART-001"]
     },
     {
       "policy_id": "DATA-EVIDENCE-001",
-      "primitive": "receipt_trace_and_open_evidence",
-      "storage": "versioned receipt, typed trace edge, status event, and closure-decision relations",
+      "primitive": "traceable_observation_and_provenance",
+      "storage": "versioned evaluation record, typed source lineage, and governed raw-artifact locator",
       "validation": [
-        "Receipt schema, serialization, persistence, and release report share one compatible contract.",
-        "Typed edges preserve asserted evidence relationships.",
-        "Open status, accountable role, due or review time, closure evidence, decision, and supersession remain linked.",
-        "Receipt authority and environment remain explicit."
+        "Record schema, serialization, persistence, and comparison report share one compatible contract.",
+        "Typed edges preserve asserted evidence relationships and source identity.",
+        "Environment, collection method, observation time, and data classification remain explicit.",
+        "Raw regulated or sensitive evidence remains in governed storage while the repository carries a redacted locator."
       ],
       "rule_ids": ["RULE-DBAS-002", "RULE-DBRL-001"],
-      "finding_ids": ["DBF-SCHEMA-001", "DBF-CONTRACT-001", "DBF-TRACE-001", "DBF-RECEIPT-001"]
+      "finding_ids": ["DBF-SCHEMA-001", "DBF-CONTRACT-001", "DBF-TRACE-001"]
     },
     {
       "policy_id": "DATA-ACCESS-001",
@@ -193,17 +192,15 @@
     {"entity": "specimen_event", "system_of_record": "immutable relational event stream", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-EVENT-001", "DATA-TENANT-001"]},
     {"entity": "custody_position_and_event", "system_of_record": "relational location projection and immutable transfer event", "required_policy_ids": ["DATA-ID-001", "DATA-EVENT-001", "DATA-IO-001", "DATA-TENANT-001"]},
     {"entity": "instrument_observation_and_measurement_provenance", "system_of_record": "relational observation plus content-addressed raw artifact", "required_policy_ids": ["DATA-TIME-001", "DATA-DIGEST-001", "DATA-MEASURE-001", "DATA-UNIT-001", "DATA-VOCAB-001"]},
-    {"entity": "approval_condition_signature_and_supersession_decision", "system_of_record": "immutable decision relation", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-EVENT-001", "DATA-NULL-001"]},
     {"entity": "integration_inbox_outbox", "system_of_record": "transactional relational work ledger", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-IO-001", "DATA-TENANT-001"]},
     {"entity": "artifact", "system_of_record": "object storage plus relational metadata and lineage", "required_policy_ids": ["DATA-ID-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-TENANT-001"]},
-    {"entity": "migration_control", "system_of_record": "relational migration state machine", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-EVIDENCE-001"]},
-    {"entity": "execution_and_open_receipt", "system_of_record": "versioned evidence ledger", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-EVIDENCE-001"]}
+    {"entity": "schema_migration_history", "system_of_record": "Flyway-managed flyway_schema_history plus immutable versioned SQL", "required_policy_ids": ["DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001"]},
+    {"entity": "evaluation_evidence", "system_of_record": "caller-supplied comparison record plus governed raw-artifact locator", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-EVIDENCE-001"]}
   ],
   "program_bindings": {
-    "requirement_ids": ["SPEC-DATA-001", "SPEC-DBAS-001"],
-    "rule_ids": ["RULE-DATA-001", "RULE-DATA-002", "RULE-DATA-003", "RULE-DATA-004", "RULE-DBAS-001", "RULE-DBAS-002", "RULE-DBAS-003", "RULE-DBAS-004", "RULE-DBRL-001"],
-    "scenario_ids": ["SCN-DATA-TIME-001", "SCN-DATA-MEASURE-001", "SCN-DB-TENANT-001", "SCN-DB-EVENT-001", "SCN-DB-IDEMPOTENCY-001"],
-    "open_receipt_ids": ["RCP-DB-DATA-001", "RCP-DB-TENANT-001", "RCP-DB-EVENT-001", "RCP-DB-CONCURRENCY-001"]
+    "requirement_ids": ["SPEC-DATA-001", "SPEC-DBAS-001", "SPEC-DBMG-001"],
+    "rule_ids": ["RULE-DATA-001", "RULE-DATA-002", "RULE-DATA-003", "RULE-DATA-004", "RULE-DBAS-001", "RULE-DBAS-002", "RULE-DBAS-003", "RULE-DBAS-004", "RULE-DBMG-001", "RULE-DBMG-002", "RULE-DBMG-003", "RULE-DBRL-001"],
+    "scenario_ids": ["SCN-DATA-TIME-001", "SCN-DATA-MEASURE-001", "SCN-DB-TENANT-001", "SCN-DB-EVENT-001", "SCN-DB-IDEMPOTENCY-001", "SCN-DB-MIGRATE-001", "SCN-DB-RECON-001"]
   },
   "metadata": {
     "created_at": "2026-08-04T14:00:00Z",

@@ -1753,7 +1753,7 @@ def validate_database_program(
                 "evidence_mode",
                 "authority",
                 "actual_acceptance_required",
-                "policy_ids",
+                "policy_coverage",
                 "accepted_divergence_ids",
             },
             f"data concordance representation[{index}]",
@@ -1779,7 +1779,6 @@ def validate_database_program(
             or representation["evidence_mode"] != evidence_mode
             or representation["authority"] != authority
             or representation["actual_acceptance_required"] is not True
-            or set(representation["policy_ids"]) != policy_ids
         ):
             raise ValueError(
                 f"data concordance representation {representation_id} posture differs"
@@ -1810,6 +1809,115 @@ def validate_database_program(
             != "git:318161f2cbb8e80383662949cb9e36b2b1c9a61f"
         ):
             raise ValueError("reference data concordance coordinate differs")
+        coverage = require_exact_object(
+            representation["policy_coverage"],
+            {
+                "coverage_state",
+                "covered_policy_ids",
+                "uncovered_policy_ids",
+                "native_binding",
+                "open_receipt_ids",
+            },
+            f"{representation_id}.policy_coverage",
+        )
+        covered_policy_ids = set(
+            require_string_list(
+                coverage["covered_policy_ids"],
+                f"{representation_id}.covered_policy_ids",
+                minimum=0,
+            )
+        )
+        uncovered_policy_ids = set(
+            require_string_list(
+                coverage["uncovered_policy_ids"],
+                f"{representation_id}.uncovered_policy_ids",
+                minimum=0,
+            )
+        )
+        if (
+            covered_policy_ids & uncovered_policy_ids
+            or covered_policy_ids | uncovered_policy_ids != policy_ids
+        ):
+            raise ValueError(
+                f"data concordance representation {representation_id} policy partition differs"
+            )
+        expected_coverage_state = (
+            "complete_native_binding"
+            if not uncovered_policy_ids
+            else "partial_native_binding"
+            if covered_policy_ids
+            else "native_binding_absent"
+        )
+        if coverage["coverage_state"] != expected_coverage_state:
+            raise ValueError(
+                f"data concordance representation {representation_id} coverage state differs"
+            )
+        native_binding = coverage["native_binding"]
+        if native_binding is None:
+            if covered_policy_ids:
+                raise ValueError(
+                    f"data concordance representation {representation_id} declares coverage without a native binding"
+                )
+        else:
+            native_binding = require_exact_object(
+                native_binding,
+                {"json_pointer", "collection_shape", "id_field"},
+                f"{representation_id}.native_binding",
+            )
+            require_string(
+                native_binding["json_pointer"],
+                f"{representation_id}.native_binding.json_pointer",
+            )
+            if native_binding["collection_shape"] not in {
+                "string_array",
+                "object_array",
+            }:
+                raise ValueError(
+                    f"data concordance representation {representation_id} native collection shape differs"
+                )
+            if native_binding["collection_shape"] == "string_array":
+                if native_binding["id_field"] is not None:
+                    raise ValueError(
+                        f"data concordance representation {representation_id} native string binding differs"
+                    )
+            else:
+                require_string(
+                    native_binding["id_field"],
+                    f"{representation_id}.native_binding.id_field",
+                )
+        if representation_id == "REP-PROGRAM-DATA-CONTRACT-001":
+            if native_binding != {
+                "json_pointer": "/primitive_policies",
+                "collection_shape": "object_array",
+                "id_field": "policy_id",
+            } or covered_policy_ids != policy_ids:
+                raise ValueError("program data concordance native policy binding differs")
+        coverage_receipt_ids = set(
+            require_string_list(
+                coverage["open_receipt_ids"],
+                f"{representation_id}.open_receipt_ids",
+                minimum=0,
+            )
+        )
+        known_database_receipt_ids = {
+            item.get("id")
+            for item in database_receipts.get("receipts", [])
+            if isinstance(item, dict)
+        }
+        if not coverage_receipt_ids <= known_database_receipt_ids:
+            raise ValueError(
+                f"data concordance representation {representation_id} references an unknown coverage receipt"
+            )
+        if uncovered_policy_ids and not (
+            coverage_receipt_ids or representation["accepted_divergence_ids"]
+        ):
+            raise ValueError(
+                f"data concordance representation {representation_id} leaves policy gaps without a resolution route"
+            )
+        if not uncovered_policy_ids and coverage_receipt_ids:
+            raise ValueError(
+                f"data concordance representation {representation_id} binds a coverage receipt without a policy gap"
+            )
         representation_divergences[representation_id] = set(
             representation["accepted_divergence_ids"]
         )

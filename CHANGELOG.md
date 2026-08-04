@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0 — Candidate
+
+- Centered the active repository on vendor-evaluation requirements, data
+  contracts, scenarios, and Practitioner Probes.
+- Preserved the Machine Node as documentary navigation and hydration.
+- Quarantined historical bounded-caller, acceptance, receipt, simulation,
+  Coordination Horizon, digest-lattice, branch-policy, and custom-validator
+  material outside the active build.
+- Replaced the cross-repository data concordance with direct vendor-evidence
+  questions and four descriptive conformance levels.
+- Configured Flyway for UTC timestamp versions and out-of-order application.
+- Selected the Debezium Outbox Event Router for cross-service transactional
+  outbox delivery while retaining application ownership of event semantics and
+  idempotent consumption.
+- Replaced bespoke repository gates with JSON Schema, unit tests, Vale, GitHub
+  Rulesets, and GitHub secret scanning and push protection.
+
 ## 0.3.2 — Candidate
 
 - Answered thirteen open database-design questions as explicit target decisions

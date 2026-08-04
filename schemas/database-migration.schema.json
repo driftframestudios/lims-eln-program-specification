@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://driftframestudios.example/schemas/lims-eln-database-migration-1.2.0.json",
+  "type": "object",
+  "required": ["migration_contract_id", "version", "status", "purpose", "data_contract_id", "engine_contract", "tool_boundary", "configuration", "migration_naming", "delivery_patterns", "transactional_outbox", "vendor_lifecycle", "ci_validation", "reconciliation_dimensions", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "migration_contract_id": {"const": "DATABASE-MIGRATION-CONTRACT-001"},
+    "version": {"const": "1.2.0"},
+    "status": {"const": "specified"},
+    "purpose": {"type": "string"},
+    "data_contract_id": {"const": "DATA-CONTRACT-001"},
+    "engine_contract": {"type": "object", "required": ["family", "qualified_major", "supported_predecessor_major", "forward_compatibility_rehearsal_major", "timezone", "encoding"]},
+    "tool_boundary": {
+      "type": "object",
+      "required": ["product", "version", "owns", "program_owns", "history_relation", "supported_commands"],
+      "properties": {
+        "product": {"const": "Flyway Community"},
+        "version": {"type": "string"},
+        "owns": {"type": "array", "minItems": 4, "items": {"type": "string"}},
+        "program_owns": {"type": "array", "minItems": 4, "items": {"type": "string"}},
+        "history_relation": {"const": "public.flyway_schema_history"},
+        "supported_commands": {"type": "array", "minItems": 3, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "configuration": {
+      "type": "object",
+      "required": ["outOfOrder", "validateMigrationNaming", "baselineOnMigrate", "cleanDisabled", "locations"],
+      "additionalProperties": false,
+      "properties": {
+        "outOfOrder": {"const": true},
+        "validateMigrationNaming": {"const": true},
+        "baselineOnMigrate": {"const": false},
+        "cleanDisabled": {"const": true},
+        "locations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      }
+    },
+    "migration_naming": {
+      "type": "object",
+      "required": ["versioned_pattern", "clock", "collision_policy", "repeatable_pattern", "repeatable_scope", "immutability"],
+      "properties": {
+        "versioned_pattern": {"const": "VyyyyMMddHHmmss__description.sql"},
+        "clock": {"const": "UTC"},
+        "collision_policy": {"type": "string"},
+        "repeatable_pattern": {"const": "R__description.sql"},
+        "repeatable_scope": {"type": "string"},
+        "immutability": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "delivery_patterns": {"type": "object", "required": ["schema_change", "expand", "transition", "contract"]},
+    "transactional_outbox": {
+      "type": "object",
+      "required": ["required", "scope", "application_responsibility", "delivery_framework", "connector_responsibility"],
+      "properties": {
+        "required": {"const": true},
+        "scope": {"type": "string"},
+        "application_responsibility": {"type": "array", "minItems": 3, "items": {"type": "string"}},
+        "delivery_framework": {"const": "Debezium Outbox Event Router"},
+        "connector_responsibility": {"type": "array", "minItems": 2, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "vendor_lifecycle": {"type": "object"},
+    "ci_validation": {"type": "object", "required": ["database", "matrix", "checks"]},
+    "reconciliation_dimensions": {"type": "array", "minItems": 6, "items": {"type": "string"}, "uniqueItems": true},
+    "metadata": {"type": "object"}
+  }
+}

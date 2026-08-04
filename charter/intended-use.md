@@ -1,37 +1,22 @@
-# Intended-Use and Applicability Charter
+# Intended use
 
-## Program purpose
+The program specification supports comparative evaluation of LIMS and ELN products,
+vendor adapters, and the program-owned integration and data platform.
 
-The constellation prepares and evaluates a vendor-neutral laboratory
-information architecture for specimen lifecycle, custody, instrument ingress,
-scientific review, release, migration, recovery, and evidence.
+It helps collaborators:
 
-## Context profiles
+- define canonical scientific and operational data semantics;
+- form reproducible configured-environment questions;
+- compare supported vendor APIs, SDKs, exports, imports, and lifecycle paths;
+- examine migration, restore, data exit, tenant isolation, event delivery, and
+  operating characteristics;
+- connect technical differences to scientific, laboratory, executive, and
+  evaluator material effects.
 
-Every implementation release selects one named profile:
+The repository supplies technical questions and factual comparison inputs. The
+organization’s established scientific, Quality, Regulatory, security, procurement,
+and product processes make consequential decisions.
 
-- research and development;
-- GLP study operation;
-- GCP clinical investigation;
-- GMP quality-control laboratory;
-- clinical-diagnostic laboratory.
-
-The selected profile determines record significance, signature meaning,
-retention, review, validation, and accountable acceptance. Profile changes
-invalidate mapped receipts and initiate selective requalification.
-
-## Intended users
-
-- laboratory scientists and technologists;
-- pathologists and scientific reviewers;
-- laboratory operations and system owners;
-- integration, data, platform, and security engineers;
-- Quality and Regulatory reviewers;
-- executive and evaluative collaborators.
-
-## Success state
-
-The system preserves specimen identity, scientific meaning, attributable
-actions, exact replay behavior, recoverability, tenant boundaries, and
-decision-grade evidence across normal, boundary, failure, and recovery paths.
+Raw regulated or sensitive evidence stays in governed storage. Repository examples
+use synthetic or approved de-identified data and redacted locators.
 

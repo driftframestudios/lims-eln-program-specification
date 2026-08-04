@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://driftframestudios.example/schemas/lims-eln-scenarios-0.4.0.json",
+  "type": "object",
+  "required": ["version", "purpose", "scenarios"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"const": "0.4.0"},
+    "purpose": {"type": "string"},
+    "scenarios": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "object",
+        "required": ["id", "requirement_id", "rule_id", "title", "given", "when", "then", "failure_twin", "recovery", "evaluation_dimensions"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^SCN-[A-Z]+(?:-[A-Z]+)*-[0-9]{3}$"},
+          "requirement_id": {"type": "string", "pattern": "^SPEC-[A-Z]+-[0-9]{3}$"},
+          "rule_id": {"type": "string", "pattern": "^RULE-[A-Z]+-[0-9]{3}$"},
+          "title": {"type": "string"},
+          "given": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "when": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "then": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "failure_twin": {"type": "string"},
+          "recovery": {"type": "string"},
+          "evaluation_dimensions": {"type": "array", "minItems": 2, "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    }
+  }
+}

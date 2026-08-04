@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://driftframestudios.example/schemas/lims-eln-probes-0.4.0.json",
+  "type": "object",
+  "required": ["version", "catalog_id", "purpose", "level_contract", "probes"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"const": "0.4.0"},
+    "catalog_id": {"const": "LIMS-ELN-PRACTITIONER-PROBES-001"},
+    "purpose": {"type": "string"},
+    "level_contract": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["level", "focus"],
+        "additionalProperties": false,
+        "properties": {
+          "level": {"type": "integer", "minimum": 1, "maximum": 5},
+          "focus": {"type": "string"}
+        }
+      }
+    },
+    "probes": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "required": ["probe_id", "title", "question", "material_effect", "mechanisms", "evaluation_levels", "evidence_sources"],
+        "additionalProperties": false,
+        "properties": {
+          "probe_id": {"type": "string", "pattern": "^PRB-[A-Z]+-[0-9]{3}$"},
+          "title": {"type": "string"},
+          "question": {"type": "string"},
+          "material_effect": {"type": "string"},
+          "mechanisms": {"type": "array", "minItems": 3, "items": {"type": "string"}},
+          "evaluation_levels": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"type": "string"}},
+          "evidence_sources": {"type": "array", "minItems": 3, "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

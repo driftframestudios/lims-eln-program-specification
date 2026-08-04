@@ -1,513 +1,152 @@
 {
   "concordance_id": "DATA-CONTRACT-CONCORDANCE-001",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "specified",
-  "authority": "program_specification",
+  "purpose": "Apply the canonical data contract consistently during LIMS and ELN vendor evaluation",
   "canonical_contract": {
     "contract_id": "DATA-CONTRACT-001",
     "version": "1.1.0",
     "path": "specifications/data-primitives.json"
   },
-  "completion_claim": {
-    "current_claim": "Versioned Flyway SQL has completed clean-install and populated-predecessor upgrade rehearsals in disposable synthetic PostgreSQL environments.",
-    "current_evidence_stage": "locally_verified_synthetic_environment",
-    "operational_claim_gate": "A durable configured environment advances only after migration, reconciliation, recovery, security, observability, and accountable acceptance receipts bind one immutable release coordinate.",
-    "production_authorization_effect": "none"
+  "conformance_levels": [
+    {
+      "level": "documented",
+      "meaning": "Vendor documentation or a supported API contract describes the behavior."
+    },
+    {
+      "level": "configured",
+      "meaning": "The behavior is visible in a named evaluation environment."
+    },
+    {
+      "level": "exercised",
+      "meaning": "A repeatable test demonstrates the behavior with representative synthetic data."
+    },
+    {
+      "level": "observed",
+      "meaning": "A production-representative run supplies measurements and raw-evidence locators."
+    }
+  ],
+  "policy_checks": [
+    {
+      "policy_id": "DATA-TIME-001",
+      "questions": [
+        "Which fields represent instants, calendar dates, durations, and source-local timestamps?",
+        "Do API and export round trips preserve offsets, precision, occurrence time, and recording time?"
+      ],
+      "suggested_evidence": ["API schema", "timezone round-trip fixture", "export/import result"]
+    },
+    {
+      "policy_id": "DATA-ID-001",
+      "questions": [
+        "How are internal identities separated from source-system identifiers?",
+        "Which tenant, namespace, normalization, and uniqueness rules apply to external identifiers?"
+      ],
+      "suggested_evidence": ["identifier schema", "duplicate and collision fixture", "cross-tenant fixture"]
+    },
+    {
+      "policy_id": "DATA-DIGEST-001",
+      "questions": [
+        "Which bytes or canonical document does each digest cover?",
+        "Are algorithm, encoding, canonicalization profile, schema version, and content scope explicit?"
+      ],
+      "suggested_evidence": ["artifact manifest", "digest round-trip fixture"]
+    },
+    {
+      "policy_id": "DATA-MEASURE-001",
+      "questions": [
+        "Can the platform preserve finite decimal precision, qualifiers, reference intervals, and detection limits?",
+        "Can a reviewer reconstruct canonical values from raw values and conversion metadata?"
+      ],
+      "suggested_evidence": ["assay fixture", "boundary-value test", "normalized readback"]
+    },
+    {
+      "policy_id": "DATA-UNIT-001",
+      "questions": [
+        "Does the platform retain source units alongside canonical UCUM codes?",
+        "Are mapping revision, conversion rule, and rounding policy versioned?"
+      ],
+      "suggested_evidence": ["unit mapping export", "conversion fixture"]
+    },
+    {
+      "policy_id": "DATA-VOCAB-001",
+      "questions": [
+        "Can evolving scientific vocabularies carry source, canonical code, and version?",
+        "Can operational states enforce a defined transition set?"
+      ],
+      "suggested_evidence": ["vocabulary configuration", "state transition fixture"]
+    },
+    {
+      "policy_id": "DATA-JSON-001",
+      "questions": [
+        "Which payloads need byte fidelity and which need queryable JSON semantics?",
+        "How are duplicate keys, non-finite numbers, unsupported depth, and schema versions handled?"
+      ],
+      "suggested_evidence": ["API contract", "malformed-payload fixture", "raw payload export"]
+    },
+    {
+      "policy_id": "DATA-NULL-001",
+      "questions": [
+        "What does each nullable field mean in every lifecycle state?",
+        "Can database or schema constraints enforce state-specific field combinations?"
+      ],
+      "suggested_evidence": ["nullability matrix", "invalid-state fixture"]
+    },
+    {
+      "policy_id": "DATA-TENANT-001",
+      "questions": [
+        "How does authenticated context establish tenant scope?",
+        "Do keys, references, APIs, analytics, exports, and diagnostics preserve that scope?"
+      ],
+      "suggested_evidence": ["tenant boundary design", "cross-tenant test", "export fixture"]
+    },
+    {
+      "policy_id": "DATA-EVENT-001",
+      "questions": [
+        "Can corrections preserve the original event and reconstruct the current projection?",
+        "Are event identity, causality, schema version, actor, occurrence time, and recording time available?"
+      ],
+      "suggested_evidence": ["audit export", "correction fixture", "projection replay"]
+    },
+    {
+      "policy_id": "DATA-IO-001",
+      "questions": [
+        "Which writes support stable idempotency identities and authoritative readback?",
+        "Can domain state and an outbox event commit atomically and flow through a supported connector?"
+      ],
+      "suggested_evidence": ["ambiguous-write fixture", "Debezium connector configuration", "duplicate-delivery test"]
+    },
+    {
+      "policy_id": "DATA-EVIDENCE-001",
+      "questions": [
+        "Can each comparison result identify its environment, collection method, observation time, and source artifact?",
+        "Can the repository retain redacted metadata while raw regulated evidence stays in governed storage?"
+      ],
+      "suggested_evidence": ["comparison record", "redacted artifact manifest"]
+    },
+    {
+      "policy_id": "DATA-ACCESS-001",
+      "questions": [
+        "Which representative workloads determine indexes and latency objectives?",
+        "Which measured volume, retention, and maintenance thresholds justify partitioning?"
+      ],
+      "suggested_evidence": ["query plans", "load-test result", "retention model"]
+    }
+  ],
+  "comparison_record": {
+    "required_fields": [
+      "vendor",
+      "product_version",
+      "environment_id",
+      "policy_id",
+      "conformance_level",
+      "observation",
+      "source_locator",
+      "observed_at"
+    ],
+    "comparison_rule": "Each expected measurement carries a present or unmeasured status; documented and exercised evidence retain distinct conformance levels."
   },
-  "target_decisions": [
-    {
-      "decision_id": "DCC-DECISION-001",
-      "topic": "completion_claim",
-      "decision": "Use migration-executable in synthetic CI as the present claim. Reserve staging-ready, vendor-qualified, and production-migrated claims for their corresponding observed receipt stages.",
-      "acceptance_criteria": [
-        "The claim names the environment class, data class, PostgreSQL major, Flyway coordinate, migration path, and immutable execution receipt.",
-        "Every stronger claim resolves all receipts required by that evidence stage.",
-        "Simulated and synthetic evidence retain their declared authority in reports and manifests."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-002",
-      "topic": "first_durable_environment",
-      "decision": "Use a production-equivalent staging rehearsal environment as the first durable target. Operations owns the environment, Data Migration owns source and predecessor identity, and Quality witnesses evidence integrity.",
-      "acceptance_criteria": [
-        "The receipt binds an environment identifier, exact predecessor catalog digest, representative source snapshot, engine image, configuration digest, and migration head.",
-        "The environment uses production-equivalent roles, row security, storage, encryption, backup, and observability topology.",
-        "The rehearsal preserves a recovery point and a bounded rollback or forward-remediation route."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-003",
-      "topic": "execution_receipt",
-      "decision": "One execution receipt binds the repository commit and tree, Flyway image digest, PostgreSQL image digest and major, immutable migration checksums, predecessor and target catalog digests, fixture or snapshot identity, command results, test results, timestamps, and evidence authority.",
-      "acceptance_criteria": [
-        "The receipt supersedes earlier runner evidence through an explicit predecessor receipt identifier.",
-        "The artifact remains retained for the release evidence lifetime and verifies through a published digest.",
-        "A neutral reviewer can reproduce the migration coordinate from released artifacts."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-004",
-      "topic": "release_promotion",
-      "decision": "Promote through reviewed pull requests into the protected integration branch, settle cross-repository concordance, freeze migration bytes, then create protected release coordinates and a successor promotion receipt.",
-      "acceptance_criteria": [
-        "Every repository release points to immutable commits and trees.",
-        "Applied migration bytes retain their checksum; remediation arrives through a successor migration.",
-        "The promotion receipt binds gate outcomes, open residuals, accountable decisions, and requalification triggers."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-005",
-      "topic": "semantic_crosswalk",
-      "decision": "Treat this concordance as the canonical machine-readable crosswalk from each DATA-CONTRACT-001 policy to its reference, implementation, simulation, and governance representation and to every accepted divergence.",
-      "acceptance_criteria": [
-        "Every canonical policy appears exactly once in each representation coverage set.",
-        "Every non-canonical representation state points to an accepted divergence or an open receipt.",
-        "Pinned-source validation compares the exact simulation and governance representation bytes before release."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-006",
-      "topic": "identity",
-      "decision": "Store internal aggregate, event, actor, tenant, and relationship identities as UUID. Store externally meaningful identities as normalized constrained text scoped by tenant and source-system identity.",
-      "acceptance_criteria": [
-        "Internal and external identities use separate columns and value types.",
-        "Tenant-owned foreign keys preserve tenant identity through composite keys.",
-        "External identity constraints cover Unicode normalization, whitespace, length, collation, source namespace, and uniqueness."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-007",
-      "topic": "digest_representation",
-      "decision": "Treat SHA-256 as one 32-byte semantic value. PostgreSQL representations may use an exactly 32-byte bytea domain or constrained lowercase 64-character hexadecimal text when algorithm, canonicalization version, schema version, and content scope remain bound.",
-      "acceptance_criteria": [
-        "Database domains enforce bytea length or lowercase hexadecimal length and alphabet while evidence envelopes enforce metadata completeness.",
-        "Bytea and hexadecimal representations round-trip without information loss and compare through one canonical lowercase hexadecimal projection.",
-        "Raw-byte, canonical-document, semantic-content, and aggregate digests carry distinct scope identifiers."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-008",
-      "topic": "scientific_numeric_profiles",
-      "decision": "Use numeric(38,18) as the maximum canonical decimal envelope. Each versioned assay, analyte, and method profile declares its effective precision, scale, range, qualifier vocabulary, detection limits, and rounding policy.",
-      "acceptance_criteria": [
-        "Stored values are finite and conform to the bound profile before scientific release.",
-        "A narrower physical numeric type is conformant when its bound profile fits exactly and round-trip evidence proves value preservation.",
-        "Migration reconciliation reports source lexeme, parsed value, canonical value, and any owned exception."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-009",
-      "topic": "measurement_provenance",
-      "decision": "Preserve raw value and unit, canonical value and UCUM code, vocabulary and mapping revision, conversion formula and digest, rounding rule, qualifier, reference interval, detection limits, analyte, assay, method revision, occurrence time, recording time, and source artifact lineage for every reportable measurement.",
-      "acceptance_criteria": [
-        "Raw and canonical measurements remain linked through immutable provenance.",
-        "Unit compatibility and conversion profiles resolve before scientific release.",
-        "A neutral reviewer can reconstruct the reported value from source evidence and released mappings."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-010",
-      "topic": "conditional_acceptance_and_supersession",
-      "decision": "A conditional approval remains release-blocking until every condition has an owner, due or expiry time, blocking classification, closure evidence, and accepted closure decision. Decisions remain append-only and identify superseded, revoked, or expired predecessors.",
-      "acceptance_criteria": [
-        "Exactly one current effective decision exists for each release and acceptance domain.",
-        "Revocation, expiry, return for evidence, and an open blocking condition yield a pending release state.",
-        "Decision history reconstructs the actor, authority, reason, evidence digest, occurrence time, recording time, and supersession chain."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-011",
-      "topic": "vendor_release_scope",
-      "decision": "The first observed release qualifies the canonical PostgreSQL service and the concrete LabKey adapter. Sapio and Benchling remain contract-tested simulation targets until configured-environment adapters close their vendor receipts.",
-      "acceptance_criteria": [
-        "Each qualified adapter publishes stable request identity, idempotency, readback, reconciliation, retry, rate-limit, and duplicate-suppression behavior.",
-        "Vendor SDK and API versions, tenant configuration, credentials boundary, and support path bind the release receipt.",
-        "Reports distinguish executable adapter scope from simulated compatibility."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-012",
-      "topic": "cutover_restore_and_data_exit",
-      "decision": "Execute inventory, snapshot, expand, keyset backfill, dual-read verification, delta drain, write-authority transfer, observation, forward remediation or rollback, clean restore, and neutral-reader data exit as one receipt-bearing cutover protocol.",
-      "acceptance_criteria": [
-        "The write-authority transfer event identifies the final source boundary and first target boundary.",
-        "Restore reconstructs database data, roles, grants, row policies, Flyway history, objects, configuration references, keys, audit evidence, and vendor projections.",
-        "Measured RTO and RPO, reconciliation thresholds, residual exceptions, and reviewer decisions bind the release."
-      ]
-    },
-    {
-      "decision_id": "DCC-DECISION-013",
-      "topic": "postgresql_support_and_evidence_authority",
-      "decision": "Qualify PostgreSQL 17 as the first implementation release major, exercise PostgreSQL 16 as the supported predecessor upgrade path, and retain PostgreSQL 18 as forward-compatibility rehearsal evidence. Each artifact declares specified, simulated, synthetic-observed, configured-observed, or accountably accepted authority.",
-      "acceptance_criteria": [
-        "The release manifest names PostgreSQL 17 and its exact image digest as the qualified runtime.",
-        "PostgreSQL 16 upgrade and PostgreSQL 18 rehearsal results retain their distinct evidence purposes.",
-        "Intended-use, scientific, Quality, Regulatory, Security, and Operations claims advance only through their accountable observed receipts."
-      ]
-    }
-  ],
-  "representations": [
-    {
-      "representation_id": "REP-PROGRAM-DATA-CONTRACT-001",
-      "repository": "driftframestudios/lims-eln-program-specification",
-      "constellation_role": "specification",
-      "representation_kind": "canonical_program_contract",
-      "artifact_path": "specifications/data-primitives.json",
-      "native_artifact_id": "DATA-CONTRACT-001",
-      "native_artifact_version": "1.1.0",
-      "artifact_sha256": "sha256:8174a2e50ce338a86874c213abd792bf7b2cf1fdba156fc8d1a940ae3d155639",
-      "coordinate_status": "local_digest_bound",
-      "coordinate_binding": "release/database-release-manifest.json",
-      "conformance_state": "canonical",
-      "evidence_mode": "specified",
-      "authority": "program_specification",
-      "actual_acceptance_required": true,
-      "policy_ids": [
-        "DATA-TIME-001",
-        "DATA-ID-001",
-        "DATA-DIGEST-001",
-        "DATA-MEASURE-001",
-        "DATA-UNIT-001",
-        "DATA-VOCAB-001",
-        "DATA-JSON-001",
-        "DATA-NULL-001",
-        "DATA-TENANT-001",
-        "DATA-EVENT-001",
-        "DATA-IO-001",
-        "DATA-EVIDENCE-001",
-        "DATA-ACCESS-001"
-      ],
-      "accepted_divergence_ids": []
-    },
-    {
-      "representation_id": "REP-REFERENCE-DATABASE-RELEASE-001",
-      "repository": "driftframestudios/prototype-exemplars",
-      "constellation_role": "reference_pack",
-      "representation_kind": "executable_reference_schema",
-      "artifact_path": "lims-eln-enterprise-reference-v0.1/database/release-provenance.json",
-      "native_artifact_id": "lims-eln-database-v0.3.0",
-      "native_artifact_version": "1.0.0",
-      "artifact_sha256": "sha256:d4dc0b63238cc613f086852349a9d5a556fb0d99e7e6ee95e455286d59517a70",
-      "coordinate_status": "immutable_source_commit",
-      "coordinate_binding": "git:318161f2cbb8e80383662949cb9e36b2b1c9a61f",
-      "conformance_state": "qualified_reference",
-      "evidence_mode": "repository_observed",
-      "authority": "reference_implementation",
-      "actual_acceptance_required": true,
-      "policy_ids": [
-        "DATA-TIME-001",
-        "DATA-ID-001",
-        "DATA-DIGEST-001",
-        "DATA-MEASURE-001",
-        "DATA-UNIT-001",
-        "DATA-VOCAB-001",
-        "DATA-JSON-001",
-        "DATA-NULL-001",
-        "DATA-TENANT-001",
-        "DATA-EVENT-001",
-        "DATA-IO-001",
-        "DATA-EVIDENCE-001",
-        "DATA-ACCESS-001"
-      ],
-      "accepted_divergence_ids": [
-        "DCC-DIVERGENCE-001",
-        "DCC-DIVERGENCE-002",
-        "DCC-DIVERGENCE-006",
-        "DCC-DIVERGENCE-008"
-      ]
-    },
-    {
-      "representation_id": "REP-IMPLEMENTATION-DATABASE-RELEASE-001",
-      "repository": "driftframestudios/lims-eln-enterprise-implementation",
-      "constellation_role": "implementation",
-      "representation_kind": "active_release_projection",
-      "artifact_path": "database/flyway-release.json",
-      "native_artifact_id": "FLYWAY-RELEASE-POSTGRESQL-001",
-      "native_artifact_version": "1.0.0",
-      "artifact_sha256": "sha256:4ce51592487b4b3f42e8c6120a557546cf2dac4f1ab75486fd637d9c5b9463f7",
-      "coordinate_status": "pending_release_projection",
-      "coordinate_binding": "constellation.lock.json#implementation",
-      "conformance_state": "pending_observed_release",
-      "evidence_mode": "observed_execution_synthetic_environment",
-      "authority": "implementation_execution",
-      "actual_acceptance_required": true,
-      "policy_ids": [
-        "DATA-TIME-001",
-        "DATA-ID-001",
-        "DATA-DIGEST-001",
-        "DATA-MEASURE-001",
-        "DATA-UNIT-001",
-        "DATA-VOCAB-001",
-        "DATA-JSON-001",
-        "DATA-NULL-001",
-        "DATA-TENANT-001",
-        "DATA-EVENT-001",
-        "DATA-IO-001",
-        "DATA-EVIDENCE-001",
-        "DATA-ACCESS-001"
-      ],
-      "accepted_divergence_ids": [
-        "DCC-DIVERGENCE-003",
-        "DCC-DIVERGENCE-005",
-        "DCC-DIVERGENCE-006",
-        "DCC-DIVERGENCE-008"
-      ]
-    },
-    {
-      "representation_id": "REP-SIMULATION-DATABASE-ORACLE-V2",
-      "repository": "driftframestudios/lims-eln-simulated-final-state",
-      "constellation_role": "simulation",
-      "representation_kind": "simulated_oracle",
-      "artifact_path": "database/final-state-database-oracle-v2.json",
-      "native_artifact_id": "ORACLE-DATABASE-FINAL-STATE-002",
-      "native_artifact_version": "2.0.0",
-      "artifact_sha256": "sha256:a4e469655c640bfc4f7f2ea7dd88215899983f400d83b75d9de64e4a2fa93c16",
-      "coordinate_status": "pending_release_projection",
-      "coordinate_binding": "constellation.lock.json#simulation",
-      "conformance_state": "simulated_conformant_candidate",
-      "evidence_mode": "simulated",
-      "authority": "simulation_only",
-      "actual_acceptance_required": true,
-      "policy_ids": [
-        "DATA-TIME-001",
-        "DATA-ID-001",
-        "DATA-DIGEST-001",
-        "DATA-MEASURE-001",
-        "DATA-UNIT-001",
-        "DATA-VOCAB-001",
-        "DATA-JSON-001",
-        "DATA-NULL-001",
-        "DATA-TENANT-001",
-        "DATA-EVENT-001",
-        "DATA-IO-001",
-        "DATA-EVIDENCE-001",
-        "DATA-ACCESS-001"
-      ],
-      "accepted_divergence_ids": [
-        "DCC-DIVERGENCE-004",
-        "DCC-DIVERGENCE-005",
-        "DCC-DIVERGENCE-006",
-        "DCC-DIVERGENCE-008"
-      ]
-    },
-    {
-      "representation_id": "REP-GOVERNANCE-DATA-CONTRACT-001",
-      "repository": "driftframestudios/site-reading-governance",
-      "constellation_role": "governance",
-      "representation_kind": "generic_executable_contract_example",
-      "artifact_path": "examples/data-contract.json",
-      "native_artifact_id": "CONTRACT-LABORATORY-CORE-001",
-      "native_artifact_version": "2.0.0",
-      "artifact_sha256": "sha256:d451c64d47bf9e8b855a87e5a3ab9ca3f0f6f294fb7e9edd4951a32537dc2d00",
-      "coordinate_status": "pending_release_projection",
-      "coordinate_binding": "constellation.lock.json#governance",
-      "conformance_state": "governance_schema_example",
-      "evidence_mode": "example",
-      "authority": "governance_schema_example",
-      "actual_acceptance_required": true,
-      "policy_ids": [
-        "DATA-TIME-001",
-        "DATA-ID-001",
-        "DATA-DIGEST-001",
-        "DATA-MEASURE-001",
-        "DATA-UNIT-001",
-        "DATA-VOCAB-001",
-        "DATA-JSON-001",
-        "DATA-NULL-001",
-        "DATA-TENANT-001",
-        "DATA-EVENT-001",
-        "DATA-IO-001",
-        "DATA-EVIDENCE-001",
-        "DATA-ACCESS-001"
-      ],
-      "accepted_divergence_ids": [
-        "DCC-DIVERGENCE-007",
-        "DCC-DIVERGENCE-008"
-      ]
-    }
-  ],
-  "accepted_divergences": [
-    {
-      "divergence_id": "DCC-DIVERGENCE-001",
-      "title": "Legacy text timestamps remain migration inputs",
-      "representation_ids": [
-        "REP-REFERENCE-DATABASE-RELEASE-001"
-      ],
-      "policy_ids": [
-        "DATA-TIME-001"
-      ],
-      "status": "accepted_predecessor_only",
-      "conditions": [
-        "Text timestamp columns remain inside the declared legacy predecessor surface.",
-        "The migration validates explicit-offset canonical forms and writes finite timestamptz target values.",
-        "Canonical schema verification rejects temporal text columns."
-      ],
-      "requalification_trigger": "A canonical or post-cutover relation exposes a temporal text primitive."
-    },
-    {
-      "divergence_id": "DCC-DIVERGENCE-002",
-      "title": "Narrower reference numeric envelope",
-      "representation_ids": [
-        "REP-REFERENCE-DATABASE-RELEASE-001"
-      ],
-      "policy_ids": [
-        "DATA-MEASURE-001"
-      ],
-      "status": "accepted_profile_bound",
-      "conditions": [
-        "The bound assay profile uses scale twelve or less.",
-        "Round-trip and range tests prove exact value preservation.",
-        "Profile changes beyond the envelope trigger a successor migration."
-      ],
-      "requalification_trigger": "A qualified assay profile requires precision or scale beyond the physical envelope."
-    },
-    {
-      "divergence_id": "DCC-DIVERGENCE-003",
-      "title": "Digest bytea and hexadecimal physical representations",
-      "representation_ids": [
-        "REP-IMPLEMENTATION-DATABASE-RELEASE-001"
-      ],
-      "policy_ids": [
-        "DATA-DIGEST-001"
-      ],
-      "status": "accepted_physical_boundary_mapping",
-      "conditions": [
-        "Bytea domains enforce exactly 32 bytes and text domains enforce exactly 64 lowercase hexadecimal characters.",
-        "Algorithm canonicalization version schema version and content scope remain bound.",
-        "Round-trip and comparison tests prove one semantic digest across both representations."
-      ],
-      "requalification_trigger": "A digest representation lacks shape enforcement or algorithm canonicalization schema and scope metadata."
-    },
-    {
-      "divergence_id": "DCC-DIVERGENCE-004",
-      "title": "Simulation authority remains distinct",
-      "representation_ids": [
-        "REP-SIMULATION-DATABASE-ORACLE-V2"
-      ],
-      "policy_ids": [
-        "DATA-EVIDENCE-001"
-      ],
-      "status": "accepted_authority_boundary",
-      "conditions": [
-        "The oracle declares simulated evidence and simulation-only authority.",
-        "Actual acceptance remains required.",
-        "Production authorization effect remains none."
-      ],
-      "requalification_trigger": "A simulation artifact presents environment-observed or production-authorizing authority."
-    },
-    {
-      "divergence_id": "DCC-DIVERGENCE-005",
-      "title": "Vendor adapter breadth follows evidence stage",
-      "representation_ids": [
-        "REP-IMPLEMENTATION-DATABASE-RELEASE-001",
-        "REP-SIMULATION-DATABASE-ORACLE-V2"
-      ],
-      "policy_ids": [
-        "DATA-IO-001",
-        "DATA-EVIDENCE-001"
-      ],
-      "status": "accepted_scope_boundary",
-      "conditions": [
-        "Observed release claims cover the concrete LabKey adapter.",
-        "Sapio and Benchling coverage remains contract-tested simulation until configured environments close their receipts.",
-        "Every report names executable and simulated adapter scope separately."
-      ],
-      "requalification_trigger": "A release claim includes a vendor whose configured-environment receipt remains open."
-    },
-    {
-      "divergence_id": "DCC-DIVERGENCE-006",
-      "title": "PostgreSQL majors serve distinct qualification purposes",
-      "representation_ids": [
-        "REP-REFERENCE-DATABASE-RELEASE-001",
-        "REP-IMPLEMENTATION-DATABASE-RELEASE-001",
-        "REP-SIMULATION-DATABASE-ORACLE-V2"
-      ],
-      "policy_ids": [
-        "DATA-TIME-001",
-        "DATA-JSON-001",
-        "DATA-TENANT-001",
-        "DATA-ACCESS-001"
-      ],
-      "status": "accepted_evidence_role",
-      "conditions": [
-        "PostgreSQL 17 is the qualified implementation runtime.",
-        "PostgreSQL 16 proves predecessor upgrade compatibility.",
-        "PostgreSQL 18 provides forward-compatibility rehearsal evidence."
-      ],
-      "requalification_trigger": "The supported runtime major or predecessor policy changes."
-    },
-    {
-      "divergence_id": "DCC-DIVERGENCE-007",
-      "title": "Governance remains a generic reusable contract example",
-      "representation_ids": [
-        "REP-GOVERNANCE-DATA-CONTRACT-001"
-      ],
-      "policy_ids": [
-        "DATA-TIME-001",
-        "DATA-ID-001",
-        "DATA-DIGEST-001",
-        "DATA-MEASURE-001",
-        "DATA-UNIT-001",
-        "DATA-VOCAB-001",
-        "DATA-JSON-001",
-        "DATA-NULL-001",
-        "DATA-TENANT-001",
-        "DATA-EVENT-001",
-        "DATA-IO-001",
-        "DATA-EVIDENCE-001",
-        "DATA-ACCESS-001"
-      ],
-      "status": "accepted_abstraction_boundary",
-      "conditions": [
-        "The schema expresses every canonical semantic category without binding one vendor implementation.",
-        "The example uses representative laboratory entities and internally consistent relationships.",
-        "Implementation-specific release evidence remains outside governance authority."
-      ],
-      "requalification_trigger": "The governance example omits a canonical semantic category or presents implementation authority."
-    },
-    {
-      "divergence_id": "DCC-DIVERGENCE-008",
-      "title": "Internal and external identity physical representations",
-      "representation_ids": [
-        "REP-REFERENCE-DATABASE-RELEASE-001",
-        "REP-IMPLEMENTATION-DATABASE-RELEASE-001",
-        "REP-SIMULATION-DATABASE-ORACLE-V2",
-        "REP-GOVERNANCE-DATA-CONTRACT-001"
-      ],
-      "policy_ids": [
-        "DATA-ID-001",
-        "DATA-TENANT-001"
-      ],
-      "status": "accepted_semantic_boundary_mapping",
-      "conditions": [
-        "Internal aggregate event actor tenant and relationship identity uses UUID.",
-        "External identity uses normalized constrained text scoped by tenant and source namespace.",
-        "Composite uniqueness and referential integrity preserve tenant and source meaning across both representations."
-      ],
-      "requalification_trigger": "An internal identity uses generic text or an external identity loses tenant source namespace normalization or length constraints."
-    }
-  ],
-  "release_gates": [
-    {
-      "gate_id": "DCC-GATE-COVERAGE",
-      "criterion": "Every representation covers every canonical primitive policy and resolves each divergence through this registry."
-    },
-    {
-      "gate_id": "DCC-GATE-PINNED-BYTES",
-      "criterion": "Pinned simulation and governance artifact bytes equal their concordance digests."
-    },
-    {
-      "gate_id": "DCC-GATE-AUTHORITY",
-      "criterion": "Each evidence artifact retains its declared authority and production-authorization effect."
-    },
-    {
-      "gate_id": "DCC-GATE-OBSERVED-RELEASE",
-      "criterion": "The implementation release advances after all required observed database receipts and accountable decisions bind one immutable coordinate."
-    }
-  ],
   "metadata": {
-    "created_at": "2026-08-04T20:00:00Z",
-    "governance_schema_release": "2.0.2",
-    "revalidation_trigger": "A canonical policy, representation artifact, accepted divergence, supported PostgreSQL major, vendor scope, or evidence-authority decision changes."
+    "updated_at": "2026-08-04T00:00:00Z",
+    "next_review_trigger": "A data primitive, vendor evaluation method, or supported integration changes."
   }
 }

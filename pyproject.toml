@@ -1,8 +1,11 @@
 [project]
 name = "lims-eln-program-specification"
-version = "0.3.2"
-description = "Executable specification and forecast control plane for comparative LIMS/ELN delivery"
+version = "0.4.0"
+description = "Vendor-evaluation requirements and data contracts for comparative LIMS/ELN delivery"
 requires-python = ">=3.12"
+
+[project.optional-dependencies]
+validation = ["jsonschema==4.26.0"]
 
 [tool.unittest]
 start-directory = "tests"

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://driftframestudios.example/schemas/lims-eln-data-primitives-1.1.0.json",
+  "type": "object",
+  "required": ["contract_id", "version", "status", "purpose", "target_platform", "primitive_policies", "entity_bindings", "program_bindings", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {"const": "DATA-CONTRACT-001"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "status": {"const": "specified"},
+    "purpose": {"type": "string", "minLength": 20},
+    "target_platform": {
+      "type": "object",
+      "required": ["engine_family", "qualified_major", "supported_predecessor_major", "forward_compatibility_rehearsal_major", "reference_majors", "timezone", "canonical_json_profile", "digest_storage", "decimal_envelope", "unit_vocabulary"],
+      "properties": {
+        "engine_family": {"const": "PostgreSQL"},
+        "qualified_major": {"type": "integer", "minimum": 16},
+        "supported_predecessor_major": {"type": "integer", "minimum": 15},
+        "forward_compatibility_rehearsal_major": {"type": "integer", "minimum": 17},
+        "reference_majors": {"type": "array", "items": {"type": "integer"}, "minItems": 3, "uniqueItems": true},
+        "timezone": {"type": "string"},
+        "canonical_json_profile": {"type": "string"},
+        "digest_storage": {"type": "string"},
+        "decimal_envelope": {"type": "string"},
+        "unit_vocabulary": {"type": "string"},
+        "supported_major_policy": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "primitive_policies": {
+      "type": "array",
+      "minItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["policy_id", "primitive", "storage", "validation", "rule_ids", "finding_ids"],
+        "additionalProperties": false,
+        "properties": {
+          "policy_id": {"type": "string", "pattern": "^DATA-[A-Z]+-[0-9]{3}$"},
+          "primitive": {"type": "string", "minLength": 3},
+          "storage": {"type": "string", "minLength": 10},
+          "validation": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 10}},
+          "rule_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "finding_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    },
+    "entity_bindings": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["entity", "system_of_record", "required_policy_ids"],
+        "additionalProperties": false,
+        "properties": {
+          "entity": {"type": "string"},
+          "system_of_record": {"type": "string"},
+          "required_policy_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    },
+    "program_bindings": {"type": "object"},
+    "metadata": {"type": "object"}
+  }
+}

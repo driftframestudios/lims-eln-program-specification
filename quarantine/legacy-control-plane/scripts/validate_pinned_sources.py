@@ -325,7 +325,7 @@ def validate_bound_representation_artifact(
     representation: dict,
     source: Path,
 ) -> list[str]:
-    """Compare one pinned repository representation with its program digest."""
+    """Compare one pinned artifact and its native policy binding with the program."""
     representation_id = representation.get("representation_id", "UNKNOWN")
     artifact_path = representation.get("artifact_path")
     expected_digest = representation.get("artifact_sha256")
@@ -356,7 +356,104 @@ def validate_bound_representation_artifact(
         return [
             f"data concordance artifact bytes differ for {representation_id}"
         ]
+    coverage = representation.get("policy_coverage")
+    if not isinstance(coverage, dict):
+        return [
+            projection_diagnostic(
+                "DATA_CONCORDANCE_POLICY_COVERAGE_INVALID",
+                f"representation {representation_id} requires policy coverage",
+            )
+        ]
+    native_binding = coverage.get("native_binding")
+    if native_binding is None:
+        if coverage.get("covered_policy_ids"):
+            return [
+                f"data concordance representation {representation_id} declares "
+                "coverage without an artifact-native binding"
+            ]
+        return []
+    if not isinstance(native_binding, dict):
+        return [
+            projection_diagnostic(
+                "DATA_CONCORDANCE_NATIVE_BINDING_INVALID",
+                f"representation {representation_id} requires a native binding object",
+            )
+        ]
+    try:
+        artifact = strict_json_loads(content)
+        native_policy_ids = resolve_native_policy_ids(artifact, native_binding)
+    except (DuplicateJsonKey, UnicodeDecodeError, ValueError) as error:
+        return [
+            projection_diagnostic(
+                "DATA_CONCORDANCE_NATIVE_BINDING_UNREADABLE",
+                f"representation {representation_id} native policy binding could not be read: {error}",
+            )
+        ]
+    declared_policy_ids = coverage.get("covered_policy_ids")
+    if not isinstance(declared_policy_ids, list) or any(
+        not isinstance(item, str) for item in declared_policy_ids
+    ):
+        return [
+            projection_diagnostic(
+                "DATA_CONCORDANCE_DECLARED_POLICY_IDS_INVALID",
+                f"representation {representation_id} requires declared policy identifiers",
+            )
+        ]
+    if set(declared_policy_ids) != native_policy_ids:
+        return [
+            f"data concordance native policy binding differs for {representation_id}: "
+            f"declared={sorted(set(declared_policy_ids))}, "
+            f"native={sorted(native_policy_ids)}"
+        ]
     return []
+
+
+def resolve_native_policy_ids(
+    artifact: object,
+    native_binding: dict,
+) -> set[str]:
+    """Resolve one closed JSON Pointer policy collection from a native artifact."""
+    if set(native_binding) != {"json_pointer", "collection_shape", "id_field"}:
+        raise ValueError("native binding fields differ")
+    pointer = native_binding.get("json_pointer")
+    collection_shape = native_binding.get("collection_shape")
+    id_field = native_binding.get("id_field")
+    if not isinstance(pointer, str) or not pointer.startswith("/"):
+        raise ValueError("native binding requires an absolute JSON Pointer")
+    current = artifact
+    for raw_token in pointer[1:].split("/"):
+        token = raw_token.replace("~1", "/").replace("~0", "~")
+        if "~" in token and re.search(r"~(?![01])", raw_token):
+            raise ValueError("native binding JSON Pointer escape differs")
+        if isinstance(current, dict) and token in current:
+            current = current[token]
+            continue
+        if isinstance(current, list) and token.isdigit():
+            index = int(token)
+            if index < len(current):
+                current = current[index]
+                continue
+        raise ValueError("native binding JSON Pointer target is absent")
+    if not isinstance(current, list):
+        raise ValueError("native binding target requires an array")
+    if collection_shape == "string_array" and id_field is None:
+        if any(not isinstance(item, str) or not item for item in current):
+            raise ValueError("native binding string array differs")
+        values = current
+    elif collection_shape == "object_array" and isinstance(id_field, str):
+        if any(
+            not isinstance(item, dict)
+            or not isinstance(item.get(id_field), str)
+            or not item[id_field]
+            for item in current
+        ):
+            raise ValueError("native binding object array differs")
+        values = [item[id_field] for item in current]
+    else:
+        raise ValueError("native binding collection shape differs")
+    if len(values) != len(set(values)):
+        raise ValueError("native binding policy identifiers repeat")
+    return set(values)
 
 
 def validate_data_concordance_projection(sources: dict[str, Path]) -> list[str]:

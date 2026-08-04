@@ -1,5 +1,5 @@
 {
-  "version": "0.3.2",
+  "version": "0.4.0",
   "rules": [
     {
       "id": "RULE-LIFE-001",
@@ -50,22 +50,6 @@
       "statement": "Operational measures preserve numerator, denominator, threshold, window, and evidence locator."
     },
     {
-      "id": "RULE-ACPT-001",
-      "statement": "Scientific, Quality, Regulatory, Security, Operations, and business owners accept the scope governed by their authority."
-    },
-    {
-      "id": "RULE-CALL-001",
-      "statement": "Every callable operation is service-owned and versioned with a strict input schema, effect class, authority ceiling, tenant scope, resource budget, approval policy, idempotency contract, audit fields, and recovery route."
-    },
-    {
-      "id": "RULE-CALL-002",
-      "statement": "The service boundary derives caller identity from authenticated context, validates the complete request, rechecks effect preconditions, applies least privilege, and emits an attributable receipt; retrieved content and model output remain data rather than authority."
-    },
-    {
-      "id": "RULE-CALL-003",
-      "statement": "A broad or consequential write executes after an unexpired human approval binds operation version, canonical request digest, tenant, resource scope, effect ceiling, and intended-use context; Scientific, Quality, and Regulatory acceptance remains with the accountable human roles."
-    },
-    {
       "id": "RULE-DATA-001",
       "statement": "Every instant uses an explicit offset at ingress, one UTC canonical representation, declared precision, and distinct business occurrence and server recording meanings."
     },
@@ -87,11 +71,11 @@
     },
     {
       "id": "RULE-DBAS-002",
-      "statement": "Consequential events, approvals, signatures, corrections, receipts, and status decisions append through controlled boundaries and preserve original meaning through explicit supersession."
+      "statement": "Domain events, signatures, corrections, and status transitions append through controlled boundaries and preserve original meaning through explicit supersession."
     },
     {
       "id": "RULE-DBAS-003",
-      "statement": "Aggregate state, immutable event, and outbox intent commit together while idempotency, inbox arrival, worker lease, attempt, terminal disposition, and recovery ownership remain durable."
+      "statement": "Aggregate state, immutable event, and outbox intent commit together; Debezium routes committed outbox records and consumers apply stable idempotency keys."
     },
     {
       "id": "RULE-DBAS-004",
@@ -103,15 +87,15 @@
     },
     {
       "id": "RULE-DBMG-002",
-      "statement": "Expand, backfill, reconcile, converge, contract, and recovery phases preserve compatibility and produce bounded receipts before each successor phase."
+      "statement": "Expand, backfill, reconcile, converge, contract, and recovery phases preserve compatibility across independently deployable application releases."
     },
     {
       "id": "RULE-DBMG-003",
-      "statement": "Migration reconciliation evaluates identity, structure, scientific semantics, relationships, distributions, artifacts, audit, tenant security, exceptions, and accountable human samples."
+      "statement": "Migration reconciliation evaluates identity, structure, scientific semantics, relationships, distributions, artifacts, audit history, tenant security, and exceptions."
     },
     {
       "id": "RULE-DBRL-001",
-      "statement": "The database release manifest binds data contract, finding ledger, migration head, catalog identity, reconciliation, security, concurrency, recovery, accountable decisions, residual risks, and requalification triggers."
+      "statement": "A database release identifies the data contract, Flyway migration set, resulting catalog, reconciliation result, security result, concurrency result, recovery result, and known limitations."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "ledger_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
   "version": "1.0.0",
-  "status": "accepted_for_program_projection",
+  "status": "documented_findings",
   "scope": {
     "repositories": [
       "driftframestudios/prototype-exemplars/lims-eln-enterprise-reference-v0.1",
@@ -31,8 +31,8 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "1-42"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/pyproject.toml", "lines": "5-10"}
       ],
-      "observation": "The numbered bootstrap scripts carry no declared engine, migration graph, history table, checksum validation, or deployment lock.",
-      "material_risk": "Environment state can diverge from repository intent and repeated deployment has no durable proof boundary.",
+      "observation": "The numbered bootstrap scripts are plain SQL files executed by shell loops; migration engine metadata, graph state, history, checksum validation, and deployment locking are absent.",
+      "material_risk": "Environment state can diverge from repository intent while repeated deployments depend on transient shell output.",
       "target_state": "A supported PostgreSQL major and a checksummed revision graph govern every schema and data transition.",
       "correction": "Adopt the tool-neutral migration capability contract and implement it with Flyway Community 13.0.0 versioned SQL, checksummed history, database coordination, PostgreSQL transactional execution, explicit baselining, forward expand-contract scripts, and retained rehearsal tests.",
       "binding_ids": ["DATA-CONTRACT-001", "DATABASE-MIGRATION-CONTRACT-001"]
@@ -77,10 +77,10 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/instrument.py", "lines": "17-41"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/evidence.py", "lines": "9-36"}
       ],
-      "observation": "The relational model omits lineage, approvals, structured locations, assay observations, measured quantities, artifacts, migration state, and material receipt fields present in domain prose or code.",
+      "observation": "The relational model omits lineage, electronic signatures, structured locations, assay observations, measured quantities, artifacts, and migration checkpoints present in domain prose or code.",
       "material_risk": "Persistence round trips can discard scientific and evidentiary meaning.",
       "target_state": "One versioned canonical model maps every qualified domain primitive to durable relational or object storage.",
-      "correction": "Publish typed mappings and add lineage, approval, observation, assay, instrument, artifact, migration-control, and evidence relations with round-trip tests.",
+      "correction": "Publish typed mappings and add lineage, signature, observation, assay, instrument, artifact, and migration-checkpoint relations with round-trip tests.",
       "binding_ids": ["DATA-CONTRACT-001", "DATABASE-MIGRATION-CONTRACT-001"]
     },
     {
@@ -100,16 +100,16 @@
     {
       "id": "DBF-SIGN-001",
       "severity": "critical",
-      "category": "approval_evidence",
+      "category": "electronic_signature_integrity",
       "sources": [
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "21-25"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/domain.py", "lines": "74-75"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/lifecycle.py", "lines": "133-165"}
       ],
-      "observation": "Approval state is mutable in memory and signature meaning is unconstrained text without signer, authentication, signed digest, or decision time.",
-      "material_risk": "Release meaning and separation of duties cannot be reconstructed from durable evidence.",
-      "target_state": "Append-only decisions bind authenticated signer, role scope, meaning code, payload digest, time, and supersession.",
-      "correction": "Model approval and signature decisions as immutable records and derive current approval state from accepted decisions.",
+      "observation": "The in-memory lifecycle model stores mutable approval status and free-form signature meaning; durable signer identity, authentication context, signed digest, and action time are absent.",
+      "material_risk": "A regulated lifecycle action and its separation-of-duties context cannot be reconstructed from durable evidence.",
+      "target_state": "An append-only electronic-signature record binds authenticated signer, role scope, meaning code, payload digest, action time, and supersession.",
+      "correction": "Persist signed lifecycle actions as append-only electronic-signature records and derive the displayed lifecycle status from those records.",
       "binding_ids": ["DATA-CONTRACT-001"]
     },
     {
@@ -123,7 +123,7 @@
       "observation": "Validation parses JSON syntax and runs in-memory tests while SQL, migrations, constraints, row security, and schema formats remain unevaluated.",
       "material_risk": "A source digest can coexist with database behavior that differs from the stated contract.",
       "target_state": "An ephemeral production-equivalent database exercises every migration and database invariant.",
-      "correction": "Add PostgreSQL integration tests for empty and predecessor upgrades, constraints, concurrency, row security, immutability, restore, query plans, and release manifest settlement.",
+      "correction": "Add PostgreSQL integration tests for empty and predecessor upgrades, constraints, concurrency, row security, immutability, restore, query plans, and canonical data round trips.",
       "binding_ids": ["DATABASE-MIGRATION-CONTRACT-001"]
     },
     {
@@ -134,11 +134,11 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/schema/execution-receipt.schema.json", "lines": "5-51"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/receipts/validation-report.json", "lines": "1-35"}
       ],
-      "observation": "The closed receipt schema and checked-in receipt disagree on top-level fields.",
-      "material_risk": "Evidence consumers receive a receipt whose published validation contract rejects it.",
-      "target_state": "One versioned receipt contract governs schema, serialization, storage, and generated evidence.",
-      "correction": "Align the receipt shape and execute Draft 2020-12 plus format validation in the release suite.",
-      "binding_ids": ["DATA-CONTRACT-001", "DATABASE-MIGRATION-CONTRACT-001", "DATABASE-RELEASE-MANIFEST-001"]
+      "observation": "The published evidence-record schema and checked-in example disagree on top-level fields.",
+      "material_risk": "Comparison consumers receive a record whose published validation contract rejects it.",
+      "target_state": "One versioned evidence-record contract governs schema, serialization, storage, and generated comparison input.",
+      "correction": "Align the record shape and execute Draft 2020-12 plus format validation in the test suite.",
+      "binding_ids": ["DATA-CONTRACT-001"]
     },
     {
       "id": "DBF-CONTRACT-001",
@@ -149,9 +149,9 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/evidence.py", "lines": "24-58"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/receipts/validation-report.json", "lines": "1-35"}
       ],
-      "observation": "Camel-case schema, snake-case domain serialization, and generated report use three receipt contracts.",
+      "observation": "Camel-case schema, snake-case domain serialization, and generated report use three evidence-record contracts.",
       "material_risk": "Evidence identity and compatibility vary by producer.",
-      "target_state": "A single versioned DTO or explicit lossless mapping produces each receipt representation.",
+      "target_state": "A single versioned DTO or explicit lossless mapping produces each evidence-record representation.",
       "correction": "Generate or map every representation from one authoritative contract and add golden backward-compatible round trips.",
       "binding_ids": ["DATA-CONTRACT-001"]
     },
@@ -178,8 +178,8 @@
       "sources": [
         {"repository": "reference-pack", "path": "src/lims_reference/ports.py", "lines": "58-73"}
       ],
-      "observation": "The earlier upsert returns a prior receipt by idempotency key without binding that key to request content.",
-      "material_risk": "Changed scientific intent can receive the earlier success receipt.",
+      "observation": "The earlier upsert returns a prior result by idempotency key while the request content remains unbound.",
+      "material_risk": "Changed scientific intent can receive the earlier success result.",
       "target_state": "Tenant, operation scope, stable key, canonical request digest, and result form one atomic reservation.",
       "correction": "Persist the request digest and reject changed reuse under concurrent identical and conflicting tests.",
       "binding_ids": ["DATA-CONTRACT-001"]
@@ -192,10 +192,10 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/migration.py", "lines": "46-159"},
         {"repository": "reference-pack", "path": "src/lims_reference/migration.py", "lines": "33-136"}
       ],
-      "observation": "Batch, checkpoint, exception, reconciliation, approval, and restore state exists only in process memory, and cutover authorization returns a formatted string.",
-      "material_risk": "Restart, review, and cutover proof cannot survive process loss.",
-      "target_state": "Durable migration control tables preserve snapshot, mapping, batch, checkpoint, exception, reconciliation, restore, approval, and rollback state.",
-      "correction": "Persist the complete migration state machine and bind every cutover decision to authenticated approvals and accepted recovery evidence.",
+      "observation": "Batch, checkpoint, exception, reconciliation, and restore state exists only in process memory.",
+      "material_risk": "Restart, reconciliation, and cutover state cannot survive process loss.",
+      "target_state": "Flyway owns schema history while the selected migration job framework persists source snapshot, mapping version, batch checkpoint, exception, reconciliation, restore, and rollback state.",
+      "correction": "Use Flyway for schema changes and persist only the application-specific state required by the selected data-movement workflow.",
       "binding_ids": ["DATABASE-MIGRATION-CONTRACT-001"]
     },
     {
@@ -251,7 +251,7 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "11,31"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "14"}
       ],
-      "observation": "Receipts, payloads, and limitations use text storage without structural or version checks.",
+      "observation": "Evaluation records, integration payloads, and limitations use text storage without structural or version checks.",
       "material_risk": "Malformed and incompatible envelopes enter durable state and query behavior remains opaque.",
       "target_state": "Versioned JSON objects use jsonb while exact raw bytes retain separate content-addressed provenance.",
       "correction": "Use jsonb with object and schema-version checks, bounded payload policy, and raw object-store digest references where byte identity matters.",
@@ -281,10 +281,10 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "10-12,33-35"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "37-40"}
       ],
-      "observation": "Status-dependent nullability and decision evidence relationships remain implicit.",
+      "observation": "Status-dependent nullability and evidence relationships remain implicit.",
       "material_risk": "Rows can claim committed, delivered, quarantined, satisfied, released, skipped, or voided states with contradictory evidence.",
       "target_state": "Discriminated state records and named table checks preserve complete evidence for each state.",
-      "correction": "Add state-specific checks or transition functions and model historical decisions as events.",
+      "correction": "Add state-specific checks or transition functions and preserve historical changes as events.",
       "binding_ids": ["DATA-CONTRACT-001"]
     },
     {
@@ -294,9 +294,9 @@
       "sources": [
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/001_laboratory_core.sql", "lines": "15-30"}
       ],
-      "observation": "The event row omits before and after state, recording time, correlation, causation, authorization decision, payload schema, and supersession.",
+      "observation": "The event row omits before and after state, recording time, correlation, causation, authenticated actor context, payload schema, and supersession.",
       "material_risk": "Event replay and incident reconstruction depend on context outside the event boundary.",
-      "target_state": "A versioned event envelope carries business and recording time, causality, actor decision context, payload schema, and correction lineage.",
+      "target_state": "A versioned event envelope carries business and recording time, causality, authenticated actor context, payload schema, and correction lineage.",
       "correction": "Publish the event envelope and prove projection reconstruction from an immutable stream.",
       "binding_ids": ["DATA-CONTRACT-001"]
     },
@@ -322,10 +322,10 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "16-37"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/docs/operations-runbook.md", "lines": "24-28"}
       ],
-      "observation": "Durable ingress and delivery omit claim lease, first and last attempt, recovery owner, terminal reason, confirmation time, schema version, and payload provenance described by the runbook.",
-      "material_risk": "Workers can duplicate, strand, or conceal work and recovery evidence remains incomplete.",
-      "target_state": "Inbox and outbox rows expose bounded leases, attempts, availability, terminal disposition, payload schema, source event, and recovery ownership.",
-      "correction": "Expand the state machines and add partial work indexes plus crash and lease-expiry tests.",
+      "observation": "Durable ingress omits stable arrival identity, processing state, schema version, and payload provenance; outbox delivery duplicates connector behavior.",
+      "material_risk": "Workers can duplicate or strand ingress work while a custom outbox competes with supported CDC infrastructure.",
+      "target_state": "The inbox preserves arrival identity and processing state; the transactional outbox preserves event identity and schema while Debezium owns change capture and routing.",
+      "correction": "Keep the inbox state required for idempotent processing, reduce the outbox to the Debezium event contract, and test duplicate delivery plus connector lag.",
       "binding_ids": ["DATA-CONTRACT-001"]
     },
     {
@@ -335,24 +335,11 @@
       "sources": [
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "17-31"}
       ],
-      "observation": "One trace row requires requirement, risk, control, and test together without referenced node versions.",
-      "material_risk": "The shape can imply unsupported relationships; typed evidence edges with explicit provenance preserve asserted meaning.",
-      "target_state": "Versioned trace nodes connect through typed evidence edges with explicit provenance.",
-      "correction": "Use typed edge relations or separate receipt mappings and add reverse-query indexes.",
+      "observation": "One trace row collapses requirement, risk, control, and test into a single shape while source versions remain implicit.",
+      "material_risk": "A comparison can imply relationships that its sources do not support.",
+      "target_state": "Each versioned comparison record carries direct source references, environment, observation time, evidence level, and limitations.",
+      "correction": "Align stored evaluation evidence with the released comparison-record schema and index direct source references used in investigations.",
       "binding_ids": ["DATA-CONTRACT-001"]
-    },
-    {
-      "id": "DBF-RECEIPT-001",
-      "severity": "high",
-      "category": "evidence_model",
-      "sources": [
-        {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "33-41"}
-      ],
-      "observation": "Open receipt rows omit scope, timestamps, due or review time, evidence link, version, decision history, and closure approver.",
-      "material_risk": "Status mutation cannot demonstrate accountable closure.",
-      "target_state": "Receipt status events bind scope, accountable role, evidence, decision, time, and supersession.",
-      "correction": "Add typed receipt and status-event relations with closure evidence and immutable decision references.",
-      "binding_ids": ["DATA-CONTRACT-001", "DATABASE-RELEASE-MANIFEST-001"]
     },
     {
       "id": "DBF-INDEX-001",
@@ -363,7 +350,7 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/002_inbox_outbox.sql", "lines": "5-37"},
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/database/legacy/v0.1/003_evidence_ledger.sql", "lines": "5-41"}
       ],
-      "observation": "The schema defines identity indexes while operational state, available work, event-time, location, open-receipt, and reverse-trace access paths remain unspecified.",
+      "observation": "The schema defines identity indexes while operational state, available work, event-time, location, pending-integration, and reverse-trace access paths remain unspecified.",
       "material_risk": "Growth can turn routine laboratory and recovery queries into broad scans.",
       "target_state": "Representative workloads and retention objectives determine partial, composite, BRIN, and partition strategies.",
       "correction": "Publish query contracts, verify plans against representative distributions, and introduce partitioning when measured thresholds justify it.",
@@ -435,7 +422,7 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/ports.py", "lines": "271-300"}
       ],
       "observation": "Artifact replay binds tenant, key, and content digest while external identity and artifact purpose remain outside the request fingerprint.",
-      "material_risk": "The same bytes and key can return a receipt associated with another specimen intent.",
+      "material_risk": "The same bytes and key can return a stored result associated with another specimen intent.",
       "target_state": "Artifact idempotency binds tenant, specimen, purpose, media type, length, digest, and stable request identity.",
       "correction": "Persist the full canonical request digest and stream content through bounded hashing and upload.",
       "binding_ids": ["DATA-CONTRACT-001"]
@@ -462,10 +449,10 @@
         {"repository": "prototype-exemplars", "path": "lims-eln-enterprise-reference-v0.1/src/lims_eln_reference/migration.py", "lines": "105-140"},
         {"repository": "reference-pack", "path": "src/lims_reference/migration.py", "lines": "91-126"}
       ],
-      "observation": "Reconciliation covers counts, identities, and exact checksums while semantic, relational, distributional, attachment, and human-sample evidence remains outside the gate.",
+      "observation": "Reconciliation covers counts, identities, and exact checksums while semantic, relational, distributional, attachment, and representative-record evidence remains outside the comparison.",
       "material_risk": "A technically complete load can still alter scientific or operational meaning.",
-      "target_state": "Versioned reconciliation dimensions cover structure, semantics, relationships, distributions, artifacts, audit, signatures, exceptions, and accountable review.",
-      "correction": "Publish thresholds and tolerances per dimension and bind cutover to accepted reconciliation, restore, and rollback receipts.",
+      "target_state": "Versioned reconciliation dimensions cover structure, semantics, relationships, distributions, artifacts, audit, signatures, exceptions, and representative record review.",
+      "correction": "Publish thresholds and tolerances per dimension and require reproducible reconciliation, restore, and rollback results before cutover.",
       "binding_ids": ["DATABASE-MIGRATION-CONTRACT-001"]
     },
     {
@@ -481,7 +468,7 @@
       "material_risk": "Collaborators can implement different contracts from artifacts carrying the same maturity signal.",
       "target_state": "One canonical reference declares lineage and retains scientifically valuable primitives through deliberate migrations.",
       "correction": "Designate the canonical tree, mark historical lineage, port assay and reagent concepts, and enforce cross-tree compatibility during settlement.",
-      "binding_ids": ["DATA-CONTRACT-001", "DATABASE-MIGRATION-CONTRACT-001", "DATABASE-RELEASE-MANIFEST-001"]
+      "binding_ids": ["DATA-CONTRACT-001", "DATABASE-MIGRATION-CONTRACT-001"]
     }
   ],
   "evidence_sources": [
@@ -494,12 +481,14 @@
     {"source_id": "SRC-FLYWAY-001", "title": "Flyway schema history table", "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table"},
     {"source_id": "SRC-FLYWAY-VALIDATE-001", "title": "Flyway validate command", "url": "https://documentation.red-gate.com/flyway/reference/commands/validate"},
     {"source_id": "SRC-FLYWAY-BASELINE-001", "title": "Flyway baselineOnMigrate setting", "url": "https://documentation.red-gate.com/flyway/reference/configuration/flyway-namespace/flyway-baseline-on-migrate-setting"},
+    {"source_id": "SRC-FLYWAY-OUT-OF-ORDER-001", "title": "Flyway outOfOrder setting", "url": "https://documentation.red-gate.com/fd/flyway-out-of-order-setting-277579015.html"},
+    {"source_id": "SRC-DEBEZIUM-OUTBOX-001", "title": "Debezium Outbox Event Router", "url": "https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html"},
     {"source_id": "SRC-AWS-DMS-SCHEMA-001", "title": "AWS DMS Schema Conversion", "url": "https://docs.aws.amazon.com/dms/latest/userguide/schema-conversion.html"}
   ],
   "metadata": {
     "created_at": "2026-08-04T14:00:00Z",
     "evidence_mode": "repository_observed",
-    "authority": "program_input",
+    "purpose": "Source-backed data-primitive and migration correction ledger",
     "next_review_trigger": "A canonical database implementation or successor reference pack changes any cited primitive."
   }
 }

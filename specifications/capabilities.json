@@ -1,5 +1,5 @@
 {
-  "version": "0.3.2",
+  "version": "0.4.0",
   "requirements": [
     {
       "id": "SPEC-LIFE-001",
@@ -44,18 +44,6 @@
       "material_effect": "Operators can rotate vendor credentials and change non-secret configuration through governed runtime stores while repositories, build artifacts, state, logs, fixtures, and telemetry preserve references or redacted metadata."
     },
     {
-      "id": "SPEC-ACPT-001",
-      "name": "Accountable multidomain acceptance",
-      "rule_ids": ["RULE-ACPT-001"],
-      "material_effect": "Scientific, Quality, and Regulatory decisions remain distinct, bounded, and reviewable."
-    },
-    {
-      "id": "SPEC-CALL-001",
-      "name": "Bounded automation caller",
-      "rule_ids": ["RULE-CALL-001", "RULE-CALL-002", "RULE-CALL-003"],
-      "material_effect": "A human, service, workflow, or AI caller selects a released operation while the service boundary continues to determine identity, authority, scope, effect, evidence, and recovery."
-    },
-    {
       "id": "SPEC-DATA-001",
       "name": "Canonical scientific and operational data primitives",
       "rule_ids": ["RULE-DATA-001", "RULE-DATA-002", "RULE-DATA-003", "RULE-DATA-004"],
@@ -71,7 +59,7 @@
       "id": "SPEC-DBMG-001",
       "name": "Versioned database migration reconciliation and release",
       "rule_ids": ["RULE-DBMG-001", "RULE-DBMG-002", "RULE-DBMG-003", "RULE-DBRL-001"],
-      "material_effect": "The organization can explain, rehearse, compare, recover, and approve each database change while preserving scientific meaning and a reversible release posture."
+      "material_effect": "The organization can rehearse, compare, and recover each database change while preserving scientific meaning and application compatibility."
     }
   ]
 }
