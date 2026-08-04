@@ -61,7 +61,7 @@
     {
       "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
       "version": "1.0.0",
-      "digest": "sha256:02f7e97300dafecacdc32a2904465f5344e7daa0cfd59850a2a74bc96899841e"
+      "digest": "sha256:a7c2cb283981cf80bf963fe7b0b40419f2dc63acfb1962279c6ce7aea6354a15"
     },
     {
       "contract_id": "DATABASE-OPEN-RECEIPTS-001",
@@ -71,7 +71,7 @@
     {
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
-      "digest": "sha256:b2b6bab058eaf8e2c58a242869a6108c03d3020902eb833894d2c2879eee9656"
+      "digest": "sha256:278bd38db08181987b488c089fb54079da199114be271cbaf197358fb15d235d"
     }
   ],
   "evidence_posture": [

@@ -344,6 +344,10 @@ class ProgramValidationTests(unittest.TestCase):
         profile = migration["selected_implementation_profile"]
         self.assertEqual("Flyway Community", profile["product"])
         self.assertEqual("13.0.0", profile["version"])
+        self.assertEqual(
+            "Flyway-owned public.flyway_schema_history",
+            profile["history_relation"],
+        )
         self.assertIn("baselineOnMigrate=false", profile["configuration_policy"])
         self.assertEqual(
             {

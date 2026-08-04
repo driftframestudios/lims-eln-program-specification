@@ -112,7 +112,7 @@
     "selection_status": "selected_for_corrective_transition",
     "version_policy": "The implementation pins the executable version and records an immutable distribution or container digest in release evidence after resolving the exact platform artifact.",
     "migration_pattern": "V<version>__<description>.sql",
-    "history_relation": "Flyway-owned flyway_schema_history in the program control schema",
+    "history_relation": "Flyway-owned public.flyway_schema_history",
     "commands": [
       "flyway validate -outputType=json",
       "flyway info -outputType=json",
