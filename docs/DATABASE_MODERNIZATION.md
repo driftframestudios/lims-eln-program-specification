@@ -121,13 +121,14 @@ assumptions.
 
 ### Corrective Flyway transition estimate
 
-`FLYWAY-TRANSITION-EQUIVALENCE-001` asks a narrower question: given the reviewed
-versioned PostgreSQL SQL, current end-to-end integration suite, parameterized
-migration scenarios, Flyway Community 13.0.0, and one corrective tranche, what
-is the probability that Flyway replaces bespoke orchestration while preserving
-clean installation, populated predecessor upgrade, failure atomicity, replay,
-zero-pending-work, and clean-versus-upgrade convergence evidence without a
-critical domain-contract regression?
+`FLYWAY-TRANSITION-EQUIVALENCE-001` asks this narrower question:
+
+> Given the reviewed versioned PostgreSQL SQL, existing end-to-end integration
+> suite, parameterized migration scenarios, Flyway Community 13.0.0, and one
+> corrective tranche, the implementation replaces bespoke migration
+> orchestration while preserving clean installation, populated predecessor
+> upgrade, failure atomicity, replay, zero-pending-work, and clean-versus-upgrade
+> convergence evidence without a critical domain-contract regression.
 
 The estimate is **0.91**, with a **0.84–0.96** credible range. It is a
 conditional derivative used to sequence the corrective transition and remains

@@ -4,15 +4,15 @@
   "release_state": "candidate_contract_surface",
   "authority": "program_specification_only",
   "artifact_bindings": [
-    {"artifact_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001", "version": "1.0.0", "path": "database/primitive-findings.json", "digest": "sha256:fa71851aab07a36537dec5532d13065c77b461e2c7d0af857d2354c1e9610d65"},
-    {"artifact_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001", "version": "1.0.0", "path": "database/constellation-finding-index.json", "digest": "sha256:f74d9faa2ed7da535a28ee5b7fbcce081b9b604010a01dd341234a6f70898262"},
-    {"artifact_id": "DATABASE-MODERNIZATION-PLAN-SET-001", "version": "1.0.0", "path": "plans/database-modernization-plans.json", "digest": "sha256:44d3192aa3ec43632c38bd2cbad99de3f2baf83de705e6dc9a691b33c44ab034"},
+    {"artifact_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001", "version": "1.0.0", "path": "database/primitive-findings.json", "digest": "sha256:f3fc8fd047fc69a63801fbf294deaf39502855b441bb4cd80e23656e53f939e3"},
+    {"artifact_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001", "version": "1.0.0", "path": "database/constellation-finding-index.json", "digest": "sha256:2d80dc8cd671331755cba73961091c691356da614806c7493a7760e5540ea97e"},
+    {"artifact_id": "DATABASE-MODERNIZATION-PLAN-SET-001", "version": "1.0.0", "path": "plans/database-modernization-plans.json", "digest": "sha256:7f55e85e0caf826acd407e48349a2cf9ddc0501c9f753067113d9321e880d21d"},
     {"artifact_id": "DATA-CONTRACT-001", "version": "1.0.0", "path": "specifications/data-primitives.json", "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"},
-    {"artifact_id": "DATABASE-MIGRATION-CONTRACT-001", "version": "1.0.0", "path": "specifications/database-migration.json", "digest": "sha256:280ca47f7e1bed40c49c35630ff549939188ed2a038d45ef4d238c5be2e7eb3a"},
-    {"artifact_id": "DATABASE-OPEN-RECEIPTS-001", "version": "1.0.0", "path": "receipts/database-open-receipts.json", "digest": "sha256:93e660eecdf88b156f5df8f0c2ea02111d8c5c845d3d3186c0637ff55bab2ddd"},
+    {"artifact_id": "DATABASE-MIGRATION-CONTRACT-001", "version": "1.0.0", "path": "specifications/database-migration.json", "digest": "sha256:02f7e97300dafecacdc32a2904465f5344e7daa0cfd59850a2a74bc96899841e"},
+    {"artifact_id": "DATABASE-OPEN-RECEIPTS-001", "version": "1.0.0", "path": "receipts/database-open-receipts.json", "digest": "sha256:725725876b92557b2158dc5f46aa918ea5f6a9d8e0d113b1960a927f15ead133"},
     {"artifact_id": "PROGRAM-CAPABILITIES-0.3.1", "version": "0.3.1", "path": "specifications/capabilities.json", "digest": "sha256:34c8bbe988a6eaf98a00fa3771d28fcc884c9a26a2344b3d115d3cc20d318098"},
-    {"artifact_id": "PROGRAM-INVARIANTS-0.3.1", "version": "0.3.1", "path": "specifications/invariants.json", "digest": "sha256:8b54181f80354a48e5d2809a7ae4af444af6c210343d829efb90cd6d4c37a869"},
-    {"artifact_id": "PROGRAM-SCENARIOS-0.3.1", "version": "0.3.1", "path": "examples/scenarios.json", "digest": "sha256:be15ad3143d926317cd03a1a96a4cbe89fda0435bf6181d9fcf63ebe25cfa8e4"}
+    {"artifact_id": "PROGRAM-INVARIANTS-0.3.1", "version": "0.3.1", "path": "specifications/invariants.json", "digest": "sha256:154ef8e6db2b4a242322c3f0069b5c1ecf47a0eddf1287390752ce143c2d89ba"},
+    {"artifact_id": "PROGRAM-SCENARIOS-0.3.1", "version": "0.3.1", "path": "examples/scenarios.json", "digest": "sha256:2a9cf17f8a3c6ae54388299afaa16de3512a4226ec3daf90682385ef343fe2f2"}
   ],
   "migration_coordinate": {
     "contract_posture": "tool_neutral_capability_contract",

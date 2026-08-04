@@ -51,17 +51,17 @@
     {
       "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
       "version": "1.0.0",
-      "digest": "sha256:fa71851aab07a36537dec5532d13065c77b461e2c7d0af857d2354c1e9610d65"
+      "digest": "sha256:f3fc8fd047fc69a63801fbf294deaf39502855b441bb4cd80e23656e53f939e3"
     },
     {
       "contract_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
       "version": "1.0.0",
-      "digest": "sha256:f74d9faa2ed7da535a28ee5b7fbcce081b9b604010a01dd341234a6f70898262"
+      "digest": "sha256:2d80dc8cd671331755cba73961091c691356da614806c7493a7760e5540ea97e"
     },
     {
       "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
       "version": "1.0.0",
-      "digest": "sha256:44d3192aa3ec43632c38bd2cbad99de3f2baf83de705e6dc9a691b33c44ab034"
+      "digest": "sha256:7f55e85e0caf826acd407e48349a2cf9ddc0501c9f753067113d9321e880d21d"
     },
     {
       "contract_id": "DATA-CONTRACT-001",
@@ -71,17 +71,17 @@
     {
       "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
       "version": "1.0.0",
-      "digest": "sha256:280ca47f7e1bed40c49c35630ff549939188ed2a038d45ef4d238c5be2e7eb3a"
+      "digest": "sha256:02f7e97300dafecacdc32a2904465f5344e7daa0cfd59850a2a74bc96899841e"
     },
     {
       "contract_id": "DATABASE-OPEN-RECEIPTS-001",
       "version": "1.0.0",
-      "digest": "sha256:93e660eecdf88b156f5df8f0c2ea02111d8c5c845d3d3186c0637ff55bab2ddd"
+      "digest": "sha256:725725876b92557b2158dc5f46aa918ea5f6a9d8e0d113b1960a927f15ead133"
     },
     {
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
-      "digest": "sha256:b1780dc4cbe59c02caf0b11b511633637d46205b687204f32fbf05213390482f"
+      "digest": "sha256:b2b6bab058eaf8e2c58a242869a6108c03d3020902eb833894d2c2879eee9656"
     }
   ],
   "campaigns": [

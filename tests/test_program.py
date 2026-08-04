@@ -199,7 +199,7 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(
             {
                 "PROGRAM-DISCOVERY-FINDINGS": (
-                    "4948b0b81d5c31e566292d265f001adf9d4c03eb"
+                    "fc1577a8886842c606ccbc3c115c7b812fd5dfca"
                 ),
                 "REFERENCE-PACK-FINDINGS": (
                     "ce90126cac4e769511e0886b1b55f2d58107d119"
@@ -524,7 +524,7 @@ class ProgramValidationTests(unittest.TestCase):
         automatic_baseline = self.database_validation_arguments()
         automatic_baseline["migration_contract"]["selected_implementation_profile"][
             "configuration_policy"
-        ].remove("baselineOnMigrate=false")
+        ][0] = "baselineOnMigrate=true"
         with self.assertRaisesRegex(ValueError, "explicit baseline adoption"):
             MODULE.validate_database_program(**automatic_baseline)
 

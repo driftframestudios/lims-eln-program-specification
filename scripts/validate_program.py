@@ -1112,7 +1112,7 @@ def validate_database_program(
                 "lims-eln-program-specification/pull/11"
             ),
             "head_ref": "feature/corrective-integrity-v0-3-1",
-            "source_commit": "4948b0b81d5c31e566292d265f001adf9d4c03eb",
+            "source_commit": "fc1577a8886842c606ccbc3c115c7b812fd5dfca",
             "coordinate_kind": "same_release_artifact_digest",
             "ledger_path": "database/primitive-findings.json",
             "ledger_format": "json_findings",
