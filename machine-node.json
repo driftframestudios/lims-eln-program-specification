@@ -2,7 +2,7 @@
   "machine_node_id": "NODE-LIMS-ELN-PROGRAM",
   "canonical_identity": "driftframestudios/lims-eln-program-specification",
   "title": "LIMS/ELN Program Specification",
-  "purpose": "Orient collaborators to the versioned LIMS/ELN requirements, Practitioner Probes, bounded operations, simulated receipt closures, evidence posture, and accountable handoffs.",
+  "purpose": "Orient collaborators to the versioned LIMS/ELN requirements, Practitioner Probes, bounded operations, canonical data primitives, database migration and release contracts, simulated receipt closures, evidence posture, and accountable handoffs.",
   "control_plane_profile": "0.3.0",
   "schema_release": "2.0.1",
   "repository_role": "program_specification",
@@ -47,6 +47,36 @@
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
       "version": "1.0.0",
       "digest": "sha256:0f3be9ab956877281f9261c69a5f099547b048c1c878541a7c9c47edc5e03280"
+    },
+    {
+      "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
+      "version": "1.0.0",
+      "digest": "sha256:b3ca176af037686103022e975397ebd7c1f78ac2a9fa427dfe9ef90a098a4864"
+    },
+    {
+      "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
+      "version": "1.0.0",
+      "digest": "sha256:c18e5054c6f3efb8f9f1dec553850d589f4e131da5a2bfdb1842d765c8e242da"
+    },
+    {
+      "contract_id": "DATA-CONTRACT-001",
+      "version": "1.0.0",
+      "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"
+    },
+    {
+      "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
+      "version": "1.0.0",
+      "digest": "sha256:280ca47f7e1bed40c49c35630ff549939188ed2a038d45ef4d238c5be2e7eb3a"
+    },
+    {
+      "contract_id": "DATABASE-OPEN-RECEIPTS-001",
+      "version": "1.0.0",
+      "digest": "sha256:93e660eecdf88b156f5df8f0c2ea02111d8c5c845d3d3186c0637ff55bab2ddd"
+    },
+    {
+      "contract_id": "DATABASE-RELEASE-MANIFEST-001",
+      "version": "1.0.0",
+      "digest": "sha256:10b059c431ca2630616c6554f3a7383af54be58e93291c04f8003554a44457de"
     }
   ],
   "campaigns": [
@@ -87,6 +117,14 @@
     "RCP-SECR-001",
     "RCP-OBS-001",
     "RCP-ACPT-001",
+    "RCP-DB-DATA-001",
+    "RCP-DB-TENANT-001",
+    "RCP-DB-EVENT-001",
+    "RCP-DB-CONCURRENCY-001",
+    "RCP-DB-MIGRATION-001",
+    "RCP-DB-RECON-001",
+    "RCP-DB-RECOVERY-001",
+    "RCP-DB-RELEASE-001",
     "RCP-PROGRAM-PROMOTION-003"
   ],
   "invalidation_conditions": [
@@ -95,6 +133,7 @@
     "The canonical selected-future closure appears as environment-observed evidence or production authorization.",
     "The advisory program design and canonical selected-future closure share an identity or authority posture.",
     "A Scientific Quality or Regulatory decision appears outside its accountable human role.",
+    "A database contract binding migration head catalog identity reconciliation dimension or required database receipt changes.",
     "The governance schema release or Control Plane Profile changes."
   ],
   "downstream_consumers": [
@@ -133,7 +172,7 @@
   "metadata": {
     "schema_version": "2.0.1",
     "created_at": "2026-07-28T12:00:00Z",
-    "updated_at": "2026-07-28T20:00:00Z",
+    "updated_at": "2026-08-04T14:00:00Z",
     "owner": {
       "actor_id": "ACTOR-PROGRAM-OWNERS",
       "display_name": "Program repository owners",

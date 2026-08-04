@@ -95,6 +95,30 @@ independent Scientific, Quality, Regulatory, Security, Operations, or business
 authority. Consequential approvals bind operation version, canonical request
 digest, tenant, effect ceiling, intended use, expiry, and recovery coordinates.
 
+## Database modernization contracts
+
+[`database/primitive-findings.json`](database/primitive-findings.json) records
+32 critical or high cross-repository findings with stable identities,
+source locations, material effects, affirmative target states, and correction
+bindings. [`plans/database-modernization-plans.json`](plans/database-modernization-plans.json)
+compares five routes against one declared probability event and synthesizes a
+seven-stage chain with a recalibration interstitial after every stage.
+
+[`specifications/data-primitives.json`](specifications/data-primitives.json)
+defines canonical temporal, identifier, digest, measurement, unit, vocabulary,
+JSON, nullability, tenancy, event, idempotency, evidence, and access-path
+semantics. [`specifications/database-migration.json`](specifications/database-migration.json)
+defines PostgreSQL/Alembic evolution, nine reconciliation dimensions, seven
+release gates, and a ten-check verification matrix.
+
+[`receipts/database-open-receipts.json`](receipts/database-open-receipts.json)
+preserves eight future-observed proof obligations. The digest-bound
+[`release/database-release-manifest.json`](release/database-release-manifest.json)
+joins those obligations to the contract artifacts and specification-by-example
+suite while implementation coordinates remain explicitly pending. See
+[`docs/DATABASE_MODERNIZATION.md`](docs/DATABASE_MODERNIZATION.md) for the
+probability posture, evidence boundaries, synthesized chain, and interstitials.
+
 ## Evidence ladder
 
 `specified → simulated → locally_verified → configured_environment_qualified
@@ -165,8 +189,11 @@ The validator uses the Python standard library and checks stable identifiers,
 cross-file references, bounded operation classes, probe levels and veracity,
 forecast coordinates, simulated and observed receipt-state separation,
 Coordination Horizon structure, Machine Node posture, receipt ownership, and
-required collaboration surfaces. Its JSON boundary requires unique object keys
-and finite numbers before identifiers or canonical digests enter validation.
+required collaboration surfaces. Database validation additionally closes the
+finding-to-policy map, plan and interstitial shape, contract references, open
+receipt set, and manifest digests. Its JSON boundary requires unique object
+keys and finite numbers before identifiers or canonical digests enter
+validation.
 
 Candidate records carry explicit zero coordinates and an open promotion receipt.
 Released records carry pinned coordinates and a closed, evidence-bearing

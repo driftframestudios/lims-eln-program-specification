@@ -16,6 +16,12 @@ GOVERNANCE_TAG = f"governance-v{GOVERNANCE_RELEASE}"
 CONTROL_PLANE_PROFILE = "0.3.0"
 RECEIPT_VOCABULARY_RELEASE = "1.0.0"
 LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
+DATABASE_PROBABILITY_EVENT = (
+    "The plan produces a reviewable enterprise-grade database release "
+    "candidate within two implementation increments while preserving "
+    "qualified scientific semantics, tenant isolation, audit reconstruction, "
+    "and recoverability."
+)
 PROMOTION_RECEIPT_ID = "RCP-PROGRAM-PROMOTION-003"
 CANONICAL_CLOSURE_DIGEST = (
     "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb"
@@ -163,6 +169,11 @@ STATUS_KEYS = {
     "advisory_future_reality_design",
     "canonical_simulated_closure",
     "receipt_vocabulary_map",
+    "database_finding_ledger",
+    "data_contract",
+    "database_migration_contract",
+    "database_release_manifest",
+    "database_open_receipts",
     "simulated_receipt_classes_closed",
     "future_observed_receipt_classes_open",
 }
@@ -356,16 +367,17 @@ def validate_core_shapes(
         {"repository", "pull_request", "source_commit", "merge_commit"},
         "STATUS.yaml.source_seed",
     )
+    numeric_status_keys = {
+        "simulated_receipt_classes_closed",
+        "future_observed_receipt_classes_open",
+        "database_open_receipts",
+    }
     for key in STATUS_KEYS - {
         "source_seed",
-        "simulated_receipt_classes_closed",
-        "future_observed_receipt_classes_open",
+        *numeric_status_keys,
     }:
         require_string(status_document[key], f"STATUS.yaml.{key}")
-    for key in {
-        "simulated_receipt_classes_closed",
-        "future_observed_receipt_classes_open",
-    }:
+    for key in numeric_status_keys:
         if type(status_document[key]) is not int or status_document[key] < 0:
             raise ValueError(f"STATUS.yaml.{key} must be a non-negative integer")
 
@@ -484,6 +496,12 @@ def validate_core_shapes(
             "practitioner_probe_catalog",
             "proof_class_registry",
             "receipt_vocabulary_map",
+            "data_primitive_finding_ledger",
+            "database_modernization_plan_set",
+            "data_contract",
+            "database_migration_contract",
+            "database_open_receipts",
+            "database_release_manifest",
         },
         "release_role.contract_bindings",
     )
@@ -497,6 +515,24 @@ def validate_core_shapes(
         {"path", "digest", "core_digest", "corpus_digest"},
         "release_role.contract_bindings.language_policy_manifest",
     )
+    for binding_name in (
+        "data_primitive_finding_ledger",
+        "database_modernization_plan_set",
+        "data_contract",
+        "database_migration_contract",
+        "database_open_receipts",
+        "database_release_manifest",
+    ):
+        binding = require_exact_object(
+            contract_bindings[binding_name],
+            {"contract_id", "version", "path", "digest"},
+            f"release_role.contract_bindings.{binding_name}",
+        )
+        for key, value in binding.items():
+            require_string(
+                value,
+                f"release_role.contract_bindings.{binding_name}.{key}",
+            )
     require_exact_object(
         release_role["orientation_surfaces"],
         {
@@ -841,10 +877,598 @@ def unique_ids(records: list[dict], label: str) -> set[str]:
     return set(values)
 
 
+def validate_database_program(
+    *,
+    ledger: dict,
+    plan_set: dict,
+    data_contract: dict,
+    migration_contract: dict,
+    database_receipts: dict,
+    database_manifest: dict,
+    release_role: dict,
+    status_document: dict,
+    requirement_ids: set[str],
+    rule_ids: set[str],
+    scenario_ids: set[str],
+    role_ids: set[str],
+) -> dict[str, int]:
+    """Validate the database program as one closed, traceable contract surface."""
+    require_exact_object(
+        ledger,
+        {
+            "ledger_id",
+            "version",
+            "status",
+            "scope",
+            "severity_vocabulary",
+            "findings",
+            "evidence_sources",
+            "metadata",
+        },
+        "database primitive finding ledger",
+    )
+    if (
+        ledger["ledger_id"] != "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001"
+        or ledger["version"] != "1.0.0"
+        or ledger["status"] != "accepted_for_program_projection"
+    ):
+        raise ValueError("database primitive finding ledger identity differs")
+    severity_vocabulary = require_exact_object(
+        ledger["severity_vocabulary"],
+        {"critical", "high"},
+        "database primitive severity vocabulary",
+    )
+    for severity, meaning in severity_vocabulary.items():
+        require_string(meaning, f"database severity {severity}")
+    finding_ids: set[str] = set()
+    finding_categories: set[str] = set()
+    finding_repositories: set[str] = set()
+    finding_bindings: dict[str, set[str]] = {}
+    allowed_finding_bindings = {
+        "DATA-CONTRACT-001",
+        "DATABASE-MIGRATION-CONTRACT-001",
+        "DATABASE-RELEASE-MANIFEST-001",
+    }
+    for index, finding in enumerate(ledger["findings"]):
+        finding = require_exact_object(
+            finding,
+            {
+                "id",
+                "severity",
+                "category",
+                "sources",
+                "observation",
+                "material_risk",
+                "target_state",
+                "correction",
+                "binding_ids",
+            },
+            f"database finding[{index}]",
+        )
+        finding_id = require_string(finding["id"], f"finding[{index}].id")
+        if re.fullmatch(r"DBF-[A-Z]+-[0-9]{3}", finding_id) is None:
+            raise ValueError(f"database finding identifier {finding_id!r} differs")
+        if finding_id in finding_ids:
+            raise ValueError(f"database finding {finding_id} appears more than once")
+        finding_ids.add(finding_id)
+        if finding["severity"] not in severity_vocabulary:
+            raise ValueError(f"{finding_id} uses an undeclared severity")
+        category = require_string(finding["category"], f"{finding_id}.category")
+        finding_categories.add(category)
+        for field in ("observation", "material_risk", "target_state", "correction"):
+            require_string(finding[field], f"{finding_id}.{field}")
+        binding_ids = set(
+            require_string_list(
+                finding["binding_ids"],
+                f"{finding_id}.binding_ids",
+                minimum=1,
+            )
+        )
+        if not binding_ids <= allowed_finding_bindings:
+            raise ValueError(f"{finding_id} references an unknown contract binding")
+        finding_bindings[finding_id] = binding_ids
+        if not isinstance(finding["sources"], list) or not finding["sources"]:
+            raise ValueError(f"{finding_id}.sources requires at least one location")
+        for source_index, source in enumerate(finding["sources"]):
+            source = require_exact_object(
+                source,
+                {"repository", "path", "lines"},
+                f"{finding_id}.sources[{source_index}]",
+            )
+            for key, value in source.items():
+                require_string(value, f"{finding_id}.sources[{source_index}].{key}")
+            finding_repositories.add(source["repository"])
+    required_categories = {
+        "temporal_semantics",
+        "identifiers",
+        "digests",
+        "numeric_precision_units",
+        "controlled_vocabularies",
+        "json_contracts",
+        "nullability_constraints",
+        "relational_integrity",
+        "audit_immutability",
+        "tenancy_rls",
+        "indexing_partitioning",
+        "idempotency",
+        "migration_lifecycle",
+        "reconciliation",
+        "tests_validation",
+        "fork_divergence",
+    }
+    if not required_categories <= finding_categories:
+        raise ValueError(
+            "database finding ledger category coverage differs: "
+            f"missing={sorted(required_categories - finding_categories)}"
+        )
+    if finding_repositories != {"prototype-exemplars", "reference-pack"}:
+        raise ValueError("database finding ledger repository coverage differs")
+    if len(finding_ids) != 32:
+        raise ValueError("database finding ledger requires 32 stable findings")
+
+    require_exact_object(
+        plan_set,
+        {
+            "plan_set_id",
+            "version",
+            "probability_of",
+            "estimation_posture",
+            "plans",
+            "recommended_synthesis",
+            "chain_of_action",
+            "metadata",
+        },
+        "database modernization plan set",
+    )
+    if (
+        plan_set["plan_set_id"] != "DATABASE-MODERNIZATION-PLAN-SET-001"
+        or plan_set["version"] != "1.0.0"
+    ):
+        raise ValueError("database modernization plan set identity differs")
+    if plan_set["probability_of"] != DATABASE_PROBABILITY_EVENT:
+        raise ValueError("database plan set probability event differs")
+    if len(plan_set["plans"]) != 5:
+        raise ValueError("database plan set requires five comparative routes")
+    plan_ids: set[str] = set()
+    for index, plan in enumerate(plan_set["plans"]):
+        plan = require_exact_object(
+            plan,
+            {
+                "id",
+                "name",
+                "probability",
+                "credible_range",
+                "route",
+                "strengths",
+                "tradeoffs",
+                "best_fit",
+                "falsifiers",
+            },
+            f"database plan[{index}]",
+        )
+        plan_id = require_string(plan["id"], f"database plan[{index}].id")
+        if plan_id in plan_ids:
+            raise ValueError(f"database plan {plan_id} appears more than once")
+        plan_ids.add(plan_id)
+        lower, upper = plan["credible_range"]
+        probability = plan["probability"]
+        if not (0 <= lower <= probability <= upper <= 1):
+            raise ValueError(f"{plan_id} probability range differs")
+        for field in ("name", "route", "best_fit"):
+            require_string(plan[field], f"{plan_id}.{field}")
+        for field in ("strengths", "tradeoffs", "falsifiers"):
+            require_string_list(plan[field], f"{plan_id}.{field}", minimum=2)
+    if plan_ids != {f"DB-PLAN-0{index}" for index in range(1, 6)}:
+        raise ValueError("database comparative route identifiers differ")
+    synthesis = require_exact_object(
+        plan_set["recommended_synthesis"],
+        {
+            "recommendation_id",
+            "estimated_probability",
+            "credible_range",
+            "composition",
+            "rationale",
+        },
+        "database recommended synthesis",
+    )
+    lower, upper = synthesis["credible_range"]
+    if not (0 <= lower <= synthesis["estimated_probability"] <= upper <= 1):
+        raise ValueError("database synthesis probability range differs")
+    synthesis_plan_ids = {
+        item["plan_id"] for item in synthesis["composition"]
+    }
+    if synthesis_plan_ids != plan_ids:
+        raise ValueError("database synthesis plan coverage differs")
+    stages = plan_set["chain_of_action"]
+    if [item["sequence"] for item in stages] != list(range(1, 8)):
+        raise ValueError("database action chain requires ordered stages 1 through 7")
+    stage_ids: set[str] = set()
+    for index, stage in enumerate(stages):
+        stage = require_exact_object(
+            stage,
+            {
+                "stage_id",
+                "sequence",
+                "name",
+                "actions",
+                "completion_evidence",
+                "interstitial",
+            },
+            f"database stage[{index}]",
+        )
+        stage_id = require_string(stage["stage_id"], f"database stage[{index}].id")
+        if stage_id in stage_ids:
+            raise ValueError(f"database stage {stage_id} appears more than once")
+        stage_ids.add(stage_id)
+        require_string_list(stage["actions"], f"{stage_id}.actions", minimum=3)
+        require_string_list(
+            stage["completion_evidence"],
+            f"{stage_id}.completion_evidence",
+            minimum=3,
+        )
+        interstitial = require_exact_object(
+            stage["interstitial"],
+            {"question", "signals", "response"},
+            f"{stage_id}.interstitial",
+        )
+        require_string(interstitial["question"], f"{stage_id}.question")
+        require_string(interstitial["response"], f"{stage_id}.response")
+        require_string_list(
+            interstitial["signals"], f"{stage_id}.signals", minimum=3
+        )
+    if stage_ids != {f"DB-STAGE-0{index}" for index in range(1, 8)}:
+        raise ValueError("database action-chain stage identifiers differ")
+
+    require_exact_object(
+        data_contract,
+        {
+            "contract_id",
+            "version",
+            "status",
+            "authority",
+            "target_platform",
+            "primitive_policies",
+            "entity_bindings",
+            "program_bindings",
+            "metadata",
+        },
+        "data primitive contract",
+    )
+    if (
+        data_contract["contract_id"] != "DATA-CONTRACT-001"
+        or data_contract["version"] != "1.0.0"
+        or data_contract["status"] != "specified"
+    ):
+        raise ValueError("data primitive contract identity differs")
+    policy_ids = {
+        item["policy_id"] for item in data_contract["primitive_policies"]
+    }
+    required_policy_ids = {
+        "DATA-TIME-001",
+        "DATA-ID-001",
+        "DATA-DIGEST-001",
+        "DATA-MEASURE-001",
+        "DATA-UNIT-001",
+        "DATA-VOCAB-001",
+        "DATA-JSON-001",
+        "DATA-NULL-001",
+        "DATA-TENANT-001",
+        "DATA-EVENT-001",
+        "DATA-IO-001",
+        "DATA-EVIDENCE-001",
+        "DATA-ACCESS-001",
+    }
+    if policy_ids != required_policy_ids:
+        raise ValueError("data primitive policy coverage differs")
+    policy_finding_ids: set[str] = set()
+    for policy in data_contract["primitive_policies"]:
+        require_exact_object(
+            policy,
+            {
+                "policy_id",
+                "primitive",
+                "storage",
+                "validation",
+                "rule_ids",
+                "finding_ids",
+            },
+            f"data policy {policy['policy_id']}",
+        )
+        require_string(policy["primitive"], f"{policy['policy_id']}.primitive")
+        require_string(policy["storage"], f"{policy['policy_id']}.storage")
+        require_string_list(
+            policy["validation"], f"{policy['policy_id']}.validation", minimum=3
+        )
+        if not set(policy["rule_ids"]) <= rule_ids:
+            raise ValueError(f"{policy['policy_id']} references unknown rules")
+        if not set(policy["finding_ids"]) <= finding_ids:
+            raise ValueError(f"{policy['policy_id']} references unknown findings")
+        policy_finding_ids.update(policy["finding_ids"])
+    for binding in data_contract["entity_bindings"]:
+        require_exact_object(
+            binding,
+            {"entity", "system_of_record", "required_policy_ids"},
+            f"data entity binding {binding.get('entity', '<missing>')}",
+        )
+        if not set(binding["required_policy_ids"]) <= policy_ids:
+            raise ValueError(
+                f"{binding['entity']} references unknown data primitive policies"
+            )
+    data_program = require_exact_object(
+        data_contract["program_bindings"],
+        {"requirement_ids", "rule_ids", "scenario_ids", "open_receipt_ids"},
+        "data contract program bindings",
+    )
+    if not set(data_program["requirement_ids"]) <= requirement_ids:
+        raise ValueError("data contract references unknown requirements")
+    if not set(data_program["rule_ids"]) <= rule_ids:
+        raise ValueError("data contract references unknown rules")
+    if not set(data_program["scenario_ids"]) <= scenario_ids:
+        raise ValueError("data contract references unknown scenarios")
+
+    require_exact_object(
+        migration_contract,
+        {
+            "migration_contract_id",
+            "version",
+            "status",
+            "authority",
+            "data_contract_id",
+            "finding_ids",
+            "engine_contract",
+            "migration_mechanism",
+            "phases",
+            "reconciliation_dimensions",
+            "release_gates",
+            "verification_matrix",
+            "program_bindings",
+            "metadata",
+        },
+        "database migration contract",
+    )
+    if (
+        migration_contract["migration_contract_id"]
+        != "DATABASE-MIGRATION-CONTRACT-001"
+        or migration_contract["version"] != "1.0.0"
+        or migration_contract["data_contract_id"] != data_contract["contract_id"]
+    ):
+        raise ValueError("database migration contract identity differs")
+    migration_finding_ids = set(migration_contract["finding_ids"])
+    if not migration_finding_ids <= finding_ids:
+        raise ValueError("database migration contract references unknown findings")
+    if policy_finding_ids | migration_finding_ids != finding_ids:
+        raise ValueError(
+            "database contracts differ from complete finding coverage: "
+            f"unbound={sorted(finding_ids - policy_finding_ids - migration_finding_ids)}"
+        )
+    ledger_migration_finding_ids = {
+        finding_id
+        for finding_id, binding_ids in finding_bindings.items()
+        if "DATABASE-MIGRATION-CONTRACT-001" in binding_ids
+    }
+    if migration_finding_ids != ledger_migration_finding_ids:
+        raise ValueError("database migration finding bindings differ from ledger")
+    if any(
+        "DATA-CONTRACT-001" not in finding_bindings[finding_id]
+        for finding_id in policy_finding_ids
+    ):
+        raise ValueError("data primitive policy finding bindings differ from ledger")
+    phases = migration_contract["phases"]
+    if len(phases) != 5 or len({item["phase_id"] for item in phases}) != 5:
+        raise ValueError("database migration phase coverage differs")
+    dimension_ids = {
+        item["dimension_id"]
+        for item in migration_contract["reconciliation_dimensions"]
+    }
+    if len(dimension_ids) != 9:
+        raise ValueError("database reconciliation dimension coverage differs")
+    gate_ids = {item["gate_id"] for item in migration_contract["release_gates"]}
+    if len(gate_ids) != 7:
+        raise ValueError("database release gate coverage differs")
+    if len(migration_contract["verification_matrix"]) < 10:
+        raise ValueError("database verification matrix requires ten checks")
+    migration_program = require_exact_object(
+        migration_contract["program_bindings"],
+        {"requirement_ids", "rule_ids", "scenario_ids", "open_receipt_ids"},
+        "database migration program bindings",
+    )
+    if not set(migration_program["requirement_ids"]) <= requirement_ids:
+        raise ValueError("database migration contract references unknown requirements")
+    if not set(migration_program["rule_ids"]) <= rule_ids:
+        raise ValueError("database migration contract references unknown rules")
+    if not set(migration_program["scenario_ids"]) <= scenario_ids:
+        raise ValueError("database migration contract references unknown scenarios")
+
+    require_exact_object(
+        database_receipts,
+        {
+            "registry_id",
+            "version",
+            "evidence_posture",
+            "receipts",
+            "closure_boundary",
+            "metadata",
+        },
+        "database receipt registry",
+    )
+    if (
+        database_receipts["registry_id"] != "DATABASE-OPEN-RECEIPTS-001"
+        or database_receipts["version"] != "1.0.0"
+        or database_receipts["evidence_posture"] != "future_observed_closure"
+    ):
+        raise ValueError("database receipt registry identity differs")
+    database_receipt_ids: set[str] = set()
+    for index, receipt in enumerate(database_receipts["receipts"]):
+        receipt = require_exact_object(
+            receipt,
+            {
+                "id",
+                "component",
+                "status",
+                "evidence_mode",
+                "success_event",
+                "accountable_roles",
+                "required_evidence",
+                "requalification_triggers",
+            },
+            f"database receipt[{index}]",
+        )
+        receipt_id = require_string(receipt["id"], f"database receipt[{index}].id")
+        if receipt_id in database_receipt_ids:
+            raise ValueError(f"database receipt {receipt_id} appears more than once")
+        database_receipt_ids.add(receipt_id)
+        if receipt["status"] != "open" or receipt["evidence_mode"] != "observed":
+            raise ValueError(f"{receipt_id} future observed posture differs")
+        if not set(receipt["accountable_roles"]) <= role_ids:
+            raise ValueError(f"{receipt_id} references unknown accountable roles")
+        require_string_list(
+            receipt["required_evidence"],
+            f"{receipt_id}.required_evidence",
+            minimum=4,
+        )
+        require_string_list(
+            receipt["requalification_triggers"],
+            f"{receipt_id}.requalification_triggers",
+            minimum=4,
+        )
+    if len(database_receipt_ids) != 8:
+        raise ValueError("database receipt registry requires eight open receipts")
+    bound_receipt_ids = set(data_program["open_receipt_ids"]) | set(
+        migration_program["open_receipt_ids"]
+    )
+    if bound_receipt_ids != database_receipt_ids:
+        raise ValueError("database contract receipt coverage differs")
+
+    require_exact_object(
+        database_manifest,
+        {
+            "manifest_id",
+            "version",
+            "release_state",
+            "authority",
+            "artifact_bindings",
+            "migration_coordinate",
+            "reconciliation_binding",
+            "required_receipt_ids",
+            "required_gate_ids",
+            "specification_by_example",
+            "settlement_policy",
+            "deferred_boundaries",
+            "metadata",
+        },
+        "database release manifest",
+    )
+    if (
+        database_manifest["manifest_id"] != "DATABASE-RELEASE-MANIFEST-001"
+        or database_manifest["version"] != "1.0.0"
+        or database_manifest["release_state"] != "candidate_contract_surface"
+        or database_manifest["authority"] != "program_specification_only"
+    ):
+        raise ValueError("database release manifest identity differs")
+    expected_artifacts = {
+        "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001": "database/primitive-findings.json",
+        "DATABASE-MODERNIZATION-PLAN-SET-001": "plans/database-modernization-plans.json",
+        "DATA-CONTRACT-001": "specifications/data-primitives.json",
+        "DATABASE-MIGRATION-CONTRACT-001": "specifications/database-migration.json",
+        "DATABASE-OPEN-RECEIPTS-001": "receipts/database-open-receipts.json",
+        "PROGRAM-CAPABILITIES-0.3.1": "specifications/capabilities.json",
+        "PROGRAM-INVARIANTS-0.3.1": "specifications/invariants.json",
+        "PROGRAM-SCENARIOS-0.3.1": "examples/scenarios.json",
+    }
+    observed_artifacts: dict[str, str] = {}
+    for index, binding in enumerate(database_manifest["artifact_bindings"]):
+        binding = require_exact_object(
+            binding,
+            {"artifact_id", "version", "path", "digest"},
+            f"database manifest artifact[{index}]",
+        )
+        artifact_id = binding["artifact_id"]
+        if artifact_id in observed_artifacts:
+            raise ValueError(f"database manifest artifact {artifact_id} repeats")
+        observed_artifacts[artifact_id] = binding["path"]
+        if binding["digest"] != sha256_digest(binding["path"]):
+            raise ValueError(f"database manifest digest differs for {artifact_id}")
+    if observed_artifacts != expected_artifacts:
+        raise ValueError("database manifest artifact inventory differs")
+    if set(database_manifest["required_receipt_ids"]) != database_receipt_ids:
+        raise ValueError("database manifest receipt binding differs")
+    if set(database_manifest["required_gate_ids"]) != gate_ids:
+        raise ValueError("database manifest gate binding differs")
+    if not set(database_manifest["specification_by_example"]) <= scenario_ids:
+        raise ValueError("database manifest references unknown scenarios")
+    reconciliation = database_manifest["reconciliation_binding"]
+    if set(reconciliation["required_dimension_ids"]) != dimension_ids:
+        raise ValueError("database manifest reconciliation binding differs")
+
+    release_bindings = release_role["contract_bindings"]
+    binding_map = {
+        "data_primitive_finding_ledger": (
+            ledger["ledger_id"],
+            "database/primitive-findings.json",
+        ),
+        "database_modernization_plan_set": (
+            plan_set["plan_set_id"],
+            "plans/database-modernization-plans.json",
+        ),
+        "data_contract": (
+            data_contract["contract_id"],
+            "specifications/data-primitives.json",
+        ),
+        "database_migration_contract": (
+            migration_contract["migration_contract_id"],
+            "specifications/database-migration.json",
+        ),
+        "database_open_receipts": (
+            database_receipts["registry_id"],
+            "receipts/database-open-receipts.json",
+        ),
+        "database_release_manifest": (
+            database_manifest["manifest_id"],
+            "release/database-release-manifest.json",
+        ),
+    }
+    for binding_name, (contract_id, path) in binding_map.items():
+        binding = release_bindings[binding_name]
+        if (
+            binding["contract_id"] != contract_id
+            or binding["version"] != "1.0.0"
+            or binding["path"] != path
+            or binding["digest"] != sha256_digest(path)
+        ):
+            raise ValueError(f"release role database binding differs for {binding_name}")
+    if (
+        status_document["database_finding_ledger"] != ledger["ledger_id"]
+        or status_document["data_contract"] != data_contract["contract_id"]
+        or status_document["database_migration_contract"]
+        != migration_contract["migration_contract_id"]
+        or status_document["database_release_manifest"]
+        != database_manifest["manifest_id"]
+        or status_document["database_open_receipts"] != len(database_receipt_ids)
+    ):
+        raise ValueError("STATUS database bindings differ")
+    return {
+        "database_findings": len(finding_ids),
+        "database_plans": len(plan_ids),
+        "database_stages": len(stage_ids),
+        "data_primitive_policies": len(policy_ids),
+        "database_reconciliation_dimensions": len(dimension_ids),
+        "database_release_gates": len(gate_ids),
+        "database_open_receipts": len(database_receipt_ids),
+    }
+
+
 def validate() -> dict[str, int]:
     capabilities = load_json("specifications/capabilities.json")["requirements"]
     invariants = load_json("specifications/invariants.json")["rules"]
     scenarios = load_json("examples/scenarios.json")["scenarios"]
+    database_ledger = load_json("database/primitive-findings.json")
+    database_plan_set = load_json("plans/database-modernization-plans.json")
+    data_contract = load_json("specifications/data-primitives.json")
+    database_migration_contract = load_json(
+        "specifications/database-migration.json"
+    )
+    database_receipts = load_json("receipts/database-open-receipts.json")
+    database_manifest = load_json("release/database-release-manifest.json")
     forecast_document = load_json("forecasts/forecast-2026-Q3-r2.json")
     forecasts = forecast_document["predictions"]
     roles = load_json("acceptance/roles.json")["roles"]
@@ -893,12 +1517,30 @@ def validate() -> dict[str, int]:
     role_ids = unique_ids(roles, "role")
     proof_class_ids = unique_ids(proof_classes, "proof class")
     receipt_ids = unique_ids(receipts, "receipt")
+    database_receipt_ids = unique_ids(
+        database_receipts["receipts"], "database receipt"
+    )
     operation_ids = unique_ids(operations, "operation")
     probe_ids = unique_ids(probes, "probe")
     closure_ids = unique_ids(simulated_closures, "simulated closure")
     closure_proof_class_by_id = {
         item["id"]: item["proof_class"] for item in simulated_closures
     }
+
+    database_summary = validate_database_program(
+        ledger=database_ledger,
+        plan_set=database_plan_set,
+        data_contract=data_contract,
+        migration_contract=database_migration_contract,
+        database_receipts=database_receipts,
+        database_manifest=database_manifest,
+        release_role=release_role,
+        status_document=status_document,
+        requirement_ids=requirement_ids,
+        rule_ids=rule_ids,
+        scenario_ids=scenario_ids,
+        role_ids=role_ids,
+    )
 
     for requirement in capabilities:
         unknown_rules = set(requirement["rule_ids"]) - rule_ids
@@ -1333,12 +1975,16 @@ def validate() -> dict[str, int]:
     }
     expected_horizon_item_ids = {
         "HORIZON-CONTRACTS",
+        "HORIZON-DATABASE-CONTRACT",
+        "HORIZON-DATABASE-IMPLEMENTATION",
+        "HORIZON-DATABASE-REHEARSAL",
+        "HORIZON-DATABASE-RELEASE",
         "HORIZON-VERTICAL-SLICE",
         "HORIZON-EXTENSIONS",
     }
     if horizon_item_ids != expected_horizon_item_ids:
         raise ValueError(
-            "Coordination Horizon differs from the three-band program contract"
+            "Coordination Horizon differs from the seven-item program contract"
         )
     if not set(coordination_horizon["current_item_ids"]) <= horizon_item_ids:
         raise ValueError(
@@ -1429,7 +2075,7 @@ def validate() -> dict[str, int]:
         promotion_receipt=promotion_receipt,
         constellation_lock=constellation_lock,
         status_document=status_document,
-        substantive_receipt_ids=receipt_ids,
+        substantive_receipt_ids=receipt_ids | database_receipt_ids,
     )
 
     contract_paths = {
@@ -1455,6 +2101,30 @@ def validate() -> dict[str, int]:
         ),
         "RECEIPT-VOCABULARY-MAP-001": (
             "specifications/receipt-vocabulary-map.v1.json",
+            "file",
+        ),
+        "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001": (
+            "database/primitive-findings.json",
+            "file",
+        ),
+        "DATABASE-MODERNIZATION-PLAN-SET-001": (
+            "plans/database-modernization-plans.json",
+            "file",
+        ),
+        "DATA-CONTRACT-001": (
+            "specifications/data-primitives.json",
+            "file",
+        ),
+        "DATABASE-MIGRATION-CONTRACT-001": (
+            "specifications/database-migration.json",
+            "file",
+        ),
+        "DATABASE-OPEN-RECEIPTS-001": (
+            "receipts/database-open-receipts.json",
+            "file",
+        ),
+        "DATABASE-RELEASE-MANIFEST-001": (
+            "release/database-release-manifest.json",
             "file",
         ),
     }
@@ -1653,6 +2323,13 @@ def validate() -> dict[str, int]:
         "language-policy/manifest.json",
         "scripts/validate_pinned_sources.py",
         "docs/migrations/0.3.0-to-0.3.1.md",
+        "docs/DATABASE_MODERNIZATION.md",
+        "database/primitive-findings.json",
+        "plans/database-modernization-plans.json",
+        "specifications/data-primitives.json",
+        "specifications/database-migration.json",
+        "receipts/database-open-receipts.json",
+        "release/database-release-manifest.json",
         "tests/test_branch_flow.py",
         "tests/test_language_policy.py",
     ]
@@ -1671,11 +2348,13 @@ def validate() -> dict[str, int]:
         "receipt_vocabulary_mappings": len(family_mappings),
         "roles": len(role_ids),
         "proof_classes": len(proof_class_ids),
-        "open_receipts": len(receipts),
+        "open_receipts": len(receipts) + len(database_receipt_ids),
+        "canonical_open_receipts": len(receipts),
         "promotion_receipts": int(
             promotion_receipt["promotion_receipt_id"] == PROMOTION_RECEIPT_ID
         ),
         "repositories": len(repository_roles),
+        **database_summary,
     }
 
 

@@ -1,0 +1,85 @@
+{
+  "manifest_id": "DATABASE-RELEASE-MANIFEST-001",
+  "version": "1.0.0",
+  "release_state": "candidate_contract_surface",
+  "authority": "program_specification_only",
+  "artifact_bindings": [
+    {"artifact_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001", "version": "1.0.0", "path": "database/primitive-findings.json", "digest": "sha256:b3ca176af037686103022e975397ebd7c1f78ac2a9fa427dfe9ef90a098a4864"},
+    {"artifact_id": "DATABASE-MODERNIZATION-PLAN-SET-001", "version": "1.0.0", "path": "plans/database-modernization-plans.json", "digest": "sha256:c18e5054c6f3efb8f9f1dec553850d589f4e131da5a2bfdb1842d765c8e242da"},
+    {"artifact_id": "DATA-CONTRACT-001", "version": "1.0.0", "path": "specifications/data-primitives.json", "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"},
+    {"artifact_id": "DATABASE-MIGRATION-CONTRACT-001", "version": "1.0.0", "path": "specifications/database-migration.json", "digest": "sha256:280ca47f7e1bed40c49c35630ff549939188ed2a038d45ef4d238c5be2e7eb3a"},
+    {"artifact_id": "DATABASE-OPEN-RECEIPTS-001", "version": "1.0.0", "path": "receipts/database-open-receipts.json", "digest": "sha256:93e660eecdf88b156f5df8f0c2ea02111d8c5c845d3d3186c0637ff55bab2ddd"},
+    {"artifact_id": "PROGRAM-CAPABILITIES-0.3.1", "version": "0.3.1", "path": "specifications/capabilities.json", "digest": "sha256:34c8bbe988a6eaf98a00fa3771d28fcc884c9a26a2344b3d115d3cc20d318098"},
+    {"artifact_id": "PROGRAM-INVARIANTS-0.3.1", "version": "0.3.1", "path": "specifications/invariants.json", "digest": "sha256:8b54181f80354a48e5d2809a7ae4af444af6c210343d829efb90cd6d4c37a869"},
+    {"artifact_id": "PROGRAM-SCENARIOS-0.3.1", "version": "0.3.1", "path": "examples/scenarios.json", "digest": "sha256:be15ad3143d926317cd03a1a96a4cbe89fda0435bf6181d9fcf63ebe25cfa8e4"}
+  ],
+  "migration_coordinate": {
+    "framework": "Alembic",
+    "engine_family": "PostgreSQL",
+    "status": "pending_implementation_projection",
+    "implementation_release": "implementation-v0.3.1",
+    "migration_head": "pending_observed_evidence",
+    "catalog_digest": "pending_observed_evidence"
+  },
+  "reconciliation_binding": {
+    "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
+    "required_dimension_ids": [
+      "RECON-IDENTITY",
+      "RECON-STRUCTURE",
+      "RECON-SEMANTIC",
+      "RECON-RELATIONSHIP",
+      "RECON-DISTRIBUTION",
+      "RECON-ARTIFACT",
+      "RECON-AUDIT",
+      "RECON-SECURITY",
+      "RECON-HUMAN-SAMPLE"
+    ],
+    "status": "pending_observed_evidence"
+  },
+  "required_receipt_ids": [
+    "RCP-DB-DATA-001",
+    "RCP-DB-TENANT-001",
+    "RCP-DB-EVENT-001",
+    "RCP-DB-CONCURRENCY-001",
+    "RCP-DB-MIGRATION-001",
+    "RCP-DB-RECON-001",
+    "RCP-DB-RECOVERY-001",
+    "RCP-DB-RELEASE-001"
+  ],
+  "required_gate_ids": [
+    "DB-GATE-MIGRATION-HISTORY",
+    "DB-GATE-DATA-CONTRACT",
+    "DB-GATE-TENANT",
+    "DB-GATE-CONSISTENCY",
+    "DB-GATE-RECONCILIATION",
+    "DB-GATE-RECOVERY",
+    "DB-GATE-RELEASE"
+  ],
+  "specification_by_example": [
+    "SCN-DATA-TIME-001",
+    "SCN-DATA-MEASURE-001",
+    "SCN-DB-TENANT-001",
+    "SCN-DB-EVENT-001",
+    "SCN-DB-IDEMPOTENCY-001",
+    "SCN-DB-MIGRATE-001",
+    "SCN-DB-RECON-001",
+    "SCN-DB-RELEASE-001"
+  ],
+  "settlement_policy": {
+    "candidate_condition": "Contract artifacts, paths, versions, digests, requirements, rules, scenarios, and open receipt identities validate in this program release.",
+    "observed_condition": "The implementation release supplies migration head, catalog digest, environment identity, database test results, reconciliation, recovery, and accountable receipt closures.",
+    "promotion_condition": "Every required gate and receipt resolves to current observed evidence and the protected workflow binds an immutable implementation coordinate.",
+    "requalification_condition": "A bound contract, migration head, catalog, environment, threshold, role decision, or recovery topology change reopens its dependent receipt and gates."
+  },
+  "deferred_boundaries": [
+    "Implementation selects and pins the supported PostgreSQL major.",
+    "Implementation publishes the Alembic revision graph and database catalog projection.",
+    "Representative environments supply query plans, reconciliation, restore, rollback, security, and concurrency evidence.",
+    "Accountable Scientific, Quality, Regulatory, Security, Operations, and business roles settle observed acceptance."
+  ],
+  "metadata": {
+    "created_at": "2026-08-04T14:00:00Z",
+    "coordination_horizon_id": "COORD-HORIZON-2026-Q3-R1",
+    "recommended_synthesis_id": "DB-SYNTHESIS-001"
+  }
+}

@@ -5,7 +5,7 @@ evidence_mode: planned
 assurance_stage: specified
 default_branch: main
 integration_branch: develop
-as_of: 2026-07-28
+as_of: 2026-08-04
 source_seed:
   repository: driftframestudios/prototype-exemplars
   pull_request: 3
@@ -26,5 +26,10 @@ practitioner_probe_catalog: LIMS-ELN-PRACTITIONER-PROBES-001
 advisory_future_reality_design: DESIGN-FUTURE-REALITY-CLOSURE-001
 canonical_simulated_closure: SIMULATED-SUBSTANTIVE-CLOSURE-2028-V1
 receipt_vocabulary_map: RECEIPT-VOCABULARY-MAP-001
+database_finding_ledger: LIMS-ELN-DATA-PRIMITIVE-LEDGER-001
+data_contract: DATA-CONTRACT-001
+database_migration_contract: DATABASE-MIGRATION-CONTRACT-001
+database_release_manifest: DATABASE-RELEASE-MANIFEST-001
+database_open_receipts: 8
 simulated_receipt_classes_closed: 4
 future_observed_receipt_classes_open: 4

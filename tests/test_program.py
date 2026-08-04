@@ -42,19 +42,246 @@ PINNED_SPEC.loader.exec_module(PINNED)
 
 
 class ProgramValidationTests(unittest.TestCase):
+    def database_validation_arguments(self) -> dict:
+        capabilities = json.loads(
+            (ROOT / "specifications" / "capabilities.json").read_text()
+        )["requirements"]
+        invariants = json.loads(
+            (ROOT / "specifications" / "invariants.json").read_text()
+        )["rules"]
+        scenarios = json.loads(
+            (ROOT / "examples" / "scenarios.json").read_text()
+        )["scenarios"]
+        roles = json.loads(
+            (ROOT / "acceptance" / "roles.json").read_text()
+        )["roles"]
+        return {
+            "ledger": json.loads(
+                (ROOT / "database" / "primitive-findings.json").read_text()
+            ),
+            "plan_set": json.loads(
+                (
+                    ROOT / "plans" / "database-modernization-plans.json"
+                ).read_text()
+            ),
+            "data_contract": json.loads(
+                (
+                    ROOT / "specifications" / "data-primitives.json"
+                ).read_text()
+            ),
+            "migration_contract": json.loads(
+                (
+                    ROOT / "specifications" / "database-migration.json"
+                ).read_text()
+            ),
+            "database_receipts": json.loads(
+                (
+                    ROOT / "receipts" / "database-open-receipts.json"
+                ).read_text()
+            ),
+            "database_manifest": json.loads(
+                (
+                    ROOT / "release" / "database-release-manifest.json"
+                ).read_text()
+            ),
+            "release_role": json.loads(
+                (ROOT / "release" / "repository-role.json").read_text()
+            ),
+            "status_document": MODULE.load_status(),
+            "requirement_ids": {item["id"] for item in capabilities},
+            "rule_ids": {item["id"] for item in invariants},
+            "scenario_ids": {item["id"] for item in scenarios},
+            "role_ids": {item["id"] for item in roles},
+        }
+
     def test_complete_program_validates(self) -> None:
         summary = MODULE.validate()
         self.assertEqual(summary["proof_classes"], 4)
         self.assertEqual(summary["repositories"], 5)
-        self.assertEqual(summary["requirements"], 9)
-        self.assertEqual(summary["scenarios"], 16)
-        self.assertEqual(summary["open_receipts"], 9)
+        self.assertEqual(summary["requirements"], 12)
+        self.assertEqual(summary["rules"], 28)
+        self.assertEqual(summary["scenarios"], 24)
+        self.assertEqual(summary["open_receipts"], 17)
+        self.assertEqual(summary["canonical_open_receipts"], 9)
         self.assertEqual(summary["promotion_receipts"], 1)
         self.assertEqual(summary["operations"], 3)
         self.assertEqual(summary["probes"], 10)
         self.assertEqual(summary["simulated_closures"], 4)
         self.assertEqual(summary["governance_closure_families"], 4)
         self.assertEqual(summary["receipt_vocabulary_mappings"], 7)
+        self.assertEqual(summary["database_findings"], 32)
+        self.assertEqual(summary["database_plans"], 5)
+        self.assertEqual(summary["database_stages"], 7)
+        self.assertEqual(summary["data_primitive_policies"], 13)
+        self.assertEqual(summary["database_reconciliation_dimensions"], 9)
+        self.assertEqual(summary["database_release_gates"], 7)
+        self.assertEqual(summary["database_open_receipts"], 8)
+
+    def test_database_finding_ledger_is_complete_and_contract_bound(self) -> None:
+        arguments = self.database_validation_arguments()
+        ledger = arguments["ledger"]
+        finding_ids = {item["id"] for item in ledger["findings"]}
+        self.assertEqual(32, len(finding_ids))
+        self.assertEqual(
+            {"critical", "high"},
+            {item["severity"] for item in ledger["findings"]},
+        )
+        self.assertEqual(
+            {"prototype-exemplars", "reference-pack"},
+            {
+                source["repository"]
+                for item in ledger["findings"]
+                for source in item["sources"]
+            },
+        )
+        policy_findings = {
+            finding_id
+            for policy in arguments["data_contract"]["primitive_policies"]
+            for finding_id in policy["finding_ids"]
+        }
+        migration_findings = set(
+            arguments["migration_contract"]["finding_ids"]
+        )
+        self.assertEqual(finding_ids, policy_findings | migration_findings)
+
+    def test_database_plan_set_declares_one_event_and_seven_interstitials(
+        self,
+    ) -> None:
+        plan_set = self.database_validation_arguments()["plan_set"]
+        self.assertEqual(
+            MODULE.DATABASE_PROBABILITY_EVENT,
+            plan_set["probability_of"],
+        )
+        self.assertEqual(5, len(plan_set["plans"]))
+        self.assertEqual(
+            {
+                "DB-PLAN-01": 0.54,
+                "DB-PLAN-02": 0.83,
+                "DB-PLAN-03": 0.71,
+                "DB-PLAN-04": 0.89,
+                "DB-PLAN-05": 0.78,
+            },
+            {item["id"]: item["probability"] for item in plan_set["plans"]},
+        )
+        synthesis = plan_set["recommended_synthesis"]
+        self.assertEqual(
+            {item["id"] for item in plan_set["plans"]},
+            {item["plan_id"] for item in synthesis["composition"]},
+        )
+        stages = plan_set["chain_of_action"]
+        self.assertEqual(
+            list(range(1, 8)),
+            [item["sequence"] for item in stages],
+        )
+        self.assertTrue(
+            all(
+                item["interstitial"]["question"]
+                and item["interstitial"]["signals"]
+                and item["interstitial"]["response"]
+                for item in stages
+            )
+        )
+
+    def test_database_contract_references_resolve(self) -> None:
+        arguments = self.database_validation_arguments()
+        data = arguments["data_contract"]
+        migration = arguments["migration_contract"]
+        receipt_ids = {
+            item["id"] for item in arguments["database_receipts"]["receipts"]
+        }
+        for contract in (data, migration):
+            bindings = contract["program_bindings"]
+            self.assertLessEqual(
+                set(bindings["requirement_ids"]), arguments["requirement_ids"]
+            )
+            self.assertLessEqual(
+                set(bindings["rule_ids"]), arguments["rule_ids"]
+            )
+            self.assertLessEqual(
+                set(bindings["scenario_ids"]), arguments["scenario_ids"]
+            )
+        self.assertEqual(
+            receipt_ids,
+            set(data["program_bindings"]["open_receipt_ids"])
+            | set(migration["program_bindings"]["open_receipt_ids"]),
+        )
+
+    def test_database_receipts_and_release_manifest_preserve_boundaries(
+        self,
+    ) -> None:
+        arguments = self.database_validation_arguments()
+        receipts = arguments["database_receipts"]["receipts"]
+        manifest = arguments["database_manifest"]
+        self.assertEqual(8, len(receipts))
+        for receipt in receipts:
+            self.assertEqual("open", receipt["status"])
+            self.assertEqual("observed", receipt["evidence_mode"])
+            self.assertGreaterEqual(len(receipt["accountable_roles"]), 4)
+            self.assertGreaterEqual(len(receipt["required_evidence"]), 4)
+            self.assertGreaterEqual(len(receipt["requalification_triggers"]), 4)
+        self.assertEqual(
+            "pending_implementation_projection",
+            manifest["migration_coordinate"]["status"],
+        )
+        self.assertEqual(4, len(manifest["deferred_boundaries"]))
+        for binding in manifest["artifact_bindings"]:
+            self.assertEqual(
+                MODULE.sha256_digest(binding["path"]), binding["digest"]
+            )
+
+        release_bindings = arguments["release_role"]["contract_bindings"]
+        machine_contracts = {
+            item["contract_id"]: item
+            for item in json.loads((ROOT / "machine-node.json").read_text())[
+                "contracts"
+            ]
+        }
+        first_contracts = {
+            item["contract_id"]: item
+            for item in json.loads((ROOT / "first-receipt.json").read_text())[
+                "contract_state"
+            ]
+        }
+        for binding_name in (
+            "data_primitive_finding_ledger",
+            "database_modernization_plan_set",
+            "data_contract",
+            "database_migration_contract",
+            "database_open_receipts",
+            "database_release_manifest",
+        ):
+            binding = release_bindings[binding_name]
+            self.assertEqual(
+                MODULE.sha256_digest(binding["path"]), binding["digest"]
+            )
+            self.assertEqual(
+                binding["digest"],
+                machine_contracts[binding["contract_id"]]["digest"],
+            )
+            self.assertEqual(
+                binding["digest"],
+                first_contracts[binding["contract_id"]]["digest"],
+            )
+
+    def test_database_validator_rejects_contract_drift(self) -> None:
+        missing_finding = self.database_validation_arguments()
+        missing_finding["ledger"]["findings"].pop()
+        with self.assertRaises(ValueError):
+            MODULE.validate_database_program(**missing_finding)
+
+        stale_digest = self.database_validation_arguments()
+        stale_digest["database_manifest"]["artifact_bindings"][0][
+            "digest"
+        ] = "sha256:" + ("0" * 64)
+        with self.assertRaisesRegex(ValueError, "manifest digest differs"):
+            MODULE.validate_database_program(**stale_digest)
+
+        unknown_rule = self.database_validation_arguments()
+        unknown_rule["data_contract"]["primitive_policies"][0][
+            "rule_ids"
+        ].append("RULE-UNPUBLISHED-001")
+        with self.assertRaisesRegex(ValueError, "unknown rules"):
+            MODULE.validate_database_program(**unknown_rule)
 
     def test_program_and_governance_release_coordinates_are_explicit(self) -> None:
         versioned_paths = (
@@ -362,6 +589,10 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(
             {
                 "HORIZON-CONTRACTS",
+                "HORIZON-DATABASE-CONTRACT",
+                "HORIZON-DATABASE-IMPLEMENTATION",
+                "HORIZON-DATABASE-REHEARSAL",
+                "HORIZON-DATABASE-RELEASE",
                 "HORIZON-VERTICAL-SLICE",
                 "HORIZON-EXTENSIONS",
             },
@@ -417,7 +648,12 @@ class ProgramValidationTests(unittest.TestCase):
         receipts = json.loads(
             (ROOT / "receipts" / "open-receipts.json").read_text()
         )["receipts"]
-        substantive_ids = {item["id"] for item in receipts}
+        database_receipts = json.loads(
+            (ROOT / "receipts" / "database-open-receipts.json").read_text()
+        )["receipts"]
+        substantive_ids = {
+            item["id"] for item in receipts + database_receipts
+        }
 
         release_role = deepcopy(release_role)
         machine_node = deepcopy(machine_node)

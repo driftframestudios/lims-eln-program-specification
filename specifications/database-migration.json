@@ -1,0 +1,119 @@
+{
+  "migration_contract_id": "DATABASE-MIGRATION-CONTRACT-001",
+  "version": "1.0.0",
+  "status": "specified",
+  "authority": "program_specification",
+  "data_contract_id": "DATA-CONTRACT-001",
+  "finding_ids": [
+    "DBF-MIG-001",
+    "DBF-TIME-001",
+    "DBF-TEN-001",
+    "DBF-MODEL-001",
+    "DBF-AUDIT-001",
+    "DBF-SCHEMA-001",
+    "DBF-TEST-001",
+    "DBF-MIG-002",
+    "DBF-CUST-001",
+    "DBF-INDEX-001",
+    "DBF-MIG-003",
+    "DBF-MIG-004",
+    "DBF-FORK-001"
+  ],
+  "engine_contract": {
+    "family": "PostgreSQL",
+    "qualified_major": "selected_by_implementation_release",
+    "reference_majors": [17, 18],
+    "timezone": "UTC",
+    "encoding": "UTF8"
+  },
+  "migration_mechanism": {
+    "framework": "Alembic",
+    "history_table": "program_control.alembic_version",
+    "revision_policy": "Immutable versioned revisions with one reviewed head per release candidate",
+    "deployment_lock": "PostgreSQL advisory lock scoped to the database and migration program",
+    "transaction_policy": "Transactional DDL where supported; online index and long-running data phases carry explicit transaction boundaries",
+    "review_artifact": "Offline rendered SQL plus revision metadata and checksums",
+    "drift_gate": "The expected head and database catalog projection agree before application traffic begins",
+    "remediation_policy": "Applied revisions retain their bytes; corrective behavior arrives through a successor forward revision and an exercised recovery route"
+  },
+  "phases": [
+    {
+      "phase_id": "DB-MIG-PHASE-01",
+      "name": "baseline_and_lineage",
+      "entry_evidence": ["canonical tree decision", "DATA-CONTRACT-001", "supported engine major"],
+      "actions": ["create program-owned schemas and roles", "establish migration history", "record predecessor baseline and catalog digest"],
+      "exit_evidence": ["baseline revision", "history checksum receipt", "role and schema ownership receipt"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-02",
+      "name": "expand",
+      "entry_evidence": ["accepted baseline", "reviewed offline SQL", "change-window and lock objectives"],
+      "actions": ["add compatible types tables columns constraints and indexes", "introduce dual-write or projection adapters where required", "add constraints through staged validation when table volume warrants it"],
+      "exit_evidence": ["expand migration receipt", "predecessor compatibility tests", "query-plan review"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-03",
+      "name": "backfill_and_reconcile",
+      "entry_evidence": ["expand phase accepted", "stable source snapshot or watermark", "versioned transformation manifest"],
+      "actions": ["load bounded batches with durable compound checkpoints", "record source-to-canonical mappings and exceptions", "evaluate every reconciliation dimension"],
+      "exit_evidence": ["batch receipts", "exception dispositions", "accepted reconciliation report"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-04",
+      "name": "converge_and_shadow",
+      "entry_evidence": ["accepted reconciliation", "delta capture active", "shadow comparison plan"],
+      "actions": ["apply and reconcile deltas", "compare canonical reads events and query plans", "exercise restore rollback and data exit"],
+      "exit_evidence": ["shadow parity receipt", "restore receipt", "rollback and data-exit receipt"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-05",
+      "name": "contract_and_release",
+      "entry_evidence": ["observed migration gates accepted", "accountable cutover decisions", "rollback checkpoint current"],
+      "actions": ["move readers and writers to the canonical boundary", "retire compatibility paths through a successor migration", "settle the database release manifest"],
+      "exit_evidence": ["immutable migration head", "DATABASE-RELEASE-MANIFEST-001", "residual risk and requalification triggers"]
+    }
+  ],
+  "reconciliation_dimensions": [
+    {"dimension_id": "RECON-IDENTITY", "measure": "source and canonical identity uniqueness and mapping coverage", "acceptance": "Every in-scope identity maps once or carries an accepted exception."},
+    {"dimension_id": "RECON-STRUCTURE", "measure": "schema field type nullability vocabulary and version coverage", "acceptance": "Every required field satisfies the released data contract or carries an accepted exception."},
+    {"dimension_id": "RECON-SEMANTIC", "measure": "scientific state quantity unit qualifier method and intended meaning", "acceptance": "Accountable scientific reviewers accept defined equality and tolerance rules."},
+    {"dimension_id": "RECON-RELATIONSHIP", "measure": "lineage custody assay approval signature artifact and trace edges", "acceptance": "Required edges preserve endpoint identity cardinality and version."},
+    {"dimension_id": "RECON-DISTRIBUTION", "measure": "counts null rates status distributions numeric summaries and exception rates", "acceptance": "Observed metrics remain within approved thresholds and every breach carries disposition."},
+    {"dimension_id": "RECON-ARTIFACT", "measure": "artifact inventory bytes digest media type and lineage", "acceptance": "Every in-scope artifact verifies its content digest or carries an accepted exception."},
+    {"dimension_id": "RECON-AUDIT", "measure": "actors times reasons authorization decisions events and supersession", "acceptance": "Representative histories reconstruct the approved business narrative."},
+    {"dimension_id": "RECON-SECURITY", "measure": "tenant scope row policies role grants redaction and retention", "acceptance": "Adversarial tests demonstrate the released tenant and privilege boundary."},
+    {"dimension_id": "RECON-HUMAN-SAMPLE", "measure": "risk-based record review by scientific laboratory Quality and business roles", "acceptance": "The approved sample completes with recorded decisions and owned exceptions."}
+  ],
+  "release_gates": [
+    {"gate_id": "DB-GATE-MIGRATION-HISTORY", "evidence": ["migration head", "revision checksums", "catalog digest", "predecessor upgrade receipt"]},
+    {"gate_id": "DB-GATE-DATA-CONTRACT", "evidence": ["DATA-CONTRACT-001", "entity mapping coverage", "primitive edge-case suite"]},
+    {"gate_id": "DB-GATE-TENANT", "evidence": ["forced row-level security catalog", "cross-tenant tests", "role grant review"]},
+    {"gate_id": "DB-GATE-CONSISTENCY", "evidence": ["concurrent idempotency tests", "aggregate event outbox atomicity tests", "direct-DML control tests"]},
+    {"gate_id": "DB-GATE-RECONCILIATION", "evidence": ["all reconciliation dimensions", "exception dispositions", "accountable review decisions"]},
+    {"gate_id": "DB-GATE-RECOVERY", "evidence": ["clean restore", "rollback", "data exit", "observed RTO and RPO"]},
+    {"gate_id": "DB-GATE-RELEASE", "evidence": ["database release manifest", "observed open-receipt closures", "immutable release coordinate"]}
+  ],
+  "verification_matrix": [
+    "Empty database reaches the expected migration head.",
+    "Every supported predecessor reaches the expected head with preserved data.",
+    "Repeated execution preserves one migration history.",
+    "Interrupted data phases resume from durable checkpoints.",
+    "Concurrent identical and conflicting requests exercise idempotency and optimistic concurrency.",
+    "Cross-tenant reads and writes exercise row policies and privileged-role posture.",
+    "Direct event and evidence mutation exercises database privilege boundaries.",
+    "Equivalent instants decimals unit mappings JSON edge cases and status invariants exercise primitive contracts.",
+    "Representative query plans exercise indexes retention and partition decisions.",
+    "Backup restore rollback and data exit reconstruct the accepted evidence boundary."
+  ],
+  "program_bindings": {
+    "requirement_ids": ["SPEC-DBMG-001"],
+    "rule_ids": ["RULE-DBMG-001", "RULE-DBMG-002", "RULE-DBMG-003", "RULE-DBRL-001"],
+    "scenario_ids": ["SCN-DB-MIGRATE-001", "SCN-DB-RECON-001", "SCN-DB-RELEASE-001"],
+    "open_receipt_ids": ["RCP-DB-MIGRATION-001", "RCP-DB-RECON-001", "RCP-DB-RECOVERY-001", "RCP-DB-RELEASE-001"]
+  },
+  "metadata": {
+    "created_at": "2026-08-04T14:00:00Z",
+    "source_ledger_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
+    "next_review_trigger": "The engine major, migration framework, source snapshot mechanism, reconciliation threshold, or release topology changes."
+  }
+}

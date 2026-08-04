@@ -16,6 +16,10 @@ Release stable requirements, rules, failure twins, recovery examples, fixtures,
 forecasts, bounded operations, Practitioner Probes, proof classes, receipt
 contracts, and first-receipt instructions.
 
+Settle the database finding ledger, probability-framed plan set, canonical data
+primitive contract, migration and reconciliation contract, database receipt
+registry, and digest-bound release manifest.
+
 ## Phase 2 — Golden specimen and durable boundary
 
 Carry one representative synthetic specimen through accession, custody,
@@ -40,6 +44,10 @@ preserving vendor-specific semantics and version evidence.
 Exercise representative volumes, historical exceptions, delta catch-up,
 semantic parity, rollback, clean restore, continuity, and neutral-reader
 export.
+
+Execute the five-phase Alembic evolution contract, compare all nine
+reconciliation dimensions, exercise the seven database release gates, and bind
+results to the immutable migration catalog and release manifest.
 
 ## Phase 6 — Production controls
 

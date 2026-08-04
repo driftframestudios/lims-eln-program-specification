@@ -37,6 +37,36 @@
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
       "version": "1.0.0",
       "digest": "sha256:0f3be9ab956877281f9261c69a5f099547b048c1c878541a7c9c47edc5e03280"
+    },
+    {
+      "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
+      "version": "1.0.0",
+      "digest": "sha256:b3ca176af037686103022e975397ebd7c1f78ac2a9fa427dfe9ef90a098a4864"
+    },
+    {
+      "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
+      "version": "1.0.0",
+      "digest": "sha256:c18e5054c6f3efb8f9f1dec553850d589f4e131da5a2bfdb1842d765c8e242da"
+    },
+    {
+      "contract_id": "DATA-CONTRACT-001",
+      "version": "1.0.0",
+      "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"
+    },
+    {
+      "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
+      "version": "1.0.0",
+      "digest": "sha256:280ca47f7e1bed40c49c35630ff549939188ed2a038d45ef4d238c5be2e7eb3a"
+    },
+    {
+      "contract_id": "DATABASE-OPEN-RECEIPTS-001",
+      "version": "1.0.0",
+      "digest": "sha256:93e660eecdf88b156f5df8f0c2ea02111d8c5c845d3d3186c0637ff55bab2ddd"
+    },
+    {
+      "contract_id": "DATABASE-RELEASE-MANIFEST-001",
+      "version": "1.0.0",
+      "digest": "sha256:10b059c431ca2630616c6554f3a7383af54be58e93291c04f8003554a44457de"
     }
   ],
   "evidence_posture": [
@@ -63,10 +93,16 @@
       "mode": "observed",
       "assurance_stage": "specified",
       "status": "designed_but_unexercised"
+    },
+    {
+      "claim": "The database finding ledger data contract migration contract plan synthesis and release manifest form a validated program surface while implementation and environment receipts remain open for observed evidence.",
+      "mode": "planned",
+      "assurance_stage": "specified",
+      "status": "active"
     }
   ],
   "coordination_horizon_id": "COORD-HORIZON-2026-Q3-R1",
-  "current_horizon_summary": "Candidate release 0.3.1 is settling: contract content and canonical closure digests are bound while repository promotion coordinates remain explicitly pending.",
+  "current_horizon_summary": "Candidate release 0.3.1 is settling: canonical closure digests and database modernization contracts are bound while implementation database evidence and repository promotion coordinates remain explicitly pending.",
   "open_receipts": [
     "RCP-VEND-SAPIO-001",
     "RCP-VEND-BENCH-001",
@@ -77,6 +113,14 @@
     "RCP-SECR-001",
     "RCP-OBS-001",
     "RCP-ACPT-001",
+    "RCP-DB-DATA-001",
+    "RCP-DB-TENANT-001",
+    "RCP-DB-EVENT-001",
+    "RCP-DB-CONCURRENCY-001",
+    "RCP-DB-MIGRATION-001",
+    "RCP-DB-RECON-001",
+    "RCP-DB-RECOVERY-001",
+    "RCP-DB-RELEASE-001",
     "RCP-PROGRAM-PROMOTION-003"
   ],
   "invalidation_conditions": [
@@ -84,6 +128,7 @@
     "A simulated receipt is interpreted as observed evidence or production authorization.",
     "A caller operation exceeds its released identity scope budget approval or effect ceiling.",
     "A domain acceptance decision appears outside the accountable human role.",
+    "A database finding contract migration release binding or observed receipt changes its identity version digest or authority posture.",
     "A governance schema release changes the required control surface."
   ],
   "source_permissions": [
@@ -110,13 +155,13 @@
   ],
   "handoff": {
     "recipient_role": "program governance",
-    "next_safe_action": "Run the complete validation suite, confirm cross-repository canonical digest equality, and promote the candidate through the protected release path.",
-    "success_evidence": "A passing validation summary with exact canonical closure equality, distinct design identity, explicit vocabulary mapping, separate observed successor state, and immutable promotion coordinates that close RCP-PROGRAM-PROMOTION-003."
+    "next_safe_action": "Run the complete validation suite, confirm database artifact bindings and cross-repository canonical digest equality, then promote the candidate through the protected release path.",
+    "success_evidence": "A passing validation summary with exact database contract and manifest bindings, canonical closure equality, distinct design identity, explicit vocabulary mapping, separate observed successor state, and immutable promotion coordinates that close RCP-PROGRAM-PROMOTION-003."
   },
   "metadata": {
     "schema_version": "2.0.1",
     "created_at": "2026-07-28T13:00:00Z",
-    "updated_at": "2026-07-28T20:00:00Z",
+    "updated_at": "2026-08-04T14:00:00Z",
     "owner": {
       "actor_id": "ACTOR-PROGRAM-OWNERS",
       "display_name": "Program repository owners",

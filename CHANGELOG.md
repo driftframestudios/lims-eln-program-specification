@@ -2,6 +2,20 @@
 
 ## 0.3.1 — Candidate
 
+- Added a 32-finding cross-repository database primitive ledger with stable
+  identities, evidence locations, affirmative target states, and complete
+  data- or migration-contract bindings.
+- Added five probability-framed database modernization plans, a synthesized
+  seven-stage chain, and an evidence-driven interstitial after every stage.
+- Added canonical data-primitive and PostgreSQL/Alembic migration contracts,
+  nine reconciliation dimensions, seven release gates, and database-focused
+  requirements, invariants, and specification-by-example scenarios.
+- Added eight future-observed database receipts and a digest-bound database
+  release manifest with explicit implementation, rehearsal, recovery, and
+  accountable-acceptance boundaries.
+- Extended the Coordination Horizon, Machine Node, first receipt, release role,
+  status surface, validator, and tests to enforce the database program as one
+  traceable contract surface.
 - Added a repository-owned Vale author-feedback layer for Markdown prose and
   Python comments, with a checksum-verified immutable Vale release asset and
   explicit separation from the deterministic program gate.
