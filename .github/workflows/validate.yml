@@ -1,13 +1,13 @@
 name: Validate program specification
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
-      - develop
-    tags:
-      - "spec-v*"
+  workflow_dispatch:
+    inputs:
+      confirm_run:
+        description: Confirm a human has allocated this remote proof
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ concurrency:
 jobs:
   author-feedback:
     name: author-feedback (advisory)
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -48,6 +48,7 @@ jobs:
 
   program:
     name: program-contracts (${{ matrix.python-version }})
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
@@ -82,7 +83,7 @@ jobs:
 
   candidate-coordinates:
     name: candidate-coordinates
-    if: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/spec-v') && !startsWith(github.head_ref, 'release/') && !startsWith(github.head_ref, 'hotfix/') }}
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/spec-v') && !startsWith(github.head_ref, 'release/') && !startsWith(github.head_ref, 'hotfix/') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -96,7 +97,7 @@ jobs:
 
   cross-repository-contracts:
     name: cross-repository-contracts
-    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/spec-v') || startsWith(github.head_ref, 'release/') || startsWith(github.head_ref, 'hotfix/') }}
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/spec-v') || startsWith(github.head_ref, 'release/') || startsWith(github.head_ref, 'hotfix/')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -180,7 +181,7 @@ jobs:
 
   program-validation:
     name: program-validation
-    if: ${{ always() }}
+    if: ${{ always() && vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run }}
     needs:
       - program
       - candidate-coordinates

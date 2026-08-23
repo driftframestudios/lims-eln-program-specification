@@ -1,0 +1,124 @@
+{
+  "$defs": {
+    "CallerClass": {
+      "enum": [
+        "human_operator",
+        "service_workload",
+        "workflow_automation",
+        "ai_bounded_caller"
+      ],
+      "title": "CallerClass",
+      "type": "string"
+    },
+    "JsonValue": {}
+  },
+  "$id": "urn:driftframe:lims-eln:bounded-call-request:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "approval_receipt_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approval Receipt Id"
+    },
+    "call_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Call Id",
+      "type": "string"
+    },
+    "caller_class": {
+      "$ref": "#/$defs/CallerClass"
+    },
+    "caller_identity": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Caller Identity",
+      "type": "string"
+    },
+    "correlation_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "initiating_principal": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Initiating Principal",
+      "type": "string"
+    },
+    "operation_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "operation_version": {
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Operation Version",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Payload",
+      "type": "object"
+    },
+    "purpose": {
+      "minLength": 1,
+      "title": "Purpose",
+      "type": "string"
+    },
+    "request_version": {
+      "default": "1.0.0",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Request Version",
+      "type": "string"
+    },
+    "requested_at": {
+      "maxLength": 27,
+      "minLength": 20,
+      "title": "Requested At",
+      "type": "string"
+    },
+    "tenant_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "call_id",
+    "caller_class",
+    "caller_identity",
+    "initiating_principal",
+    "operation_id",
+    "operation_version",
+    "tenant_id",
+    "purpose",
+    "payload",
+    "requested_at",
+    "correlation_id"
+  ],
+  "title": "BoundedCallRequest",
+  "type": "object"
+}

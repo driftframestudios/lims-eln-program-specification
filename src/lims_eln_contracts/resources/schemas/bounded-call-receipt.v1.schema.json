@@ -1,0 +1,196 @@
+{
+  "$defs": {
+    "CallDecision": {
+      "enum": [
+        "authorized",
+        "succeeded",
+        "replayed",
+        "denied",
+        "recovery_required"
+      ],
+      "title": "CallDecision",
+      "type": "string"
+    },
+    "CallerClass": {
+      "enum": [
+        "human_operator",
+        "service_workload",
+        "workflow_automation",
+        "ai_bounded_caller"
+      ],
+      "title": "CallerClass",
+      "type": "string"
+    },
+    "EffectState": {
+      "enum": [
+        "zero_effect",
+        "confirmed_effect",
+        "recovery_owned"
+      ],
+      "title": "EffectState",
+      "type": "string"
+    },
+    "EffectSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_fields": {
+          "default": [],
+          "items": {
+            "maxLength": 96,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Changed Fields",
+          "type": "array"
+        },
+        "record_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Record Count"
+        },
+        "resource_ids": {
+          "default": [],
+          "items": {
+            "maxLength": 128,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+            "type": "string"
+          },
+          "title": "Resource Ids",
+          "type": "array"
+        },
+        "state": {
+          "$ref": "#/$defs/EffectState"
+        }
+      },
+      "required": [
+        "state",
+        "record_count"
+      ],
+      "title": "EffectSummary",
+      "type": "object"
+    }
+  },
+  "$id": "urn:driftframe:lims-eln:bounded-call-receipt:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "caller_class": {
+      "$ref": "#/$defs/CallerClass"
+    },
+    "caller_identity": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Caller Identity",
+      "type": "string"
+    },
+    "correlation_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/CallDecision"
+    },
+    "effect_summary": {
+      "$ref": "#/$defs/EffectSummary"
+    },
+    "evidence_locator": {
+      "minLength": 1,
+      "title": "Evidence Locator",
+      "type": "string"
+    },
+    "initiating_principal": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Initiating Principal",
+      "type": "string"
+    },
+    "next_action": {
+      "minLength": 1,
+      "title": "Next Action",
+      "type": "string"
+    },
+    "occurred_at": {
+      "maxLength": 27,
+      "minLength": 20,
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "operation_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "operation_version": {
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Operation Version",
+      "type": "string"
+    },
+    "reason_code": {
+      "maxLength": 96,
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Reason Code",
+      "type": "string"
+    },
+    "receipt_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Receipt Id",
+      "type": "string"
+    },
+    "receipt_version": {
+      "default": "1.0.0",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Receipt Version",
+      "type": "string"
+    },
+    "request_digest": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "title": "Request Digest",
+      "type": "string"
+    },
+    "tenant_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_id",
+    "occurred_at",
+    "caller_class",
+    "caller_identity",
+    "initiating_principal",
+    "operation_id",
+    "operation_version",
+    "tenant_id",
+    "request_digest",
+    "decision",
+    "effect_summary",
+    "evidence_locator",
+    "correlation_id",
+    "reason_code",
+    "next_action"
+  ],
+  "title": "BoundedCallReceipt",
+  "type": "object"
+}

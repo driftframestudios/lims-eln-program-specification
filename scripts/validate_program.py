@@ -1995,6 +1995,40 @@ def validate_database_program(
         "database_release_gates": len(gate_ids),
         "database_open_receipts": len(database_receipt_ids),
     }
+def workflow_trigger_keys(workflow: str) -> set[str]:
+    """Read exact top-level workflow triggers without adding a YAML dependency."""
+    lines = workflow.splitlines()
+    start = lines.index("on:") + 1
+    triggers: set[str] = set()
+    for line in lines[start:]:
+        if line and not line.startswith(" "):
+            break
+        match = re.fullmatch(r"""  ["']?([A-Za-z0-9_-]+)["']?:.*""", line)
+        if match:
+            triggers.add(match.group(1))
+    return triggers
+
+
+def runner_job_blocks(workflow: str) -> dict[str, str]:
+    """Return every workflow job that allocates a hosted runner."""
+    lines = workflow.splitlines()
+    start = lines.index("jobs:") + 1
+    job_starts = [
+        (index, match.group(1))
+        for index in range(start, len(lines))
+        if (match := re.fullmatch(r"  ([A-Za-z0-9_-]+):", lines[index]))
+    ]
+    blocks: dict[str, str] = {}
+    for position, (index, name) in enumerate(job_starts):
+        end = (
+            job_starts[position + 1][0]
+            if position + 1 < len(job_starts)
+            else len(lines)
+        )
+        block = "\n".join(lines[index:end])
+        if re.search(r"(?m)^    runs-on:", block):
+            blocks[name] = block
+    return blocks
 
 
 def validate() -> dict[str, int]:
@@ -2859,8 +2893,8 @@ def validate() -> dict[str, int]:
         "simulations/future-reality-2028-06-30-v1.json",
         "simulations/simulated-receipt-closure.v2.json",
         ".github/workflows/validate.yml",
-        ".github/workflows/branch-policy.yml",
-        ".github/dependabot.yml",
+        ".github/dependabot.manual.yml",
+        ".github/AUTOMATION.md",
         ".github/pull_request_template.md",
         "scripts/check_branch_flow.py",
         "scripts/check_language.py",
@@ -2886,6 +2920,72 @@ def validate() -> dict[str, int]:
     missing = [path for path in required_paths if not (ROOT / path).exists()]
     if missing:
         raise ValueError(f"required collaboration surfaces are absent: {missing}")
+
+    active_trigger_paths = [
+        ".github/workflows/branch-policy.yml",
+        ".github/dependabot.yml",
+    ]
+    active_triggers = [path for path in active_trigger_paths if (ROOT / path).exists()]
+    if active_triggers:
+        raise ValueError(
+            "human-cued automation resting state contains active trigger files: "
+            f"{active_triggers}"
+        )
+
+    workflow_directory = ROOT / ".github" / "workflows"
+    workflow_paths = sorted(
+        [*workflow_directory.glob("*.yml"), *workflow_directory.glob("*.yaml")]
+    )
+    if [path.name for path in workflow_paths] != ["validate.yml"]:
+        raise ValueError(
+            "manual program proof catalog differs from ['validate.yml']: "
+            f"{[path.name for path in workflow_paths]}"
+        )
+    workflow = workflow_paths[0].read_text(encoding="utf-8")
+    required_activation_fragments = (
+        "workflow_dispatch:",
+        "confirm_run:",
+        "vars.ENABLE_GITHUB_ACTIONS == 'true'",
+        "inputs.confirm_run",
+        "permissions:\n  contents: read",
+        "timeout-minutes: 10",
+    )
+    missing_fragments = [
+        fragment for fragment in required_activation_fragments if fragment not in workflow
+    ]
+    if missing_fragments:
+        raise ValueError(
+            "manual program proof differs from its activation boundary: "
+            f"{missing_fragments}"
+        )
+    triggers = workflow_trigger_keys(workflow)
+    if triggers != {"workflow_dispatch"}:
+        raise ValueError(
+            "manual program proof trigger allowlist differs: "
+            f"expected ['workflow_dispatch'], available {sorted(triggers)}"
+        )
+    runner_jobs = runner_job_blocks(workflow)
+    if not runner_jobs:
+        raise ValueError("manual program proof requires at least one runner job")
+    for name, block in runner_jobs.items():
+        gate = re.search(r"(?m)^    if:\s*(.+)$", block)
+        if gate is None or not all(
+            fragment in gate.group(1)
+            for fragment in (
+                "vars.ENABLE_GITHUB_ACTIONS == 'true'",
+                "inputs.confirm_run",
+            )
+        ):
+            raise ValueError(
+                f"manual program proof job {name!r} requires the variable and "
+                "confirmation gate"
+            )
+
+    dependency_template = (ROOT / ".github/dependabot.manual.yml").read_text(
+        encoding="utf-8"
+    )
+    if "Activation template:" not in dependency_template:
+        raise ValueError("dependency activation template requires its activation cue")
 
     return {
         "requirements": len(requirement_ids),

@@ -35,27 +35,32 @@ Every pull request states:
 Release and hotfix branches preserve semantic-version compatibility and
 generate a new constellation lock coordinate.
 
-## Automated dependency maintenance
+## Local proof and optional dependency maintenance
 
-Dependabot monitors the repository's immutable GitHub Action references.
-Minor and patch updates may share one bounded pull request; major updates retain
-separate review and rollback coordinates. An automation change is identified by
-a complete branch grammar, exact pull-request author, and governed target
-together:
+Local program validation and unit tests are the standing proof path. GitHub
+Actions rests disabled in repository settings at a **$0** budget. The manual
+`Validate program specification` workflow becomes available only when a named
+human enables Actions, sets `ENABLE_GITHUB_ACTIONS=true`, selects
+`confirm_run`, and dispatches the proof. After the proof is read, set
+`ENABLE_GITHUB_ACTIONS=false` and disable Actions in repository settings to
+restore the resting state.
+
+Dependency scheduling rests in `.github/dependabot.manual.yml`. Reviewing that
+template and renaming it to `.github/dependabot.yml` activates its schedule; the
+manual filename is the return state. When dependency automation is active, an
+automation change is identified by a complete branch grammar, exact
+pull-request author, and governed target together:
 
 - Dependabot uses `dependabot/github_actions/<dependency-update>` with
   `dependabot[bot]`.
 - Renovate uses `renovate/<dependency-update>` with `renovate[bot]`.
 - Either automation flow targets `main` or `develop`.
 
-The read-only branch-policy workflow checks out the exact pull-request base
-commit into `.branch-policy-base` and executes that reviewed checker.
-Pull-request head content remains in ordinary validation; the policy gate
-receives its branch name and author as quoted event data. The gate begins
-governing subsequent proposals after the workflow reaches the default branch
-and the checker reaches each protected target branch.
+The repository-local branch checker remains available to reviewers and local
+validation. Pull requests carry their branch and author coordinates for human
+review; no automatic branch-policy workflow runs in the resting state.
 
-GitHub security updates may target the default branch. These pull requests run
-the complete validation suite and receive human review before promotion. A
-change accepted on `main` is reconciled into `develop` so the next
-specification release retains the repair.
+An activated security update may target the default branch. Its standing proof
+is the complete local validation suite plus human review before promotion. A
+change accepted on `main` is reconciled into `develop` so the next specification
+release retains the repair.

@@ -1,0 +1,235 @@
+{
+  "catalog_version": "1.0.0",
+  "contract_id": "CALLER-CONTRACT-001",
+  "operations": [
+    {
+      "operation_id": "OP-SPECIMEN-READ-001",
+      "version": "1.0.0",
+      "name": "read_specimen_projection",
+      "effect_class": "read",
+      "allowed_callers": [
+        "human_operator",
+        "service_workload",
+        "workflow_automation",
+        "ai_bounded_caller"
+      ],
+      "input_contract": {
+        "declared_fields_only": true,
+        "fields": [
+          {
+            "name": "tenant_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Tenant identity derived from authenticated context.",
+            "minimum_length": 3
+          },
+          {
+            "name": "specimen_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Stable specimen identity inside the authenticated tenant.",
+            "minimum_length": 3
+          },
+          {
+            "name": "projection_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Released field projection selected for this use.",
+            "minimum_length": 3
+          },
+          {
+            "name": "purpose",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Attributable reason for this read.",
+            "minimum_length": 3
+          }
+        ]
+      },
+      "output_contract": "Return the authorized projection, source revision, field-level redaction decisions, and evidence locator.",
+      "budgets": {
+        "record_limit": 1,
+        "depth_limit": 2,
+        "attempt_limit": 2,
+        "timeout_seconds": 10
+      },
+      "effect_ceiling": {
+        "record_limit": 1,
+        "editable_fields": [],
+        "resource_types": ["specimen_projection"],
+        "preflight_match_required": true
+      },
+      "approval_binding": [],
+      "recovery_state": "Current scientific records remain unchanged; a typed outcome carries one correlation identity and an accountable next action."
+    },
+    {
+      "operation_id": "OP-METADATA-CORRECT-001",
+      "version": "1.0.0",
+      "name": "correct_specimen_metadata",
+      "effect_class": "narrow_idempotent_write",
+      "allowed_callers": [
+        "human_operator",
+        "workflow_automation",
+        "ai_bounded_caller"
+      ],
+      "input_contract": {
+        "declared_fields_only": true,
+        "fields": [
+          {
+            "name": "tenant_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Tenant identity derived from authenticated context.",
+            "minimum_length": 3
+          },
+          {
+            "name": "specimen_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Stable specimen identity for one metadata correction.",
+            "minimum_length": 3
+          },
+          {
+            "name": "expected_revision",
+            "value_kind": "integer",
+            "required": true,
+            "purpose": "Current revision that keeps concurrent corrections attributable.",
+            "minimum": 0
+          },
+          {
+            "name": "patch",
+            "value_kind": "object",
+            "required": true,
+            "purpose": "Metadata values selected from the released editable field set.",
+            "minimum_length": 1
+          },
+          {
+            "name": "reason",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Attributable reason for the correction.",
+            "minimum_length": 3
+          },
+          {
+            "name": "idempotency_key",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Stable request identity for replay and reconciliation.",
+            "minimum_length": 3
+          }
+        ]
+      },
+      "output_contract": "Return the original revision, resulting revision, accepted field set, canonical result digest, and evidence locator.",
+      "budgets": {
+        "record_limit": 1,
+        "depth_limit": 1,
+        "attempt_limit": 2,
+        "timeout_seconds": 15
+      },
+      "effect_ceiling": {
+        "record_limit": 1,
+        "editable_fields": [
+          "display_name",
+          "external_reference",
+          "storage_note"
+        ],
+        "resource_types": ["specimen"],
+        "preflight_match_required": true
+      },
+      "approval_binding": [],
+      "recovery_state": "The current revision remains authoritative while digest collisions and stale revisions move to accountable review."
+    },
+    {
+      "operation_id": "OP-MIGRATION-CUTOVER-001",
+      "version": "1.0.0",
+      "name": "execute_migration_cutover",
+      "effect_class": "approval_gated_broad_write",
+      "allowed_callers": [
+        "human_operator",
+        "workflow_automation"
+      ],
+      "input_contract": {
+        "declared_fields_only": true,
+        "fields": [
+          {
+            "name": "tenant_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Tenant identity bound to the approved cutover.",
+            "minimum_length": 3
+          },
+          {
+            "name": "release_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Released migration coordinate selected for cutover.",
+            "minimum_length": 3
+          },
+          {
+            "name": "source_snapshot_digest",
+            "value_kind": "sha256_digest",
+            "required": true,
+            "purpose": "Frozen source inventory bound to the approval."
+          },
+          {
+            "name": "mapping_digest",
+            "value_kind": "sha256_digest",
+            "required": true,
+            "purpose": "Canonical mapping definition bound to the approval."
+          },
+          {
+            "name": "planned_effect_count",
+            "value_kind": "integer",
+            "required": true,
+            "purpose": "Preflight record count within the released effect ceiling.",
+            "minimum": 1
+          },
+          {
+            "name": "rollback_checkpoint",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Last accepted restoration coordinate.",
+            "minimum_length": 3
+          },
+          {
+            "name": "approval_receipt_id",
+            "value_kind": "string",
+            "required": true,
+            "purpose": "Accountable approval bound to this exact request.",
+            "minimum_length": 3
+          }
+        ]
+      },
+      "output_contract": "Return the effect inventory, batch checkpoints, approval decision, resulting state, and rollback evidence locator.",
+      "budgets": {
+        "record_limit": 25000,
+        "depth_limit": 4,
+        "attempt_limit": 1,
+        "timeout_seconds": 3600
+      },
+      "effect_ceiling": {
+        "record_limit": 25000,
+        "editable_fields": [],
+        "resource_types": [
+          "specimen",
+          "aliquot",
+          "container",
+          "result",
+          "artifact_reference"
+        ],
+        "preflight_match_required": true
+      },
+      "approval_binding": [
+        "operation_id",
+        "operation_version",
+        "tenant_id",
+        "canonical_request_digest",
+        "effect_ceiling",
+        "intended_use_profile",
+        "expires_at"
+      ],
+      "recovery_state": "The cutover gate remains closed at the last accepted checkpoint while an effect inventory supports rollback adjudication."
+    }
+  ]
+}
+

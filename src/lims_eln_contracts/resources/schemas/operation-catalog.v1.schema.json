@@ -1,0 +1,316 @@
+{
+  "$defs": {
+    "CallerClass": {
+      "enum": [
+        "human_operator",
+        "service_workload",
+        "workflow_automation",
+        "ai_bounded_caller"
+      ],
+      "title": "CallerClass",
+      "type": "string"
+    },
+    "EffectCeiling": {
+      "additionalProperties": false,
+      "properties": {
+        "editable_fields": {
+          "default": [],
+          "items": {
+            "maxLength": 96,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Editable Fields",
+          "type": "array"
+        },
+        "preflight_match_required": {
+          "title": "Preflight Match Required",
+          "type": "boolean"
+        },
+        "record_limit": {
+          "exclusiveMinimum": 0,
+          "title": "Record Limit",
+          "type": "integer"
+        },
+        "resource_types": {
+          "items": {
+            "maxLength": 96,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Resource Types",
+          "type": "array"
+        }
+      },
+      "required": [
+        "record_limit",
+        "resource_types",
+        "preflight_match_required"
+      ],
+      "title": "EffectCeiling",
+      "type": "object"
+    },
+    "EffectClass": {
+      "enum": [
+        "read",
+        "narrow_idempotent_write",
+        "approval_gated_broad_write"
+      ],
+      "title": "EffectClass",
+      "type": "string"
+    },
+    "InputValueKind": {
+      "enum": [
+        "string",
+        "integer",
+        "object",
+        "array",
+        "boolean",
+        "sha256_digest"
+      ],
+      "title": "InputValueKind",
+      "type": "string"
+    },
+    "OperationBudgets": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_limit": {
+          "exclusiveMinimum": 0,
+          "title": "Attempt Limit",
+          "type": "integer"
+        },
+        "depth_limit": {
+          "exclusiveMinimum": 0,
+          "title": "Depth Limit",
+          "type": "integer"
+        },
+        "record_limit": {
+          "exclusiveMinimum": 0,
+          "title": "Record Limit",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "record_limit",
+        "depth_limit",
+        "attempt_limit",
+        "timeout_seconds"
+      ],
+      "title": "OperationBudgets",
+      "type": "object"
+    },
+    "OperationContract": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_callers": {
+          "items": {
+            "$ref": "#/$defs/CallerClass"
+          },
+          "minItems": 1,
+          "title": "Allowed Callers",
+          "type": "array"
+        },
+        "approval_binding": {
+          "default": [],
+          "items": {
+            "maxLength": 96,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Approval Binding",
+          "type": "array"
+        },
+        "budgets": {
+          "$ref": "#/$defs/OperationBudgets"
+        },
+        "effect_ceiling": {
+          "$ref": "#/$defs/EffectCeiling"
+        },
+        "effect_class": {
+          "$ref": "#/$defs/EffectClass"
+        },
+        "input_contract": {
+          "$ref": "#/$defs/OperationInputContract"
+        },
+        "name": {
+          "maxLength": 96,
+          "minLength": 3,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "operation_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "output_contract": {
+          "minLength": 1,
+          "title": "Output Contract",
+          "type": "string"
+        },
+        "recovery_state": {
+          "minLength": 1,
+          "title": "Recovery State",
+          "type": "string"
+        },
+        "version": {
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "version",
+        "name",
+        "effect_class",
+        "allowed_callers",
+        "input_contract",
+        "output_contract",
+        "budgets",
+        "effect_ceiling",
+        "recovery_state"
+      ],
+      "title": "OperationContract",
+      "type": "object"
+    },
+    "OperationInputContract": {
+      "additionalProperties": false,
+      "properties": {
+        "declared_fields_only": {
+          "const": true,
+          "default": true,
+          "title": "Declared Fields Only",
+          "type": "boolean"
+        },
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/OperationInputField"
+          },
+          "minItems": 1,
+          "title": "Fields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "fields"
+      ],
+      "title": "OperationInputContract",
+      "type": "object"
+    },
+    "OperationInputField": {
+      "additionalProperties": false,
+      "properties": {
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum"
+        },
+        "minimum_length": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum Length"
+        },
+        "name": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "pattern": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pattern"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "value_kind": {
+          "$ref": "#/$defs/InputValueKind"
+        }
+      },
+      "required": [
+        "name",
+        "value_kind",
+        "purpose"
+      ],
+      "title": "OperationInputField",
+      "type": "object"
+    }
+  },
+  "$id": "urn:driftframe:lims-eln:operation-catalog:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "catalog_version": {
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Catalog Version",
+      "type": "string"
+    },
+    "contract_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "operations": {
+      "items": {
+        "$ref": "#/$defs/OperationContract"
+      },
+      "minItems": 1,
+      "title": "Operations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "catalog_version",
+    "contract_id",
+    "operations"
+  ],
+  "title": "OperationCatalog",
+  "type": "object"
+}
