@@ -657,7 +657,7 @@ def validate_core_shapes(
         require_string_list(
             release_coordinate["check_contexts"],
             "promotion_receipt.release_coordinate.check_contexts",
-            minimum=2,
+            minimum=0,
         )
         for key in {
             "tag",
@@ -859,8 +859,9 @@ def validate_release_lifecycle(
         or release_coordinate.get("tag") != PROGRAM_TAG
         or release_coordinate.get("commit") != provenance["commit"]
         or release_coordinate.get("digest") != provenance["digest"]
-        or set(release_coordinate.get("check_contexts", []))
-        != {"branch-policy", "program-validation"}
+        or not set(release_coordinate.get("check_contexts", [])).issubset(
+            {"program-validation"}
+        )
         or promotion_coordinates["status"] != "settled"
     ):
         raise ValueError("released promotion evidence or Machine Node posture differs")

@@ -45,7 +45,7 @@ from .scenario import ScenarioContract
 from .specimen import SpecimenCommand, SpecimenCommandAction
 
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 CONTRACT_VERSION = "1.0.0"
 
 __all__ = [

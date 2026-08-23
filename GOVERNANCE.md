@@ -63,7 +63,9 @@ A candidate carries explicit zero provenance, a settling Coordination Horizon
 item, and the open promotion receipt
 `RCP-PROGRAM-PROMOTION-003`. A released record carries material commit and tree
 coordinates, observed ruleset and CODEOWNER evidence, completed promotion
-work, and the stable `branch-policy` and `program-validation` check contexts.
+work, local validation evidence, and the hosted contexts active for that
+release. The current `$0` resting state carries an empty hosted-context list
+while protected review and history controls remain active.
 
 Release and hotfix validation resolves every external repository from its
 nonzero 40-hex lock coordinate before checkout. A fine-grained

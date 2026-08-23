@@ -4,6 +4,7 @@ import json
 import math
 from pathlib import Path
 import sys
+import tomllib
 import unittest
 
 from pydantic import ValidationError
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from lims_eln_contracts import (  # noqa: E402
+    __version__,
     ApprovalDecision,
     ApprovalDomain,
     AssuranceStage,
@@ -39,6 +41,14 @@ from lims_eln_contracts.bounded_call import (  # noqa: E402
     InputValueKind,
     OperationInputField,
 )
+
+
+class DistributionMetadataTests(unittest.TestCase):
+    def test_runtime_version_matches_distribution_metadata(self) -> None:
+        with (ROOT / "pyproject.toml").open("rb") as handle:
+            distribution = tomllib.load(handle)
+
+        self.assertEqual(distribution["project"]["version"], __version__)
 
 
 class CanonicalJsonTests(unittest.TestCase):

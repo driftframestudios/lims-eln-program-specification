@@ -199,11 +199,10 @@
         },
         "check_contexts": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 0,
           "uniqueItems": true,
           "items": {
             "enum": [
-              "branch-policy",
               "program-validation"
             ]
           }

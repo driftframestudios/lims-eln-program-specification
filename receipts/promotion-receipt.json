@@ -12,7 +12,8 @@
   },
   "release_coordinate": null,
   "required_evidence": [
-    "The release branch reaches main through the required branch-policy and program-validation checks.",
+    "The release branch reaches main through protected pull-request review with one approval, CODEOWNER review, last-push approval, resolved review threads, and protected history.",
+    "The local program, language, secret-shape, schema-generation, and unit-test proofs pass at the candidate coordinate.",
     "The canonical specification tag resolves to the promoted commit and signed-tag evidence.",
     "Every constellation coordinate carries a pinned commit and tree digest from its protected release.",
     "The governance schema suite and cross-repository canonical closure comparison pass against pinned sources."
