@@ -8,7 +8,7 @@
 /simulations/ @driftframestudios
 /specifications/ @driftframestudios
 /coordination-horizon.json @driftframestudios
-/.github/dependabot.yml @driftframestudios
+/.github/dependabot.manual.yml @driftframestudios
 /.github/workflows/ @driftframestudios
 /.vale.ini @driftframestudios
 /.vale/ @driftframestudios

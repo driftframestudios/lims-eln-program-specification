@@ -76,6 +76,62 @@ Each probe declares a technical-veracity status and links requirements, rules,
 scenarios, and receipts. This makes principal-level claims inspectable rather
 than relying on prose confidence alone.
 
+## Shared Python contract nucleus
+
+[`src/lims_eln_contracts`](src/lims_eln_contracts) publishes the small runtime
+contract shared by implementation, simulation, and comparison work. It gives
+each repository the same vocabulary for:
+
+- evidence mode and assurance stage;
+- strict specimen commands;
+- bounded operations, requests, effect summaries, and receipts;
+- comparative observation envelopes; and
+- the executable golden-specimen journey.
+
+The package owns wire meaning and canonical digests. Each consuming service
+continues to own authenticated identity, authorization, domain behavior,
+persistence, and accountable decisions. This keeps agency calibrated to the
+role that can exercise it.
+
+The released resources travel inside the package:
+
+- [`operations.v1.json`](src/lims_eln_contracts/resources/operations.v1.json)
+  carries the three versioned operation definitions;
+- [`golden-specimen.v1.json`](src/lims_eln_contracts/resources/scenarios/golden-specimen.v1.json)
+  carries one synthetic, executable specimen journey; and
+- [`resources/schemas`](src/lims_eln_contracts/resources/schemas) carries six
+  generated JSON Schema projections for non-Python consumers.
+
+Pydantic strengthens these external boundaries through strict types, declared
+fields, finite numbers, and immutable model instances. The JSON parser also
+rejects duplicate keys and non-finite numeric tokens; callers can proceed by
+supplying one value per key and a finite measurement or explicit textual state.
+
+Install the package from this repository and load the released resources:
+
+```sh
+python3 -m pip install -e .
+```
+
+```python
+from lims_eln_contracts import (
+    load_golden_specimen_scenario,
+    load_operation_catalog,
+)
+
+catalog = load_operation_catalog()
+scenario = load_golden_specimen_scenario()
+```
+
+The generated schemas remain a byte-identical projection of the Python models.
+After a deliberate model revision, render them once; routine validation checks
+that the committed projection remains current.
+
+```sh
+PYTHONPATH=src python3 scripts/generate_contract_schemas.py
+PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
+```
+
 ## Bounded callers
 
 [`specifications/bounded-caller.json`](specifications/bounded-caller.json)
@@ -94,6 +150,8 @@ An AI caller selects released operations through an allowlist. It gains no
 independent Scientific, Quality, Regulatory, Security, Operations, or business
 authority. Consequential approvals bind operation version, canonical request
 digest, tenant, effect ceiling, intended use, expiry, and recovery coordinates.
+The outer request and released payload carry one approval receipt identity,
+keeping the reviewed payload and execution grant joined at the service boundary.
 
 ## Database modernization contracts
 
@@ -197,10 +255,11 @@ python3 scripts/validate_program.py
 python3 scripts/check_language.py
 python3 scripts/check_language.py --format sarif
 python3 scripts/scan_secret_shapes.py
+PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
 python3 -m unittest discover -s tests -v
 ```
 
-The validator uses the Python standard library and checks stable identifiers,
+The program validator uses the Python standard library and checks stable identifiers,
 cross-file references, bounded operation classes, probe levels and veracity,
 forecast coordinates, simulated and observed receipt-state separation,
 Coordination Horizon structure, Machine Node posture, receipt ownership, and
@@ -208,7 +267,9 @@ required collaboration surfaces. Database validation additionally closes the
 finding-to-policy map, plan and interstitial shape, contract references, open
 receipt set, and manifest digests. Its JSON boundary requires unique object
 keys and finite numbers before identifiers or canonical digests enter
-validation.
+validation. The shared contract tests use Pydantic at the external model
+boundary and verify strict parsing, semantic invariants, packaged resources,
+and byte-identical JSON Schema regeneration.
 
 Candidate records carry explicit zero coordinates and an open promotion receipt.
 Released records carry pinned coordinates and a closed, evidence-bearing

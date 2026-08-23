@@ -955,7 +955,7 @@ class ProgramValidationTests(unittest.TestCase):
             "commit": commit,
             "digest": content_digest,
             "promoted_at": "2026-07-29T12:00:00Z",
-            "check_contexts": ["branch-policy", "program-validation"],
+            "check_contexts": [],
             "ruleset_receipt": "governed://github/rulesets/program-main",
             "codeowner_resolution": "evidence://github/codeowners/program-main",
         }
@@ -1047,6 +1047,11 @@ class ProgramValidationTests(unittest.TestCase):
             "sha256:" + ("0" * 64),
             candidate_contract["digest"]["const"],
         )
+        hosted_contexts = schema["$defs"]["releaseCoordinate"]["properties"][
+            "check_contexts"
+        ]
+        self.assertEqual(0, hosted_contexts["minItems"])
+        self.assertEqual(["program-validation"], hosted_contexts["items"]["enum"])
 
     def test_pinned_source_gate_is_fail_closed(self) -> None:
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
@@ -1493,9 +1498,10 @@ class ProgramValidationTests(unittest.TestCase):
         ):
             self.assertIn(f"--document-path {document}", workflow)
         self.assertIn(
-            "if: ${{ github.event_name == 'pull_request' }}",
+            "vars.ENABLE_GITHUB_ACTIONS == 'true'",
             author_job,
         )
+        self.assertIn("inputs.confirm_run", author_job)
         self.assertIn("continue-on-error: true", author_job)
         self.assertIn(
             "VALE_ARCHIVE: vale_3.15.2_Linux_64-bit.tar.gz",

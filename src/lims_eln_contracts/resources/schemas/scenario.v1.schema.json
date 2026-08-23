@@ -1,0 +1,405 @@
+{
+  "$defs": {
+    "ExpectedSpecimenState": {
+      "additionalProperties": false,
+      "properties": {
+        "aggregate_version": {
+          "exclusiveMinimum": 0,
+          "title": "Aggregate Version",
+          "type": "integer"
+        },
+        "custody_location": {
+          "minLength": 1,
+          "title": "Custody Location",
+          "type": "string"
+        },
+        "instrument_disposition": {
+          "$ref": "#/$defs/InstrumentDisposition"
+        },
+        "lifecycle_state": {
+          "const": "released",
+          "title": "Lifecycle State",
+          "type": "string"
+        },
+        "outbox_topics": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Outbox Topics",
+          "type": "array"
+        },
+        "result": {
+          "$ref": "#/$defs/ScientificResult"
+        }
+      },
+      "required": [
+        "lifecycle_state",
+        "aggregate_version",
+        "custody_location",
+        "instrument_disposition",
+        "result",
+        "outbox_topics"
+      ],
+      "title": "ExpectedSpecimenState",
+      "type": "object"
+    },
+    "FixtureClass": {
+      "enum": [
+        "synthetic"
+      ],
+      "title": "FixtureClass",
+      "type": "string"
+    },
+    "InstrumentDisposition": {
+      "enum": [
+        "accepted",
+        "quarantined"
+      ],
+      "title": "InstrumentDisposition",
+      "type": "string"
+    },
+    "InstrumentMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "maxLength": 27,
+          "minLength": 20,
+          "title": "Captured At",
+          "type": "string"
+        },
+        "instrument_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Instrument Id",
+          "type": "string"
+        },
+        "media_type": {
+          "const": "application/json",
+          "title": "Media Type",
+          "type": "string"
+        },
+        "message_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Message Id",
+          "type": "string"
+        },
+        "raw_document": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Raw Document",
+          "type": "object"
+        },
+        "specimen_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Specimen Id",
+          "type": "string"
+        },
+        "tenant_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Tenant Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "message_id",
+        "tenant_id",
+        "specimen_id",
+        "instrument_id",
+        "captured_at",
+        "media_type",
+        "raw_document"
+      ],
+      "title": "InstrumentMessage",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "QualityFlag": {
+      "enum": [
+        "pass",
+        "review"
+      ],
+      "title": "QualityFlag",
+      "type": "string"
+    },
+    "RecoveryRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "owner_role": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Owner Role",
+          "type": "string"
+        },
+        "replacement_state": {
+          "minLength": 1,
+          "title": "Replacement State",
+          "type": "string"
+        },
+        "trigger": {
+          "minLength": 1,
+          "title": "Trigger",
+          "type": "string"
+        }
+      },
+      "required": [
+        "trigger",
+        "replacement_state",
+        "owner_role"
+      ],
+      "title": "RecoveryRoute",
+      "type": "object"
+    },
+    "ScientificResult": {
+      "additionalProperties": false,
+      "properties": {
+        "analyte": {
+          "minLength": 1,
+          "title": "Analyte",
+          "type": "string"
+        },
+        "quality_flag": {
+          "$ref": "#/$defs/QualityFlag"
+        },
+        "unit": {
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "analyte",
+        "value",
+        "unit",
+        "quality_flag"
+      ],
+      "title": "ScientificResult",
+      "type": "object"
+    },
+    "SpecimenCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/SpecimenCommandAction"
+        },
+        "actor_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "command_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Command Id",
+          "type": "string"
+        },
+        "expected_version": {
+          "minimum": 0,
+          "title": "Expected Version",
+          "type": "integer"
+        },
+        "occurred_at": {
+          "maxLength": 27,
+          "minLength": 20,
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Payload",
+          "type": "object"
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason Code"
+        },
+        "schema_version": {
+          "default": "1.0.0",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "specimen_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Specimen Id",
+          "type": "string"
+        },
+        "tenant_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Tenant Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "command_id",
+        "tenant_id",
+        "specimen_id",
+        "actor_id",
+        "action",
+        "expected_version",
+        "occurred_at"
+      ],
+      "title": "SpecimenCommand",
+      "type": "object"
+    },
+    "SpecimenCommandAction": {
+      "enum": [
+        "register",
+        "accession",
+        "start_processing",
+        "submit_review",
+        "release",
+        "correct",
+        "void"
+      ],
+      "title": "SpecimenCommandAction",
+      "type": "string"
+    },
+    "SpecimenFixture": {
+      "additionalProperties": false,
+      "properties": {
+        "initial_location": {
+          "minLength": 1,
+          "title": "Initial Location",
+          "type": "string"
+        },
+        "specimen_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Specimen Id",
+          "type": "string"
+        },
+        "specimen_type": {
+          "minLength": 1,
+          "title": "Specimen Type",
+          "type": "string"
+        },
+        "tenant_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Tenant Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tenant_id",
+        "specimen_id",
+        "specimen_type",
+        "initial_location"
+      ],
+      "title": "SpecimenFixture",
+      "type": "object"
+    }
+  },
+  "$id": "urn:driftframe:lims-eln:scenario:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "clock": {
+      "maxLength": 27,
+      "minLength": 20,
+      "title": "Clock",
+      "type": "string"
+    },
+    "commands": {
+      "items": {
+        "$ref": "#/$defs/SpecimenCommand"
+      },
+      "minItems": 2,
+      "title": "Commands",
+      "type": "array"
+    },
+    "expected_state": {
+      "$ref": "#/$defs/ExpectedSpecimenState"
+    },
+    "fixture_class": {
+      "$ref": "#/$defs/FixtureClass"
+    },
+    "instrument_message": {
+      "$ref": "#/$defs/InstrumentMessage"
+    },
+    "recovery_route": {
+      "$ref": "#/$defs/RecoveryRoute"
+    },
+    "scenario_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "scenario_version": {
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Scenario Version",
+      "type": "string"
+    },
+    "source_scenario_ids": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 3,
+        "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Source Scenario Ids",
+      "type": "array"
+    },
+    "specimen": {
+      "$ref": "#/$defs/SpecimenFixture"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scenario_version",
+    "scenario_id",
+    "title",
+    "source_scenario_ids",
+    "fixture_class",
+    "clock",
+    "specimen",
+    "commands",
+    "instrument_message",
+    "expected_state",
+    "recovery_route"
+  ],
+  "title": "ScenarioContract",
+  "type": "object"
+}
