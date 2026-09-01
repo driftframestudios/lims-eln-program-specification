@@ -66,6 +66,19 @@ class ReleasedResourceTests(unittest.TestCase):
 
         implementation_projection = implementation.result.projection
         simulation_projection = simulation.result.projection
+        expected_scenario_coordinate = (
+            scenario.scenario_id,
+            scenario.scenario_version,
+            canonical_sha256(scenario),
+        )
+        self.assertEqual(
+            expected_scenario_coordinate,
+            implementation.scenario_coordinate(),
+        )
+        self.assertEqual(
+            implementation.scenario_coordinate(),
+            simulation.scenario_coordinate(),
+        )
         self.assertEqual(
             implementation_projection.canonical_digest(),
             simulation_projection.canonical_digest(),
@@ -142,6 +155,21 @@ class ReleasedResourceTests(unittest.TestCase):
         document["commands"][2]["expected_version"] = 9
         with self.assertRaisesRegex(ValidationError, "contiguous sequence"):
             model_from_strict_json(ScenarioContract, json.dumps(document))
+
+    def test_golden_observation_rejects_a_changed_source_scenario_coordinate(self) -> None:
+        observation = load_golden_specimen_observation_example("implementation")
+        payload = observation.model_dump(mode="json")
+        payload["scenario_digest"] = "sha256:" + "0" * 64
+        with self.assertRaises(ValidationError):
+            model_from_strict_json(type(observation), json.dumps(payload))
+
+        scenario = load_golden_specimen_scenario()
+        changed_source = scenario.model_dump(mode="json")
+        changed_source["recovery_route"]["owner_role"] = "release_recovery_owner"
+        self.assertNotEqual(
+            observation.scenario_digest,
+            canonical_sha256(changed_source),
+        )
 
     def test_schema_resources_are_loadable_and_identified(self) -> None:
         self.assertIn(

@@ -5,6 +5,10 @@ open-receipt collaboration. It publishes versioned requirements, executable
 examples, decision forecasts, acceptance contracts, and the lock coordinates
 used to compare the active implementation with the simulated final state.
 
+Repository authorship and maintenance provenance is recorded in
+[`AUTHORS`](AUTHORS). Git history and reviewed pull requests preserve change
+chronology and contribution credit.
+
 The current planned program release is `spec-v0.3.1`. It consumes the canonical
 governance release `governance-v2.0.1`, Control Plane Profile 0.3.0, and schema
 `2.0.1`; its release
@@ -110,6 +114,13 @@ The Golden Specimen observation places its common comparison fields in
 evidence mode, assurance stage, source, provenance, approvals, and data class.
 Implementation and simulation can therefore report the same decision-relevant
 result while retaining the detail each repository owns.
+
+The surrounding observation binds that result to the released source scenario
+with its identifier, semantic version, and canonical scenario digest. A
+comparator verifies this three-part coordinate before it compares projection
+bytes, so a revised command, instrument message, expected state, or recovery
+route receives a new source identity even when its scenario identifier remains
+familiar.
 
 The projection carries the tenant and specimen identities, released lifecycle
 revision, current custody location, scientific measurement, accepted review

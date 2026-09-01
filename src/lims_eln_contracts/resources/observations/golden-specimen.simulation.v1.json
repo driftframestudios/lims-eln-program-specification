@@ -4,6 +4,8 @@
   "evidence_mode": "simulated",
   "assurance_stage": "specified",
   "scenario_id": "SCN-GOLDEN-SPECIMEN-001",
+  "scenario_version": "1.0.0",
+  "scenario_digest": "sha256:fea95444dbbfbd3e26f5fb8d3975038541bf75bb1e4a7ffb748dd2cefdf173e9",
   "source": {
     "environment_id": "EXAMPLE-SIMULATION",
     "implementation_commit": "example-simulation-coordinate",

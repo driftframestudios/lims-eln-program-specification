@@ -14,6 +14,10 @@ from .scenario import QualityFlag, ScientificResult
 
 
 GOLDEN_SPECIMEN_SCENARIO_ID: Final = "SCN-GOLDEN-SPECIMEN-001"
+GOLDEN_SPECIMEN_SCENARIO_VERSION: Final = "1.0.0"
+GOLDEN_SPECIMEN_SCENARIO_DIGEST: Final = (
+    "sha256:fea95444dbbfbd3e26f5fb8d3975038541bf75bb1e4a7ffb748dd2cefdf173e9"
+)
 GOLDEN_SPECIMEN_RESULT_PROJECTION_ID: Final = (
     "urn:driftframe:lims-eln:golden-specimen-result"
 )
@@ -85,7 +89,16 @@ class GoldenSpecimenObservation(ObservationEnvelope):
     """Observation envelope for the Golden Specimen comparison boundary."""
 
     scenario_id: Literal["SCN-GOLDEN-SPECIMEN-001"]
+    scenario_version: Literal["1.0.0"]
+    scenario_digest: Literal[
+        "sha256:fea95444dbbfbd3e26f5fb8d3975038541bf75bb1e4a7ffb748dd2cefdf173e9"
+    ]
     result: GoldenSpecimenObservationResult
+
+    def scenario_coordinate(self) -> tuple[str, str, str]:
+        """Return the immutable source scenario coordinate used for comparison."""
+
+        return (self.scenario_id, self.scenario_version, self.scenario_digest)
 
 
 def _utc_instant(value: str) -> datetime:

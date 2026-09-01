@@ -25,6 +25,9 @@ from lims_eln_contracts import (  # noqa: E402
     GOLDEN_SPECIMEN_RESULT_COMPATIBILITY,
     GOLDEN_SPECIMEN_RESULT_PROJECTION_ID,
     GOLDEN_SPECIMEN_RESULT_PROJECTION_VERSION,
+    GOLDEN_SPECIMEN_SCENARIO_DIGEST,
+    GOLDEN_SPECIMEN_SCENARIO_ID,
+    GOLDEN_SPECIMEN_SCENARIO_VERSION,
     GoldenSpecimenObservation,
     NonFiniteNumberError,
     ObservationApproval,
@@ -147,6 +150,14 @@ class ExternalBoundaryTests(unittest.TestCase):
     def test_golden_projection_requires_its_exact_comparison_coordinate(self) -> None:
         example = load_golden_specimen_observation_example("implementation")
         payload = example.model_dump(mode="json")
+        self.assertEqual(
+            (
+                GOLDEN_SPECIMEN_SCENARIO_ID,
+                GOLDEN_SPECIMEN_SCENARIO_VERSION,
+                GOLDEN_SPECIMEN_SCENARIO_DIGEST,
+            ),
+            example.scenario_coordinate(),
+        )
         projection = payload["result"]["projection"]
         self.assertEqual(
             (
