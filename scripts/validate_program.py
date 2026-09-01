@@ -2895,6 +2895,8 @@ def validate() -> dict[str, int]:
         raise ValueError("release, promotion, or status version binding differs")
 
     required_paths = [
+        ".agents/skills/source-authority-mapping/SKILL.md",
+        "AGENTS.md",
         "CHANGELOG.md",
         "README.md",
         "BRANCHING.md",

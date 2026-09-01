@@ -1,13 +1,39 @@
 # LIMS/ELN Program Specification
 
-This repository is the intent and comparison control plane for the LIMS/ELN
-open-receipt collaboration. It publishes versioned requirements, executable
-examples, decision forecasts, acceptance contracts, and the lock coordinates
-used to compare the active implementation with the simulated final state.
+This repository defines the shared requirements and acceptance route for a
+five-repository LIMS/ELN program. Start here to understand what the suite is
+meant to prove, find which repository owns a behavior, and compare the active
+implementation with the simulated final state against the same contract.
 
 Repository authorship and maintenance provenance is recorded in
 [`AUTHORS`](AUTHORS). Git history and reviewed pull requests preserve change
 chronology and contribution credit.
+
+## Start here
+
+1. Read [`release/repository-role.json`](release/repository-role.json) for this
+   repository's role and current release state, then use
+   [`STATUS.yaml`](STATUS.yaml) for the compact status.
+2. Use [`constellation.json`](constellation.json) and the table below to find
+   the repository that can establish the behavior you need. Use
+   [`constellation.lock.json`](constellation.lock.json) when an exact release
+   tag, commit, or digest affects the decision.
+3. Use Python 3.12, run `python3 -m pip install -e .`, and begin with
+   `python3 scripts/validate_program.py`. The complete candidate proof is in
+   [Validation](#validation).
+4. Start changes from `develop` using the branch forms in
+   [`BRANCHING.md`](BRANCHING.md), follow the contribution contract in
+   [`CONTRIBUTING.md`](CONTRIBUTING.md), and keep tests beside the behavior they
+   establish.
+5. Use the copy-local
+   [`source-authority-mapping`](.agents/skills/source-authority-mapping/SKILL.md)
+   skill when a requirement, schema, implementation result, simulated result,
+   comparison report, release coordinate, or public page crosses repository
+   roles.
+
+[`coordination-horizon.json`](coordination-horizon.json) records current and
+queued work. [`first-receipt.json`](first-receipt.json) provides a compact
+re-entry record with the current evidence status and next verified move.
 
 The current planned program release is `spec-v0.3.1`. It consumes the canonical
 governance release `governance-v2.0.1`, Control Plane Profile 0.3.0, and schema
@@ -362,9 +388,10 @@ Branch creation, Pages activation, and domain configuration remain separate
 publication actions.
 
 Repository skills join the generated catalog when their `SKILL.md` front matter
-declares `source_band: public_ready`. Internal and public-possible sources retain
-their collaboration boundaries, and an empty public-ready set produces no
-catalog.
+declares `source_band: public_ready`. The current public-ready set contains the
+copy-local source-authority map used to follow one material object through the
+five-repository suite. Internal and public-possible sources retain their
+collaboration boundaries, and an empty public-ready set produces no catalog.
 
 The released projection manifest contract is `1.0.0`. It records the projection
 owner, complete file scope, verified source revision and standing, optional
