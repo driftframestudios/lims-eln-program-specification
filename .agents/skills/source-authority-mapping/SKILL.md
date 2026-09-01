@@ -1,6 +1,6 @@
 ---
 name: source-authority-mapping
-description: Traces a LIMS/ELN program claim, contract, artifact, or release coordinate through the five-repository suite. Applies when specification meaning, governance schema, runtime evidence, simulated behavior, comparison output, public projection, or promotion ownership could be confused.
+description: Traces a LIMS/ELN program claim, contract, artifact, or release coordinate through the five-repository suite. Applies when specification meaning, governance schema, runtime evidence, simulated behavior, comparison output, public projection, or promotion ownership requires clear sources and receivers.
 source_band: public_ready
 skill_version: 0.1.0
 upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git

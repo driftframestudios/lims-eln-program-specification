@@ -25,7 +25,7 @@ chronology and contribution credit.
    [`BRANCHING.md`](BRANCHING.md), follow the contribution contract in
    [`CONTRIBUTING.md`](CONTRIBUTING.md), and keep tests beside the behavior they
    establish.
-5. Use the copy-local
+5. Use the repository-local
    [`source-authority-mapping`](.agents/skills/source-authority-mapping/SKILL.md)
    skill when a requirement, schema, implementation result, simulated result,
    comparison report, release coordinate, or public page crosses repository
@@ -389,7 +389,7 @@ publication actions.
 
 Repository skills join the generated catalog when their `SKILL.md` front matter
 declares `source_band: public_ready`. The current public-ready set contains the
-copy-local source-authority map used to follow one material object through the
+repository-local source-authority map used to follow one material object through the
 five-repository suite. Internal and public-possible sources retain their
 collaboration boundaries, and an empty public-ready set produces no catalog.
 

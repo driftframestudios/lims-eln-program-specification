@@ -34,8 +34,8 @@ shared contract, comparison input, or acceptance boundary needs to change.
 Use
 [`source-authority-mapping`](.agents/skills/source-authority-mapping/SKILL.md)
 when a claim, contract, generated artifact, release coordinate, or public page
-crosses these roles. The map ends at the source or receiver that can establish
-the next decision.
+crosses these roles. The map identifies the source that establishes meaning or
+evidence, then ends at the receiver that can make the next decision.
 
 ## Use the accepted branch route
 
