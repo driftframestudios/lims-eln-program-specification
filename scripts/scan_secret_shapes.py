@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {
     ".cfg",
     ".conf",
+    ".css",
     ".env",
+    ".html",
     ".ini",
     ".json",
     ".md",

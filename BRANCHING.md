@@ -75,3 +75,17 @@ An activated security update may target the default branch. Its standing proof
 is the complete local validation suite plus human review before promotion. A
 change accepted on `main` is reconciled into `develop` so the next specification
 release retains the repair.
+
+## Program Pages source and publication
+
+`pages/` and the standard-library projection scripts are program source.
+Feature work begins from `develop`, returns through review, and keeps generated
+Pages bytes outside the source worktree. A clean exact `HEAD` can therefore
+produce a manifest that truthfully identifies the complete source state.
+
+The local Pages aggregate creates two isolated builds, validates both complete
+inventories, and scans their text for credential-shaped values. A later,
+separately authorized publication action can place reviewed bytes on a `docs`
+branch, activate repository Pages settings, and attach an HTTPS origin plus its
+matching CNAME. Each action keeps the accepted projection manifest as its
+recovery coordinate.

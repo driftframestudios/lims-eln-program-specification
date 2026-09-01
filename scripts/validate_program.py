@@ -19,6 +19,7 @@ from automation_contract import (
     MISSING_AUTOMATION_CONTROLS,
     validate_repository_automation,
 )
+from pages_projection import validate_source_contract
 
 
 PROGRAM_RELEASE = "0.3.1"
@@ -2094,6 +2095,7 @@ def validate() -> dict[str, int]:
     release_role = load_json("release/repository-role.json")
     promotion_receipt = load_json("receipts/promotion-receipt.json")
     status_document = load_status()
+    pages_context = validate_source_contract(ROOT)
 
     validate_core_shapes(
         constellation=constellation,
@@ -2928,6 +2930,8 @@ def validate() -> dict[str, int]:
         "docs/migrations/0.3.0-to-0.3.1.md",
         "docs/DATABASE_MODERNIZATION.md",
         "docs/DATABASE_CONSTELLATION_LEDGER.md",
+        "pages/README.md",
+        "pages/program-content.json",
         "database/primitive-findings.json",
         "database/constellation-finding-index.json",
         "plans/database-modernization-plans.json",
@@ -2937,6 +2941,11 @@ def validate() -> dict[str, int]:
         "release/database-release-manifest.json",
         "tests/test_branch_flow.py",
         "tests/test_language_policy.py",
+        "tests/test_pages_projection.py",
+        "scripts/build_pages.py",
+        "scripts/pages_projection.py",
+        "scripts/validate_projection.py",
+        "scripts/verify_pages.py",
     ]
     missing = [path for path in required_paths if not (ROOT / path).exists()]
     if missing:
@@ -3047,6 +3056,22 @@ def validate() -> dict[str, int]:
         raise ValueError("CODEOWNERS requires the active dependency configuration")
     if "/scripts/automation_contract.py @driftframestudios" not in codeowners:
         raise ValueError("CODEOWNERS requires the automation contract owner")
+    pages_owner_paths = (
+        "/pages/ @driftframestudios",
+        "/scripts/build_pages.py @driftframestudios",
+        "/scripts/pages_projection.py @driftframestudios",
+        "/scripts/validate_projection.py @driftframestudios",
+        "/scripts/verify_pages.py @driftframestudios",
+        "/tests/test_pages_projection.py @driftframestudios",
+    )
+    missing_pages_owners = [
+        path for path in pages_owner_paths if path not in codeowners
+    ]
+    if missing_pages_owners:
+        raise ValueError(
+            "CODEOWNERS requires every Program Pages source owner: "
+            f"{missing_pages_owners}"
+        )
     if "dependabot.manual.yml" in codeowners:
         raise ValueError("CODEOWNERS should route the active dependency source")
 
@@ -3088,6 +3113,8 @@ def validate() -> dict[str, int]:
             promotion_receipt["promotion_receipt_id"] == PROMOTION_RECEIPT_ID
         ),
         "repositories": len(repository_roles),
+        "pages_sources": 1,
+        "public_ready_skills": len(pages_context.public_skills),
         **database_summary,
     }
 
