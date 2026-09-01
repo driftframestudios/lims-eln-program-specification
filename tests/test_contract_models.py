@@ -22,6 +22,10 @@ from lims_eln_contracts import (  # noqa: E402
     CallerClass,
     DuplicateObjectKeyError,
     EvidenceMode,
+    GOLDEN_SPECIMEN_RESULT_COMPATIBILITY,
+    GOLDEN_SPECIMEN_RESULT_PROJECTION_ID,
+    GOLDEN_SPECIMEN_RESULT_PROJECTION_VERSION,
+    GoldenSpecimenObservation,
     NonFiniteNumberError,
     ObservationApproval,
     ObservationClassification,
@@ -33,6 +37,7 @@ from lims_eln_contracts import (  # noqa: E402
     canonical_json_bytes,
     canonical_sha256,
     load_operation_catalog,
+    load_golden_specimen_observation_example,
     model_from_strict_json,
     strict_json_loads,
 )
@@ -138,6 +143,41 @@ class ExternalBoundaryTests(unittest.TestCase):
     def test_assurance_stage_order_is_explicit(self) -> None:
         self.assertTrue(AssuranceStage.VALIDATED.reaches(AssuranceStage.QUALIFIED))
         self.assertFalse(AssuranceStage.VERIFIED.reaches(AssuranceStage.ACCEPTED))
+
+    def test_golden_projection_requires_its_exact_comparison_coordinate(self) -> None:
+        example = load_golden_specimen_observation_example("implementation")
+        payload = example.model_dump(mode="json")
+        projection = payload["result"]["projection"]
+        self.assertEqual(
+            (
+                GOLDEN_SPECIMEN_RESULT_PROJECTION_ID,
+                GOLDEN_SPECIMEN_RESULT_PROJECTION_VERSION,
+                GOLDEN_SPECIMEN_RESULT_COMPATIBILITY,
+            ),
+            (
+                projection["projection_id"],
+                projection["projection_version"],
+                projection["comparison_compatibility"],
+            ),
+        )
+
+        projection["projection_version"] = "1.1.0"
+        with self.assertRaises(ValidationError):
+            model_from_strict_json(GoldenSpecimenObservation, json.dumps(payload))
+
+        payload = example.model_dump(mode="json")
+        del payload["result"]["projection"]["projection_id"]
+        with self.assertRaises(ValidationError):
+            model_from_strict_json(GoldenSpecimenObservation, json.dumps(payload))
+
+    def test_golden_projection_binds_review_before_release(self) -> None:
+        example = load_golden_specimen_observation_example("simulation")
+        payload = example.model_dump(mode="json")
+        payload["result"]["projection"]["review_resolution"]["resolved_at"] = (
+            "2026-08-17T14:36:00Z"
+        )
+        with self.assertRaisesRegex(ValidationError, "review resolution precedes release"):
+            model_from_strict_json(GoldenSpecimenObservation, json.dumps(payload))
 
 
 class OperationSemanticTests(unittest.TestCase):

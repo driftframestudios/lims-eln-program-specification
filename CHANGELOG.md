@@ -23,6 +23,10 @@
 - Published `lims_eln_contracts` 0.3.1 with strict shared evidence, bounded-call,
   specimen-command, observation-envelope, and Golden Specimen scenario
   boundaries plus generated JSON Schema projections.
+- Added the versioned Golden Specimen result projection, its exact comparison
+  coordinate, strict JSON Schema, and implementation- and simulation-shaped
+  examples. Both examples retain distinct evidence and producer detail while
+  sharing one canonical decision-relevant result.
 - Extended the Coordination Horizon, Machine Node, first receipt, release role,
   status surface, validator, and tests to enforce the database program as one
   traceable contract surface.

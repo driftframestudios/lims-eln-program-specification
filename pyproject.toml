@@ -20,6 +20,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 lims_eln_contracts = [
   "resources/*.json",
+  "resources/observations/*.json",
   "resources/scenarios/*.json",
   "resources/schemas/*.json",
 ]
