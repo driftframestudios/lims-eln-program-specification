@@ -4,12 +4,23 @@ import hashlib
 import json
 import math
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+from automation_contract import (
+    MISSING_AUTOMATION_CONTROLS,
+    validate_repository_automation,
+)
+
+
 PROGRAM_RELEASE = "0.3.1"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
 GOVERNANCE_RELEASE = "2.0.1"
@@ -113,6 +124,7 @@ CORE_ROOT_KEYS = {
         "canonical_closure",
         "advisory_design",
         "contract_bindings",
+        "automation_controls",
         "orientation_surfaces",
         "seed_lineage",
         "release_coordinates",
@@ -530,6 +542,11 @@ def validate_core_shapes(
             "database_release_manifest",
         },
         "release_role.contract_bindings",
+    )
+    require_exact_object(
+        release_role["automation_controls"],
+        {"contract_version", "pull_request", "dependabot"},
+        "release_role.automation_controls",
     )
     receipt_binding = require_exact_object(
         contract_bindings["receipt_vocabulary_map"],
@@ -2893,10 +2910,13 @@ def validate() -> dict[str, int]:
         "simulations/future-reality-closure-v0.3.json",
         "simulations/future-reality-2028-06-30-v1.json",
         "simulations/simulated-receipt-closure.v2.json",
+        ".github/workflows/pull-request.yml",
         ".github/workflows/validate.yml",
-        ".github/dependabot.manual.yml",
+        ".github/dependabot.yml",
         ".github/AUTOMATION.md",
+        "CODEOWNERS",
         ".github/pull_request_template.md",
+        "scripts/automation_contract.py",
         "scripts/check_branch_flow.py",
         "scripts/check_language.py",
         "scripts/language_policy_core.py",
@@ -2922,14 +2942,11 @@ def validate() -> dict[str, int]:
     if missing:
         raise ValueError(f"required collaboration surfaces are absent: {missing}")
 
-    active_trigger_paths = [
-        ".github/workflows/branch-policy.yml",
-        ".github/dependabot.yml",
-    ]
+    active_trigger_paths = [".github/workflows/branch-policy.yml"]
     active_triggers = [path for path in active_trigger_paths if (ROOT / path).exists()]
     if active_triggers:
         raise ValueError(
-            "human-cued automation resting state contains active trigger files: "
+            "automation catalog contains an undeclared trigger file: "
             f"{active_triggers}"
         )
 
@@ -2937,12 +2954,15 @@ def validate() -> dict[str, int]:
     workflow_paths = sorted(
         [*workflow_directory.glob("*.yml"), *workflow_directory.glob("*.yaml")]
     )
-    if [path.name for path in workflow_paths] != ["validate.yml"]:
+    if [path.name for path in workflow_paths] != ["pull-request.yml", "validate.yml"]:
         raise ValueError(
-            "manual program proof catalog differs from ['validate.yml']: "
+            "program proof catalog differs from ['pull-request.yml', 'validate.yml']: "
             f"{[path.name for path in workflow_paths]}"
         )
-    workflow = workflow_paths[0].read_text(encoding="utf-8")
+    workflows = {
+        path.name: path.read_text(encoding="utf-8") for path in workflow_paths
+    }
+    workflow = workflows["validate.yml"]
     required_activation_fragments = (
         "workflow_dispatch:",
         "confirm_run:",
@@ -2982,11 +3002,74 @@ def validate() -> dict[str, int]:
                 "confirmation gate"
             )
 
-    dependency_template = (ROOT / ".github/dependabot.manual.yml").read_text(
+    pull_request_workflow = workflows["pull-request.yml"]
+
+    action_reference = re.compile(r"^\s*uses:\s*([^#\s]+)", re.MULTILINE)
+    immutable_action = re.compile(r"^[^@]+@[a-f0-9]{40}$")
+    for path in workflow_paths:
+        content = workflows[path.name]
+        for reference in action_reference.findall(content):
+            if immutable_action.fullmatch(reference) is None:
+                raise ValueError(
+                    f"workflow action reference requires an immutable SHA: {reference!r}"
+                )
+        if content.count("persist-credentials: false") < content.count(
+            "actions/checkout@"
+        ):
+            raise ValueError(
+                f"workflow checkout credentials require bounded handling: {path.name}"
+            )
+
+    manual_dependency_path = ROOT / ".github" / "dependabot.manual.yml"
+    if manual_dependency_path.exists():
+        raise ValueError(
+            "monthly dependency upkeep uses the active dependabot.yml source"
+        )
+    dependency_config = (ROOT / ".github/dependabot.yml").read_text(
         encoding="utf-8"
     )
-    if "Activation template:" not in dependency_template:
-        raise ValueError("dependency activation template requires its activation cue")
+    automation_findings = validate_repository_automation(
+        pull_request_workflow,
+        dependency_config,
+        release_role.get(
+            "automation_controls",
+            MISSING_AUTOMATION_CONTROLS,
+        ),
+    )
+    if automation_findings:
+        raise ValueError(
+            "bounded pull-request automation differs from its semantic contract: "
+            f"{automation_findings}"
+        )
+
+    codeowners = (ROOT / "CODEOWNERS").read_text(encoding="utf-8")
+    if "/.github/dependabot.yml @driftframestudios" not in codeowners:
+        raise ValueError("CODEOWNERS requires the active dependency configuration")
+    if "/scripts/automation_contract.py @driftframestudios" not in codeowners:
+        raise ValueError("CODEOWNERS requires the automation contract owner")
+    if "dependabot.manual.yml" in codeowners:
+        raise ValueError("CODEOWNERS should route the active dependency source")
+
+    automation_note = (ROOT / ".github/AUTOMATION.md").read_text(encoding="utf-8")
+    required_automation_fragments = (
+        "100–300 GitHub Actions runner\nminutes per month",
+        "Pull requests targeting `develop` or `main`",
+        "Superseded runs cancel",
+        "## Deliberate full proof",
+        "`ENABLE_GITHUB_ACTIONS=true`",
+        "## Recovery",
+        "`.github/dependabot.manual.yml` returns dependency scheduling",
+    )
+    missing_automation_fragments = [
+        fragment
+        for fragment in required_automation_fragments
+        if fragment not in automation_note
+    ]
+    if missing_automation_fragments:
+        raise ValueError(
+            "automation orientation differs from the funded proof and recovery route: "
+            f"{missing_automation_fragments}"
+        )
 
     return {
         "requirements": len(requirement_ids),

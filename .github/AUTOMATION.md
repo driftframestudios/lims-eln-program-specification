@@ -1,13 +1,35 @@
-# Human-cued automation
+# Bounded automation
 
-## Resting state
+## Monthly allocation and pull-request proof
 
-The repository rests with GitHub Actions disabled in repository settings, and the Actions spend boundary remains **$0**. Local program validation and unit tests are the standing proof path. Pull requests and pushes stay on that path; the manual workflow preserves the same remote proof for an allocated dispatch.
+This repository has an approved allocation of **100–300 GitHub Actions runner
+minutes per month**. Pull requests targeting `develop` or `main` receive one
+read-only `ubuntu-24.04` job on Python 3.12. Superseded runs cancel, and each
+run has a ten-minute ceiling. The job runs the program aggregate, language and
+secret-shape checks, byte-current generated schemas, and the repository-owned
+regression suite. Its parsed controls must match the source-owned
+`automation_controls` projection in `release/repository-role.json`.
 
-Repository settings are the primary control. If Actions is later enabled, the workflow still requires the repository variable `ENABLE_GITHUB_ACTIONS` to equal `true` and a human to select `confirm_run` during manual dispatch. Scheduled dependency updates remain at rest while the activation template is named `dependabot.manual.yml`.
+The pull-request path receives repository contents and proposed source through
+read-only permissions. Credentials and cross-repository coordinates stay with
+their dedicated proof paths. Monthly Dependabot updates target `develop`, group
+minor and patch updates, and keep at most two update pull requests open.
 
-## Activation state
+## Deliberate full proof
 
-A named human can allocate one remote proof by enabling Actions in repository settings, setting `ENABLE_GITHUB_ACTIONS=true`, selecting the confirmation, and dispatching **Validate program specification**. Dependency update scheduling becomes active only after a human reviews the template and renames it to `.github/dependabot.yml`.
+The manual **Validate program specification** workflow retains the broader
+Python matrix, advisory author feedback, candidate or accepted coordinate
+checks, cross-repository checkouts, and aggregate result. A named receiver sets
+`ENABLE_GITHUB_ACTIONS=true`, selects `confirm_run`, and dispatches that proof
+when a release, compatibility question, or external-coordinate change calls
+for the wider observation.
 
-After the proof is read, set `ENABLE_GITHUB_ACTIONS=false` and return Actions in repository settings to disabled. Keep the dependency template at `.github/dependabot.manual.yml` to restore its resting state.
+## Recovery
+
+Local validation remains the complete source-owned proof path. Setting
+`ENABLE_GITHUB_ACTIONS=false` rests the manual proof. Disabling Actions in
+repository settings rests all hosted execution while local commands continue
+to serve review. A reviewed rename from `.github/dependabot.yml` to
+`.github/dependabot.manual.yml` returns dependency scheduling to a dormant
+source state. The next receiver can restore either path from the same reviewed
+workflow and configuration.

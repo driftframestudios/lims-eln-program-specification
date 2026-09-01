@@ -8,11 +8,12 @@
 /simulations/ @driftframestudios
 /specifications/ @driftframestudios
 /coordination-horizon.json @driftframestudios
-/.github/dependabot.manual.yml @driftframestudios
+/.github/dependabot.yml @driftframestudios
 /.github/workflows/ @driftframestudios
 /.vale.ini @driftframestudios
 /.vale/ @driftframestudios
 /language-policy/ @driftframestudios
+/scripts/automation_contract.py @driftframestudios
 /scripts/check_branch_flow.py @driftframestudios
 /scripts/check_language.py @driftframestudios
 /scripts/validate_pinned_sources.py @driftframestudios

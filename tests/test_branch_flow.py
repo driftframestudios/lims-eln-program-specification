@@ -111,11 +111,10 @@ class BranchFlowTests(unittest.TestCase):
         self.assertEqual(1, result)
         self.assertIn("outside the branch naming contract", output)
 
-    def test_dependency_activation_template_matches_branch_grammar(self) -> None:
-        template_path = ROOT / ".github" / "dependabot.manual.yml"
-        config = template_path.read_text(encoding="utf-8")
-        self.assertFalse((ROOT / ".github" / "dependabot.yml").exists())
-        self.assertIn("Activation template:", config)
+    def test_monthly_dependency_route_matches_branch_grammar(self) -> None:
+        config_path = ROOT / ".github" / "dependabot.yml"
+        config = config_path.read_text(encoding="utf-8")
+        self.assertFalse((ROOT / ".github" / "dependabot.manual.yml").exists())
         configured = {
             item.replace("-", "_")
             for item in re.findall(
@@ -125,7 +124,15 @@ class BranchFlowTests(unittest.TestCase):
             )
         }
         self.assertEqual(check_branch_flow.DEPENDABOT_BRANCH_ECOSYSTEMS, configured)
+        self.assertIn("target-branch: develop", config)
+        self.assertIn("interval: monthly", config)
+        self.assertIn("open-pull-requests-limit: 2", config)
+        self.assertIn("github-actions-minor-patch:", config)
+        self.assertIn("update-types:\n          - minor\n          - patch", config)
         self.assertNotIn("pull-request-branch-name:", config)
+        codeowners = (ROOT / "CODEOWNERS").read_text(encoding="utf-8")
+        self.assertIn("/.github/dependabot.yml @driftframestudios", codeowners)
+        self.assertNotIn("dependabot.manual.yml", codeowners)
         self.assertEqual(
             1,
             self.invoke(
@@ -140,13 +147,21 @@ class BranchFlowTests(unittest.TestCase):
         self.assertEqual(0, self.invoke("develop", head, "contributor")[0])
         self.assertEqual(1, self.invoke("main", head, "contributor")[0])
 
-    def test_remote_proof_uses_human_cued_activation_boundary(self) -> None:
+    def test_hosted_proofs_keep_lightweight_and_deliberate_paths_distinct(
+        self,
+    ) -> None:
         workflow_directory = ROOT / ".github" / "workflows"
         workflow_paths = sorted(
             [*workflow_directory.glob("*.yml"), *workflow_directory.glob("*.yaml")]
         )
-        self.assertEqual(["validate.yml"], [path.name for path in workflow_paths])
-        workflow = workflow_paths[0].read_text(encoding="utf-8")
+        self.assertEqual(
+            ["pull-request.yml", "validate.yml"],
+            [path.name for path in workflow_paths],
+        )
+        workflows = {
+            path.name: path.read_text(encoding="utf-8") for path in workflow_paths
+        }
+        workflow = workflows["validate.yml"]
         self.assertFalse(
             (ROOT / ".github" / "workflows" / "branch-policy.yml").exists()
         )
@@ -171,6 +186,46 @@ class BranchFlowTests(unittest.TestCase):
                 assert gate is not None
                 self.assertIn("vars.ENABLE_GITHUB_ACTIONS == 'true'", gate.group(1))
                 self.assertIn("inputs.confirm_run", gate.group(1))
+
+        pull_request = workflows["pull-request.yml"]
+        self.assertEqual({"pull_request"}, workflow_trigger_keys(pull_request))
+        self.assertIn(
+            "  pull_request:\n    branches:\n      - develop\n      - main",
+            pull_request,
+        )
+        self.assertIn("permissions:\n  contents: read", pull_request)
+        self.assertIn("cancel-in-progress: true", pull_request)
+        self.assertNotIn("secrets.", pull_request)
+        pull_request_jobs = runner_job_blocks(pull_request)
+        self.assertEqual({"program-pr-validation"}, set(pull_request_jobs))
+        job = pull_request_jobs["program-pr-validation"]
+        self.assertIn("runs-on: ubuntu-24.04", job)
+        timeout = re.search(r"(?m)^    timeout-minutes: ([0-9]+)$", job)
+        self.assertIsNotNone(timeout)
+        assert timeout is not None
+        self.assertLessEqual(int(timeout.group(1)), 10)
+        self.assertEqual(1, pull_request.count("actions/setup-python@"))
+        self.assertIn('python-version: "3.12"', pull_request)
+        self.assertNotIn("strategy:", pull_request)
+        self.assertNotIn("matrix:", pull_request)
+        self.assertIn("python scripts/validate_program.py", pull_request)
+        self.assertIn(
+            "python scripts/generate_contract_schemas.py --check",
+            pull_request,
+        )
+        self.assertIn("python -m unittest discover -s tests -v", pull_request)
+
+        action_reference = re.compile(r"^\s*uses:\s*([^#\s]+)", re.MULTILINE)
+        for name, content in workflows.items():
+            with self.subTest(workflow=name):
+                references = action_reference.findall(content)
+                self.assertTrue(references)
+                for reference in references:
+                    self.assertRegex(reference, r"^[^@]+@[a-f0-9]{40}$")
+                self.assertGreaterEqual(
+                    content.count("persist-credentials: false"),
+                    content.count("actions/checkout@"),
+                )
 
 
 if __name__ == "__main__":
