@@ -3,18 +3,24 @@
 from __future__ import annotations
 
 from importlib import resources
-from typing import Final
+from typing import Final, Literal
 
 from .bounded_call import OperationCatalog
 from .canonical import model_from_strict_json, strict_json_loads
+from .golden_specimen import GoldenSpecimenObservation
 from .scenario import ScenarioContract
 
 
 OPERATION_CATALOG_RESOURCE: Final = "operations.v1.json"
 GOLDEN_SCENARIO_RESOURCE: Final = "scenarios/golden-specimen.v1.json"
+GOLDEN_OBSERVATION_EXAMPLE_RESOURCES: Final = {
+    "implementation": "observations/golden-specimen.implementation.v1.json",
+    "simulation": "observations/golden-specimen.simulation.v1.json",
+}
 SCHEMA_RESOURCE_NAMES: Final = (
     "bounded-call-receipt.v1.schema.json",
     "bounded-call-request.v1.schema.json",
+    "golden-specimen-result-projection.v1.schema.json",
     "observation-envelope.v1.schema.json",
     "operation-catalog.v1.schema.json",
     "scenario.v1.schema.json",
@@ -43,6 +49,21 @@ def load_golden_specimen_scenario() -> ScenarioContract:
     )
 
 
+def load_golden_specimen_observation_example(
+    producer: Literal["implementation", "simulation"],
+) -> GoldenSpecimenObservation:
+    try:
+        resource_name = GOLDEN_OBSERVATION_EXAMPLE_RESOURCES[producer]
+    except KeyError as error:
+        raise ValueError(
+            "producer names one released example: implementation or simulation"
+        ) from error
+    return model_from_strict_json(
+        GoldenSpecimenObservation,
+        _resource_bytes(resource_name),
+    )
+
+
 def load_generated_schema(schema_name: str) -> dict:
     if schema_name not in SCHEMA_RESOURCE_NAMES:
         raise ValueError(
@@ -62,4 +83,3 @@ def generated_schema_bytes(schema_name: str) -> bytes:
             + ", ".join(SCHEMA_RESOURCE_NAMES)
         )
     return _resource_bytes(f"schemas/{schema_name}")
-

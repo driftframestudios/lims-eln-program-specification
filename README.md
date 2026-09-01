@@ -5,6 +5,10 @@ open-receipt collaboration. It publishes versioned requirements, executable
 examples, decision forecasts, acceptance contracts, and the lock coordinates
 used to compare the active implementation with the simulated final state.
 
+Repository authorship and maintenance provenance is recorded in
+[`AUTHORS`](AUTHORS). Git history and reviewed pull requests preserve change
+chronology and contribution credit.
+
 The current planned program release is `spec-v0.3.1`. It consumes the canonical
 governance release `governance-v2.0.1`, Control Plane Profile 0.3.0, and schema
 `2.0.1`; its release
@@ -99,8 +103,49 @@ The released resources travel inside the package:
   carries the three versioned operation definitions;
 - [`golden-specimen.v1.json`](src/lims_eln_contracts/resources/scenarios/golden-specimen.v1.json)
   carries one synthetic, executable specimen journey; and
-- [`resources/schemas`](src/lims_eln_contracts/resources/schemas) carries six
+- [`resources/schemas`](src/lims_eln_contracts/resources/schemas) carries the
   generated JSON Schema projections for non-Python consumers.
+
+### Shared Golden Specimen result
+
+The Golden Specimen observation places its common comparison fields in
+`result.projection` and keeps producer-specific detail in
+`result.producer_detail`. The surrounding observation continues to state its
+evidence mode, assurance stage, source, provenance, approvals, and data class.
+Implementation and simulation can therefore report the same decision-relevant
+result while retaining the detail each repository owns.
+
+The surrounding observation binds that result to the released source scenario
+with its identifier, semantic version, and canonical scenario digest. A
+comparator verifies this three-part coordinate before it compares projection
+bytes, so a revised command, instrument message, expected state, or recovery
+route receives a new source identity even when its scenario identifier remains
+familiar.
+
+The projection carries the tenant and specimen identities, released lifecycle
+revision, current custody location, scientific measurement, accepted review
+resolution, and approval receipt with the release timestamp. Its stable
+identity is `urn:driftframe:lims-eln:golden-specimen-result`, its current
+version is `1.0.0`, and its comparison rule is `exact-version`. A comparator
+verifies all three values before comparing canonical projection bytes. A later
+projection version can receive an explicit adapter when its meaning is settled.
+
+The package includes an
+[`implementation`-shaped example](src/lims_eln_contracts/resources/observations/golden-specimen.implementation.v1.json)
+and a
+[`simulation`-shaped example](src/lims_eln_contracts/resources/observations/golden-specimen.simulation.v1.json).
+Their shared projection has canonical digest
+`sha256:cead042eaf3ca8f72b9c30c41d9acb0bd9255027448f3b28e3451305bed1aef1`.
+These resources establish the exchange shape. Producer execution and governed
+evidence establish the environment-specific result and its assurance stage.
+Each example binds its local configuration and complete result to the SHA-256
+digests carried in the observation.
+The generated
+[`golden-specimen-result-projection.v1.schema.json`](src/lims_eln_contracts/resources/schemas/golden-specimen-result-projection.v1.schema.json)
+provides the closed structural boundary and declares the temporal invariant for
+non-Python consumers. The typed loader enforces that review resolves at or
+before release; another consumer applies the same declared invariant alongside
+JSON Schema validation.
 
 Pydantic strengthens these external boundaries through strict types, declared
 fields, finite numbers, and immutable model instances. The JSON parser also
@@ -121,6 +166,15 @@ from lims_eln_contracts import (
 
 catalog = load_operation_catalog()
 scenario = load_golden_specimen_scenario()
+```
+
+Load either shaped observation through the same typed boundary:
+
+```python
+from lims_eln_contracts import load_golden_specimen_observation_example
+
+implementation_example = load_golden_specimen_observation_example("implementation")
+simulation_example = load_golden_specimen_observation_example("simulation")
 ```
 
 The generated schemas remain a byte-identical projection of the Python models.

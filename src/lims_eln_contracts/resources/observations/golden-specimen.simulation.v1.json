@@ -1,0 +1,63 @@
+{
+  "envelope_version": "1.0.0",
+  "observation_id": "SIM-OBS-GOLDEN-EXAMPLE-001",
+  "evidence_mode": "simulated",
+  "assurance_stage": "specified",
+  "scenario_id": "SCN-GOLDEN-SPECIMEN-001",
+  "scenario_version": "1.0.0",
+  "scenario_digest": "sha256:fea95444dbbfbd3e26f5fb8d3975038541bf75bb1e4a7ffb748dd2cefdf173e9",
+  "source": {
+    "environment_id": "EXAMPLE-SIMULATION",
+    "implementation_commit": "example-simulation-coordinate",
+    "configuration_digest": "sha256:1cb06deb5f7ff82a33238e894207905d924397b9dfef5a0c229017d85e98a52a"
+  },
+  "result": {
+    "projection": {
+      "projection_id": "urn:driftframe:lims-eln:golden-specimen-result",
+      "projection_version": "1.0.0",
+      "comparison_compatibility": "exact-version",
+      "tenant_id": "TENANT-SYN-GENOMICS",
+      "specimen_id": "SPM-SYN-0001",
+      "lifecycle": {
+        "state": "released",
+        "aggregate_version": 5
+      },
+      "custody": {
+        "current_location": "SYN-LAB-A/RECEIVING"
+      },
+      "measurement": {
+        "analyte": "synthetic-copy-number-marker",
+        "value": 2.0,
+        "unit": "copies",
+        "quality_flag": "pass"
+      },
+      "review_resolution": {
+        "review_id": "REVIEW-SYN-001",
+        "decision": "accepted",
+        "resolved_at": "2026-08-17T14:35:00Z"
+      },
+      "release": {
+        "approval_receipt_id": "APPROVAL-SYN-QUALITY-001",
+        "released_at": "2026-08-17T14:35:00Z"
+      }
+    },
+    "producer_detail": {
+      "configuration": {
+        "forecast_recovery_seconds": 72,
+        "selected_future_id": "EXAMPLE-SELECTED-FUTURE-001"
+      },
+      "execution_trace_id": "EXAMPLE-SIMULATION-TRACE-001"
+    }
+  },
+  "provenance": {
+    "raw_artifact_digest": "sha256:5a81152ee8f5a447c1e4977d4eb468eba21ae47fd02bd8a59c95e32f36935cf4",
+    "governed_locator": "example://simulation/golden-specimen-001",
+    "performed_by": "EXAMPLE-SIMULATION-RUNNER",
+    "reviewed_by": "EXAMPLE-SIMULATION-REVIEWER"
+  },
+  "approvals": [],
+  "classification": {
+    "data_class": "approved-synthetic-exemplar",
+    "redaction_status": "generated-identities"
+  }
+}

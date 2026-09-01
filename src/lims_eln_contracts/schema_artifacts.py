@@ -8,6 +8,7 @@ import json
 from pydantic import BaseModel
 
 from .bounded_call import BoundedCallReceipt, BoundedCallRequest, OperationCatalog
+from .golden_specimen import GoldenSpecimenResultProjection
 from .observation import ObservationEnvelope
 from .scenario import ScenarioContract
 from .specimen import SpecimenCommand
@@ -18,14 +19,18 @@ class SchemaArtifact:
     filename: str
     schema_id: str
     model: type[BaseModel]
+    semantic_invariants: tuple[str, ...] = ()
 
     def document(self) -> dict:
         generated = self.model.model_json_schema(by_alias=True, mode="validation")
-        return {
+        document = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": self.schema_id,
             **generated,
         }
+        if self.semantic_invariants:
+            document["x-semantic-invariants"] = list(self.semantic_invariants)
+        return document
 
     def rendered_bytes(self) -> bytes:
         return (
@@ -49,6 +54,14 @@ SCHEMA_ARTIFACTS = (
         "bounded-call-request.v1.schema.json",
         "urn:driftframe:lims-eln:bounded-call-request:1.0.0",
         BoundedCallRequest,
+    ),
+    SchemaArtifact(
+        "golden-specimen-result-projection.v1.schema.json",
+        "urn:driftframe:lims-eln:golden-specimen-result:1.0.0",
+        GoldenSpecimenResultProjection,
+        (
+            "review_resolution.resolved_at occurs at or before release.released_at",
+        ),
     ),
     SchemaArtifact(
         "observation-envelope.v1.schema.json",
@@ -75,4 +88,3 @@ SCHEMA_ARTIFACTS = (
 
 def rendered_schema_artifacts() -> dict[str, bytes]:
     return {artifact.filename: artifact.rendered_bytes() for artifact in SCHEMA_ARTIFACTS}
-

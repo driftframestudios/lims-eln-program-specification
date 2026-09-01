@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "lims-eln-program-specification"
 version = "0.3.1"
 description = "Executable specification and forecast control plane for comparative LIMS/ELN delivery"
+authors = [{ name = "Vikrant Varun Kudesia" }]
 requires-python = ">=3.12"
 dependencies = [
   "pydantic>=2.13,<3",
@@ -20,6 +21,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 lims_eln_contracts = [
   "resources/*.json",
+  "resources/observations/*.json",
   "resources/scenarios/*.json",
   "resources/schemas/*.json",
 ]
