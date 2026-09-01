@@ -40,11 +40,15 @@
 - Added a concrete promotion receipt and a closed-object JSON Schema for it.
 - Added fail-closed structural checks for the lock, release manifest, status,
   Machine Node, first receipt, Coordination Horizon, and constellation.
-- Added a named `program-validation` proof aggregate for a human-allocated
-  hosted run.
-- Established local proof as the standing path and placed hosted validation and
-  dependency updates behind explicit manual activation at the `$0` resting
-  posture.
+- Added a named `program-validation` aggregate for deliberate full proof and a
+  smaller read-only pull-request proof for repository-owned contracts,
+  language and secret-shape checks, generated-schema equality, and regression
+  behavior. A restricted semantic YAML contract and mutation suite keep its
+  triggers, permissions, jobs, step names, commands, actions, raw-secret
+  boundary, manifest projection, and dependency route aligned.
+- Established local proof as the complete source-owned path, activated bounded
+  monthly dependency updates, and aligned protected promotion with `main`, lean
+  integration with `develop`, and short-lived release branches.
 - Added negation-aware language automation and regression coverage.
 - Replaced line-local matching with the structure-aware, corpus-qualified
   `language-policy-v1.0.0` projection, exact expiring exemptions, and

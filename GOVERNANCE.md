@@ -64,8 +64,10 @@ item, and the open promotion receipt
 `RCP-PROGRAM-PROMOTION-003`. A released record carries material commit and tree
 coordinates, observed ruleset and CODEOWNER evidence, completed promotion
 work, local validation evidence, and the hosted contexts active for that
-release. The current `$0` resting state carries an empty hosted-context list
-while protected review and history controls remain active.
+release. The lightweight pull-request proof begins as an observed context with
+an approved monthly budget. A required-check list remains empty until a
+separate review establishes the stable context name, useful evidence, and
+recovery route.
 
 Release and hotfix validation resolves every external repository from its
 nonzero 40-hex lock coordinate before checkout. A fine-grained

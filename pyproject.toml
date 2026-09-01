@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "lims-eln-program-specification"
 version = "0.3.1"
 description = "Executable specification and forecast control plane for comparative LIMS/ELN delivery"
-authors = [{ name = "Vikrant Varun Kudesia" }]
+authors = [{ name = "Driftframe Studios, Limited Liability Company" }]
 requires-python = ">=3.12"
 dependencies = [
   "pydantic>=2.13,<3",

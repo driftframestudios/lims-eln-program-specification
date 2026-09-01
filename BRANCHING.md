@@ -5,6 +5,9 @@
 - `main` carries reviewed specification releases.
 - `develop` integrates the next specification release.
 
+`main` carries the active protected-delivery ruleset. `develop` remains the
+lean integration branch for reviewed candidate work.
+
 ## Supporting branches
 
 - `feature/<stable-claim-or-receipt>` begins from `develop` and returns to
@@ -13,7 +16,8 @@
 - `chore/<stable-claim-or-receipt>` carries maintenance with stable external
   behavior.
 - `release/<semver>` begins from `develop`, receives release-only stabilization,
-  lands in `main`, and merges forward into `develop`.
+  lands in `main`, merges forward into `develop`, and closes after that forward
+  merge settles.
 - `hotfix/<stable-claim-or-receipt>` begins from `main`, lands in `main`, and merges
   forward into `develop`.
 - `forecast/YYYY-qN-rN` freezes a preregistered forecast from `develop`; its
@@ -35,20 +39,25 @@ Every pull request states:
 Release and hotfix branches preserve semantic-version compatibility and
 generate a new constellation lock coordinate.
 
-## Local proof and optional dependency maintenance
+## Local proof and bounded hosted maintenance
 
-Local program validation and unit tests are the standing proof path. GitHub
-Actions rests disabled in repository settings at a **$0** budget. The manual
-`Validate program specification` workflow becomes available only when a named
-human enables Actions, sets `ENABLE_GITHUB_ACTIONS=true`, selects
-`confirm_run`, and dispatches the proof. After the proof is read, set
-`ENABLE_GITHUB_ACTIONS=false` and disable Actions in repository settings to
-restore the resting state.
+Local program validation and unit tests remain the complete source-owned proof
+path. The repository has a monthly **100–300 runner-minute** allocation for one
+small pull-request proof. Pull requests targeting `develop` or `main` run the
+program aggregate, language and secret-shape checks, generated-schema equality,
+and repository regression suite on Python 3.12. One standard runner, read-only
+permissions, cancellation of superseded runs, and a ten-minute ceiling keep
+that observation bounded.
 
-Dependency scheduling rests in `.github/dependabot.manual.yml`. Reviewing that
-template and renaming it to `.github/dependabot.yml` activates its schedule; the
-manual filename is the return state. When dependency automation is active, an
-automation change is identified by a complete branch grammar, exact
+The manual `Validate program specification` workflow retains the broader
+Python matrix, candidate and release coordinate paths, advisory author
+feedback, and cross-repository proof. A named receiver sets
+`ENABLE_GITHUB_ACTIONS=true`, selects `confirm_run`, and dispatches it when that
+additional evidence is material.
+
+Monthly dependency updates live in `.github/dependabot.yml`, target `develop`,
+group minor and patch updates, and keep at most two update pull requests open.
+An automation change is identified by a complete branch grammar, exact
 pull-request author, and governed target together:
 
 - Dependabot uses `dependabot/github_actions/<dependency-update>` with
@@ -58,7 +67,9 @@ pull-request author, and governed target together:
 
 The repository-local branch checker remains available to reviewers and local
 validation. Pull requests carry their branch and author coordinates for human
-review; no automatic branch-policy workflow runs in the resting state.
+review. Setting `ENABLE_GITHUB_ACTIONS=false` rests the manual proof; repository
+settings can rest all hosted execution, and a reviewed return to
+`.github/dependabot.manual.yml` rests dependency scheduling.
 
 An activated security update may target the default branch. Its standing proof
 is the complete local validation suite plus human review before promotion. A

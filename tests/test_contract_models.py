@@ -57,6 +57,10 @@ class DistributionMetadataTests(unittest.TestCase):
             distribution = tomllib.load(handle)
 
         self.assertEqual(distribution["project"]["version"], __version__)
+        self.assertEqual(
+            [{"name": "Driftframe Studios, Limited Liability Company"}],
+            distribution["project"]["authors"],
+        )
 
 
 class CanonicalJsonTests(unittest.TestCase):
