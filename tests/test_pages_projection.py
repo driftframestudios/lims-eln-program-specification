@@ -3,12 +3,14 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from scripts import pages_projection as pages
 from scripts import scan_secret_shapes
@@ -139,6 +141,13 @@ class PagesProjectionTests(unittest.TestCase):
                 ("git", "init", "--quiet"),
                 ("git", "config", "user.name", "Projection Fixture"),
                 ("git", "config", "user.email", "fixture@example.invalid"),
+                (
+                    "git",
+                    "remote",
+                    "add",
+                    "origin",
+                    f"https://github.com/{pages.PROJECTION_OWNER}.git",
+                ),
             )
             for command in commands:
                 subprocess.run(command, cwd=repository, check=True)
@@ -152,6 +161,99 @@ class PagesProjectionTests(unittest.TestCase):
             proof = pages.verify_clean_source(repository)
             self.assertEqual("clean", proof.standing)
             self.assertRegex(proof.revision, r"^[0-9a-f]{40}$")
+
+            foreign = Path(temporary) / "foreign"
+            foreign.mkdir()
+            foreign_commands = (
+                ("git", "init", "--quiet"),
+                ("git", "config", "user.name", "Foreign Fixture"),
+                ("git", "config", "user.email", "foreign@example.invalid"),
+                (
+                    "git",
+                    "remote",
+                    "add",
+                    "origin",
+                    f"https://github.com/{pages.PROJECTION_OWNER}.git",
+                ),
+            )
+            for command in foreign_commands:
+                subprocess.run(command, cwd=foreign, check=True)
+            (foreign / "source.txt").write_text("stable\n", encoding="utf-8")
+            subprocess.run(("git", "add", "source.txt"), cwd=foreign, check=True)
+            subprocess.run(
+                ("git", "commit", "--quiet", "-m", "Add foreign source"),
+                cwd=foreign,
+                check=True,
+            )
+            foreign_revision = subprocess.run(
+                ("git", "rev-parse", "HEAD"),
+                cwd=foreign,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            self.assertNotEqual(proof.revision, foreign_revision)
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "GIT_DIR": str(foreign / ".git"),
+                    "GIT_WORK_TREE": str(repository),
+                    "GIT_CONFIG_COUNT": "1",
+                    "GIT_CONFIG_KEY_0": "core.worktree",
+                    "GIT_CONFIG_VALUE_0": str(repository),
+                },
+            ):
+                self.assertEqual(proof, pages.verify_clean_source(repository))
+
+            subprocess.run(
+                ("git", "remote", "set-url", "origin", "https://github.com/example/other.git"),
+                cwd=repository,
+                check=True,
+            )
+            with self.assertRaisesRegex(pages.ProjectionError, "origin differs"):
+                pages.verify_clean_source(repository)
+            subprocess.run(
+                (
+                    "git",
+                    "remote",
+                    "set-url",
+                    "origin",
+                    f"https://github.com/{pages.PROJECTION_OWNER}.git",
+                ),
+                cwd=repository,
+                check=True,
+            )
+
+            subprocess.run(
+                (
+                    "git",
+                    "remote",
+                    "set-url",
+                    "--add",
+                    "origin",
+                    "https://github.com/example/secondary-wrong.git",
+                ),
+                cwd=repository,
+                check=True,
+            )
+            with self.assertRaisesRegex(pages.ProjectionError, "origin differs"):
+                pages.verify_clean_source(repository)
+            subprocess.run(
+                ("git", "config", "--unset-all", "remote.origin.url"),
+                cwd=repository,
+                check=True,
+            )
+            subprocess.run(
+                (
+                    "git",
+                    "config",
+                    "--add",
+                    "remote.origin.url",
+                    f"https://github.com/{pages.PROJECTION_OWNER}.git",
+                ),
+                cwd=repository,
+                check=True,
+            )
 
             nested = repository / "nested-source"
             nested.mkdir()
@@ -181,6 +283,76 @@ class PagesProjectionTests(unittest.TestCase):
             with self.assertRaisesRegex(pages.ProjectionError, "bytes differ from HEAD"):
                 pages.verify_clean_source(repository)
 
+    def test_clean_source_proof_ignores_local_replace_refs(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary) / "repository"
+            repository.mkdir()
+            for command in (
+                ("git", "init", "--quiet"),
+                ("git", "config", "user.name", "Projection Fixture"),
+                ("git", "config", "user.email", "fixture@example.invalid"),
+                (
+                    "git",
+                    "remote",
+                    "add",
+                    "origin",
+                    f"https://github.com/{pages.PROJECTION_OWNER}.git",
+                ),
+            ):
+                subprocess.run(command, cwd=repository, check=True)
+
+            source = repository / "source.txt"
+            source.write_text("accepted\n", encoding="utf-8")
+            subprocess.run(("git", "add", "source.txt"), cwd=repository, check=True)
+            subprocess.run(
+                ("git", "commit", "--quiet", "-m", "Add accepted source"),
+                cwd=repository,
+                check=True,
+            )
+            accepted_revision = subprocess.run(
+                ("git", "rev-parse", "HEAD"),
+                cwd=repository,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+
+            source.write_text("replacement\n", encoding="utf-8")
+            subprocess.run(("git", "add", "source.txt"), cwd=repository, check=True)
+            subprocess.run(
+                ("git", "commit", "--quiet", "-m", "Add replacement source"),
+                cwd=repository,
+                check=True,
+            )
+            replacement_revision = subprocess.run(
+                ("git", "rev-parse", "HEAD"),
+                cwd=repository,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            subprocess.run(
+                ("git", "reset", "--soft", accepted_revision),
+                cwd=repository,
+                check=True,
+            )
+            subprocess.run(
+                ("git", "replace", accepted_revision, replacement_revision),
+                cwd=repository,
+                check=True,
+            )
+
+            masked_status = subprocess.run(
+                ("git", "status", "--porcelain=v1", "--untracked-files=all"),
+                cwd=repository,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual("", masked_status.stdout)
+            with self.assertRaisesRegex(pages.ProjectionError, "match HEAD"):
+                pages.verify_clean_source(repository)
+
     def test_clean_build_rejects_ignored_untracked_skill_source(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = Path(temporary)
@@ -192,6 +364,13 @@ class PagesProjectionTests(unittest.TestCase):
                 ("git", "init", "--quiet"),
                 ("git", "config", "user.name", "Projection Fixture"),
                 ("git", "config", "user.email", "fixture@example.invalid"),
+                (
+                    "git",
+                    "remote",
+                    "add",
+                    "origin",
+                    f"https://github.com/{pages.PROJECTION_OWNER}.git",
+                ),
                 ("git", "add", "."),
                 ("git", "commit", "--quiet", "-m", "Add fixture source"),
             )
@@ -335,10 +514,18 @@ class PagesProjectionTests(unittest.TestCase):
             )
             for path in output.rglob("*.html"):
                 document = path.read_text(encoding="utf-8")
+                visible = html.unescape(document)
                 self.assertRegex(document, source_pattern)
-                self.assertLess(document.index("MAPS"), document.index("BIG-bench"))
-                self.assertIn(pages.BENCHMARK_DATA_USE_LINE, html.unescape(document))
-                self.assertIn(pages.FOOTER_NOTICE, html.unescape(document))
+                required = (
+                    pages.BENCHMARK_DATA_USE_LINE,
+                    pages.MAPS_MARKER_LINE,
+                    pages.MAPS_GUID_LINE,
+                    pages.BIG_BENCH_MARKER_LINE,
+                    pages.BIG_BENCH_GUID_LINE,
+                    pages.FOOTER_NOTICE,
+                )
+                positions = [visible.index(item) for item in required]
+                self.assertEqual(sorted(positions), positions)
                 self.assertIn(
                     f'<meta name="author" content="{pages.ORGANIZATION}">',
                     document,
@@ -348,9 +535,28 @@ class PagesProjectionTests(unittest.TestCase):
                     document,
                 )
             self.assertIn(
-                ".benchmark-line, .legal { margin: 0; max-width: 62rem; overflow-wrap: anywhere; }",
+                ".benchmark-line, .benchmark-marker, .legal { margin: 0; max-width: 62rem; overflow-wrap: anywhere; }",
                 (output / "assets/styles.css").read_text(encoding="utf-8"),
             )
+
+    def test_canary_guid_mutation_is_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = self.build(Path(temporary))
+            page_path = "index.html"
+            changed = (output / page_path).read_text(encoding="utf-8").replace(
+                pages.MAPS_GUID_LINE,
+                "canary GUID changed",
+                1,
+            )
+            with self.assertRaisesRegex(pages.ProjectionError, "benchmark or attribution"):
+                pages._validate_html(
+                    output,
+                    page_path,
+                    changed.encode("utf-8"),
+                    root=ROOT,
+                    proof=self.proof,
+                    canonical_origin=None,
+                )
 
     def test_source_link_revision_mutation_is_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -434,6 +640,26 @@ class PagesProjectionTests(unittest.TestCase):
             with self.assertRaisesRegex(pages.ProjectionError, "outside"):
                 pages.build_projection(
                     ROOT / ".pages-build" / "fixture",
+                    source_proof=self.proof,
+                )
+
+            valid = self.build(base, name="valid")
+            validation_alias = base / "validation-alias"
+            validation_alias.symlink_to(valid, target_is_directory=True)
+            with self.assertRaisesRegex(pages.ProjectionError, "symbolic-link"):
+                pages.validate_projection(
+                    validation_alias,
+                    root=ROOT,
+                    allow_fixture=True,
+                )
+
+            build_parent = base / "build-parent"
+            build_parent.mkdir()
+            build_parent_alias = base / "build-parent-alias"
+            build_parent_alias.symlink_to(build_parent, target_is_directory=True)
+            with self.assertRaisesRegex(pages.ProjectionError, "symbolic-link"):
+                pages.build_projection(
+                    build_parent_alias / "site",
                     source_proof=self.proof,
                 )
 
