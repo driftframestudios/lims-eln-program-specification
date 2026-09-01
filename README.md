@@ -330,6 +330,48 @@ Released records carry pinned coordinates and a closed, evidence-bearing
 promotion receipt. The validator exercises both lifecycle shapes, so settlement
 can advance without weakening the candidate boundary.
 
+## Program Pages candidate
+
+[`pages/program-content.json`](pages/program-content.json) is the source-owned
+visitor orientation for the five-repository constellation. The builder combines
+that content with the current repository role, release status, constellation,
+and exact Git `HEAD`. The resulting static pages describe the 0.3.1 candidate
+posture, route readers to each authority, provide local commands, and link every
+program source reference through the full producing commit SHA.
+
+A clean checkout can create and validate one local projection outside the
+worktree:
+
+```sh
+python3 scripts/build_pages.py --output ../program-pages-build
+python3 scripts/validate_projection.py ../program-pages-build
+```
+
+The aggregate creates two isolated builds, compares every projected byte,
+validates their manifests and relative links, and scans generated text for
+credential-shaped values:
+
+```sh
+python3 scripts/verify_pages.py
+```
+
+The default build remains portable and carries no domain claim. A publication
+receiver can provide both `--canonical-origin https://docs.example.org` and
+`--cname docs.example.org` to create matching HTML canonical links and `CNAME`.
+Branch creation, Pages activation, and domain configuration remain separate
+publication actions.
+
+Repository skills join the generated catalog when their `SKILL.md` front matter
+declares `source_band: public_ready`. Internal and public-possible sources retain
+their collaboration boundaries, and an empty public-ready set produces no
+catalog.
+
+The released projection manifest contract is `1.0.0`. It records the projection
+owner, complete file scope, verified source revision and standing, optional
+canonical origin, authoritative program-content digest, public-skill inventory,
+and byte length plus SHA-256 for every projected file. Unit tests use an explicit
+`fixture` standing; ordinary builds accept only a clean exact `HEAD`.
+
 Release changes and consumer migration notes are recorded in
 [`CHANGELOG.md`](CHANGELOG.md) and
 [`docs/migrations/0.3.0-to-0.3.1.md`](docs/migrations/0.3.0-to-0.3.1.md).

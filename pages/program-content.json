@@ -1,0 +1,90 @@
+{
+  "contentVersion": "1.0.0",
+  "site": {
+    "title": "LIMS/ELN Program Specification",
+    "description": "A source-bound guide to the five repositories that share the LIMS/ELN program contract."
+  },
+  "release": {
+    "version": "0.3.1",
+    "tag": "spec-v0.3.1",
+    "state": "candidate_pending_promotion",
+    "label": "0.3.1 candidate",
+    "releasedBaseline": "spec-v0.3.0",
+    "coordinateStatus": "pending_release_commit",
+    "summary": "Version 0.3.1 is the current candidate. Its contracts and local checks are ready for review while the permanent release commit and cross-repository promotion record are still settling.",
+    "evidenceBoundary": "The pages describe the candidate at the Git commit recorded in the projection manifest. Release promotion, hosted publication, configured environments, and accountable acceptance retain their own evidence and decision paths."
+  },
+  "roleCopy": {
+    "program": {
+      "name": "Program specification",
+      "summary": "Defines intent, shared contract content, examples, decisions, forecasts, and acceptance boundaries.",
+      "next": "Begin here when you need the common vocabulary or the route to another authority."
+    },
+    "actual": {
+      "name": "Enterprise implementation",
+      "summary": "Owns running code, durable behavior, infrastructure, migrations, and observed execution evidence.",
+      "next": "Continue here when the question depends on what the active system does."
+    },
+    "simulation": {
+      "name": "Simulated final state",
+      "summary": "Owns the executable selected future, its assumptions, and the results explicitly identified as simulated.",
+      "next": "Continue here when you need the modeled future behavior or its explicit assumptions."
+    },
+    "comparison": {
+      "name": "Comparative evidence",
+      "summary": "Owns paired runs, puts their results into one comparison shape, classifies differences, and publishes readable reports.",
+      "next": "Continue here when you need to understand how accepted results agree or differ."
+    },
+    "governance": {
+      "name": "Site Reading governance",
+      "summary": "Owns shared schemas, language rules, workflows, templates, and governance rules.",
+      "next": "Continue here when you need a governed schema or the rule that defines a shared record."
+    }
+  },
+  "contracts": [
+    {
+      "name": "Repository role and release status",
+      "summary": "The release-role record states what this repository owns, the candidate status, its contract links, and the release commits still awaiting promotion.",
+      "sourcePath": "release/repository-role.json"
+    },
+    {
+      "name": "Constellation map",
+      "summary": "The constellation record names all five repositories and the behavior each one owns.",
+      "sourcePath": "constellation.json"
+    },
+    {
+      "name": "Constellation lock",
+      "summary": "The lock records the 0.3.1 release identities and shows pending commits as placeholders until the protected release process supplies permanent commit IDs.",
+      "sourcePath": "constellation.lock.json"
+    },
+    {
+      "name": "Bounded operation catalog",
+      "summary": "The packaged catalog gives implementation, simulation, and comparison work one versioned operation vocabulary.",
+      "sourcePath": "src/lims_eln_contracts/resources/operations.v1.json"
+    },
+    {
+      "name": "Golden Specimen scenario",
+      "summary": "The synthetic journey gives producers one executable scenario with a stable identity and one content digest used by every consumer.",
+      "sourcePath": "src/lims_eln_contracts/resources/scenarios/golden-specimen.v1.json"
+    },
+    {
+      "name": "Golden Specimen result schema",
+      "summary": "The closed schema defines the decision-relevant result shape that both producers can project while retaining their own evidence detail.",
+      "sourcePath": "src/lims_eln_contracts/resources/schemas/golden-specimen-result-projection.v1.schema.json"
+    }
+  ],
+  "verification": {
+    "buildCommand": "python3 scripts/build_pages.py --output ../program-pages-build",
+    "validateCommand": "python3 scripts/validate_projection.py ../program-pages-build",
+    "aggregateCommand": "python3 scripts/verify_pages.py",
+    "serveCommand": "python3 -m http.server --directory ../program-pages-build 8000",
+    "repositoryCommands": [
+      "python3 scripts/validate_program.py",
+      "python3 scripts/check_language.py",
+      "python3 scripts/scan_secret_shapes.py",
+      "PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check",
+      "python3 -m unittest discover -s tests -v"
+    ],
+    "coverage": "The local Pages aggregate creates two isolated sites, compares every byte, validates the complete file manifest and visitor links, and scans the generated text for credential-shaped values. Browser rendering, hosted responses, domain configuration, and publication approval remain with their fitting later observations."
+  }
+}

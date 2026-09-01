@@ -56,6 +56,11 @@
 - Added pinned-source validation for release settlement and cross-repository
   canonical closure comparison.
 - Standardized the governance release coordinate on `governance-v2.0.1`.
+- Added a source-owned, standard-library Program Pages builder and fail-closed
+  validator with exact Git source proof, responsive relative-link pages,
+  optional paired canonical origin and CNAME, complete byte manifests,
+  public-ready skill filtering, two-build identity proof, and generated-output
+  secret-shape coverage.
 
 ## 0.3.0
 

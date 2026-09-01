@@ -13,11 +13,16 @@
 /.vale.ini @driftframestudios
 /.vale/ @driftframestudios
 /language-policy/ @driftframestudios
+/pages/ @driftframestudios
 /scripts/automation_contract.py @driftframestudios
+/scripts/build_pages.py @driftframestudios
 /scripts/check_branch_flow.py @driftframestudios
 /scripts/check_language.py @driftframestudios
+/scripts/pages_projection.py @driftframestudios
 /scripts/validate_pinned_sources.py @driftframestudios
+/scripts/validate_projection.py @driftframestudios
 /scripts/validate_program.py @driftframestudios
+/scripts/verify_pages.py @driftframestudios
 /schemas/ @driftframestudios
 /CHANGELOG.md @driftframestudios
 /tests/test_branch_flow.py @driftframestudios
@@ -28,4 +33,5 @@
 /docs/AUTHOR_FEEDBACK.md @driftframestudios
 /docs/LANGUAGE_POLICY.md @driftframestudios
 /tests/test_language_policy.py @driftframestudios
+/tests/test_pages_projection.py @driftframestudios
 /CODEOWNERS @driftframestudios
