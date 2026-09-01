@@ -126,7 +126,7 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["database_release_gates"], 7)
         self.assertEqual(summary["database_open_receipts"], 8)
         self.assertEqual(summary["pages_sources"], 1)
-        self.assertEqual(summary["public_ready_skills"], 0)
+        self.assertEqual(summary["public_ready_skills"], 1)
 
     def test_database_finding_ledger_is_complete_and_contract_bound(self) -> None:
         arguments = self.database_validation_arguments()

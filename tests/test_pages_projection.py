@@ -101,8 +101,8 @@ class PagesProjectionTests(unittest.TestCase):
                 first, root=ROOT, allow_fixture=True
             )
             self.assertEqual("valid", summary["status"])
-            self.assertEqual(3, summary["htmlPages"])
-            self.assertEqual(0, summary["publicSkills"])
+            self.assertEqual(5, summary["htmlPages"])
+            self.assertEqual(1, summary["publicSkills"])
 
     def test_manifest_covers_the_complete_declared_scope(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -114,8 +114,19 @@ class PagesProjectionTests(unittest.TestCase):
             self.assertEqual(FIXTURE_REVISION, manifest["sourceRevision"])
             self.assertEqual("fixture", manifest["sourceStanding"])
             self.assertIsNone(manifest["canonicalOrigin"])
-            self.assertEqual([], manifest["publicSkills"])
-            self.assertNotIn("skills/index.html", {item["path"] for item in manifest["files"]})
+            self.assertEqual(
+                ["source-authority-mapping"],
+                [item["slug"] for item in manifest["publicSkills"]],
+            )
+            self.assertEqual(
+                [".agents/skills/source-authority-mapping/SKILL.md"],
+                [item["sourcePath"] for item in manifest["publicSkills"]],
+            )
+            projected_paths = {item["path"] for item in manifest["files"]}
+            self.assertIn("skills/index.html", projected_paths)
+            self.assertIn(
+                "skills/source-authority-mapping/index.html", projected_paths
+            )
             expected = {
                 path.relative_to(output).as_posix()
                 for path in output.rglob("*")
