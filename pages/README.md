@@ -36,8 +36,9 @@ local candidate evidence. A separately authorized publication action can place
 reviewed bytes on the builder-owned `pages` branch and attach Pages settings or
 a custom domain.
 
-Repository skills enter the projection only when their `SKILL.md` front matter
-declares `source_band: public_ready`. A present public-ready set receives a
-catalog and one source-faithful page per skill. An empty set produces no skill
-catalog, while internal and public-possible sources retain their existing
-collaboration boundaries.
+The generated catalog currently selects repository skills whose `SKILL.md`
+front matter declares `source_band: public_ready`. Public-possible guidance is
+also suitable for public use and refinement; a later catalog can include it
+when that serves the visitor route. A present selected set receives a catalog
+and one source-faithful page per skill. An empty set produces no skill catalog.
+Internal, unknown, and absent bands remain outside the projection.

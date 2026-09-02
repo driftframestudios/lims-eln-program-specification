@@ -634,7 +634,7 @@ class PagesProjectionTests(unittest.TestCase):
             with self.assertRaises(pages.ProjectionError):
                 pages.validate_projection(output, root=ROOT, allow_fixture=True)
 
-    def test_public_ready_skill_set_controls_catalog_presence(self) -> None:
+    def test_current_public_ready_selection_controls_catalog_presence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = Path(temporary)
             source = self.copy_source_fixture(base / "source")
@@ -651,6 +651,14 @@ class PagesProjectionTests(unittest.TestCase):
                     "---\nname: Internal guide\ndescription: An internal collaboration source.\n"
                     "source_band: internal\n---\n# Internal guide\n"
                 ),
+                "unknown-guide": (
+                    "---\nname: Unknown guide\ndescription: A source with another band.\n"
+                    "source_band: experimental\n---\n# Unknown guide\n"
+                ),
+                "unbanded-guide": (
+                    "---\nname: Unbanded guide\ndescription: A source without a band.\n"
+                    "---\n# Unbanded guide\n"
+                ),
             }
             for slug, text in skill_sources.items():
                 path = source / ".agents" / "skills" / slug / "SKILL.md"
@@ -659,7 +667,8 @@ class PagesProjectionTests(unittest.TestCase):
             output = self.build(base, root=source, name="projection")
             manifest = self.load_manifest(output)
             self.assertEqual(
-                ["public-guide"], [item["slug"] for item in manifest["publicSkills"]]
+                ["public-guide"],
+                [item["slug"] for item in manifest["publicSkills"]],
             )
             self.assertTrue((output / "skills/index.html").is_file())
             self.assertTrue((output / "skills/public-guide/index.html").is_file())
@@ -670,6 +679,8 @@ class PagesProjectionTests(unittest.TestCase):
             self.assertIn("Public guide", combined_html)
             self.assertNotIn("Working guide", combined_html)
             self.assertNotIn("Internal guide", combined_html)
+            self.assertNotIn("Unknown guide", combined_html)
+            self.assertNotIn("Unbanded guide", combined_html)
             summary = pages.validate_projection(
                 output, root=source, allow_fixture=True
             )

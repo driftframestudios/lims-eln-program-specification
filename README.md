@@ -25,20 +25,28 @@ chronology and contribution credit.
    [`BRANCHING.md`](BRANCHING.md), follow the contribution contract in
    [`CONTRIBUTING.md`](CONTRIBUTING.md), and keep tests beside the behavior they
    establish.
-5. Use the repository-local
+5. Use
+   [`repository-reentry`](.agents/skills/repository-reentry/SKILL.md) when
+   source, release, constellation, coordination, and public projection need one
+   current starting point.
+6. Use the repository-local
    [`source-authority-mapping`](.agents/skills/source-authority-mapping/SKILL.md)
    skill when a requirement, schema, implementation result, simulated result,
    comparison report, release coordinate, or public page crosses repository
    roles.
-6. Use
+7. Use
    [`constellation-coherence-reconciliation`](.agents/skills/constellation-coherence-reconciliation/SKILL.md)
    before pinning a coordinated release whose exact source coordinates and
    copied semantic artifacts must settle together.
-7. Use
+8. Use
    [`proportionate-recovery-routing`](.agents/skills/proportionate-recovery-routing/SKILL.md)
    when an evidence, source, permission, or coordination strain needs one
    bounded recovery move, a decision-bearing receipt, and an exact re-entry
    point.
+9. Use
+   [`contextual-jargon-scan`](.agents/skills/contextual-jargon-scan/SKILL.md)
+   in stride when changed public or cross-repository prose assumes Program-local
+   context.
 
 [`coordination-horizon.json`](coordination-horizon.json) records current and
 queued work. [`first-receipt.json`](first-receipt.json) provides a compact
@@ -493,15 +501,13 @@ receiver can provide both `--canonical-origin https://docs.example.org` and
 Branch creation, Pages activation, and domain configuration remain separate
 publication actions.
 
-Repository skills join the generated catalog when their `SKILL.md` front matter
-declares `source_band: public_ready`. The current public-ready set contains the
-repository-local source-authority map and constellation-coherence reconciliation
-used to trace one material object and settle a coordinated release without
-separating its coordinates from its copied meaning. Internal and public-possible
-sources retain their collaboration boundaries. Proportionate recovery routing
-currently remains public-possible while its first natural uses test the
-smallest-move, receipt, and re-entry contract. An empty public-ready set produces
-no catalog.
+The generated catalog currently selects repository skills whose `SKILL.md`
+front matter declares `source_band: public_ready`. Public-possible guidance is
+also suitable for public use and refinement; it can join a later catalog when
+that serves the visitor route. The current selection keeps the repository-local
+source-authority map and constellation-coherence reconciliation in the catalog.
+Sources marked `internal`, carrying an unknown band, or carrying no band remain
+outside the projection. An empty selected set produces no catalog.
 
 The released projection manifest contract is `1.0.0`. It records the projection
 owner, complete file scope, verified source revision and standing, optional

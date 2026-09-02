@@ -1,4 +1,6 @@
 * @driftframestudios
+/AGENTS.md @driftframestudios
+/.agents/ @driftframestudios
 /acceptance/ @driftframestudios
 /decisions/ @driftframestudios
 /examples/ @driftframestudios
@@ -35,4 +37,5 @@
 /docs/LANGUAGE_POLICY.md @driftframestudios
 /tests/test_language_policy.py @driftframestudios
 /tests/test_pages_projection.py @driftframestudios
+/tests/test_collaboration_workbench.py @driftframestudios
 /CODEOWNERS @driftframestudios

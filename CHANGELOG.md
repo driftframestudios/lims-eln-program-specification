@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added repository-local re-entry and contextual jargon scan skills so an
+  isolated Program checkout can recover current source and suite state and
+  revise shorthand into wording the repository itself explains.
+- Clarified that public-possible and public-ready skills both support open
+  collaboration while the current Pages catalog retains its reviewed
+  public-ready selection.
 - Added the public-possible `proportionate-recovery-routing` skill. It turns a
   consequential failed check, repeated retry, source loss, authority mismatch,
   stale handoff, or coordination drift into one smallest adequate move, an
