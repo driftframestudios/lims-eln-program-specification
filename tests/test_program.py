@@ -2568,29 +2568,55 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             program_job.index("Exercise program contracts"),
         )
         self.assertIn(
-            "Confirm private sibling checkout readiness",
+            "Confirm private sibling read access",
             cross_repository_job,
         )
         self.assertIn(
-            "CONSTELLATION_READ_TOKEN: "
+            "GH_TOKEN: "
             "${{ secrets.CONSTELLATION_READ_TOKEN }}",
             cross_repository_job,
         )
         self.assertIn(
-            'if [ -n "${CONSTELLATION_READ_TOKEN:-}" ]; then',
+            'if [ -z "${GH_TOKEN:-}" ]; then',
             cross_repository_job,
         )
         self.assertIn(
-            "Private sibling checkout needs a read credential",
+            "gh api --silent user",
+            cross_repository_job,
+        )
+        for coordinate, repository in (
+            ("simulation", "driftframestudios/lims-eln-simulated-final-state"),
+            (
+                "implementation",
+                "driftframestudios/lims-eln-enterprise-implementation",
+            ),
+            ("comparison", "driftframestudios/lims-eln-comparative-evidence"),
+            ("governance", "driftframestudios/site-reading-governance"),
+        ):
+            self.assertIn(
+                f'{coordinate})\n                repository="{repository}"',
+                cross_repository_job,
+            )
+        self.assertIn(
+            "commit=\"$(jq -r --arg coordinate \"$coordinate\" "
+            "'.[$coordinate].commit' constellation.lock.json)\"",
+            cross_repository_job,
+        )
+        self.assertIn(
+            'gh api --silent "repos/$repository/contents?ref=$commit"',
+            cross_repository_job,
+        )
+        self.assertIn(
+            "Private sibling read access needs confirmation",
             cross_repository_job,
         )
         self.assertNotIn(
-            'echo "$CONSTELLATION_READ_TOKEN"',
+            'echo "$GH_TOKEN"',
             cross_repository_job,
         )
         self.assertLess(
             cross_repository_job.index(
-                "Confirm private sibling checkout readiness"
+                "Confirm private sibling read access"
             ),
             cross_repository_job.index("Check out the simulation coordinate"),
         )

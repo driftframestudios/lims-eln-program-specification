@@ -124,16 +124,41 @@ jobs:
       - name: Require pinned external coordinates before checkout
         run: python scripts/validate_pinned_sources.py --preflight-external
 
-      - name: Confirm private sibling checkout readiness
+      - name: Confirm private sibling read access
         env:
-          CONSTELLATION_READ_TOKEN: ${{ secrets.CONSTELLATION_READ_TOKEN }}
+          GH_TOKEN: ${{ secrets.CONSTELLATION_READ_TOKEN }}
         run: |
-          if [ -n "${CONSTELLATION_READ_TOKEN:-}" ]; then
-            echo "Private sibling checkout credential is available."
-            exit 0
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error title=Private sibling read access needs a credential::Configure the CONSTELLATION_READ_TOKEN repository secret with Contents read access to the four pinned sibling repositories, then dispatch this proof again."
+            exit 1
           fi
-          echo "::error title=Private sibling checkout needs a read credential::Configure the CONSTELLATION_READ_TOKEN repository secret with read access to the four pinned sibling repositories, then dispatch this proof again."
-          exit 1
+          if ! gh api --silent user >/dev/null 2>&1; then
+            echo "::error title=Private sibling credential needs authentication::Store an active GitHub token in CONSTELLATION_READ_TOKEN, then dispatch this proof again."
+            exit 1
+          fi
+          for coordinate in simulation implementation comparison governance; do
+            case "$coordinate" in
+              simulation)
+                repository="driftframestudios/lims-eln-simulated-final-state"
+                ;;
+              implementation)
+                repository="driftframestudios/lims-eln-enterprise-implementation"
+                ;;
+              comparison)
+                repository="driftframestudios/lims-eln-comparative-evidence"
+                ;;
+              governance)
+                repository="driftframestudios/site-reading-governance"
+                ;;
+            esac
+            commit="$(jq -r --arg coordinate "$coordinate" '.[$coordinate].commit' constellation.lock.json)"
+            if ! gh api --silent "repos/$repository/contents?ref=$commit" >/dev/null 2>&1; then
+              echo "::error title=Private sibling read access needs confirmation::Confirm CONSTELLATION_READ_TOKEN has Contents read access to $repository and that pinned commit $commit remains available, then dispatch this proof again."
+              exit 1
+            fi
+            echo "Confirmed private sibling read access: $coordinate@$commit"
+          done
 
       - name: Verify the selected Program release subject
         env:

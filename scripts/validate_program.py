@@ -3644,8 +3644,10 @@ def validate() -> dict[str, int]:
         "timeout-minutes: 10",
         "Install the contract model boundary",
         "python -m pip install --disable-pip-version-check .",
-        "Confirm private sibling checkout readiness",
-        "CONSTELLATION_READ_TOKEN: ${{ secrets.CONSTELLATION_READ_TOKEN }}",
+        "Confirm private sibling read access",
+        "GH_TOKEN: ${{ secrets.CONSTELLATION_READ_TOKEN }}",
+        "gh api --silent user",
+        'gh api --silent "repos/$repository/contents?ref=$commit"',
         "python scripts/verify_program_release_observation.py",
     )
     missing_fragments = [
@@ -3655,6 +3657,28 @@ def validate() -> dict[str, int]:
         raise ValueError(
             "manual program proof differs from its activation boundary: "
             f"{missing_fragments}"
+        )
+    sibling_coordinate_fragments = (
+        'simulation)\n                repository="driftframestudios/'
+        'lims-eln-simulated-final-state"',
+        'implementation)\n                repository="driftframestudios/'
+        'lims-eln-enterprise-implementation"',
+        'comparison)\n                repository="driftframestudios/'
+        'lims-eln-comparative-evidence"',
+        'governance)\n                repository="driftframestudios/'
+        'site-reading-governance"',
+        'commit="$(jq -r --arg coordinate "$coordinate" '
+        "'.[$coordinate].commit' constellation.lock.json)\"",
+    )
+    missing_sibling_fragments = [
+        fragment
+        for fragment in sibling_coordinate_fragments
+        if fragment not in workflow
+    ]
+    if missing_sibling_fragments:
+        raise ValueError(
+            "private sibling read-access mapping differs from the Program lock: "
+            f"{missing_sibling_fragments}"
         )
     release_subject_fragments = (
         "Verify the selected Program release subject",
