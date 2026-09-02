@@ -3647,7 +3647,9 @@ def validate() -> dict[str, int]:
         "Confirm private sibling read access",
         "GH_TOKEN: ${{ secrets.CONSTELLATION_READ_TOKEN }}",
         "gh api --silent user",
-        'gh api --silent "repos/$repository/contents?ref=$commit"',
+        'gh api --include "repos/$repository/contents?ref=$commit"',
+        "Private sibling request is forbidden",
+        "Private sibling coordinate is unavailable to this credential",
         "python scripts/verify_program_release_observation.py",
     )
     missing_fragments = [
