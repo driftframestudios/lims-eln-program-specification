@@ -201,13 +201,13 @@ length, and content bytes. Runtime cache files are outside the selection, and
 symlinks make the scoped digest invalid. This makes the custom digest
 reproducible without requiring the Program validator as an implementation.
 
-This branch leaves the source commit open because its reviewed merge commit
-becomes the immutable package coordinate. After that merge, an authenticated
-PEP 508 installation uses the full 40-character commit:
+The reviewed `develop` merge for the package contract is the immutable source
+coordinate `4d06eeb7f96910311fbcb7f51547c978b6a07290`. An authenticated PEP 508
+installation uses that full 40-character commit:
 
 ```sh
 python3 -m pip install \
-  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@<FULL_40_HEX_COMMIT>"
+  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@4d06eeb7f96910311fbcb7f51547c978b6a07290"
 ```
 
 HTTPS is the canonical transport for this private distribution because the

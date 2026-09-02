@@ -490,8 +490,21 @@ def validate_repository_automation(
                             findings.append("checkout step name differs")
                         if checkout.get("uses") != contract.checkout_action:
                             findings.append("checkout must use the approved GitHub-owned action SHA")
-                        if checkout.get("with") != {"persist-credentials": False}:
-                            findings.append("checkout must disable credential persistence")
+                        checkout_inputs = checkout.get("with")
+                        if not isinstance(checkout_inputs, dict) or set(
+                            checkout_inputs
+                        ) != {"persist-credentials", "fetch-depth"}:
+                            findings.append("checkout input controls differ")
+                        else:
+                            if checkout_inputs.get("persist-credentials") is not False:
+                                findings.append(
+                                    "checkout must disable credential persistence"
+                                )
+                            fetch_depth = checkout_inputs.get("fetch-depth")
+                            if type(fetch_depth) is not int or fetch_depth != 0:
+                                findings.append(
+                                    "checkout must retain complete source history"
+                                )
                     if not isinstance(setup, dict) or set(setup) != {
                         "name", "uses", "with"
                     }:

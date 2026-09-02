@@ -5,8 +5,8 @@
   "package_version": "0.3.1",
   "repository": "driftframestudios/lims-eln-program-specification",
   "publication_owner": "Program repository owners",
-  "publication_state": "pending_reviewed_merge_commit",
-  "source_commit": null,
+  "publication_state": "reviewed_source_available",
+  "source_commit": "4d06eeb7f96910311fbcb7f51547c978b6a07290",
   "source_identity": {
     "scope": [
       "pyproject.toml",
@@ -38,7 +38,7 @@
   "authenticated_pep_508_template": "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@{full_commit}",
   "editable_sibling_install": "python3 -m pip install -e ../lims-eln-program-specification",
   "consumer_conformance": {
-    "state": "planned_after_source_commit",
+    "state": "required",
     "first_consumer": "driftframestudios/lims-eln-enterprise-implementation",
     "environment": "clean Python 3.12 environment",
     "direct_url_record": "PEP 610 direct_url.json",

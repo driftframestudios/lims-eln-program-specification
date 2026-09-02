@@ -284,6 +284,24 @@ class AutomationContractTests(unittest.TestCase):
                 ),
                 "checkout step controls differ",
             ),
+            (
+                "shallow-history",
+                self.changed(
+                    self.workflow,
+                    "          fetch-depth: 0",
+                    "          fetch-depth: 1",
+                ),
+                "complete source history",
+            ),
+            (
+                "boolean-history",
+                self.changed(
+                    self.workflow,
+                    "          fetch-depth: 0",
+                    "          fetch-depth: false",
+                ),
+                "complete source history",
+            ),
         )
         for name, workflow, expected in mutations:
             with self.subTest(name=name):

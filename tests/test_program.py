@@ -1196,14 +1196,23 @@ class ProgramValidationTests(unittest.TestCase):
                 ),
             )
 
-    def test_contract_package_coordinate_waits_for_reviewed_merge(self) -> None:
+    def test_contract_package_coordinate_binds_reviewed_merge(self) -> None:
         coordinate = json.loads(
             (ROOT / "release" / "contract-package-coordinate.json").read_text()
         )
         MODULE.validate_contract_package_coordinate(coordinate)
-        self.assertIsNone(coordinate["source_commit"])
+        self.assertEqual("reviewed_source_available", coordinate["publication_state"])
+        self.assertRegex(coordinate["source_commit"], r"^[a-f0-9]{40}$")
 
-        premature = deepcopy(coordinate)
+        candidate = deepcopy(coordinate)
+        candidate["publication_state"] = "pending_reviewed_merge_commit"
+        candidate["source_commit"] = None
+        candidate["consumer_conformance"]["state"] = (
+            "planned_after_source_commit"
+        )
+        MODULE.validate_contract_package_coordinate(candidate)
+
+        premature = deepcopy(candidate)
         premature["source_commit"] = "a" * 40
         with self.assertRaisesRegex(ValueError, "keeps its source commit open"):
             MODULE.validate_contract_package_coordinate(premature)
@@ -1213,26 +1222,15 @@ class ProgramValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "scoped source digest differs"):
             MODULE.validate_contract_package_coordinate(changed_source)
 
-        reviewed = deepcopy(coordinate)
-        reviewed["publication_state"] = "reviewed_source_available"
-        reviewed["source_commit"] = "a" * 40
-        reviewed["consumer_conformance"]["state"] = "required"
-        with mock.patch.object(
-            MODULE,
-            "package_source_digest_from_git",
-            return_value=coordinate["source_identity"]["digest"],
+        incomplete = deepcopy(coordinate)
+        incomplete["consumer_conformance"]["required_observations"].pop()
+        with self.assertRaisesRegex(
+            ValueError,
+            "at least 9 non-empty strings",
         ):
-            MODULE.validate_contract_package_coordinate(reviewed)
+            MODULE.validate_contract_package_coordinate(incomplete)
 
-            incomplete = deepcopy(reviewed)
-            incomplete["consumer_conformance"]["required_observations"].pop()
-            with self.assertRaisesRegex(
-                ValueError,
-                "at least 9 non-empty strings",
-            ):
-                MODULE.validate_contract_package_coordinate(incomplete)
-
-        unavailable = deepcopy(reviewed)
+        unavailable = deepcopy(coordinate)
         unavailable["source_commit"] = "a" * 40
         with self.assertRaisesRegex(ValueError, "commit is unavailable"):
             MODULE.validate_contract_package_coordinate(unavailable)
