@@ -2,7 +2,7 @@
   "horizon_id": "COORD-HORIZON-2026-Q3-R1",
   "title": "LIMS/ELN Coordination Horizon",
   "objective": "Keep the collaboration surface legible and coordination-only while allowing sequence, scope, and release boundaries to adapt as contract, implementation, simulation, and comparison evidence arrives.",
-  "as_of": "2026-08-04T14:00:00Z",
+  "as_of": "2026-09-01T20:04:27-04:00",
   "current_item_ids": ["HORIZON-CONTRACTS", "HORIZON-DATABASE-CONTRACT"],
   "work_items": [
     {
@@ -19,7 +19,7 @@
         "program validator and tests pass",
         "the program copy of the canonical closure has digest sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb",
         "the advisory design and canonical executed simulation retain distinct identities and authority postures",
-        "governance schema release 2.0.1 validates the canonical closure",
+        "governance schema release 2.1.0 validates the canonical closure while its historical record identity remains stable",
         "RCP-PROGRAM-PROMOTION-003 closes against the reviewed immutable coordinate"
       ],
       "owner_role": "program governance",
@@ -140,9 +140,9 @@
     }
   ],
   "reentry_capsule": {
-    "current_state": "Specification candidate 0.3.1 is settling with bounded-caller operations, ten Practitioner Probes, an explicit receipt vocabulary map, the exact canonical four-family selected-future closure, and an enforceable database modernization contract surface.",
+    "current_state": "Specification candidate 0.3.1 is settling with accepted Governance 2.1.0, a reviewed-source package coordinate awaiting its merge commit, bounded-caller operations, ten Practitioner Probes, an explicit receipt vocabulary map, the exact canonical four-family selected-future closure, and an enforceable database modernization contract surface.",
     "recent_decisions": ["ADR-0005", "ADR-0006"],
-    "next_safe_action": "Validate every contract and database artifact binding, confirm canonical digest equality across program simulation and comparator, and promote release coordinates through the protected release path.",
+    "next_safe_action": "Review and merge the contract-coordinate change, record that merge as the immutable lims_eln_contracts source commit, then let implementation and simulation adopt it through review while the remaining release coordinates continue through the protected path.",
     "verification": "Run the program validator, unit tests, language and secret-shape scans, database binding checks, governance schema suite, and cross-repository canonical digest comparison."
   },
   "retained_effects": [
@@ -162,9 +162,9 @@
     "Which observed database divergence belongs in the specification implementation simulated twin or operating objective?"
   ],
   "metadata": {
-    "schema_version": "2.0.1",
+    "schema_version": "2.1.0",
     "created_at": "2026-07-28T12:00:00Z",
-    "updated_at": "2026-08-04T14:00:00Z",
+    "updated_at": "2026-09-01T20:04:27-04:00",
     "owner": {
       "actor_id": "ACTOR-PROGRAM-OWNERS",
       "display_name": "Program repository owners",

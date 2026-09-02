@@ -5,7 +5,7 @@ evidence_mode: planned
 assurance_stage: specified
 default_branch: main
 integration_branch: develop
-as_of: 2026-08-04
+as_of: 2026-09-01
 source_seed:
   repository: driftframestudios/prototype-exemplars
   pull_request: 3
@@ -14,12 +14,12 @@ source_seed:
 released_baseline: spec-v0.3.0
 released_commit: 895b7a02ebddc9f7c2b63a2d03432775a120c119
 planned_release: spec-v0.3.1
-governance_contract: governance-v2.0.1
+governance_contract: governance-v2.1.0
 governance_profile: Control Plane Profile 0.3.0
-governance_schema: 2.0.1
-receipt_schema: 2.0.1
+governance_schema: 2.1.0
+receipt_schema: 2.1.0
 release_coordinate_status: pending_release_commit
-governance_coordinate_status: pending_release_commit
+governance_coordinate_status: pinned
 coordination_horizon: COORD-HORIZON-2026-Q3-R1
 bounded_caller_contract: CALLER-CONTRACT-001
 practitioner_probe_catalog: LIMS-ELN-PRACTITIONER-PROBES-001

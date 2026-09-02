@@ -2,6 +2,16 @@
 
 ## 0.3.1 — Candidate
 
+- Adopted the accepted `governance-v2.1.0` coordinate with distinct annotated
+  tag-object, accepted-commit, Git-tree, and reproducible Git-archive
+  identities while retaining the stable `/v2.0/` schema identifier family and
+  historical closure bytes.
+- Defined the reviewed full-commit distribution route for
+  `lims-eln-program-specification` 0.3.1, its `lims_eln_contracts` import,
+  scoped package-source SHA-256, credential-helper-backed HTTPS install,
+  editable local path, publication ownership, successor rule, and receiving
+  PEP 610 conformance observation. The merge commit remains open until review
+  establishes it.
 - Added a 32-finding cross-repository database primitive ledger with stable
   identities, evidence locations, affirmative target states, and complete
   data- or migration-contract bindings.
@@ -20,7 +30,7 @@
 - Added eight future-observed database receipts and a digest-bound database
   release manifest with explicit implementation, rehearsal, recovery, and
   accountable-acceptance boundaries.
-- Published `lims_eln_contracts` 0.3.1 with strict shared evidence, bounded-call,
+- Prepared `lims_eln_contracts` 0.3.1 with strict shared evidence, bounded-call,
   specimen-command, observation-envelope, and Golden Specimen scenario
   boundaries plus generated JSON Schema projections.
 - Added the versioned Golden Specimen result projection, its exact comparison

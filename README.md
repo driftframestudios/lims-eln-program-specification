@@ -35,11 +35,13 @@ chronology and contribution credit.
 queued work. [`first-receipt.json`](first-receipt.json) provides a compact
 re-entry record with the current evidence status and next verified move.
 
-The current planned program release is `spec-v0.3.1`. It consumes the canonical
-governance release `governance-v2.0.1`, Control Plane Profile 0.3.0, and schema
-`2.0.1`; its release
-and governance commit coordinates receive observed
-commit and tree identities during promotion.
+The current planned program release is `spec-v0.3.1`. It consumes the accepted
+governance release `governance-v2.1.0`, Control Plane Profile 0.3.0, and schema
+release `2.1.0`. The Governance coordinate in
+[`constellation.lock.json`](constellation.lock.json) binds the annotated tag
+object, accepted commit, Git tree, and reproducible Git archive as distinct
+identities. The Program release coordinate remains open until its reviewed
+promotion supplies the corresponding commit and tree.
 
 The repository describes what collaborators can verify. The simulation supplies
 an executable future reality whose assumptions, synthetic decisions, and
@@ -86,10 +88,12 @@ accountable domain roles continue to govern effects and acceptance.
 
 [`machine-node.json`](machine-node.json),
 [`first-receipt.json`](first-receipt.json), and the Coordination Horizon are
-strict projections of governance schema release `2.0.1`. Contract references
-carry SHA-256 digests that the program validator recalculates. The Machine Node
-orients; the first receipt supplies safe re-entry; neither grants production or
-domain authority.
+strict projections of governance schema release `2.1.0`. This release keeps the
+stable `/v2.0/` schema identifier family while adding compatible contract
+capabilities. Contract references carry SHA-256 digests that the program
+validator recalculates. The Machine Node orients; the first receipt supplies
+safe re-entry; runtime services and accountable roles continue to own effects
+and decisions.
 
 ## Practitioner Probes
 
@@ -178,11 +182,63 @@ fields, finite numbers, and immutable model instances. The JSON parser also
 rejects duplicate keys and non-finite numeric tokens; callers can proceed by
 supplying one value per key and a finite measurement or explicit textual state.
 
-Install the package from this repository and load the released resources:
+### Install the shared contract package
+
+The Python distribution is `lims-eln-program-specification`; its import package
+is `lims_eln_contracts`, and the current package version is `0.3.1`.
+[`release/contract-package-coordinate.json`](release/contract-package-coordinate.json)
+records the installation and replacement contract. Program repository owners
+publish the reviewed source coordinate. The final protected `main` commit may
+replace the reviewed integration commit at version `0.3.1` when their scoped
+package digests are identical. A package-content change advances both version
+and digest. Each consumer adopts either kind of replacement through review.
+The same record binds `pyproject.toml` and `src/lims_eln_contracts` through a
+path-delimited SHA-256 digest, so consumers can verify package content
+independently of the repository coordinate. The coordinate defines the framing:
+each regular file is ordered by the UTF-8 bytes of its POSIX relative path, then
+contributes its unsigned eight-byte big-endian path length, path bytes, content
+length, and content bytes. Runtime cache files are outside the selection, and
+symlinks make the scoped digest invalid. This makes the custom digest
+reproducible without requiring the Program validator as an implementation.
+
+This branch leaves the source commit open because its reviewed merge commit
+becomes the immutable package coordinate. After that merge, an authenticated
+PEP 508 installation uses the full 40-character commit:
+
+```sh
+python3 -m pip install \
+  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@<FULL_40_HEX_COMMIT>"
+```
+
+HTTPS is the canonical transport for this private distribution because the
+same requirement works for developer machines, CI, and service accounts. Git
+receives authentication from a configured credential helper or a short-lived
+GitHub App token, while the committed requirement remains free of credentials.
+SSH remains a receiving-environment option for teams that already manage deploy
+keys and host verification; both routes resolve the same full commit.
+
+Inside this repository, install the active source directly:
 
 ```sh
 python3 -m pip install -e .
 ```
+
+A receiving repository can use an adjacent editable checkout during local
+development:
+
+```sh
+python3 -m pip install -e ../lims-eln-program-specification
+```
+
+A receiving repository's release-conformance check later reads the installed
+distribution's PEP 610 `direct_url.json`, confirms that `vcs_info.commit_id`
+matches its reviewed binding, and verifies the scoped package-source digest,
+distribution and import versions, contract version `1.0.0`, operation catalog,
+Golden Specimen scenario, implementation- and simulation-shaped observations,
+and every schema named by `SCHEMA_RESOURCE_NAMES`. The editable route remains
+the direct path for active local development. The first recorded receiving
+repository is `lims-eln-enterprise-implementation`, using a clean Python 3.12
+environment for the release-conformance observation.
 
 ```python
 from lims_eln_contracts import (

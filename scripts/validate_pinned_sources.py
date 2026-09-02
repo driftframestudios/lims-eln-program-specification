@@ -27,6 +27,18 @@ ZERO_TREE = "git-tree-sha1:" + ("0" * 40)
 COMMIT = re.compile(r"^(?!0{40}$)[a-f0-9]{40}$")
 TREE = re.compile(r"^git-tree-sha1:(?!0{40}$)[a-f0-9]{40}$")
 SHA256 = re.compile(r"^sha256:[a-f0-9]{64}$")
+GOVERNANCE_RELEASE = "governance-v2.1.0"
+GOVERNANCE_SCHEMA_VERSION = "2.1.0"
+GOVERNANCE_PROFILE = "Control Plane Profile 0.3.0"
+GOVERNANCE_TAG_OBJECT = "1c77396e44b71719ccab138fecd02e525089e39d"
+GOVERNANCE_COMMIT = "8469c2a6b2c7f4445523cee262b961ffe3d2523b"
+GOVERNANCE_TREE_DIGEST = (
+    "git-tree-sha1:aed5d57120e15ceabe77d7bba700a43097200b19"
+)
+GOVERNANCE_ARCHIVE_FORMAT = "git-archive-tar"
+GOVERNANCE_ARCHIVE_DIGEST = (
+    "sha256:469ae49fca7d5ad6e1766080b3c39d76c46a840366b217f3839b9d34f2e77d32"
+)
 LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
 LANGUAGE_POLICY_MANIFEST = Path("language-policy/manifest.json")
 LANGUAGE_POLICY_EXEMPTIONS = Path("language-policy/exemptions.json")
@@ -336,6 +348,70 @@ def git_identity(root: Path) -> tuple[str, str]:
     return commit, f"git-tree-sha1:{tree}"
 
 
+def git_archive_digest(root: Path, commit: str) -> str:
+    """Return the SHA-256 identity of raw Git tar archive bytes."""
+    archive = subprocess.run(
+        ["git", "-C", str(root), "archive", "--format=tar", commit],
+        check=True,
+        capture_output=True,
+    ).stdout
+    return "sha256:" + hashlib.sha256(archive).hexdigest()
+
+
+def git_annotated_tag_identity(root: Path, release: str) -> tuple[str, str]:
+    """Return an annotated tag object and the commit it peels to."""
+    tag_object = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(root),
+            "rev-parse",
+            f"refs/tags/{release}^{{tag}}",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    commit = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(root),
+            "rev-parse",
+            f"{tag_object}^{{commit}}",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    return tag_object, commit
+
+
+def validate_governance_coordinate(coordinate: object) -> list[str]:
+    """Require the accepted Governance release, source, tree, and archive."""
+    if not isinstance(coordinate, dict):
+        return ["governance coordinate is absent or malformed"]
+    findings: list[str] = []
+    expected = {
+        "release": GOVERNANCE_RELEASE,
+        "profile": GOVERNANCE_PROFILE,
+        "schema_version": GOVERNANCE_SCHEMA_VERSION,
+        "tag_object": GOVERNANCE_TAG_OBJECT,
+        "commit": GOVERNANCE_COMMIT,
+        "digest": GOVERNANCE_TREE_DIGEST,
+        "archive_format": GOVERNANCE_ARCHIVE_FORMAT,
+        "archive_digest": GOVERNANCE_ARCHIVE_DIGEST,
+        "coordinate_status": "pinned",
+    }
+    if set(coordinate) != set(expected):
+        findings.append("governance coordinate field set differs")
+        return findings
+    for key, value in expected.items():
+        if coordinate.get(key) != value:
+            findings.append(f"governance {key} differs from the accepted release")
+    return findings
+
+
 def validate_sources(
     lock: dict,
     sources: dict[str, Path],
@@ -343,6 +419,7 @@ def validate_sources(
     allow_pending: bool,
 ) -> list[str]:
     findings = validate_language_policy_projection(sources.get("governance"))
+    findings.extend(validate_governance_coordinate(lock.get("governance")))
     unknown_sources = set(sources) - EXTERNAL_ROLES
     if unknown_sources:
         findings.append(
@@ -377,7 +454,10 @@ def validate_sources(
             continue
         source = sources.get(role)
         if source is None:
-            findings.append(f"{role} pinned coordinate requires a checked-out source")
+            if not (allow_pending and role == "governance"):
+                findings.append(
+                    f"{role} pinned coordinate requires a checked-out source"
+                )
             continue
         if source.is_symlink():
             findings.append(
@@ -409,6 +489,38 @@ def validate_sources(
             findings.append(f"{role} source commit differs from its lock")
         if actual_tree != digest:
             findings.append(f"{role} source tree differs from its lock")
+        if role == "governance":
+            try:
+                actual_tag_object, tagged_commit = git_annotated_tag_identity(
+                    source,
+                    coordinate["release"],
+                )
+            except (OSError, subprocess.CalledProcessError):
+                findings.append(
+                    "GOVERNANCE_TAG_IDENTITY_UNREADABLE: governance annotated "
+                    "tag identity could not be reproduced"
+                )
+            else:
+                if actual_tag_object != coordinate.get("tag_object"):
+                    findings.append(
+                        "governance annotated tag object differs from its lock"
+                    )
+                if tagged_commit != coordinate.get("commit"):
+                    findings.append(
+                        "governance annotated tag peels to a different commit"
+                    )
+            try:
+                actual_archive_digest = git_archive_digest(source, actual_commit)
+            except (OSError, subprocess.CalledProcessError):
+                findings.append(
+                    "GOVERNANCE_ARCHIVE_IDENTITY_UNREADABLE: governance archive "
+                    "identity could not be reproduced"
+                )
+            else:
+                if actual_archive_digest != coordinate.get("archive_digest"):
+                    findings.append(
+                        "governance source archive differs from its lock"
+                    )
 
     canonical_path = ROOT / "simulations/simulated-receipt-closure.v2.json"
     canonical, _, canonical_failure = read_json_document(
@@ -631,8 +743,10 @@ def validate_sources(
                     )
                 )
             else:
-                if version != "2.0.1":
-                    findings.append("governance VERSION differs from 2.0.1")
+                if version != GOVERNANCE_SCHEMA_VERSION:
+                    findings.append(
+                        "governance VERSION differs from the selected 2.1.0 release"
+                    )
 
     return findings
 
@@ -653,12 +767,7 @@ def validate_external_preflight(lock: dict) -> list[str]:
             findings.append(f"{role} external commit must be nonzero 40-hex")
         if not isinstance(digest, str) or TREE.fullmatch(digest) is None:
             findings.append(f"{role} external tree digest must be nonzero 40-hex")
-    governance = lock.get("governance", {})
-    if (
-        governance.get("release") != "governance-v2.0.1"
-        or governance.get("schema_version") != "2.0.1"
-    ):
-        findings.append("governance coordinate must bind governance-v2.0.1")
+    findings.extend(validate_governance_coordinate(lock.get("governance")))
     return findings
 
 

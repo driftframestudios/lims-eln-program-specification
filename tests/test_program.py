@@ -127,6 +127,7 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["database_open_receipts"], 8)
         self.assertEqual(summary["pages_sources"], 1)
         self.assertEqual(summary["public_ready_skills"], 1)
+        self.assertEqual(summary["contract_package_coordinates"], 1)
 
     def test_database_finding_ledger_is_complete_and_contract_bound(self) -> None:
         arguments = self.database_validation_arguments()
@@ -562,17 +563,44 @@ class ProgramValidationTests(unittest.TestCase):
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
         self.assertEqual(MODULE.PROGRAM_RELEASE, lock["constellation_version"])
         self.assertEqual("spec-v0.3.1", lock["specification"]["release"])
-        self.assertEqual("governance-v2.0.1", lock["governance"]["release"])
+        self.assertEqual(MODULE.GOVERNANCE_TAG, lock["governance"]["release"])
         self.assertEqual(
             "implementation-v0.3.1",
             lock["implementation"]["release"],
         )
-        self.assertEqual("2.0.1", lock["governance"]["schema_version"])
+        self.assertEqual(
+            MODULE.GOVERNANCE_RELEASE,
+            lock["governance"]["schema_version"],
+        )
         self.assertEqual(
             "Control Plane Profile 0.3.0",
             lock["governance"]["profile"],
         )
-        self.assertEqual("2.0.1", lock["comparison"]["receipt_schema"])
+        self.assertEqual(
+            MODULE.GOVERNANCE_RELEASE,
+            lock["comparison"]["receipt_schema"],
+        )
+        self.assertEqual(
+            {
+                "tag_object": MODULE.GOVERNANCE_TAG_OBJECT,
+                "commit": MODULE.GOVERNANCE_COMMIT,
+                "digest": MODULE.GOVERNANCE_TREE_DIGEST,
+                "archive_format": MODULE.GOVERNANCE_ARCHIVE_FORMAT,
+                "archive_digest": MODULE.GOVERNANCE_ARCHIVE_DIGEST,
+                "coordinate_status": "pinned",
+            },
+            {
+                key: lock["governance"][key]
+                for key in (
+                    "tag_object",
+                    "commit",
+                    "digest",
+                    "archive_format",
+                    "archive_digest",
+                    "coordinate_status",
+                )
+            },
+        )
         self.assertEqual(
             MODULE.CANONICAL_RESULT_DIGEST,
             lock["simulation"]["reference_result_digest"],
@@ -605,9 +633,9 @@ class ProgramValidationTests(unittest.TestCase):
         status = MODULE.load_status()
         self.assertEqual("0.3.1", status["version"])
         self.assertEqual("spec-v0.3.1", status["planned_release"])
-        self.assertEqual("governance-v2.0.1", status["governance_contract"])
-        self.assertEqual("2.0.1", status["governance_schema"])
-        self.assertEqual("2.0.1", status["receipt_schema"])
+        self.assertEqual(MODULE.GOVERNANCE_TAG, status["governance_contract"])
+        self.assertEqual(MODULE.GOVERNANCE_RELEASE, status["governance_schema"])
+        self.assertEqual(MODULE.GOVERNANCE_RELEASE, status["receipt_schema"])
         self.assertIn('version = "0.3.1"', (ROOT / "pyproject.toml").read_text())
 
     def test_every_open_receipt_has_accountable_roles(self) -> None:
@@ -802,7 +830,14 @@ class ProgramValidationTests(unittest.TestCase):
             machine_node["authority"]["mode"],
         )
         self.assertEqual("0.3.0", machine_node["control_plane_profile"])
-        self.assertEqual("2.0.1", machine_node["schema_release"])
+        self.assertEqual(MODULE.GOVERNANCE_RELEASE, machine_node["schema_release"])
+        self.assertEqual(
+            {MODULE.GOVERNANCE_RELEASE},
+            {
+                item["marking_schema_version"]
+                for item in machine_node["campaigns"]
+            },
+        )
         self.assertEqual("settling", machine_node["lifecycle_state"])
         self.assertEqual(
             "spec-v0.3.0",
@@ -1062,7 +1097,11 @@ class ProgramValidationTests(unittest.TestCase):
             PINNED.validate_sources(lock, {}, allow_pending=True),
         )
         findings = PINNED.validate_sources(lock, {}, allow_pending=False)
-        self.assertEqual(5, sum("requires a pinned" in item for item in findings))
+        self.assertEqual(4, sum("requires a pinned" in item for item in findings))
+        self.assertIn(
+            "governance pinned coordinate requires a checked-out source",
+            findings,
+        )
 
         pinned = deepcopy(lock)
         pinned["simulation"]["coordinate_status"] = "pinned"
@@ -1075,11 +1114,196 @@ class ProgramValidationTests(unittest.TestCase):
         )
         preflight = PINNED.validate_external_preflight(lock)
         self.assertTrue(preflight)
-        for role in PINNED.EXTERNAL_ROLES:
+        for role in PINNED.EXTERNAL_ROLES - {"governance"}:
             pinned[role]["coordinate_status"] = "pinned"
             pinned[role]["commit"] = "a" * 40
             pinned[role]["digest"] = "git-tree-sha1:" + ("b" * 40)
         self.assertEqual([], PINNED.validate_external_preflight(pinned))
+
+    def test_governance_coordinate_mutations_keep_identities_distinct(self) -> None:
+        governance = json.loads(
+            (ROOT / "constellation.lock.json").read_text()
+        )["governance"]
+        self.assertEqual([], PINNED.validate_governance_coordinate(governance))
+        mutations = {
+            "release": "governance-v2.1.1",
+            "schema_version": "2.1.1",
+            "tag_object": "a" * 40,
+            "commit": "b" * 40,
+            "digest": "git-tree-sha1:" + ("c" * 40),
+            "archive_format": "zip",
+            "archive_digest": "sha256:" + ("d" * 64),
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                changed = deepcopy(governance)
+                changed[field] = value
+                self.assertIn(
+                    f"governance {field} differs from the accepted release",
+                    PINNED.validate_governance_coordinate(changed),
+                )
+
+    def test_annotated_tag_identity_includes_object_and_peeled_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            repository = Path(temporary_directory)
+            commands = (
+                ["git", "init", "--quiet"],
+                ["git", "config", "user.name", "Release Test"],
+                ["git", "config", "user.email", "release-test@example.invalid"],
+            )
+            for command in commands:
+                PINNED.subprocess.run(command, cwd=repository, check=True)
+            (repository / "VERSION").write_text("2.1.0\n", encoding="utf-8")
+            PINNED.subprocess.run(
+                ["git", "add", "VERSION"], cwd=repository, check=True
+            )
+            PINNED.subprocess.run(
+                ["git", "commit", "--quiet", "-m", "Release source"],
+                cwd=repository,
+                check=True,
+            )
+            PINNED.subprocess.run(
+                [
+                    "git",
+                    "tag",
+                    "-a",
+                    "governance-v2.1.0",
+                    "-m",
+                    "Governance 2.1.0",
+                ],
+                cwd=repository,
+                check=True,
+            )
+            expected_tag = PINNED.subprocess.run(
+                ["git", "rev-parse", "refs/tags/governance-v2.1.0"],
+                cwd=repository,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            expected_commit = PINNED.subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=repository,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            self.assertEqual(
+                (expected_tag, expected_commit),
+                PINNED.git_annotated_tag_identity(
+                    repository,
+                    "governance-v2.1.0",
+                ),
+            )
+
+    def test_contract_package_coordinate_waits_for_reviewed_merge(self) -> None:
+        coordinate = json.loads(
+            (ROOT / "release" / "contract-package-coordinate.json").read_text()
+        )
+        MODULE.validate_contract_package_coordinate(coordinate)
+        self.assertIsNone(coordinate["source_commit"])
+
+        premature = deepcopy(coordinate)
+        premature["source_commit"] = "a" * 40
+        with self.assertRaisesRegex(ValueError, "keeps its source commit open"):
+            MODULE.validate_contract_package_coordinate(premature)
+
+        changed_source = deepcopy(coordinate)
+        changed_source["source_identity"]["digest"] = "sha256:" + ("0" * 64)
+        with self.assertRaisesRegex(ValueError, "scoped source digest differs"):
+            MODULE.validate_contract_package_coordinate(changed_source)
+
+        reviewed = deepcopy(coordinate)
+        reviewed["publication_state"] = "reviewed_source_available"
+        reviewed["source_commit"] = "a" * 40
+        reviewed["consumer_conformance"]["state"] = "required"
+        with mock.patch.object(
+            MODULE,
+            "package_source_digest_from_git",
+            return_value=coordinate["source_identity"]["digest"],
+        ):
+            MODULE.validate_contract_package_coordinate(reviewed)
+
+            incomplete = deepcopy(reviewed)
+            incomplete["consumer_conformance"]["required_observations"].pop()
+            with self.assertRaisesRegex(
+                ValueError,
+                "at least 9 non-empty strings",
+            ):
+                MODULE.validate_contract_package_coordinate(incomplete)
+
+        unavailable = deepcopy(reviewed)
+        unavailable["source_commit"] = "a" * 40
+        with self.assertRaisesRegex(ValueError, "commit is unavailable"):
+            MODULE.validate_contract_package_coordinate(unavailable)
+
+    def test_contract_package_source_digest_ignores_python_runtime_caches(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            package = root / "src" / "lims_eln_contracts"
+            package.mkdir(parents=True)
+            (root / "pyproject.toml").write_text("[project]\nname = 'example'\n")
+            (package / "__init__.py").write_text("VALUE = 1\n")
+            expected = MODULE.package_source_digest(root)
+
+            cache = package / "__pycache__"
+            cache.mkdir()
+            (cache / "__init__.cpython-312.pyc").write_bytes(b"runtime cache")
+
+            self.assertEqual(expected, MODULE.package_source_digest(root))
+
+            (package / "__init__.py").write_text("VALUE = 2\n")
+            self.assertNotEqual(expected, MODULE.package_source_digest(root))
+
+            regular_package = root / "regular-package"
+            package.rename(regular_package)
+            package.symlink_to(regular_package, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "requires regular files"):
+                MODULE.package_source_digest(root)
+
+    def test_contract_package_git_digest_is_commit_scoped(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            package = root / "src" / "lims_eln_contracts"
+            package.mkdir(parents=True)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname = 'example'\n",
+                encoding="utf-8",
+            )
+            module = package / "__init__.py"
+            module.write_text("VALUE = 1\n", encoding="utf-8")
+            commands = (
+                ["git", "init", "--quiet"],
+                ["git", "config", "user.name", "Package Test"],
+                ["git", "config", "user.email", "package-test@example.invalid"],
+                ["git", "add", "pyproject.toml", "src/lims_eln_contracts"],
+                ["git", "commit", "--quiet", "-m", "Package source"],
+            )
+            for command in commands:
+                MODULE.subprocess.run(command, cwd=root, check=True)
+            commit = MODULE.subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            expected = MODULE.package_source_digest(root)
+
+            self.assertEqual(
+                expected,
+                MODULE.package_source_digest_from_git(commit, root),
+            )
+            module.write_text("VALUE = 2\n", encoding="utf-8")
+            self.assertNotEqual(expected, MODULE.package_source_digest(root))
+            self.assertEqual(
+                expected,
+                MODULE.package_source_digest_from_git(commit, root),
+            )
+            with self.assertRaisesRegex(ValueError, "commit is unavailable"):
+                MODULE.package_source_digest_from_git("a" * 40, root)
 
     def test_cross_repository_artifact_checks_are_operational(self) -> None:
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
