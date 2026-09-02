@@ -6,7 +6,10 @@
   before validation and to confirm private-sibling read access to every locked
   repository and commit before the first external checkout. Repository read
   access receives a focused configuration route while its credential value
-  stays out of workflow output.
+  stays out of workflow output. Status-only diagnostics establish credential
+  authentication and route ambiguous private-resource responses through
+  repository selection, Contents permission, policy, rate state, and
+  coordinate-availability checks.
   A later carrier can now select the immutable Program release tag explicitly;
   the proof requires its signed annotated identity and confirms that the
   release commit belongs to the carrier's ancestry.
