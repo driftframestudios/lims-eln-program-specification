@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Install checksum-verified Vale
         env:
           VALE_ARCHIVE: vale_3.15.2_Linux_64-bit.tar.gz
@@ -62,6 +63,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Select Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -71,6 +73,9 @@ jobs:
 
       - name: Validate stable identifiers and trace links
         run: python scripts/validate_program.py
+
+      - name: Validate the Program release observation state
+        run: python scripts/verify_program_release_observation.py
 
       - name: Check negation-aware language
         run: python scripts/check_language.py
@@ -83,7 +88,7 @@ jobs:
 
   candidate-coordinates:
     name: candidate-coordinates
-    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/spec-v') && !startsWith(github.head_ref, 'release/') && !startsWith(github.head_ref, 'hotfix/') }}
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/spec-v') && !startsWith(github.ref, 'refs/heads/release/') && !startsWith(github.ref, 'refs/heads/hotfix/') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -91,13 +96,14 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 0
 
-      - name: Validate explicit candidate coordinates
-        run: python scripts/validate_pinned_sources.py --allow-pending
+      - name: Validate external coordinate readiness
+        run: python scripts/validate_pinned_sources.py --preflight-external
 
   cross-repository-contracts:
     name: cross-repository-contracts
-    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/spec-v') || startsWith(github.head_ref, 'release/') || startsWith(github.head_ref, 'hotfix/')) }}
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/spec-v') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -105,9 +111,23 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Require pinned external coordinates before checkout
         run: python scripts/validate_pinned_sources.py --preflight-external
+
+      - name: Verify the selected Program release subject
+        if: ${{ startsWith(github.ref, 'refs/tags/spec-v') }}
+        run: |
+          expected_tag="$(jq -r '.specification.release' constellation.lock.json)"
+          test "$GITHUB_REF_NAME" = "$expected_tag"
+          test "$(git rev-parse "$GITHUB_REF_NAME^{commit}")" = "$GITHUB_SHA"
+          git \
+            -c gpg.format=ssh \
+            -c gpg.minTrustLevel=fully \
+            -c gpg.ssh.allowedSignersFile=release/trusted-release-signers \
+            -c gpg.ssh.revocationFile=/dev/null \
+            verify-tag "$GITHUB_REF_NAME"
 
       - name: Resolve immutable external coordinates
         id: coordinates
@@ -125,6 +145,7 @@ jobs:
           token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
           path: constellation/simulation
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Check out the implementation coordinate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -134,6 +155,7 @@ jobs:
           token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
           path: constellation/implementation
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Check out the comparison coordinate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -143,6 +165,7 @@ jobs:
           token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
           path: constellation/comparison
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Check out the governance coordinate
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -152,14 +175,23 @@ jobs:
           token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
           path: constellation/governance
           persist-credentials: false
+          fetch-depth: 0
 
-      - name: Validate pinned sources and canonical closure equality
+      - name: >-
+          Validate pinned sources, historical schema compatibility, and canonical
+          closure equality
         run: |
-          python scripts/validate_pinned_sources.py \
-            --source simulation=constellation/simulation \
-            --source implementation=constellation/implementation \
-            --source comparison=constellation/comparison \
-            --source governance=constellation/governance
+          pending_mode=()
+          if jq --exit-status \
+            '.specification.coordinate_status == "pending_release_commit"' \
+            constellation.lock.json >/dev/null; then
+            pending_mode+=(--allow-pending)
+          fi
+          python scripts/validate_pinned_sources.py "${pending_mode[@]}" \
+              --source simulation=constellation/simulation \
+              --source implementation=constellation/implementation \
+              --source comparison=constellation/comparison \
+              --source governance=constellation/governance
 
       - name: Validate program orientation against pinned governance
         run: |

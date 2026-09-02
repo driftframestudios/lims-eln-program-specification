@@ -2,10 +2,34 @@
 
 ## 0.3.1 — Candidate
 
+- Reconciled the Program hub with accepted Governance 2.1.0, Implementation
+  0.3.2, Simulation 2028 selected-future, and Comparison 0.3.1 release
+  subjects. The lock records signed tag objects, source commits, Git trees,
+  reproducible archives, and semantic release names. Detached-source
+  validation also checks the Implementation release-role semantics and every
+  material artifact digest it binds.
+- Recorded the Comparative release's historical 2.0.1 schema binding as an
+  untagged Governance commit whose exact validator checks the signed
+  Comparison orientation carriers.
+- Replaced the older Program-selected-future projection with the byte-identical
+  bundle shared by the signed Simulation and Comparison releases, then updated
+  every dependent canonical, result, aggregate, advisory, and bundle digest.
+- Added the public-ready `constellation-coherence-reconciliation` skill so a
+  multi-repository hub settles exact coordinates and copied meaning together.
+- Made the deliberate cross-repository workflow recognize dispatches from
+  release and hotfix refs, fetch complete tag history, and validate pending
+  Program coordinates separately from fully released source sets. A tag
+  dispatch also verifies the selected Program tag name, peeled commit, and
+  repository-trusted signature before reporting the release subject.
+- Added a version-specific Program release-observation contract and verifier.
+  The candidate rests with planned fields; a later carrier can record the tag
+  object, commit, tree, archive, signature, hosted proof, merge admission,
+  independent review, and GitHub review record while the verifier derives the
+  carrier commit from Git.
 - Adopted the accepted `governance-v2.1.0` coordinate with distinct annotated
   tag-object, accepted-commit, Git-tree, and reproducible Git-archive
   identities while retaining the stable `/v2.0/` schema identifier family and
-  historical closure bytes.
+  historical schema lineage.
 - Defined the reviewed full-commit distribution route for
   `lims-eln-program-specification` 0.3.1, its `lims_eln_contracts` import,
   scoped package-source SHA-256, credential-helper-backed HTTPS install,

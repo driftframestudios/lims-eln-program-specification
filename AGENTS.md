@@ -37,6 +37,12 @@ when a claim, contract, generated artifact, release coordinate, or public page
 crosses these roles. The map identifies the source that establishes meaning or
 evidence, then ends at the receiver that can make the next decision.
 
+Use
+[`constellation-coherence-reconciliation`](.agents/skills/constellation-coherence-reconciliation/SKILL.md)
+before a coordinated release becomes pinned. It checks exact signed release
+subjects, copied semantic artifacts, schema-era bindings, and hub summaries as
+one receiving state.
+
 ## Use the accepted branch route
 
 - `main` carries reviewed releases; `develop` integrates the next release.
@@ -66,7 +72,8 @@ Use Python 3.12 and install the local package before running the complete proof:
 ```sh
 python3 -m pip install -e .
 python3 scripts/validate_program.py
-python3 scripts/validate_pinned_sources.py --allow-pending
+python3 scripts/verify_program_release_observation.py
+python3 scripts/validate_pinned_sources.py --preflight-external
 python3 scripts/check_language.py
 python3 -m unittest tests.test_language_policy -v
 python3 scripts/scan_secret_shapes.py
@@ -74,9 +81,20 @@ PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
 python3 -m unittest discover -s tests -v
 ```
 
-`--allow-pending` verifies the candidate shape while release commits are still
-open. Release settlement supplies the sibling checkouts required for exact
-pinned-source equality.
+The external preflight establishes that every sibling coordinate is complete
+before checkout. For exact release settlement, check out each sibling at the
+commit recorded in `constellation.lock.json`, then run:
+
+```sh
+python3 scripts/validate_pinned_sources.py --allow-pending \
+  --source simulation=../lims-eln-simulated-final-state \
+  --source implementation=../lims-eln-enterprise-implementation \
+  --source comparison=../lims-eln-comparative-evidence \
+  --source governance=../site-reading-governance
+```
+
+The relative paths above describe the standard sibling layout. Supply the same
+four role-to-path bindings from another checkout layout when needed.
 
 Run `python3 scripts/verify_pages.py` from a clean commit when repository skills
 or Program Pages source changes. The command builds twice, validates both

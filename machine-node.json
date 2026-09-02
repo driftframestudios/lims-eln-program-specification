@@ -36,12 +36,12 @@
     {
       "contract_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
       "version": "0.3.1",
-      "digest": "sha256:1b023b13d740ba65052802870133fbb0bb1bd4b9bc4f95aea7b96669ac57c0be"
+      "digest": "sha256:1bf4064b303efc70cd59b7a9348a785f225909d6122c54d9f6222af0b1eeedd7"
     },
     {
       "contract_id": "SIMULATED-SUBSTANTIVE-CLOSURE-2028-V1",
       "version": "2.0.0",
-      "digest": "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb"
+      "digest": "sha256:33bcc14da24309b7716728b3f0204008e8f7ebf58de75f9e40a5986b421f06b5"
     },
     {
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
@@ -81,7 +81,7 @@
     {
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
-      "digest": "sha256:3901e92f414014c3f90d822e1c0dd06b218e11612f18dafc8308e5e99cfd0273"
+      "digest": "sha256:8a96ccfc206021cdcf76e9db7baeb11b2bd8f751106af4fcb5359c5ca6aaf429"
     }
   ],
   "campaigns": [
@@ -177,7 +177,7 @@
   "metadata": {
     "schema_version": "2.1.0",
     "created_at": "2026-07-28T12:00:00Z",
-    "updated_at": "2026-09-01T20:04:27-04:00",
+    "updated_at": "2026-09-02T06:01:58-04:00",
     "owner": {
       "actor_id": "ACTOR-PROGRAM-OWNERS",
       "display_name": "Program repository owners",

@@ -8,18 +8,18 @@
   "canonical_closure": {
     "closure_id": "CLOSURE-SIM-SUBSTANTIVE-2028-V1",
     "future_reality_id": "FUTURE-REALITY-LIMS-2028-001",
-    "digest": "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb",
-    "reference_result_digest": "sha256:9d42b972c77764c81ff32fefe8f02367a27406e9ba082a704587cc9b5a9da860",
-    "aggregate_artifact_digest": "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61",
+    "digest": "sha256:33bcc14da24309b7716728b3f0204008e8f7ebf58de75f9e40a5986b421f06b5",
+    "reference_result_digest": "sha256:5ed067887dc02d2a4c85845d3d25ab6b3fbee857011bed7e5b528e4e58c03861",
+    "aggregate_artifact_digest": "sha256:ddbce2fe891bfcd70515005714cdabf34e6430869cc2e2a4daca59016ac6ce3b",
     "bundle_path": "simulations/future-reality-2028-06-30-v1.json",
-    "bundle_file_digest": "sha256:b868604412039c3705d4b60e649c43da2f51592ca0215d22ebe4477b75016ef4",
+    "bundle_file_digest": "sha256:a72810e850c88f7a06c6e86fb94c1026a22d859089ee70ef31d4413b086fd098",
     "authority": "definitive_within_selected_future_reality",
     "production_authorization_effect": "none"
   },
   "advisory_design": {
     "simulation_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
     "future_reality_id": "FUTURE-REALITY-DESIGN-LIMS-2028-001",
-    "digest": "sha256:1b023b13d740ba65052802870133fbb0bb1bd4b9bc4f95aea7b96669ac57c0be",
+    "digest": "sha256:1bf4064b303efc70cd59b7a9348a785f225909d6122c54d9f6222af0b1eeedd7",
     "authority": "advisory_design_only"
   },
   "contract_bindings": {
@@ -80,7 +80,7 @@
       "contract_id": "DATABASE-RELEASE-MANIFEST-001",
       "version": "1.0.0",
       "path": "release/database-release-manifest.json",
-      "digest": "sha256:3901e92f414014c3f90d822e1c0dd06b218e11612f18dafc8308e5e99cfd0273"
+      "digest": "sha256:8a96ccfc206021cdcf76e9db7baeb11b2bd8f751106af4fcb5359c5ca6aaf429"
     }
   },
   "automation_controls": {
@@ -138,6 +138,23 @@
       ]
     }
   },
+  "promotion_controls": {
+    "standing_branch_controls": {
+      "protected_branch": "main",
+      "required_approvals": 1,
+      "code_owner_review": true,
+      "dismiss_stale_reviews_on_push": true,
+      "last_push_approval": true,
+      "review_thread_resolution": true,
+      "branch_deletion_guard": true,
+      "non_fast_forward_guard": true
+    },
+    "release_review_route": {
+      "merge_admission": "configured_ordinary_bypass",
+      "independent_review": "deputized_independent_review_completed",
+      "github_review_record": "no_formal_review_submitted"
+    }
+  },
   "orientation_surfaces": {
     "machine_node": "machine-node.json",
     "first_receipt": "first-receipt.json",
@@ -156,9 +173,11 @@
     "coordinate_status": "pending_release_commit"
   },
   "promotion_coordinates": {
-    "status": "pending_cross_repository_settlement",
+    "status": "ready_for_authorized_promotion",
     "receipt_id": "RCP-PROGRAM-PROMOTION-003",
     "receipt_path": "receipts/promotion-receipt.json",
+    "observation_path": "receipts/promotion-observation-spec-v0.3.1.json",
+    "observation_schema_path": "schemas/program-release-observation.v1.schema.json",
     "required_roles": [
       "site_reading_governance",
       "program_specification",

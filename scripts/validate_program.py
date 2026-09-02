@@ -21,6 +21,12 @@ from automation_contract import (
     validate_repository_automation,
 )
 from pages_projection import validate_source_contract
+from verify_program_release_observation import (
+    OBSERVATION_SCHEMA_PATH,
+    candidate_receipt_digest,
+    validate_observation_document,
+    validate_observation_schema,
+)
 
 
 PROGRAM_RELEASE = "0.3.1"
@@ -57,6 +63,107 @@ GOVERNANCE_ARCHIVE_FORMAT = "git-archive-tar"
 GOVERNANCE_ARCHIVE_DIGEST = (
     "sha256:469ae49fca7d5ad6e1766080b3c39d76c46a840366b217f3839b9d34f2e77d32"
 )
+EXTERNAL_RELEASE_SUBJECTS = {
+    "simulation": {
+        "release": "forecast-2028-FR-v1",
+        "tag_object": "73fc89690b6cc9df7a99ea495e580e7f4e2caedc",
+        "commit": "37c3861b5411db8e772feedf41e4abf1fb7829bc",
+        "digest": "git-tree-sha1:595ae59f25f522732577c5f8e00709f023464a6d",
+        "archive_format": "git-archive-tar",
+        "archive_digest": "sha256:c6a062a6efb6786c53dc9e7298a9dd881fcc2301d807db5cecf84663c98438e2",
+        "coordinate_status": "pinned",
+    },
+    "implementation": {
+        "release": "implementation-v0.3.2",
+        "tag": "v0.3.2",
+        "tag_object": "c3db01079b88622f06e8714c8bcbdf0dc1803a10",
+        "commit": "fe0bd2a08ac1697ce18ca583d9631faae7db7132",
+        "digest": "git-tree-sha1:eb8eadb27a9e07c6069a1946f115a0083d94af5c",
+        "archive_format": "git-archive-tar",
+        "archive_digest": "sha256:0ea3db3099e3485f65d238fb2e194c6bfd9b9a90f6642431c4a96974ebcc3c16",
+        "coordinate_status": "pinned",
+        "source_binding_status": "accepted_package_source",
+    },
+    "comparison": {
+        "release": "comparison-v0.3.1",
+        "tag_object": "4c29f6ca410eb4400c55ad77fc34ada2960d1972",
+        "commit": "b5c13689a32739d29437e209816bf0cd6a878976",
+        "digest": "git-tree-sha1:10a784b8a677ee6eb524d2860ff5ee7151d6050b",
+        "archive_format": "git-archive-tar",
+        "archive_digest": "sha256:92c2d57bd9e75c650365db4b481a22a6580b201926ba1c666fcf8cb8c9311a2e",
+        "coordinate_status": "pinned",
+    },
+}
+IMPLEMENTATION_REPOSITORY_RELEASE = "0.3.2"
+IMPLEMENTATION_CONTRACT_BINDINGS = {
+    "governance_schema": GOVERNANCE_RELEASE,
+    "governance_release": GOVERNANCE_RELEASE,
+    "program_contract_package": PROGRAM_RELEASE,
+    "control_plane_profile": "0.3.0",
+    "execution_receipt_schema": "1.1.0",
+    "provenance_schema": "1.0.0",
+    "runtime_setting_catalog_schema": "1.0.0",
+    "bounded_caller_binding": "0.3.2",
+    "database_flyway_release": "1.0.0",
+    "open_receipt_ledger": "2.0.0",
+}
+IMPLEMENTATION_SOURCE_ARTIFACT_BINDINGS = {
+    "bounded_caller_binding_digest": {
+        "path": "release/bounded-caller-bindings.json",
+        "digest": (
+            "sha256:d141061bf028fdd63cc879ab455b0a68853d369da98edbeb17421a35714ed796"
+        ),
+        "equality_mode": "byte_sha256",
+    },
+    "database_flyway_release_digest": {
+        "path": "database/flyway-release.json",
+        "digest": (
+            "sha256:a4fafe7ebb50da1efbad47df24d6d7af741130039ba8c90b8d6457e9d1d107b9"
+        ),
+        "equality_mode": "byte_sha256",
+    },
+    "external_contract_coordinate_digest": {
+        "path": "release/external-contract-coordinates.json",
+        "digest": (
+            "sha256:ad699b5d7cb6c24e0d86b2dfbae5d3104d03fec8ee08cdd04c33f444376bcde1"
+        ),
+        "equality_mode": "byte_sha256",
+    },
+    "public_inspection_manifest_digest": {
+        "path": "release/public-inspection-manifest.json",
+        "digest": (
+            "sha256:73a062069301c694df26196a7384184d7229089885d97279cb989244ca7435c8"
+        ),
+        "equality_mode": "byte_sha256",
+    },
+    "open_receipt_ledger_digest": {
+        "path": "receipts/open-receipt-ledger.json",
+        "digest": (
+            "sha256:41fabadcf31d22439f410575af3bb041b37ac0124927508484aca0818ecaefad"
+        ),
+        "equality_mode": "byte_sha256",
+    },
+    "promotion_candidate_digest": {
+        "path": "receipts/promotion-candidate.json",
+        "digest": (
+            "sha256:c78f16df5832f6c7b39ea1b0d9a61316b26d90cd1552fd8b2c39043436a94340"
+        ),
+        "equality_mode": "byte_sha256",
+    },
+}
+COMPARISON_RECEIPT_SCHEMA = "2.0.1"
+COMPARISON_HISTORICAL_GOVERNANCE_SCHEMA = {
+    "schema_version": COMPARISON_RECEIPT_SCHEMA,
+    "coordinate_kind": "historical_commit_without_release_tag",
+    "release_tag": None,
+    "commit": "6349919d55c25d44cfa49ecad2a6631a80db539b",
+    "digest": "git-tree-sha1:16786dd2a92fb161ad1cc14b61ee80f8d3d9f31b",
+    "archive_format": "git-archive-tar",
+    "archive_digest": (
+        "sha256:26f38102a63304f6bbdd6262aa37be6a8340d012a0ddf3034a4cd0367ab54884"
+    ),
+    "ancestor_of_release": GOVERNANCE_TAG,
+}
 CONTROL_PLANE_PROFILE = "0.3.0"
 CANONICAL_BUNDLE_VERSION = "2.0.1"
 RECEIPT_VOCABULARY_RELEASE = "1.0.0"
@@ -92,17 +199,32 @@ FLYWAY_TRANSITION_EVENT = (
 )
 DATABASE_CONSTELLATION_FINDING_TOTAL = 115
 PROMOTION_RECEIPT_ID = "RCP-PROGRAM-PROMOTION-003"
+RELEASE_REVIEW_ROUTE = {
+    "merge_admission": "configured_ordinary_bypass",
+    "independent_review": "deputized_independent_review_completed",
+    "github_review_record": "no_formal_review_submitted",
+}
+STANDING_BRANCH_CONTROLS = {
+    "protected_branch": "main",
+    "required_approvals": 1,
+    "code_owner_review": True,
+    "dismiss_stale_reviews_on_push": True,
+    "last_push_approval": True,
+    "review_thread_resolution": True,
+    "branch_deletion_guard": True,
+    "non_fast_forward_guard": True,
+}
 CANONICAL_CLOSURE_DIGEST = (
-    "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb"
+    "sha256:33bcc14da24309b7716728b3f0204008e8f7ebf58de75f9e40a5986b421f06b5"
 )
 CANONICAL_RESULT_DIGEST = (
-    "sha256:9d42b972c77764c81ff32fefe8f02367a27406e9ba082a704587cc9b5a9da860"
+    "sha256:5ed067887dc02d2a4c85845d3d25ab6b3fbee857011bed7e5b528e4e58c03861"
 )
 CANONICAL_AGGREGATE_ARTIFACT_DIGEST = (
-    "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61"
+    "sha256:ddbce2fe891bfcd70515005714cdabf34e6430869cc2e2a4daca59016ac6ce3b"
 )
 CANONICAL_BUNDLE_FILE_DIGEST = (
-    "sha256:b868604412039c3705d4b60e649c43da2f51592ca0215d22ebe4477b75016ef4"
+    "sha256:a72810e850c88f7a06c6e86fb94c1026a22d859089ee70ef31d4413b086fd098"
 )
 PENDING_COMMIT = "0" * 40
 PENDING_TREE_DIGEST = "git-tree-sha1:" + ("0" * 40)
@@ -158,6 +280,7 @@ CORE_ROOT_KEYS = {
         "advisory_design",
         "contract_bindings",
         "automation_controls",
+        "promotion_controls",
         "orientation_surfaces",
         "seed_lineage",
         "release_coordinates",
@@ -256,6 +379,7 @@ PROMOTION_RECEIPT_KEYS = {
     "assurance_stage",
     "candidate_coordinate",
     "release_coordinate",
+    "release_review_route",
     "required_evidence",
     "accountable_role",
     "metadata",
@@ -406,6 +530,14 @@ def require_string_list(value: Any, label: str, *, minimum: int = 0) -> list[str
     if len(value) != len(set(value)):
         raise ValueError(f"{label} must contain unique strings")
     return value
+
+
+def validate_release_review_route(value: Any, label: str) -> dict[str, Any]:
+    """Keep release admission, independent review, and GitHub record distinct."""
+    route = require_exact_object(value, set(RELEASE_REVIEW_ROUTE), label)
+    if route != RELEASE_REVIEW_ROUTE:
+        raise ValueError(f"{label} differs from the authorized release route")
+    return route
 
 
 def package_source_digest(root: Path = ROOT) -> str:
@@ -747,8 +879,11 @@ def validate_core_shapes(
         },
         "simulation": {
             "release",
+            "tag_object",
             "commit",
             "digest",
+            "archive_format",
+            "archive_digest",
             "coordinate_status",
             "canonical_closure_digest",
             "reference_result_digest",
@@ -757,19 +892,31 @@ def validate_core_shapes(
         },
         "implementation": {
             "release",
+            "tag",
+            "tag_object",
             "commit",
             "digest",
+            "archive_format",
+            "archive_digest",
             "coordinate_status",
             "source_binding_status",
+            "repository_release",
+            "selected_future_closure_digest",
+            "contract_bindings",
+            "source_artifact_bindings",
         },
         "comparison": {
             "release",
+            "tag_object",
             "commit",
             "digest",
+            "archive_format",
+            "archive_digest",
             "coordinate_status",
             "canonical_closure_digest",
             "aggregate_artifact_digest",
             "receipt_schema",
+            "historical_governance_schema",
         },
         "governance": {
             "release",
@@ -789,8 +936,60 @@ def validate_core_shapes(
             expected_keys,
             f"constellation_lock.{role}",
         )
-        for key in expected_keys:
+        string_keys = expected_keys - {
+            "contract_bindings",
+            "historical_governance_schema",
+            "source_artifact_bindings",
+        }
+        for key in string_keys:
             require_string(coordinate[key], f"constellation_lock.{role}.{key}")
+    implementation_contract_bindings = require_exact_object(
+        constellation_lock["implementation"]["contract_bindings"],
+        set(IMPLEMENTATION_CONTRACT_BINDINGS),
+        "constellation_lock.implementation.contract_bindings",
+    )
+    for key in implementation_contract_bindings:
+        require_string(
+            implementation_contract_bindings[key],
+            f"constellation_lock.implementation.contract_bindings.{key}",
+        )
+    implementation_source_artifacts = require_exact_object(
+        constellation_lock["implementation"]["source_artifact_bindings"],
+        set(IMPLEMENTATION_SOURCE_ARTIFACT_BINDINGS),
+        "constellation_lock.implementation.source_artifact_bindings",
+    )
+    for binding_name, binding in implementation_source_artifacts.items():
+        binding = require_exact_object(
+            binding,
+            {"path", "digest", "equality_mode"},
+            (
+                "constellation_lock.implementation.source_artifact_bindings."
+                f"{binding_name}"
+            ),
+        )
+        for key in binding:
+            require_string(
+                binding[key],
+                (
+                    "constellation_lock.implementation.source_artifact_bindings."
+                    f"{binding_name}.{key}"
+                ),
+            )
+    historical_governance_schema = require_exact_object(
+        constellation_lock["comparison"]["historical_governance_schema"],
+        set(COMPARISON_HISTORICAL_GOVERNANCE_SCHEMA),
+        "constellation_lock.comparison.historical_governance_schema",
+    )
+    for key in set(COMPARISON_HISTORICAL_GOVERNANCE_SCHEMA) - {"release_tag"}:
+        require_string(
+            historical_governance_schema[key],
+            f"constellation_lock.comparison.historical_governance_schema.{key}",
+        )
+    if historical_governance_schema["release_tag"] is not None:
+        raise ValueError(
+            "historical Governance compatibility coordinate requires a null "
+            "release tag"
+        )
     require_string_list(
         [
             item.get("repository_role", "")
@@ -808,7 +1007,14 @@ def validate_core_shapes(
     )
     require_exact_object(
         release_role["promotion_coordinates"],
-        {"status", "receipt_id", "receipt_path", "required_roles"},
+        {
+            "status",
+            "receipt_id",
+            "receipt_path",
+            "observation_path",
+            "observation_schema_path",
+            "required_roles",
+        },
         "release_role.promotion_coordinates",
     )
     require_string_list(
@@ -870,6 +1076,24 @@ def validate_core_shapes(
         release_role["automation_controls"],
         {"contract_version", "pull_request", "dependabot"},
         "release_role.automation_controls",
+    )
+    promotion_controls = require_exact_object(
+        release_role["promotion_controls"],
+        {"standing_branch_controls", "release_review_route"},
+        "release_role.promotion_controls",
+    )
+    standing_branch_controls = require_exact_object(
+        promotion_controls["standing_branch_controls"],
+        set(STANDING_BRANCH_CONTROLS),
+        "release_role.promotion_controls.standing_branch_controls",
+    )
+    if standing_branch_controls != STANDING_BRANCH_CONTROLS:
+        raise ValueError(
+            "release_role standing branch controls differ from their current record"
+        )
+    validate_release_review_route(
+        promotion_controls["release_review_route"],
+        "release_role.promotion_controls.release_review_route",
     )
     receipt_binding = require_exact_object(
         contract_bindings["receipt_vocabulary_map"],
@@ -980,6 +1204,10 @@ def validate_core_shapes(
             f"promotion_receipt.candidate_coordinate.{key}",
         )
     release_coordinate = promotion_receipt["release_coordinate"]
+    validate_release_review_route(
+        promotion_receipt["release_review_route"],
+        "promotion_receipt.release_review_route",
+    )
     if release_coordinate is not None:
         release_coordinate = require_exact_object(
             release_coordinate,
@@ -989,8 +1217,8 @@ def validate_core_shapes(
                 "digest",
                 "promoted_at",
                 "check_contexts",
-                "ruleset_receipt",
-                "codeowner_resolution",
+                "pull_request",
+                "review_observation",
             },
             "promotion_receipt.release_coordinate",
         )
@@ -999,18 +1227,22 @@ def validate_core_shapes(
             "promotion_receipt.release_coordinate.check_contexts",
             minimum=0,
         )
-        for key in {
-            "tag",
-            "commit",
-            "digest",
-            "promoted_at",
-            "ruleset_receipt",
-            "codeowner_resolution",
-        }:
+        for key in {"tag", "commit", "digest", "promoted_at"}:
             require_string(
                 release_coordinate[key],
                 f"promotion_receipt.release_coordinate.{key}",
             )
+        if (
+            type(release_coordinate["pull_request"]) is not int
+            or release_coordinate["pull_request"] < 1
+        ):
+            raise ValueError(
+                "promotion_receipt.release_coordinate.pull_request must be positive"
+            )
+        validate_release_review_route(
+            release_coordinate["review_observation"],
+            "promotion_receipt.release_coordinate.review_observation",
+        )
     require_string_list(
         promotion_receipt["required_evidence"],
         "promotion_receipt.required_evidence",
@@ -1061,6 +1293,7 @@ def validate_release_lifecycle(
     first_receipt: dict,
     coordination_horizon: dict,
     promotion_receipt: dict,
+    release_observation: dict,
     constellation_lock: dict,
     status_document: dict,
     substantive_receipt_ids: set[str],
@@ -1069,6 +1302,7 @@ def validate_release_lifecycle(
     state = release_role["release_state"]
     release_coordinates = release_role["release_coordinates"]
     promotion_coordinates = release_role["promotion_coordinates"]
+    promotion_controls = release_role["promotion_controls"]
     provenance = machine_node["current_provenance"]
     promotion_id = promotion_receipt["promotion_receipt_id"]
     promotion_items = [
@@ -1088,8 +1322,18 @@ def validate_release_lifecycle(
         or promotion_coordinates["receipt_id"] != promotion_id
         or promotion_coordinates["receipt_path"]
         != "receipts/promotion-receipt.json"
+        or promotion_coordinates["observation_path"]
+        != "receipts/promotion-observation-spec-v0.3.1.json"
+        or promotion_coordinates["observation_schema_path"]
+        != "schemas/program-release-observation.v1.schema.json"
+        or release_observation["promotion_receipt_id"] != promotion_id
+        or release_observation["target_release"] != PROGRAM_TAG
+        or promotion_receipt["release_review_route"] != RELEASE_REVIEW_ROUTE
+        or promotion_controls["release_review_route"] != RELEASE_REVIEW_ROUTE
     ):
-        raise ValueError("promotion receipt identity or manifest locator differs")
+        raise ValueError(
+            "promotion receipt or release observation identity differs"
+        )
     if promotion_receipt["candidate_coordinate"] != {
         "release": f"candidate-{PROGRAM_TAG}",
         "commit": PENDING_COMMIT,
@@ -1132,16 +1376,27 @@ def validate_release_lifecycle(
             raise ValueError(
                 "candidate Machine Node requires settling placeholder provenance"
             )
+        expected_promotion_status = (
+            "ready_for_authorized_promotion"
+            if all(
+                constellation_lock[role]["coordinate_status"] == "pinned"
+                for role in RELEASE_PATTERNS
+                if role != "specification"
+            )
+            else "pending_cross_repository_settlement"
+        )
         if (
             promotion_receipt["promotion_state"] != "candidate_pending"
             or promotion_receipt["evidence_mode"] != "planned"
             or promotion_receipt["assurance_stage"] != "specified"
             or promotion_receipt["candidate_coordinate"] != provenance
             or promotion_receipt["release_coordinate"] is not None
-            or promotion_coordinates["status"]
-            != "pending_cross_repository_settlement"
+            or promotion_coordinates["status"] != expected_promotion_status
+            or release_observation["observation_state"] != "pending_post_tag"
         ):
-            raise ValueError("candidate promotion receipt posture differs")
+            raise ValueError(
+                "candidate promotion and release observation posture differs"
+            )
         current_ids = set(coordination_horizon["current_item_ids"])
         if not any(
             item.get("item_id") in current_ids
@@ -1187,6 +1442,9 @@ def validate_release_lifecycle(
                 "released program state requires every constellation coordinate pinned"
             )
     release_coordinate = promotion_receipt["release_coordinate"]
+    release_subject = release_observation["release_subject"]
+    workflow_observation = release_observation["workflow_observation"]
+    review_observation = release_observation["review_observation"]
     if (
         machine_node["lifecycle_state"] not in {"reference_ready", "active"}
         or provenance["release"] != PROGRAM_TAG
@@ -1202,15 +1460,28 @@ def validate_release_lifecycle(
         or not set(release_coordinate.get("check_contexts", [])).issubset(
             {"program-validation"}
         )
+        or release_observation["observation_state"] != "release_observed"
+        or not isinstance(release_subject, dict)
+        or release_subject.get("tag") != PROGRAM_TAG
+        or release_subject.get("commit_oid") != provenance["commit"]
+        or release_subject.get("tree_oid")
+        != release_coordinates["tree_digest"].removeprefix("git-tree-sha1:")
+        or not isinstance(workflow_observation, dict)
+        or workflow_observation.get("check_context")
+        not in release_coordinate.get("check_contexts", [])
+        or not isinstance(review_observation, dict)
+        or review_observation.get("pull_request")
+        != release_coordinate.get("pull_request")
+        or {
+            key: review_observation.get(key)
+            for key in RELEASE_REVIEW_ROUTE
+        }
+        != release_coordinate.get("review_observation")
+        or release_coordinate.get("review_observation")
+        != RELEASE_REVIEW_ROUTE
         or promotion_coordinates["status"] != "settled"
     ):
         raise ValueError("released promotion evidence or Machine Node posture differs")
-    for locator in {
-        release_coordinate["ruleset_receipt"],
-        release_coordinate["codeowner_resolution"],
-    }:
-        if re.fullmatch(r"(?:governed|evidence)://[a-z0-9][a-z0-9._/-]*", locator) is None:
-            raise ValueError("released promotion evidence locator is malformed")
     if not promotion_items or any(
         item.get("state") != "complete" for item in promotion_items
     ):
@@ -2229,7 +2500,7 @@ def validate_database_program(
         or migration_coordinate["engine_family"] != "PostgreSQL"
         or migration_coordinate["status"] != "pending_implementation_projection"
         or migration_coordinate["implementation_release"]
-        != "implementation-v0.3.1"
+        != EXTERNAL_RELEASE_SUBJECTS["implementation"]["release"]
     ):
         raise ValueError("database release migration coordinate differs")
     for field in ("migration_head", "catalog_digest", "executable_digest"):
@@ -2419,6 +2690,10 @@ def validate() -> dict[str, int]:
         "release/contract-package-coordinate.json"
     )
     promotion_receipt = load_json("receipts/promotion-receipt.json")
+    release_observation = load_json(
+        "receipts/promotion-observation-spec-v0.3.1.json"
+    )
+    release_observation_schema = load_json(OBSERVATION_SCHEMA_PATH.as_posix())
     status_document = load_status()
     pages_context = validate_source_contract(ROOT)
 
@@ -2433,6 +2708,18 @@ def validate() -> dict[str, int]:
         status_document=status_document,
     )
     validate_contract_package_coordinate(contract_package_coordinate)
+    receipt_digest = candidate_receipt_digest(ROOT, release_observation)
+    signers_digest = sha256_digest("release/trusted-release-signers")
+    validate_observation_schema(
+        release_observation_schema,
+        candidate_receipt_digest=receipt_digest,
+        trusted_signers_digest=signers_digest,
+    )
+    validate_observation_document(
+        release_observation,
+        candidate_receipt_digest=receipt_digest,
+        trusted_signers_digest=signers_digest,
+    )
 
     requirement_ids = unique_ids(capabilities, "requirement")
     rule_ids = unique_ids(invariants, "rule")
@@ -2997,6 +3284,7 @@ def validate() -> dict[str, int]:
         first_receipt=first_receipt,
         coordination_horizon=coordination_horizon,
         promotion_receipt=promotion_receipt,
+        release_observation=release_observation,
         constellation_lock=constellation_lock,
         status_document=status_document,
         substantive_receipt_ids=receipt_ids | database_receipt_ids,
@@ -3126,13 +3414,6 @@ def validate() -> dict[str, int]:
             f"governance lock release differs from {GOVERNANCE_TAG}"
         )
     if (
-        constellation_lock["implementation"]["release"]
-        != f"implementation-v{PROGRAM_RELEASE}"
-    ):
-        raise ValueError(
-            "implementation lock release differs from the canonical external candidate"
-        )
-    if (
         constellation_lock["governance"].get("schema_version")
         != GOVERNANCE_RELEASE
         or constellation_lock["governance"].get("profile")
@@ -3155,9 +3436,42 @@ def validate() -> dict[str, int]:
         raise ValueError(
             "governance lock differs from the accepted tag, source, tree, or archive"
         )
-    if constellation_lock["comparison"]["receipt_schema"] != GOVERNANCE_RELEASE:
+    for role, expected_subject in EXTERNAL_RELEASE_SUBJECTS.items():
+        observed_subject = {
+            key: constellation_lock[role].get(key)
+            for key in expected_subject
+        }
+        if observed_subject != expected_subject:
+            raise ValueError(
+                f"{role} release subject differs from the accepted signed coordinate"
+            )
+    implementation_coordinate = constellation_lock["implementation"]
+    if (
+        implementation_coordinate["repository_release"]
+        != IMPLEMENTATION_REPOSITORY_RELEASE
+        or implementation_coordinate["selected_future_closure_digest"]
+        != CANONICAL_CLOSURE_DIGEST
+        or implementation_coordinate["contract_bindings"]
+        != IMPLEMENTATION_CONTRACT_BINDINGS
+        or implementation_coordinate["source_artifact_bindings"]
+        != IMPLEMENTATION_SOURCE_ARTIFACT_BINDINGS
+    ):
         raise ValueError(
-            f"receipt schema differs from governance {GOVERNANCE_RELEASE}"
+            "implementation semantic bindings differ from the accepted signed source"
+        )
+    if (
+        constellation_lock["comparison"]["receipt_schema"]
+        != COMPARISON_RECEIPT_SCHEMA
+    ):
+        raise ValueError(
+            "comparison receipt schema differs from its signed release binding"
+        )
+    if (
+        constellation_lock["comparison"]["historical_governance_schema"]
+        != COMPARISON_HISTORICAL_GOVERNANCE_SCHEMA
+    ):
+        raise ValueError(
+            "comparison historical Governance schema coordinate differs"
         )
     if (
         constellation_lock["simulation"]["canonical_closure_digest"]
@@ -3235,6 +3549,7 @@ def validate() -> dict[str, int]:
         raise ValueError("release, promotion, or status version binding differs")
 
     required_paths = [
+        ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
         ".agents/skills/source-authority-mapping/SKILL.md",
         "AGENTS.md",
         "CHANGELOG.md",
@@ -3246,9 +3561,12 @@ def validate() -> dict[str, int]:
         "coordination-horizon.json",
         "first-receipt.json",
         "release/repository-role.json",
+        "release/trusted-release-signers",
         "release/contract-package-coordinate.json",
         "receipts/promotion-receipt.json",
+        "receipts/promotion-observation-spec-v0.3.1.json",
         "schemas/promotion-receipt.schema.json",
+        "schemas/program-release-observation.v1.schema.json",
         "specifications/bounded-caller.json",
         "specifications/receipt-vocabulary-map.v1.json",
         "probes/catalog.json",
@@ -3270,6 +3588,7 @@ def validate() -> dict[str, int]:
         "language-policy/exemptions.json",
         "language-policy/manifest.json",
         "scripts/validate_pinned_sources.py",
+        "scripts/verify_program_release_observation.py",
         "docs/migrations/0.3.0-to-0.3.1.md",
         "docs/DATABASE_MODERNIZATION.md",
         "docs/DATABASE_CONSTELLATION_LEDGER.md",
@@ -3322,6 +3641,7 @@ def validate() -> dict[str, int]:
         "inputs.confirm_run",
         "permissions:\n  contents: read",
         "timeout-minutes: 10",
+        "python scripts/verify_program_release_observation.py",
     )
     missing_fragments = [
         fragment for fragment in required_activation_fragments if fragment not in workflow
@@ -3331,6 +3651,33 @@ def validate() -> dict[str, int]:
             "manual program proof differs from its activation boundary: "
             f"{missing_fragments}"
         )
+    release_subject_fragments = (
+        "Verify the selected Program release subject",
+        "startsWith(github.ref, 'refs/tags/spec-v')",
+        "expected_tag=\"$(jq -r '.specification.release' constellation.lock.json)\"",
+        'test "$GITHUB_REF_NAME" = "$expected_tag"',
+        'test "$(git rev-parse "$GITHUB_REF_NAME^{commit}")" = "$GITHUB_SHA"',
+        "gpg.ssh.allowedSignersFile=release/trusted-release-signers",
+        'verify-tag "$GITHUB_REF_NAME"',
+    )
+    missing_release_subject_fragments = [
+        fragment
+        for fragment in release_subject_fragments
+        if fragment not in workflow
+    ]
+    if missing_release_subject_fragments:
+        raise ValueError(
+            "Program release-subject proof differs from its signed-tag boundary: "
+            f"{missing_release_subject_fragments}"
+        )
+    expected_signer = (
+        'release@driftframestudios.org namespaces="git" ssh-ed25519 '
+        "AAAAC3NzaC1lZDI1NTE5AAAAIDnUwCLnoD9N4f4P7IPB24xmMm45wEskkWiNScUswkcj\n"
+    )
+    if (ROOT / "release" / "trusted-release-signers").read_text(
+        encoding="utf-8"
+    ) != expected_signer:
+        raise ValueError("Program trusted release signer differs")
     triggers = workflow_trigger_keys(workflow)
     if triggers != {"workflow_dispatch"}:
         raise ValueError(
@@ -3399,6 +3746,11 @@ def validate() -> dict[str, int]:
         raise ValueError("CODEOWNERS requires the active dependency configuration")
     if "/scripts/automation_contract.py @driftframestudios" not in codeowners:
         raise ValueError("CODEOWNERS requires the automation contract owner")
+    if (
+        "/scripts/verify_program_release_observation.py @driftframestudios"
+        not in codeowners
+    ):
+        raise ValueError("CODEOWNERS requires the release observation verifier owner")
     pages_owner_paths = (
         "/pages/ @driftframestudios",
         "/scripts/build_pages.py @driftframestudios",
@@ -3425,6 +3777,7 @@ def validate() -> dict[str, int]:
         "Superseded runs cancel",
         "## Deliberate full proof",
         "`ENABLE_GITHUB_ACTIONS=true`",
+        "verify_program_release_observation.py --require-observed",
         "## Recovery",
         "`.github/dependabot.manual.yml` returns dependency scheduling",
     )
@@ -3454,6 +3807,10 @@ def validate() -> dict[str, int]:
         "canonical_open_receipts": len(receipts),
         "promotion_receipts": int(
             promotion_receipt["promotion_receipt_id"] == PROMOTION_RECEIPT_ID
+        ),
+        "release_observations": int(
+            release_observation["release_observation_id"]
+            == "OBS-PROGRAM-RELEASE-003"
         ),
         "repositories": len(repository_roles),
         "pages_sources": 1,

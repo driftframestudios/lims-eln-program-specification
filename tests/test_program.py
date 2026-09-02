@@ -10,6 +10,8 @@ import unittest
 from unittest import mock
 from pathlib import Path
 
+from scripts import verify_program_release_observation as OBSERVATION
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -109,6 +111,7 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["open_receipts"], 17)
         self.assertEqual(summary["canonical_open_receipts"], 9)
         self.assertEqual(summary["promotion_receipts"], 1)
+        self.assertEqual(summary["release_observations"], 1)
         self.assertEqual(summary["operations"], 3)
         self.assertEqual(summary["probes"], 10)
         self.assertEqual(summary["simulated_closures"], 4)
@@ -126,7 +129,7 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["database_release_gates"], 7)
         self.assertEqual(summary["database_open_receipts"], 8)
         self.assertEqual(summary["pages_sources"], 1)
-        self.assertEqual(summary["public_ready_skills"], 1)
+        self.assertEqual(summary["public_ready_skills"], 2)
         self.assertEqual(summary["contract_package_coordinates"], 1)
 
     def test_database_finding_ledger_is_complete_and_contract_bound(self) -> None:
@@ -565,8 +568,24 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual("spec-v0.3.1", lock["specification"]["release"])
         self.assertEqual(MODULE.GOVERNANCE_TAG, lock["governance"]["release"])
         self.assertEqual(
-            "implementation-v0.3.1",
+            "implementation-v0.3.2",
             lock["implementation"]["release"],
+        )
+        self.assertEqual(
+            MODULE.IMPLEMENTATION_REPOSITORY_RELEASE,
+            lock["implementation"]["repository_release"],
+        )
+        self.assertEqual(
+            MODULE.CANONICAL_CLOSURE_DIGEST,
+            lock["implementation"]["selected_future_closure_digest"],
+        )
+        self.assertEqual(
+            MODULE.IMPLEMENTATION_CONTRACT_BINDINGS,
+            lock["implementation"]["contract_bindings"],
+        )
+        self.assertEqual(
+            MODULE.IMPLEMENTATION_SOURCE_ARTIFACT_BINDINGS,
+            lock["implementation"]["source_artifact_bindings"],
         )
         self.assertEqual(
             MODULE.GOVERNANCE_RELEASE,
@@ -577,9 +596,18 @@ class ProgramValidationTests(unittest.TestCase):
             lock["governance"]["profile"],
         )
         self.assertEqual(
-            MODULE.GOVERNANCE_RELEASE,
+            MODULE.COMPARISON_RECEIPT_SCHEMA,
             lock["comparison"]["receipt_schema"],
         )
+        self.assertEqual(
+            MODULE.COMPARISON_HISTORICAL_GOVERNANCE_SCHEMA,
+            lock["comparison"]["historical_governance_schema"],
+        )
+        for role, expected_subject in MODULE.EXTERNAL_RELEASE_SUBJECTS.items():
+            self.assertEqual(
+                expected_subject,
+                {key: lock[role][key] for key in expected_subject},
+            )
         self.assertEqual(
             {
                 "tag_object": MODULE.GOVERNANCE_TAG_OBJECT,
@@ -925,6 +953,14 @@ class ProgramValidationTests(unittest.TestCase):
             MODULE.PROMOTION_RECEIPT_ID,
             manifest["promotion_coordinates"]["receipt_id"],
         )
+        self.assertEqual(
+            MODULE.STANDING_BRANCH_CONTROLS,
+            manifest["promotion_controls"]["standing_branch_controls"],
+        )
+        self.assertEqual(
+            MODULE.RELEASE_REVIEW_ROUTE,
+            manifest["promotion_controls"]["release_review_route"],
+        )
 
     def test_release_lifecycle_accepts_complete_settlement(self) -> None:
         release_role = json.loads(
@@ -935,6 +971,13 @@ class ProgramValidationTests(unittest.TestCase):
         horizon = json.loads((ROOT / "coordination-horizon.json").read_text())
         promotion = json.loads(
             (ROOT / "receipts" / "promotion-receipt.json").read_text()
+        )
+        release_observation = json.loads(
+            (
+                ROOT
+                / "receipts"
+                / "promotion-observation-spec-v0.3.1.json"
+            ).read_text()
         )
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
         status = MODULE.load_status()
@@ -953,6 +996,7 @@ class ProgramValidationTests(unittest.TestCase):
         first_receipt = deepcopy(first_receipt)
         horizon = deepcopy(horizon)
         promotion = deepcopy(promotion)
+        release_observation = deepcopy(release_observation)
         lock = deepcopy(lock)
         status = deepcopy(status)
         commit = "a" * 40
@@ -992,10 +1036,48 @@ class ProgramValidationTests(unittest.TestCase):
             "commit": commit,
             "digest": content_digest,
             "promoted_at": "2026-07-29T12:00:00Z",
-            "check_contexts": [],
-            "ruleset_receipt": "governed://github/rulesets/program-main",
-            "codeowner_resolution": "evidence://github/codeowners/program-main",
+            "check_contexts": ["program-validation"],
+            "pull_request": 1,
+            "review_observation": deepcopy(MODULE.RELEASE_REVIEW_ROUTE),
         }
+        release_observation.update(
+            {
+                "observation_state": "release_observed",
+                "evidence_mode": "observed",
+                "assurance_stage": "verified",
+                "candidate_source": {
+                    "commit_oid": "d" * 40,
+                    "tree_oid": "b" * 40,
+                },
+                "release_subject": {
+                    "git_object_format": "sha1",
+                    "tag": MODULE.PROGRAM_TAG,
+                    "tag_object_oid": "e" * 40,
+                    "commit_oid": commit,
+                    "tree_oid": "b" * 40,
+                    "archive_format": "git-archive-tar",
+                    "archive_digest": "sha256:" + ("f" * 64),
+                    "promoted_at": "2026-07-29T12:00:00Z",
+                },
+                "signature_observation": {
+                    "verification": "valid",
+                    "trusted_signers_path": "release/trusted-release-signers",
+                    "trusted_signers_digest": "sha256:" + ("1" * 64),
+                },
+                "workflow_observation": {
+                    "workflow_path": ".github/workflows/validate.yml",
+                    "workflow_name": "Validate program specification",
+                    "check_context": "program-validation",
+                    "run_id": "123",
+                    "job_id": "456",
+                    "conclusion": "success",
+                },
+                "review_observation": {
+                    "pull_request": 1,
+                    **MODULE.RELEASE_REVIEW_ROUTE,
+                },
+            }
+        )
         for item in horizon["work_items"]:
             if "promotion" in item["horizon_label"].lower():
                 item["state"] = "complete"
@@ -1009,6 +1091,7 @@ class ProgramValidationTests(unittest.TestCase):
             first_receipt=first_receipt,
             coordination_horizon=horizon,
             promotion_receipt=promotion,
+            release_observation=release_observation,
             constellation_lock=lock,
             status_document=status,
             substantive_receipt_ids=substantive_ids,
@@ -1022,6 +1105,7 @@ class ProgramValidationTests(unittest.TestCase):
                 first_receipt=first_receipt,
                 coordination_horizon=horizon,
                 promotion_receipt=promotion,
+                release_observation=release_observation,
                 constellation_lock=lock,
                 status_document=status,
                 substantive_receipt_ids=substantive_ids,
@@ -1089,36 +1173,447 @@ class ProgramValidationTests(unittest.TestCase):
         ]
         self.assertEqual(0, hosted_contexts["minItems"])
         self.assertEqual(["program-validation"], hosted_contexts["items"]["enum"])
+        route_schema = schema["$defs"]["reviewRoute"]
+        self.assertEqual(
+            MODULE.RELEASE_REVIEW_ROUTE,
+            {
+                key: route_schema["properties"][key]["const"]
+                for key in MODULE.RELEASE_REVIEW_ROUTE
+            },
+        )
+        self.assertEqual(
+            MODULE.RELEASE_REVIEW_ROUTE,
+            receipt["release_review_route"],
+        )
+        relabeled_route = deepcopy(receipt["release_review_route"])
+        relabeled_route["github_review_record"] = "formal_review_submitted"
+        with self.assertRaisesRegex(
+            ValueError,
+            "differs from the authorized release route",
+        ):
+            MODULE.validate_release_review_route(
+                relabeled_route,
+                "promotion_receipt.release_review_route",
+            )
+
+    def test_release_observation_has_pending_and_observed_contracts(self) -> None:
+        schema = json.loads(
+            (
+                ROOT
+                / "schemas"
+                / "program-release-observation.v1.schema.json"
+            ).read_text()
+        )
+        observation = json.loads(
+            (
+                ROOT
+                / "receipts"
+                / "promotion-observation-spec-v0.3.1.json"
+            ).read_text()
+        )
+        candidate_digest = "sha256:" + hashlib.sha256(
+            (ROOT / "receipts" / "promotion-receipt.json").read_bytes()
+        ).hexdigest()
+        signer_digest = "sha256:" + hashlib.sha256(
+            (ROOT / "release" / "trusted-release-signers").read_bytes()
+        ).hexdigest()
+        OBSERVATION.validate_observation_schema(
+            schema,
+            candidate_receipt_digest=candidate_digest,
+            trusted_signers_digest=signer_digest,
+        )
+        self.assertFalse(schema["additionalProperties"])
+        self.assertEqual(set(schema["required"]), set(observation))
+        self.assertEqual(
+            "pending_post_tag",
+            OBSERVATION.validate_observation_document(
+                observation,
+                candidate_receipt_digest=candidate_digest,
+                trusted_signers_digest=signer_digest,
+            ),
+        )
+        self.assertEqual(
+            {
+                "status": "pending_post_tag",
+                "target_release": MODULE.PROGRAM_TAG,
+                "observation_carrier_commit": None,
+            },
+            OBSERVATION.verify(ROOT),
+        )
+        with self.assertRaisesRegex(
+            OBSERVATION.ObservationError,
+            "ready for post-tag evidence",
+        ):
+            OBSERVATION.verify(ROOT, require_observed=True)
+
+        observed = deepcopy(observation)
+        observed.update(
+            {
+                "observation_state": "release_observed",
+                "evidence_mode": "observed",
+                "assurance_stage": "verified",
+                "candidate_source": {
+                    "commit_oid": "a" * 40,
+                    "tree_oid": "b" * 40,
+                },
+                "release_subject": {
+                    "git_object_format": "sha1",
+                    "tag": MODULE.PROGRAM_TAG,
+                    "tag_object_oid": "c" * 40,
+                    "commit_oid": "d" * 40,
+                    "tree_oid": "b" * 40,
+                    "archive_format": "git-archive-tar",
+                    "archive_digest": "sha256:" + ("e" * 64),
+                    "promoted_at": "2026-09-02T12:00:00Z",
+                },
+                "signature_observation": {
+                    "verification": "valid",
+                    "trusted_signers_path": "release/trusted-release-signers",
+                    "trusted_signers_digest": signer_digest,
+                },
+                "workflow_observation": {
+                    "workflow_path": ".github/workflows/validate.yml",
+                    "workflow_name": "Validate program specification",
+                    "check_context": "program-validation",
+                    "run_id": "123",
+                    "job_id": "456",
+                    "conclusion": "success",
+                },
+                "review_observation": {
+                    "pull_request": 18,
+                    **OBSERVATION.RELEASE_REVIEW_ROUTE,
+                },
+            }
+        )
+        self.assertEqual(
+            "release_observed",
+            OBSERVATION.validate_observation_document(
+                observed,
+                candidate_receipt_digest=candidate_digest,
+                trusted_signers_digest=signer_digest,
+            ),
+        )
+
+        mutations = (
+            (
+                "candidate and released Program trees differ",
+                ("candidate_source", "tree_oid", "f" * 40),
+            ),
+            (
+                "release tag object requires",
+                ("release_subject", "tag_object_oid", "0" * 40),
+            ),
+            (
+                "trusted signature observation differs",
+                (
+                    "signature_observation",
+                    "trusted_signers_digest",
+                    "sha256:" + ("f" * 64),
+                ),
+            ),
+            (
+                "hosted Program proof observation differs",
+                ("workflow_observation", "conclusion", "failure"),
+            ),
+            (
+                "differs from the authorized route",
+                ("review_observation", "github_review_record", "formal_review_submitted"),
+            ),
+        )
+        for expected_error, (container, field, value) in mutations:
+            with self.subTest(field=f"{container}.{field}"):
+                changed = deepcopy(observed)
+                changed[container][field] = value
+                with self.assertRaisesRegex(
+                    OBSERVATION.ObservationError,
+                    expected_error,
+                ):
+                    OBSERVATION.validate_observation_document(
+                        changed,
+                        candidate_receipt_digest=candidate_digest,
+                        trusted_signers_digest=signer_digest,
+                    )
+
+        changed_schema = deepcopy(schema)
+        changed_schema["$defs"]["candidateReceipt"]["properties"]["digest"][
+            "const"
+        ] = "sha256:" + ("f" * 64)
+        with self.assertRaisesRegex(
+            OBSERVATION.ObservationError,
+            "candidateReceipt.properties.digest.const differs",
+        ):
+            OBSERVATION.validate_observation_schema(
+                changed_schema,
+                candidate_receipt_digest=candidate_digest,
+                trusted_signers_digest=signer_digest,
+            )
+
+        changed_schema = deepcopy(schema)
+        changed_schema["allOf"][1]["if"]["properties"]["observation_state"][
+            "const"
+        ] = "released"
+        with self.assertRaisesRegex(
+            OBSERVATION.ObservationError,
+            "lifecycle branches differ",
+        ):
+            OBSERVATION.validate_observation_schema(
+                changed_schema,
+                candidate_receipt_digest=candidate_digest,
+                trusted_signers_digest=signer_digest,
+            )
+
+        schema_shape_mutations = (
+            (
+                ("properties", "candidate_receipt", "$ref"),
+                "#/$defs/metadata",
+            ),
+            (("$defs", "sha1Oid", "type"), "integer"),
+            (
+                (
+                    "$defs",
+                    "candidateSource",
+                    "properties",
+                    "commit_oid",
+                ),
+                {"type": "integer"},
+            ),
+            (
+                (
+                    "$defs",
+                    "releaseSubject",
+                    "properties",
+                    "promoted_at",
+                    "type",
+                ),
+                "integer",
+            ),
+            (
+                (
+                    "$defs",
+                    "workflowObservation",
+                    "properties",
+                    "run_id",
+                    "type",
+                ),
+                "integer",
+            ),
+        )
+        for path, value in schema_shape_mutations:
+            with self.subTest(schema_path=".".join(path)):
+                changed_schema = deepcopy(schema)
+                current = changed_schema
+                for key in path[:-1]:
+                    current = current[key]
+                current[path[-1]] = value
+                with self.assertRaisesRegex(
+                    OBSERVATION.ObservationError,
+                    "canonical closed shape differs",
+                ):
+                    OBSERVATION.validate_observation_schema(
+                        changed_schema,
+                        candidate_receipt_digest=candidate_digest,
+                        trusted_signers_digest=signer_digest,
+                    )
+
+    def test_observed_release_verifier_derives_the_later_carrier_commit(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            observation_path = root / OBSERVATION.OBSERVATION_PATH
+            observation_path.parent.mkdir(parents=True)
+            (root / "release").mkdir()
+            candidate_receipt_bytes = b'{"candidate":"program-0.3.1"}\n'
+            signer_bytes = b"release@example.invalid ssh-ed25519 fixture\n"
+            (root / OBSERVATION.PROMOTION_RECEIPT_PATH).write_bytes(
+                candidate_receipt_bytes
+            )
+            (root / OBSERVATION.TRUSTED_SIGNERS_PATH).write_bytes(signer_bytes)
+            candidate_commit = "a" * 40
+            tree = "b" * 40
+            tag_object = "c" * 40
+            release_commit = "d" * 40
+            carrier_commit = "e" * 40
+            archive_bytes = b"program archive"
+            observation = json.loads(
+                (
+                    ROOT
+                    / "receipts"
+                    / "promotion-observation-spec-v0.3.1.json"
+                ).read_text()
+            )
+            observation.update(
+                {
+                    "observation_state": "release_observed",
+                    "evidence_mode": "observed",
+                    "assurance_stage": "verified",
+                    "candidate_receipt": {
+                        "path": "receipts/promotion-receipt.json",
+                        "digest": OBSERVATION.sha256_digest(
+                            candidate_receipt_bytes
+                        ),
+                    },
+                    "candidate_source": {
+                        "commit_oid": candidate_commit,
+                        "tree_oid": tree,
+                    },
+                    "release_subject": {
+                        "git_object_format": "sha1",
+                        "tag": MODULE.PROGRAM_TAG,
+                        "tag_object_oid": tag_object,
+                        "commit_oid": release_commit,
+                        "tree_oid": tree,
+                        "archive_format": "git-archive-tar",
+                        "archive_digest": OBSERVATION.sha256_digest(
+                            archive_bytes
+                        ),
+                        "promoted_at": "2026-09-02T12:00:00Z",
+                    },
+                    "signature_observation": {
+                        "verification": "valid",
+                        "trusted_signers_path": "release/trusted-release-signers",
+                        "trusted_signers_digest": OBSERVATION.sha256_digest(
+                            signer_bytes
+                        ),
+                    },
+                    "workflow_observation": {
+                        "workflow_path": ".github/workflows/validate.yml",
+                        "workflow_name": "Validate program specification",
+                        "check_context": "program-validation",
+                        "run_id": "123",
+                        "job_id": "456",
+                        "conclusion": "success",
+                    },
+                    "review_observation": {
+                        "pull_request": 18,
+                        **OBSERVATION.RELEASE_REVIEW_ROUTE,
+                    },
+                }
+            )
+            observation_path.write_text(json.dumps(observation), encoding="utf-8")
+            schema = json.loads(
+                (ROOT / OBSERVATION.OBSERVATION_SCHEMA_PATH).read_text()
+            )
+            schema["$defs"]["candidateReceipt"]["properties"]["digest"][
+                "const"
+            ] = OBSERVATION.sha256_digest(candidate_receipt_bytes)
+            schema["$defs"]["signatureObservation"]["properties"][
+                "trusted_signers_digest"
+            ]["const"] = OBSERVATION.sha256_digest(signer_bytes)
+            schema_path = root / OBSERVATION.OBSERVATION_SCHEMA_PATH
+            schema_path.parent.mkdir(parents=True)
+            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            (root / OBSERVATION.PROMOTION_RECEIPT_PATH).write_bytes(
+                b'{"released":"later carrier"}\n'
+            )
+            (root / "constellation.lock.json").write_text(
+                json.dumps(
+                    {
+                        "specification": {
+                            "commit": release_commit,
+                            "digest": f"git-tree-sha1:{tree}",
+                            "coordinate_status": "pinned",
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "release" / "repository-role.json").write_text(
+                json.dumps(
+                    {
+                        "release_coordinates": {
+                            "commit": release_commit,
+                            "tree_digest": f"git-tree-sha1:{tree}",
+                            "coordinate_status": "pinned",
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            carrier_bytes = observation_path.read_bytes()
+
+            def git_result(_root: Path, *arguments: str, text: bool = True):
+                command = tuple(arguments)
+                values = {
+                    ("rev-parse", f"{MODULE.PROGRAM_TAG}^{{tag}}"): tag_object,
+                    ("rev-parse", f"{MODULE.PROGRAM_TAG}^{{commit}}"): release_commit,
+                    ("rev-parse", f"{release_commit}^{{tree}}"): tree,
+                    ("rev-parse", f"{candidate_commit}^{{tree}}"): tree,
+                    ("rev-parse", "HEAD^{commit}"): carrier_commit,
+                    ("rev-parse", "origin/main^{commit}"): release_commit,
+                }
+                if command == (
+                    "show",
+                    f"{MODULE.PROGRAM_TAG}:receipts/promotion-receipt.json",
+                ):
+                    return candidate_receipt_bytes
+                if command == (
+                    "archive",
+                    "--format=tar",
+                    release_commit,
+                ):
+                    return archive_bytes
+                if command == (
+                    "show",
+                    "HEAD:receipts/promotion-observation-spec-v0.3.1.json",
+                ):
+                    return carrier_bytes
+                return values[command]
+
+            completed = mock.Mock(returncode=0)
+            with mock.patch.object(
+                OBSERVATION,
+                "run_git",
+                side_effect=git_result,
+            ), mock.patch.object(
+                OBSERVATION.subprocess,
+                "run",
+                return_value=completed,
+            ) as run:
+                result = OBSERVATION.verify(root, require_observed=True)
+            self.assertEqual(carrier_commit, result["observation_carrier_commit"])
+            self.assertEqual(release_commit, result["release_commit"])
+            self.assertTrue(
+                any("verify-tag" in call.args[0] for call in run.call_args_list)
+            )
+
+            def ancestry(_root: Path, ancestor: str, descendant: str) -> bool:
+                return not (
+                    ancestor == candidate_commit and descendant == release_commit
+                )
+
+            with mock.patch.object(
+                OBSERVATION,
+                "run_git",
+                side_effect=git_result,
+            ), mock.patch.object(
+                OBSERVATION,
+                "git_is_ancestor",
+                side_effect=ancestry,
+            ):
+                with self.assertRaisesRegex(
+                    OBSERVATION.ObservationError,
+                    "candidate source is outside the Program release history",
+                ):
+                    OBSERVATION.verify(root, require_observed=True)
 
     def test_pinned_source_gate_is_fail_closed(self) -> None:
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
-        self.assertEqual(
-            [],
-            PINNED.validate_sources(lock, {}, allow_pending=True),
+        candidate_findings = PINNED.validate_sources(
+            lock, {}, allow_pending=True
         )
+        for role in PINNED.EXTERNAL_ROLES - {"governance"}:
+            self.assertIn(
+                f"{role} pinned coordinate requires a checked-out source",
+                candidate_findings,
+            )
         findings = PINNED.validate_sources(lock, {}, allow_pending=False)
-        self.assertEqual(4, sum("requires a pinned" in item for item in findings))
+        self.assertEqual(1, sum("requires a pinned" in item for item in findings))
         self.assertIn(
             "governance pinned coordinate requires a checked-out source",
             findings,
         )
-
-        pinned = deepcopy(lock)
-        pinned["simulation"]["coordinate_status"] = "pinned"
-        pinned["simulation"]["commit"] = "a" * 40
-        pinned["simulation"]["digest"] = "git-tree-sha1:" + ("b" * 40)
-        findings = PINNED.validate_sources(pinned, {}, allow_pending=True)
-        self.assertIn(
-            "simulation pinned coordinate requires a checked-out source",
-            findings,
-        )
-        preflight = PINNED.validate_external_preflight(lock)
-        self.assertTrue(preflight)
-        for role in PINNED.EXTERNAL_ROLES - {"governance"}:
-            pinned[role]["coordinate_status"] = "pinned"
-            pinned[role]["commit"] = "a" * 40
-            pinned[role]["digest"] = "git-tree-sha1:" + ("b" * 40)
-        self.assertEqual([], PINNED.validate_external_preflight(pinned))
+        self.assertEqual([], PINNED.validate_external_preflight(lock))
 
     def test_governance_coordinate_mutations_keep_identities_distinct(self) -> None:
         governance = json.loads(
@@ -1141,6 +1636,162 @@ class ProgramValidationTests(unittest.TestCase):
                 self.assertIn(
                     f"governance {field} differs from the accepted release",
                     PINNED.validate_governance_coordinate(changed),
+                )
+
+    def test_historical_governance_schema_coordinate_remains_untagged(self) -> None:
+        compatibility = json.loads(
+            (ROOT / "constellation.lock.json").read_text()
+        )["comparison"]["historical_governance_schema"]
+        self.assertEqual(
+            [],
+            PINNED.validate_historical_governance_coordinate(compatibility),
+        )
+        mutations = {
+            "schema_version": "2.1.0",
+            "coordinate_kind": "annotated_release_tag",
+            "release_tag": "governance-v2.0.1",
+            "commit": "a" * 40,
+            "digest": "git-tree-sha1:" + ("b" * 40),
+            "archive_format": "zip",
+            "archive_digest": "sha256:" + ("c" * 64),
+            "ancestor_of_release": "governance-v2.1.1",
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                changed = deepcopy(compatibility)
+                changed[field] = value
+                self.assertIn(
+                    "historical Governance schema "
+                    f"{field} differs from the accepted compatibility coordinate",
+                    PINNED.validate_historical_governance_coordinate(changed),
+                )
+
+    def test_historical_schema_validation_executes_from_the_pinned_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary_root = Path(temporary_directory)
+            governance = temporary_root / "governance"
+            comparison = temporary_root / "comparison"
+            governance.mkdir()
+            comparison.mkdir()
+            commands = (
+                ["git", "init", "--quiet"],
+                ["git", "config", "user.name", "Compatibility Test"],
+                [
+                    "git",
+                    "config",
+                    "user.email",
+                    "compatibility-test@example.invalid",
+                ],
+            )
+            for command in commands:
+                PINNED.subprocess.run(command, cwd=governance, check=True)
+            (governance / "tools").mkdir()
+            (governance / "schemas").mkdir()
+            (governance / "VERSION").write_text("2.0.1\n", encoding="utf-8")
+            (governance / "tools" / "validate_governance.py").write_text(
+                """import argparse
+import json
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--governance-root')
+parser.add_argument('--source-root')
+parser.add_argument('--schema-name')
+parser.add_argument('--document-path')
+arguments = parser.parse_args()
+document = json.loads(
+    (Path(arguments.source_root) / arguments.document_path).read_text()
+)
+raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
+""",
+                encoding="utf-8",
+            )
+            for schema_name in PINNED.HISTORICAL_COMPARISON_DOCUMENTS.values():
+                (governance / "schemas" / schema_name).write_text(
+                    "{}\n",
+                    encoding="utf-8",
+                )
+            PINNED.subprocess.run(
+                ["git", "add", "."], cwd=governance, check=True
+            )
+            PINNED.subprocess.run(
+                ["git", "commit", "--quiet", "-m", "Governance 2.0.1 source"],
+                cwd=governance,
+                check=True,
+            )
+            historical_commit, historical_tree = PINNED.git_identity(governance)
+            coordinate = {
+                "commit": historical_commit,
+                "digest": historical_tree,
+                "archive_digest": PINNED.git_archive_digest(
+                    governance, historical_commit
+                ),
+                "schema_version": "2.0.1",
+            }
+            for document_path in PINNED.HISTORICAL_COMPARISON_DOCUMENTS:
+                (comparison / document_path).write_text(
+                    json.dumps({"schema_release": "2.0.1"}),
+                    encoding="utf-8",
+                )
+
+            (governance / "VERSION").write_text("2.1.0\n", encoding="utf-8")
+            (governance / "tools" / "validate_governance.py").write_text(
+                "raise SystemExit(1)\n",
+                encoding="utf-8",
+            )
+            PINNED.subprocess.run(
+                ["git", "add", "."], cwd=governance, check=True
+            )
+            PINNED.subprocess.run(
+                ["git", "commit", "--quiet", "-m", "Governance 2.1.0 source"],
+                cwd=governance,
+                check=True,
+            )
+            current_commit, _ = PINNED.git_identity(governance)
+
+            with mock.patch.object(PINNED, "GOVERNANCE_COMMIT", current_commit):
+                self.assertEqual(
+                    [],
+                    PINNED.validate_historical_governance_source(
+                        governance,
+                        coordinate,
+                    ),
+                )
+            self.assertEqual(
+                [],
+                PINNED.validate_comparison_historical_schemas(
+                    governance,
+                    comparison,
+                    coordinate,
+                ),
+            )
+            (comparison / "first-receipt.json").write_text(
+                json.dumps({"schema_release": "2.1.0"}),
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "COMPARISON_HISTORICAL_SCHEMA_INVALID: signed Comparison "
+                "first-receipt.json differs from the pinned Governance 2.0.1 "
+                "schema",
+                PINNED.validate_comparison_historical_schemas(
+                    governance,
+                    comparison,
+                    coordinate,
+                ),
+            )
+            PINNED.subprocess.run(
+                ["git", "tag", "governance-v2.0.1", historical_commit],
+                cwd=governance,
+                check=True,
+            )
+            with mock.patch.object(PINNED, "GOVERNANCE_COMMIT", current_commit):
+                self.assertIn(
+                    "historical Governance compatibility commit unexpectedly "
+                    "has a release tag",
+                    PINNED.validate_historical_governance_source(
+                        governance,
+                        coordinate,
+                    ),
                 )
 
     def test_annotated_tag_identity_includes_object_and_peeled_commit(self) -> None:
@@ -1305,11 +1956,6 @@ class ProgramValidationTests(unittest.TestCase):
 
     def test_cross_repository_artifact_checks_are_operational(self) -> None:
         lock = json.loads((ROOT / "constellation.lock.json").read_text())
-        closure = json.loads(
-            (
-                ROOT / "simulations" / "simulated-receipt-closure.v2.json"
-            ).read_text()
-        )
         bundle = json.loads(
             (
                 ROOT / "simulations" / "future-reality-2028-06-30-v1.json"
@@ -1318,20 +1964,14 @@ class ProgramValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             temporary_root = Path(temporary_directory)
             simulation = temporary_root / "simulation"
-            (simulation / "build" / "simulation").mkdir(parents=True)
-            (simulation / "release").mkdir()
+            (simulation / "release").mkdir(parents=True)
+            changed_bundle = deepcopy(bundle)
+            changed_bundle["source_result_digest"] = "sha256:" + ("0" * 64)
             (
                 simulation
-                / "build"
-                / "simulation"
-                / "simulated-receipt-closure.json"
-            ).write_text(json.dumps(closure), encoding="utf-8")
-            (
-                simulation / "build" / "simulation" / "result.json"
-            ).write_text(
-                json.dumps({"content_digest": "sha256:" + ("0" * 64)}),
-                encoding="utf-8",
-            )
+                / "release"
+                / "future-reality-2028-06-30-v1.json"
+            ).write_text(json.dumps(changed_bundle), encoding="utf-8")
             (simulation / "release" / "repository-role.json").write_text(
                 json.dumps(
                     {
@@ -1349,7 +1989,7 @@ class ProgramValidationTests(unittest.TestCase):
                 allow_pending=True,
             )
             self.assertIn(
-                "simulation result content digest differs from canonical bundle",
+                "simulation source result digest differs from canonical bundle",
                 findings,
             )
 
@@ -1559,6 +2199,156 @@ class ProgramValidationTests(unittest.TestCase):
         )
         self.assertNotIn(temporary_directory, str(findings))
 
+    def test_implementation_source_semantics_and_artifact_bytes_are_bound(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source = Path(temporary_directory) / "implementation"
+            source.mkdir()
+            payloads = {
+                "bounded_caller_binding_digest": (
+                    "release/bounded-caller-bindings.json",
+                    b'{"binding":"bounded-caller"}\n',
+                ),
+                "database_flyway_release_digest": (
+                    "database/flyway-release.json",
+                    b'{"release":"flyway"}\n',
+                ),
+                "external_contract_coordinate_digest": (
+                    "release/external-contract-coordinates.json",
+                    b'{"coordinates":[]}\n',
+                ),
+                "public_inspection_manifest_digest": (
+                    "release/public-inspection-manifest.json",
+                    b'{"projection":"public"}\n',
+                ),
+                "open_receipt_ledger_digest": (
+                    "receipts/open-receipt-ledger.json",
+                    b'{"receipts":[]}\n',
+                ),
+                "promotion_candidate_digest": (
+                    "receipts/promotion-candidate.json",
+                    b'{"candidate":"0.3.2"}\n',
+                ),
+            }
+            artifact_bindings = {}
+            for binding_name, (relative_path, payload) in payloads.items():
+                artifact_path = source / relative_path
+                artifact_path.parent.mkdir(parents=True, exist_ok=True)
+                artifact_path.write_bytes(payload)
+                artifact_bindings[binding_name] = {
+                    "path": relative_path,
+                    "digest": PINNED.bytes_digest(payload),
+                    "equality_mode": "byte_sha256",
+                }
+            coordinate = {
+                "release": "implementation-v0.3.2",
+                "tag": "v0.3.2",
+                "coordinate_status": "pinned",
+                "repository_release": "0.3.2",
+                "selected_future_closure_digest": MODULE.CANONICAL_CLOSURE_DIGEST,
+                "contract_bindings": deepcopy(
+                    MODULE.IMPLEMENTATION_CONTRACT_BINDINGS
+                ),
+                "source_artifact_bindings": artifact_bindings,
+            }
+            manifest = {
+                "repository_role": "enterprise_implementation",
+                "repository_release": coordinate["repository_release"],
+                "external_release": coordinate["release"],
+                "selected_future_closure_digest": coordinate[
+                    "selected_future_closure_digest"
+                ],
+                "contract_bindings": coordinate["contract_bindings"],
+                **{
+                    binding_name: binding["digest"]
+                    for binding_name, binding in artifact_bindings.items()
+                    if binding_name != "promotion_candidate_digest"
+                },
+                "promotion_coordinates": {
+                    "candidate_receipt": artifact_bindings[
+                        "promotion_candidate_digest"
+                    ]["path"],
+                    "candidate_receipt_digest": artifact_bindings[
+                        "promotion_candidate_digest"
+                    ]["digest"],
+                    "target_release": coordinate["tag"],
+                },
+            }
+            manifest_path = source / "release" / "repository-role.json"
+            manifest_path.write_text(
+                json.dumps(manifest),
+                encoding="utf-8",
+            )
+
+            self.assertEqual(
+                [],
+                PINNED.validate_implementation_source(source, coordinate),
+            )
+
+            changed_manifest = deepcopy(manifest)
+            changed_manifest["selected_future_closure_digest"] = (
+                "sha256:" + ("0" * 64)
+            )
+            manifest_path.write_text(
+                json.dumps(changed_manifest),
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "implementation signed release selected_future_closure_digest "
+                "differs from its program lock",
+                PINNED.validate_implementation_source(source, coordinate),
+            )
+
+            changed_manifest = deepcopy(manifest)
+            changed_manifest["external_release"] = "implementation-v0.3.1"
+            manifest_path.write_text(
+                json.dumps(changed_manifest),
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "implementation signed release external_release differs from "
+                "its program lock",
+                PINNED.validate_implementation_source(source, coordinate),
+            )
+
+            changed_manifest = deepcopy(manifest)
+            changed_manifest["contract_bindings"]["governance_schema"] = "2.0.1"
+            manifest_path.write_text(
+                json.dumps(changed_manifest),
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "implementation signed release contract_bindings differs from "
+                "its program lock",
+                PINNED.validate_implementation_source(source, coordinate),
+            )
+
+            changed_manifest = deepcopy(manifest)
+            changed_manifest["bounded_caller_binding_digest"] = (
+                "sha256:" + ("f" * 64)
+            )
+            manifest_path.write_text(
+                json.dumps(changed_manifest),
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "implementation signed release bounded_caller_binding_digest "
+                "differs from its program lock",
+                PINNED.validate_implementation_source(source, coordinate),
+            )
+
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            bound_artifact = source / artifact_bindings[
+                "bounded_caller_binding_digest"
+            ]["path"]
+            bound_artifact.write_bytes(bound_artifact.read_bytes() + b"changed")
+            self.assertIn(
+                "implementation source artifact bytes differ for "
+                "bounded_caller_binding_digest",
+                PINNED.validate_implementation_source(source, coordinate),
+            )
+
     def test_pinned_source_artifact_failures_are_typed_and_path_safe(
         self,
     ) -> None:
@@ -1638,14 +2428,13 @@ class ProgramValidationTests(unittest.TestCase):
             simulation = temporary_root / "simulation"
             closure = (
                 simulation
-                / "build"
-                / "simulation"
-                / "simulated-receipt-closure.json"
+                / "release"
+                / "future-reality-2028-06-30-v1.json"
             )
             closure.parent.mkdir(parents=True)
             closure.write_text("{malformed", encoding="utf-8")
             manifest = simulation / "release" / "repository-role.json"
-            manifest.parent.mkdir()
+            manifest.parent.mkdir(exist_ok=True)
             manifest.write_text("{}", encoding="utf-8")
 
             comparison = temporary_root / "comparison"
@@ -1675,8 +2464,8 @@ class ProgramValidationTests(unittest.TestCase):
             )
 
         self.assertIn(
-            "SIMULATION_CANONICAL_CLOSURE_INVALID_JSON: "
-            "simulation canonical closure could not be loaded",
+            "SIMULATION_CANONICAL_BUNDLE_INVALID_JSON: "
+            "simulation canonical bundle could not be loaded",
             findings,
         )
         self.assertIn(
@@ -1702,6 +2491,10 @@ class ProgramValidationTests(unittest.TestCase):
             "\n  candidate-coordinates:",
             1,
         )[0]
+        candidate_job = workflow.split(
+            "\n  candidate-coordinates:",
+            1,
+        )[1].split("\n  cross-repository-contracts:", 1)[0]
         aggregate_job = workflow.split("\n  program-validation:", 1)[1]
         self.assertIn("program-validation:\n    name: program-validation", workflow)
         self.assertIn("cross-repository-contracts:", workflow)
@@ -1710,7 +2503,53 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertIn("secrets.CONSTELLATION_READ_TOKEN", workflow)
         self.assertIn("scripts/check_language.py", workflow)
         self.assertIn("scripts/validate_pinned_sources.py", workflow)
+        self.assertIn(
+            "python scripts/verify_program_release_observation.py",
+            workflow,
+        )
         self.assertIn("--preflight-external", workflow)
+        self.assertIn("--preflight-external", candidate_job)
+        self.assertNotIn("--allow-pending", candidate_job)
+        self.assertIn(
+            ".specification.coordinate_status == "
+            '\"pending_release_commit\"',
+            workflow,
+        )
+        self.assertIn('pending_mode+=(--allow-pending)', workflow)
+        self.assertIn(
+            'scripts/validate_pinned_sources.py "${pending_mode[@]}"',
+            workflow,
+        )
+        self.assertIn("historical schema compatibility", workflow)
+        self.assertIn("Verify the selected Program release subject", workflow)
+        self.assertIn(
+            "startsWith(github.ref, 'refs/tags/spec-v')",
+            workflow,
+        )
+        self.assertIn(
+            "expected_tag=\"$(jq -r '.specification.release' "
+            "constellation.lock.json)\"",
+            workflow,
+        )
+        self.assertIn('test "$GITHUB_REF_NAME" = "$expected_tag"', workflow)
+        self.assertIn(
+            'test "$(git rev-parse "$GITHUB_REF_NAME^{commit}")" = '
+            '"$GITHUB_SHA"',
+            workflow,
+        )
+        self.assertIn(
+            "gpg.ssh.allowedSignersFile=release/trusted-release-signers",
+            workflow,
+        )
+        self.assertIn('verify-tag "$GITHUB_REF_NAME"', workflow)
+        trusted_signers = (
+            ROOT / "release" / "trusted-release-signers"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(
+            'release@driftframestudios.org namespaces="git" ssh-ed25519 '
+            "AAAAC3NzaC1lZDI1NTE5AAAAIDnUwCLnoD9N4f4P7IPB24xmMm45wEskkWiNScUswkcj\n",
+            trusted_signers,
+        )
         self.assertLess(
             workflow.index("--preflight-external"),
             workflow.index("Resolve immutable external coordinates"),

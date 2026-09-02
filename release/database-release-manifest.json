@@ -19,7 +19,7 @@
     "selected_profile": "Flyway Community 13.0.0",
     "engine_family": "PostgreSQL",
     "status": "pending_implementation_projection",
-    "implementation_release": "implementation-v0.3.1",
+    "implementation_release": "implementation-v0.3.2",
     "migration_head": "pending_observed_evidence",
     "catalog_digest": "pending_observed_evidence",
     "executable_digest": "pending_observed_evidence"

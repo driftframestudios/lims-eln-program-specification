@@ -5,7 +5,7 @@ evidence_mode: planned
 assurance_stage: specified
 default_branch: main
 integration_branch: develop
-as_of: 2026-09-01
+as_of: 2026-09-02
 source_seed:
   repository: driftframestudios/prototype-exemplars
   pull_request: 3

@@ -23,6 +23,7 @@
 /scripts/validate_projection.py @driftframestudios
 /scripts/validate_program.py @driftframestudios
 /scripts/verify_pages.py @driftframestudios
+/scripts/verify_program_release_observation.py @driftframestudios
 /schemas/ @driftframestudios
 /CHANGELOG.md @driftframestudios
 /tests/test_branch_flow.py @driftframestudios

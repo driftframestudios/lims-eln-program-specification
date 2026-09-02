@@ -421,7 +421,19 @@ def validate_source_contract(
     )
     content_bytes = content_path.read_bytes()
     content = load_json_bytes(content_bytes, PROGRAM_CONTENT_SOURCE)
-    _exact_fields(content, {"contentVersion", "site", "release", "roleCopy", "contracts", "verification"}, "program content")
+    _exact_fields(
+        content,
+        {
+            "contentVersion",
+            "site",
+            "release",
+            "roleCopy",
+            "publicRoutes",
+            "contracts",
+            "verification",
+        },
+        "program content",
+    )
     if content["contentVersion"] != "1.0.0":
         raise ProjectionError("program content version differs from 1.0.0")
 
@@ -484,6 +496,37 @@ def validate_source_contract(
         copy = _exact_fields(role_copy[role], {"name", "summary", "next"}, f"program content roleCopy.{role}")
         for key, value in copy.items():
             _text(value, f"program content roleCopy.{role}.{key}")
+
+    public_routes = content["publicRoutes"]
+    if not isinstance(public_routes, list) or not public_routes:
+        raise ProjectionError("program content publicRoutes requires a non-empty list")
+    route_urls: list[str] = []
+    for index, item in enumerate(public_routes):
+        route = _exact_fields(
+            item,
+            {"name", "owner", "summary", "url"},
+            f"program content publicRoutes[{index}]",
+        )
+        for key in ("name", "owner", "summary"):
+            _text(route[key], f"program content publicRoutes[{index}].{key}")
+        route_url = _text(
+            route["url"], f"program content publicRoutes[{index}].url"
+        )
+        parsed_route = urlsplit(route_url)
+        if (
+            parsed_route.scheme != "https"
+            or not parsed_route.hostname
+            or parsed_route.username is not None
+            or parsed_route.password is not None
+            or parsed_route.query
+            or parsed_route.fragment
+        ):
+            raise ProjectionError(
+                f"program content publicRoutes[{index}].url requires a plain HTTPS route"
+            )
+        route_urls.append(route_url)
+    if len(route_urls) != len(set(route_urls)):
+        raise ProjectionError("program content publicRoutes requires unique URLs")
 
     contracts = content["contracts"]
     if not isinstance(contracts, list) or not contracts:
@@ -916,6 +959,7 @@ def _index_page(
     release = context.content["release"]
     role_copy = context.content["roleCopy"]
     repositories = {item["role"]: item for item in context.constellation["repositories"]}
+    public_routes = context.content["publicRoutes"]
     cards = []
     for role in ROLE_ORDER:
         copy = role_copy[role]
@@ -929,6 +973,15 @@ def _index_page(
   <a href="https://github.com/{html.escape(repository, quote=True)}">Repository home</a>
 </article>"""
         )
+    route_cards = "".join(
+        f"""<article class="card">
+  <p class="role-label">{html.escape(item['owner'])}</p>
+  <h3>{html.escape(item['name'])}</h3>
+  <p>{html.escape(item['summary'])}</p>
+  <a href="{html.escape(item['url'], quote=True)}">Open public surface</a>
+</article>"""
+        for item in public_routes
+    )
     body = f"""<section class="shell status-panel" aria-labelledby="release-heading">
   <div>
     <p class="eyebrow">Release status</p>
@@ -947,6 +1000,12 @@ def _index_page(
   <h2 id="roles-heading">Five repositories, five clear jobs</h2>
   <p>Each repository owns a distinct part of the program. Follow the role that can establish the behavior you need.</p>
   <div class="card-grid">{''.join(cards)}</div>
+</section>
+<section class="shell section" aria-labelledby="public-routes-heading">
+  <p class="eyebrow">Public inspection</p>
+  <h2 id="public-routes-heading">Follow an accepted visitor surface</h2>
+  <p>These routes publish a bounded view while the repository that owns each result retains its source and evidence authority.</p>
+  <div class="card-grid">{route_cards}</div>
 </section>
 <section class="shell route-grid" aria-label="Continue through the program">
   <article><h2>Read the contracts</h2><p>See the released identities, shared exchange shapes, and evidence boundaries.</p><a class="button" href="contracts/index.html">Open contracts</a></article>

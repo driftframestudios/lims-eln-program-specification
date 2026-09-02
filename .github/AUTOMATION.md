@@ -24,7 +24,13 @@ Python matrix, advisory author feedback, candidate or accepted coordinate
 checks, cross-repository checkouts, and aggregate result. A named receiver sets
 `ENABLE_GITHUB_ACTIONS=true`, selects `confirm_run`, and dispatches that proof
 when a release, compatibility question, or external-coordinate change calls
-for the wider observation.
+for the wider observation. A dispatch from the planned Program tag verifies
+the selected tag name, peeled commit, and repository-trusted signature before
+the external-coordinate proof continues. After promotion, run
+`python scripts/verify_program_release_observation.py --require-observed` from
+the later observation carrier. The verifier reproduces the tag, tree, archive,
+signature, accepted-main ancestry, and exact carrier bytes, then reports the
+carrier commit for its receiving lock.
 
 ## Recovery
 

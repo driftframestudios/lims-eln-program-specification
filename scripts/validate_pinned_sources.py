@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import math
 import re
 import stat
 import subprocess
+import sys
+import tarfile
+import tempfile
 from pathlib import Path
 
 
@@ -39,6 +43,22 @@ GOVERNANCE_ARCHIVE_FORMAT = "git-archive-tar"
 GOVERNANCE_ARCHIVE_DIGEST = (
     "sha256:469ae49fca7d5ad6e1766080b3c39d76c46a840366b217f3839b9d34f2e77d32"
 )
+HISTORICAL_GOVERNANCE_SCHEMA_COORDINATE = {
+    "schema_version": "2.0.1",
+    "coordinate_kind": "historical_commit_without_release_tag",
+    "release_tag": None,
+    "commit": "6349919d55c25d44cfa49ecad2a6631a80db539b",
+    "digest": "git-tree-sha1:16786dd2a92fb161ad1cc14b61ee80f8d3d9f31b",
+    "archive_format": "git-archive-tar",
+    "archive_digest": (
+        "sha256:26f38102a63304f6bbdd6262aa37be6a8340d012a0ddf3034a4cd0367ab54884"
+    ),
+    "ancestor_of_release": GOVERNANCE_RELEASE,
+}
+HISTORICAL_COMPARISON_DOCUMENTS = {
+    "machine-node.json": "machine-node.schema.json",
+    "first-receipt.json": "first-receipt.schema.json",
+}
 LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
 LANGUAGE_POLICY_MANIFEST = Path("language-policy/manifest.json")
 LANGUAGE_POLICY_EXEMPTIONS = Path("language-policy/exemptions.json")
@@ -348,14 +368,18 @@ def git_identity(root: Path) -> tuple[str, str]:
     return commit, f"git-tree-sha1:{tree}"
 
 
-def git_archive_digest(root: Path, commit: str) -> str:
-    """Return the SHA-256 identity of raw Git tar archive bytes."""
-    archive = subprocess.run(
+def git_archive_bytes(root: Path, commit: str) -> bytes:
+    """Return reproducible raw Git tar archive bytes for one commit."""
+    return subprocess.run(
         ["git", "-C", str(root), "archive", "--format=tar", commit],
         check=True,
         capture_output=True,
     ).stdout
-    return "sha256:" + hashlib.sha256(archive).hexdigest()
+
+
+def git_archive_digest(root: Path, commit: str) -> str:
+    """Return the SHA-256 identity of raw Git tar archive bytes."""
+    return "sha256:" + hashlib.sha256(git_archive_bytes(root, commit)).hexdigest()
 
 
 def git_annotated_tag_identity(root: Path, release: str) -> tuple[str, str]:
@@ -412,6 +436,312 @@ def validate_governance_coordinate(coordinate: object) -> list[str]:
     return findings
 
 
+def validate_historical_governance_coordinate(coordinate: object) -> list[str]:
+    """Require the untagged Governance 2.0.1 compatibility coordinate."""
+    if not isinstance(coordinate, dict):
+        return ["historical Governance schema coordinate is absent or malformed"]
+    findings: list[str] = []
+    expected = HISTORICAL_GOVERNANCE_SCHEMA_COORDINATE
+    if set(coordinate) != set(expected):
+        return ["historical Governance schema coordinate field set differs"]
+    for key, value in expected.items():
+        if coordinate.get(key) != value:
+            findings.append(
+                f"historical Governance schema {key} differs from the "
+                "accepted compatibility coordinate"
+            )
+    return findings
+
+
+def validate_historical_governance_source(
+    governance_source: Path,
+    coordinate: dict,
+) -> list[str]:
+    """Reproduce the historical commit, tree, archive, version, and lineage."""
+    findings: list[str] = []
+    commit = coordinate["commit"]
+    try:
+        resolved_commit = subprocess.run(
+            ["git", "-C", str(governance_source), "rev-parse", f"{commit}^{{commit}}"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        resolved_tree = subprocess.run(
+            ["git", "-C", str(governance_source), "rev-parse", f"{commit}^{{tree}}"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return [
+            "HISTORICAL_GOVERNANCE_IDENTITY_UNREADABLE: historical Governance "
+            "schema identity could not be reproduced"
+        ]
+    if resolved_commit != commit:
+        findings.append("historical Governance schema commit differs from its lock")
+    if f"git-tree-sha1:{resolved_tree}" != coordinate["digest"]:
+        findings.append("historical Governance schema tree differs from its lock")
+    try:
+        archive_digest = git_archive_digest(governance_source, commit)
+    except (OSError, subprocess.CalledProcessError):
+        findings.append(
+            "HISTORICAL_GOVERNANCE_ARCHIVE_UNREADABLE: historical Governance "
+            "schema archive could not be reproduced"
+        )
+    else:
+        if archive_digest != coordinate["archive_digest"]:
+            findings.append(
+                "historical Governance schema archive differs from its lock"
+            )
+    try:
+        version_bytes = subprocess.run(
+            ["git", "-C", str(governance_source), "show", f"{commit}:VERSION"],
+            check=True,
+            capture_output=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        findings.append(
+            "HISTORICAL_GOVERNANCE_VERSION_UNREADABLE: historical Governance "
+            "VERSION could not be reproduced"
+        )
+    else:
+        try:
+            version = version_bytes.decode("utf-8").strip()
+        except UnicodeError:
+            findings.append(
+                "HISTORICAL_GOVERNANCE_VERSION_ENCODING_INVALID: historical "
+                "Governance VERSION requires valid UTF-8 text"
+            )
+        else:
+            if version != coordinate["schema_version"]:
+                findings.append(
+                    "historical Governance VERSION differs from its schema binding"
+                )
+    try:
+        ancestor = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(governance_source),
+                "merge-base",
+                "--is-ancestor",
+                commit,
+                GOVERNANCE_COMMIT,
+            ],
+            check=False,
+            capture_output=True,
+        )
+    except OSError:
+        findings.append(
+            "HISTORICAL_GOVERNANCE_LINEAGE_UNREADABLE: historical Governance "
+            "schema lineage could not be reproduced"
+        )
+    else:
+        if ancestor.returncode != 0:
+            findings.append(
+                "historical Governance schema is outside the accepted 2.1.0 lineage"
+            )
+    try:
+        tags = subprocess.run(
+            ["git", "-C", str(governance_source), "tag", "--points-at", commit],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+    except (OSError, subprocess.CalledProcessError):
+        findings.append(
+            "HISTORICAL_GOVERNANCE_TAG_STATE_UNREADABLE: historical Governance "
+            "tag state could not be reproduced"
+        )
+    else:
+        if tags:
+            findings.append(
+                "historical Governance compatibility commit unexpectedly has a "
+                "release tag"
+            )
+    return findings
+
+
+def materialize_git_archive(archive_bytes: bytes, destination: Path) -> None:
+    """Extract one trusted pinned Git archive inside a bounded temporary root."""
+    destination_root = destination.resolve()
+    with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:") as archive:
+        members = archive.getmembers()
+        for member in members:
+            member_path = (destination / member.name).resolve()
+            if (
+                destination_root not in member_path.parents
+                and member_path != destination_root
+            ) or member.issym() or member.islnk():
+                raise ValueError("Git archive member exceeds the materialization root")
+        archive.extractall(destination, members=members, filter="data")
+
+
+def validate_comparison_historical_schemas(
+    governance_source: Path,
+    comparison_source: Path,
+    coordinate: dict,
+) -> list[str]:
+    """Run the pinned historical validator against signed Comparison carriers."""
+    findings: list[str] = []
+    try:
+        archive_bytes = git_archive_bytes(governance_source, coordinate["commit"])
+        with tempfile.TemporaryDirectory(
+            prefix="program-governance-compatibility-"
+        ) as temporary_directory:
+            historical_root = Path(temporary_directory)
+            materialize_git_archive(archive_bytes, historical_root)
+            validator = historical_root / "tools" / "validate_governance.py"
+            for document_path, schema_name in HISTORICAL_COMPARISON_DOCUMENTS.items():
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(validator),
+                        "--governance-root",
+                        str(historical_root),
+                        "--source-root",
+                        str(comparison_source),
+                        "--schema-name",
+                        schema_name,
+                        "--document-path",
+                        document_path,
+                    ],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                )
+                if result.returncode != 0:
+                    findings.append(
+                        "COMPARISON_HISTORICAL_SCHEMA_INVALID: "
+                        f"signed Comparison {document_path} differs from the "
+                        "pinned Governance 2.0.1 schema"
+                    )
+    except (OSError, subprocess.CalledProcessError, tarfile.TarError, ValueError):
+        findings.append(
+            "HISTORICAL_GOVERNANCE_VALIDATOR_UNREADABLE: the pinned Governance "
+            "2.0.1 validator could not be materialized"
+        )
+    return findings
+
+
+def validate_implementation_source(
+    source: Path,
+    coordinate: dict,
+) -> list[str]:
+    """Reconcile Implementation release semantics with its exact tagged source."""
+    findings: list[str] = []
+    manifest_path = source / "release" / "repository-role.json"
+    manifest, _, manifest_failure = read_json_document(
+        manifest_path,
+        root=source,
+    )
+    if manifest_failure is not None:
+        return [
+            projection_diagnostic(
+                f"IMPLEMENTATION_RELEASE_MANIFEST_{manifest_failure}",
+                "implementation release manifest could not be loaded",
+            )
+        ]
+    if not isinstance(manifest, dict):
+        return [
+            projection_diagnostic(
+                "IMPLEMENTATION_RELEASE_MANIFEST_INVALID_SHAPE",
+                "implementation release manifest requires a JSON object",
+            )
+        ]
+
+    expected_semantics = {
+        "repository_role": "enterprise_implementation",
+        "repository_release": coordinate.get("repository_release"),
+        "external_release": coordinate.get("release"),
+        "selected_future_closure_digest": coordinate.get(
+            "selected_future_closure_digest"
+        ),
+        "contract_bindings": coordinate.get("contract_bindings"),
+    }
+    for field, expected_value in expected_semantics.items():
+        if manifest.get(field) != expected_value:
+            findings.append(
+                "implementation signed release "
+                f"{field} differs from its program lock"
+            )
+
+    source_artifacts = coordinate.get("source_artifact_bindings")
+    if not isinstance(source_artifacts, dict):
+        findings.append("implementation source artifact bindings are malformed")
+        return findings
+    for binding_name, binding in source_artifacts.items():
+        if not isinstance(binding, dict):
+            findings.append(
+                f"implementation source artifact binding {binding_name} is malformed"
+            )
+            continue
+        artifact_path = binding.get("path")
+        expected_digest = binding.get("digest")
+        equality_mode = binding.get("equality_mode")
+        if (
+            not isinstance(artifact_path, str)
+            or not isinstance(expected_digest, str)
+            or SHA256.fullmatch(expected_digest) is None
+            or equality_mode != "byte_sha256"
+        ):
+            findings.append(
+                f"implementation source artifact binding {binding_name} is malformed"
+            )
+            continue
+        if binding_name == "promotion_candidate_digest":
+            promotion_coordinates = manifest.get("promotion_coordinates")
+            manifest_digest = (
+                promotion_coordinates.get("candidate_receipt_digest")
+                if isinstance(promotion_coordinates, dict)
+                else None
+            )
+            manifest_path_value = (
+                promotion_coordinates.get("candidate_receipt")
+                if isinstance(promotion_coordinates, dict)
+                else None
+            )
+            if manifest_path_value != artifact_path:
+                findings.append(
+                    "implementation promotion candidate path differs from its "
+                    "program lock"
+                )
+        else:
+            manifest_digest = manifest.get(binding_name)
+        if manifest_digest != expected_digest:
+            findings.append(
+                "implementation signed release "
+                f"{binding_name} differs from its program lock"
+            )
+        artifact_bytes, artifact_failure = read_regular_bytes(
+            source / artifact_path,
+            root=source,
+        )
+        if artifact_failure is not None:
+            findings.append(
+                projection_diagnostic(
+                    f"IMPLEMENTATION_SOURCE_ARTIFACT_{artifact_failure}",
+                    f"implementation source artifact {binding_name} could not be loaded",
+                )
+            )
+            continue
+        assert artifact_bytes is not None
+        if bytes_digest(artifact_bytes) != expected_digest:
+            findings.append(
+                f"implementation source artifact bytes differ for {binding_name}"
+            )
+
+    promotion_coordinates = manifest.get("promotion_coordinates")
+    if not isinstance(promotion_coordinates, dict):
+        findings.append("implementation promotion coordinates are malformed")
+    elif promotion_coordinates.get("target_release") != coordinate.get("tag"):
+        findings.append(
+            "implementation promotion target differs from its actual Git tag"
+        )
+    return findings
+
+
 def validate_sources(
     lock: dict,
     sources: dict[str, Path],
@@ -420,6 +750,16 @@ def validate_sources(
 ) -> list[str]:
     findings = validate_language_policy_projection(sources.get("governance"))
     findings.extend(validate_governance_coordinate(lock.get("governance")))
+    comparison_coordinate = lock.get("comparison")
+    historical_coordinate = (
+        comparison_coordinate.get("historical_governance_schema")
+        if isinstance(comparison_coordinate, dict)
+        else None
+    )
+    historical_coordinate_findings = validate_historical_governance_coordinate(
+        historical_coordinate
+    )
+    findings.extend(historical_coordinate_findings)
     unknown_sources = set(sources) - EXTERNAL_ROLES
     if unknown_sources:
         findings.append(
@@ -489,38 +829,50 @@ def validate_sources(
             findings.append(f"{role} source commit differs from its lock")
         if actual_tree != digest:
             findings.append(f"{role} source tree differs from its lock")
-        if role == "governance":
-            try:
-                actual_tag_object, tagged_commit = git_annotated_tag_identity(
-                    source,
-                    coordinate["release"],
-                )
-            except (OSError, subprocess.CalledProcessError):
+        release_tag = coordinate.get("tag", coordinate.get("release"))
+        try:
+            actual_tag_object, tagged_commit = git_annotated_tag_identity(
+                source,
+                release_tag,
+            )
+        except (OSError, subprocess.CalledProcessError):
+            findings.append(
+                f"{role.upper()}_TAG_IDENTITY_UNREADABLE: {role} annotated "
+                "tag identity could not be reproduced"
+            )
+        else:
+            if actual_tag_object != coordinate.get("tag_object"):
                 findings.append(
-                    "GOVERNANCE_TAG_IDENTITY_UNREADABLE: governance annotated "
-                    "tag identity could not be reproduced"
+                    f"{role} annotated tag object differs from its lock"
                 )
-            else:
-                if actual_tag_object != coordinate.get("tag_object"):
-                    findings.append(
-                        "governance annotated tag object differs from its lock"
-                    )
-                if tagged_commit != coordinate.get("commit"):
-                    findings.append(
-                        "governance annotated tag peels to a different commit"
-                    )
-            try:
-                actual_archive_digest = git_archive_digest(source, actual_commit)
-            except (OSError, subprocess.CalledProcessError):
+            if tagged_commit != coordinate.get("commit"):
                 findings.append(
-                    "GOVERNANCE_ARCHIVE_IDENTITY_UNREADABLE: governance archive "
-                    "identity could not be reproduced"
+                    f"{role} annotated tag peels to a different commit"
                 )
-            else:
-                if actual_archive_digest != coordinate.get("archive_digest"):
-                    findings.append(
-                        "governance source archive differs from its lock"
-                    )
+        try:
+            actual_archive_digest = git_archive_digest(source, actual_commit)
+        except (OSError, subprocess.CalledProcessError):
+            findings.append(
+                f"{role.upper()}_ARCHIVE_IDENTITY_UNREADABLE: {role} archive "
+                "identity could not be reproduced"
+            )
+        else:
+            if actual_archive_digest != coordinate.get("archive_digest"):
+                findings.append(f"{role} source archive differs from its lock")
+
+    implementation_source = sources.get("implementation")
+    implementation_coordinate = lock.get("implementation")
+    if (
+        implementation_source is not None
+        and isinstance(implementation_coordinate, dict)
+        and implementation_coordinate.get("coordinate_status") == "pinned"
+    ):
+        findings.extend(
+            validate_implementation_source(
+                implementation_source,
+                implementation_coordinate,
+            )
+        )
 
     canonical_path = ROOT / "simulations/simulated-receipt-closure.v2.json"
     canonical, _, canonical_failure = read_json_document(
@@ -569,10 +921,10 @@ def validate_sources(
     assert canonical_bundle_bytes is not None
     expected_digest = canonical_digest(canonical)
     expected_result_digest = (
-        "sha256:9d42b972c77764c81ff32fefe8f02367a27406e9ba082a704587cc9b5a9da860"
+        "sha256:5ed067887dc02d2a4c85845d3d25ab6b3fbee857011bed7e5b528e4e58c03861"
     )
     expected_aggregate_digest = (
-        "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61"
+        "sha256:ddbce2fe891bfcd70515005714cdabf34e6430869cc2e2a4daca59016ac6ce3b"
     )
     expected_bundle_file_digest = bytes_digest(canonical_bundle_bytes)
     if lock.get("simulation", {}).get("canonical_closure_digest") != expected_digest:
@@ -612,24 +964,36 @@ def validate_sources(
     if simulation_source is not None:
         source_path = (
             simulation_source
-            / "build"
-            / "simulation"
-            / "simulated-receipt-closure.json"
+            / "release"
+            / "future-reality-2028-06-30-v1.json"
         )
-        simulation_closure, _, simulation_failure = read_json_document(
+        simulation_bundle, simulation_bundle_bytes, simulation_failure = read_json_document(
             source_path,
             root=simulation_source,
         )
         if simulation_failure is not None:
             findings.append(
                 projection_diagnostic(
-                    f"SIMULATION_CANONICAL_CLOSURE_{simulation_failure}",
-                    "simulation canonical closure could not be loaded",
+                    f"SIMULATION_CANONICAL_BUNDLE_{simulation_failure}",
+                    "simulation canonical bundle could not be loaded",
                 )
             )
-        elif simulation_closure is not None:
-            if simulation_closure != canonical:
+        elif isinstance(simulation_bundle, dict):
+            if simulation_bundle_bytes != canonical_bundle_bytes:
+                findings.append("simulation canonical bundle bytes differ from program")
+            if simulation_bundle.get("governance_closure") != canonical:
                 findings.append("simulation canonical closure differs from program")
+            if simulation_bundle.get("source_result_digest") != expected_result_digest:
+                findings.append(
+                    "simulation source result digest differs from canonical bundle"
+                )
+        else:
+            findings.append(
+                projection_diagnostic(
+                    "SIMULATION_CANONICAL_BUNDLE_INVALID_SHAPE",
+                    "simulation canonical bundle requires a JSON object",
+                )
+            )
         manifest_path = simulation_source / "release" / "repository-role.json"
         manifest, _, simulation_manifest_failure = read_json_document(
             manifest_path,
@@ -654,31 +1018,6 @@ def validate_sources(
                     "simulation release manifest requires a JSON object",
                 )
             )
-        result_path = simulation_source / "build" / "simulation" / "result.json"
-        result, _, result_failure = read_json_document(
-            result_path,
-            root=simulation_source,
-        )
-        if result_failure not in {None, "MISSING"}:
-            findings.append(
-                projection_diagnostic(
-                    f"SIMULATION_RESULT_{result_failure}",
-                    "simulation result could not be loaded",
-                )
-            )
-        elif isinstance(result, dict):
-            if result.get("content_digest") != expected_result_digest:
-                findings.append(
-                    "simulation result content digest differs from canonical bundle"
-                )
-        elif result is not None:
-            findings.append(
-                projection_diagnostic(
-                    "SIMULATION_RESULT_INVALID_SHAPE",
-                    "simulation result requires a JSON object",
-                )
-            )
-
     comparison_source = sources.get("comparison")
     if comparison_source is not None:
         source_path = (
@@ -716,6 +1055,32 @@ def validate_sources(
                 and bundle.get("governance_closure_digest") != expected_digest
             ):
                 findings.append("comparison canonical closure digest differs")
+        manifest_path = comparison_source / "release" / "repository-role.json"
+        manifest, _, manifest_failure = read_json_document(
+            manifest_path,
+            root=comparison_source,
+        )
+        if manifest_failure is not None:
+            findings.append(
+                projection_diagnostic(
+                    f"COMPARISON_RELEASE_MANIFEST_{manifest_failure}",
+                    "comparison release manifest could not be loaded",
+                )
+            )
+        elif not isinstance(manifest, dict):
+            findings.append(
+                projection_diagnostic(
+                    "COMPARISON_RELEASE_MANIFEST_INVALID_SHAPE",
+                    "comparison release manifest requires a JSON object",
+                )
+            )
+        elif (
+            manifest.get("contract_bindings", {}).get("governance_schema")
+            != lock.get("comparison", {}).get("receipt_schema")
+        ):
+            findings.append(
+                "comparison signed schema binding differs from its program lock"
+            )
 
     governance_source = sources.get("governance")
     if governance_source is not None:
@@ -747,6 +1112,22 @@ def validate_sources(
                     findings.append(
                         "governance VERSION differs from the selected 2.1.0 release"
                     )
+        if not historical_coordinate_findings:
+            assert isinstance(historical_coordinate, dict)
+            findings.extend(
+                validate_historical_governance_source(
+                    governance_source,
+                    historical_coordinate,
+                )
+            )
+            if comparison_source is not None:
+                findings.extend(
+                    validate_comparison_historical_schemas(
+                        governance_source,
+                        comparison_source,
+                        historical_coordinate,
+                    )
+                )
 
     return findings
 
@@ -767,7 +1148,29 @@ def validate_external_preflight(lock: dict) -> list[str]:
             findings.append(f"{role} external commit must be nonzero 40-hex")
         if not isinstance(digest, str) or TREE.fullmatch(digest) is None:
             findings.append(f"{role} external tree digest must be nonzero 40-hex")
+        release_tag = coordinate.get("tag", coordinate.get("release"))
+        if not isinstance(release_tag, str) or not release_tag:
+            findings.append(f"{role} external release tag must be explicit")
+        if (
+            not isinstance(coordinate.get("tag_object"), str)
+            or COMMIT.fullmatch(coordinate["tag_object"]) is None
+        ):
+            findings.append(f"{role} external tag object must be nonzero 40-hex")
+        if coordinate.get("archive_format") != "git-archive-tar":
+            findings.append(f"{role} external archive format must be git-archive-tar")
+        if (
+            not isinstance(coordinate.get("archive_digest"), str)
+            or SHA256.fullmatch(coordinate["archive_digest"]) is None
+        ):
+            findings.append(f"{role} external archive digest must be SHA-256")
     findings.extend(validate_governance_coordinate(lock.get("governance")))
+    comparison_coordinate = lock.get("comparison")
+    historical_coordinate = (
+        comparison_coordinate.get("historical_governance_schema")
+        if isinstance(comparison_coordinate, dict)
+        else None
+    )
+    findings.extend(validate_historical_governance_coordinate(historical_coordinate))
     return findings
 
 

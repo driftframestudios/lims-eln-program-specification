@@ -2,7 +2,7 @@
   "aggregate_artifacts": [
     {
       "artifact_id": "ARTIFACT-SIM-SUBSTANTIVE-CLOSURE-2028-V1",
-      "digest": "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61",
+      "digest": "sha256:ddbce2fe891bfcd70515005714cdabf34e6430869cc2e2a4daca59016ac6ce3b",
       "locator": "evidence://simulation/closures/substantive-2028-v1",
       "media_type": "application/json",
       "retention_class": "simulation-baseline",
@@ -138,7 +138,7 @@
       "artifacts": [
         {
           "artifact_id": "ARTIFACT-SIM-VENDOR-CONFORMANCE-2028-V1",
-          "digest": "sha256:b63b7b0f5a48add8d7eb2f103e4a95d1f77b0892621aa94d7151ce966e8ec11e",
+          "digest": "sha256:be5b5f5daeb2f3cbb32b642fe8c05efb624d16285a00551e51ae78d19dd4e6a9",
           "locator": "evidence://simulation/closures/configured-vendors-2028-v1",
           "media_type": "application/json",
           "retention_class": "simulation-baseline",
@@ -265,7 +265,7 @@
       "artifacts": [
         {
           "artifact_id": "ARTIFACT-SIM-ACCOUNTABLE-ACCEPTANCE-2028-V1",
-          "digest": "sha256:d4544b91410af54043b8227b02d4ef72eb07731793435e5f504a896b96377aac",
+          "digest": "sha256:7aaa8e60ab415fca7a9451667de49199150e0be7542e9a021e71cc6932a5f609",
           "locator": "evidence://simulation/closures/accountable-acceptance-2028-v1",
           "media_type": "application/json",
           "retention_class": "simulation-baseline",
@@ -292,7 +292,7 @@
       "scope": "The selected future research-use lifecycle, vendor integrations, migration, recovery, security, observability, and retained evidence.",
       "simulated_environment": {
         "class": "qualification",
-        "configuration_digest": "sha256:93967f795e1420f28ac66f7f4f737da9f81182f2180c1d41c6f2a6ee8a0cac90",
+        "configuration_digest": "sha256:a8bb13fed365436155cf6b75185040647076d28fe277b3e4fb10b018979773bf",
         "environment_id": "ENV-SIM-ACCEPTANCE-2028-V1",
         "region": "synthetic-us-east",
         "schema_version": "acceptance-packet-3.0"

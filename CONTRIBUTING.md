@@ -22,7 +22,7 @@ For an ordinary candidate:
 
 ```sh
 python3 scripts/validate_program.py
-python3 scripts/validate_pinned_sources.py --allow-pending
+python3 scripts/validate_pinned_sources.py --preflight-external
 python3 scripts/check_language.py
 python3 -m unittest tests.test_language_policy -v
 python3 scripts/scan_secret_shapes.py
@@ -33,9 +33,20 @@ Vale `3.15.2` can provide advisory author feedback with
 `vale --config=.vale.ini .`. The deterministic commands above remain the
 candidate-eligibility controls.
 
-Release settlement supplies each external `ROLE=PATH` checkout to
-`scripts/validate_pinned_sources.py`. The default command requires pinned
-coordinates; `--allow-pending` is an explicit candidate-only posture.
+The external preflight establishes coordinate readiness without requiring
+sibling checkouts. Release settlement checks out each sibling at the commit in
+`constellation.lock.json`, then supplies the complete source map:
+
+```sh
+python3 scripts/validate_pinned_sources.py --allow-pending \
+  --source simulation=../lims-eln-simulated-final-state \
+  --source implementation=../lims-eln-enterprise-implementation \
+  --source comparison=../lims-eln-comparative-evidence \
+  --source governance=../site-reading-governance
+```
+
+These paths use the standard sibling layout; another layout can provide the
+same four `ROLE=PATH` bindings.
 
 Automated maintenance follows the exact branch, bot-identity, and target
 contract in `BRANCHING.md` and retains the same validation and review path.
