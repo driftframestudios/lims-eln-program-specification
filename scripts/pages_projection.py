@@ -262,7 +262,8 @@ def _parse_status(
     return result
 
 
-def _front_matter(text: str, path: str) -> dict[str, Any] | None:
+def parse_skill_front_matter(text: str, path: str) -> dict[str, Any] | None:
+    """Parse the bounded scalar-and-list front matter used by skill sources."""
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
         return None
@@ -315,7 +316,7 @@ def discover_public_skills(
     *,
     authoritative_paths: frozenset[str] | None = None,
 ) -> tuple[PublicSkill, ...]:
-    """Return every repository skill whose source band is public-ready."""
+    """Return every repository skill selected for the current public catalog."""
 
     skills_root = root / ".agents" / "skills"
     if not skills_root.exists():
@@ -339,10 +340,15 @@ def discover_public_skills(
             source_text = source_bytes.decode("utf-8")
         except UnicodeDecodeError as error:
             raise ProjectionError(f"skill source requires UTF-8: {relative_path}") from error
-        metadata = _front_matter(source_text, relative_path)
-        if metadata is None or PUBLIC_READY_BAND not in _normalized_bands(
-            metadata.get("source_band", [])
-        ):
+        metadata = parse_skill_front_matter(source_text, relative_path)
+        if metadata is None:
+            continue
+        source_bands = _normalized_bands(metadata.get("source_band", []))
+        if PUBLIC_READY_BAND in source_bands and len(source_bands) != 1:
+            raise ProjectionError(
+                f"public-ready skill requires one unambiguous source band: {relative_path}"
+            )
+        if PUBLIC_READY_BAND not in source_bands:
             continue
         slug = path.parent.name
         if SKILL_SLUG_PATTERN.fullmatch(slug) is None:
