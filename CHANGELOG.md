@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added the public-possible `proportionate-recovery-routing` skill. It turns a
+  consequential failed check, repeated retry, source loss, authority mismatch,
+  stale handoff, or coordination drift into one smallest adequate move, an
+  owning surface, a decision-bearing receipt, and an exact re-entry event while
+  preserving accepted source, identity, permission, and publication boundaries.
 - Prepared the deliberate hosted proof to install the local contract package
   before validation and to confirm private-sibling read access to every locked
   repository and commit before the first external checkout. Repository read

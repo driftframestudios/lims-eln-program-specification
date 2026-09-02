@@ -34,6 +34,11 @@ chronology and contribution credit.
    [`constellation-coherence-reconciliation`](.agents/skills/constellation-coherence-reconciliation/SKILL.md)
    before pinning a coordinated release whose exact source coordinates and
    copied semantic artifacts must settle together.
+7. Use
+   [`proportionate-recovery-routing`](.agents/skills/proportionate-recovery-routing/SKILL.md)
+   when an evidence, source, permission, or coordination strain needs one
+   bounded recovery move, a decision-bearing receipt, and an exact re-entry
+   point.
 
 [`coordination-horizon.json`](coordination-horizon.json) records current and
 queued work. [`first-receipt.json`](first-receipt.json) provides a compact
@@ -493,8 +498,10 @@ declares `source_band: public_ready`. The current public-ready set contains the
 repository-local source-authority map and constellation-coherence reconciliation
 used to trace one material object and settle a coordinated release without
 separating its coordinates from its copied meaning. Internal and public-possible
-sources retain their collaboration boundaries, and an empty public-ready set
-produces no catalog.
+sources retain their collaboration boundaries. Proportionate recovery routing
+currently remains public-possible while its first natural uses test the
+smallest-move, receipt, and re-entry contract. An empty public-ready set produces
+no catalog.
 
 The released projection manifest contract is `1.0.0`. It records the projection
 owner, complete file scope, verified source revision and standing, optional
