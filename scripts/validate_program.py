@@ -3550,6 +3550,7 @@ def validate() -> dict[str, int]:
 
     required_paths = [
         ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
+        ".agents/skills/proportionate-recovery-routing/SKILL.md",
         ".agents/skills/source-authority-mapping/SKILL.md",
         "AGENTS.md",
         "CHANGELOG.md",
