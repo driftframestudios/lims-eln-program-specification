@@ -5,6 +5,9 @@
 - `main` carries reviewed specification releases.
 - `develop` integrates the next specification release.
 
+`main` carries the active protected-delivery ruleset. `develop` remains the
+lean integration branch for reviewed candidate work.
+
 ## Supporting branches
 
 - `feature/<stable-claim-or-receipt>` begins from `develop` and returns to
@@ -13,7 +16,8 @@
 - `chore/<stable-claim-or-receipt>` carries maintenance with stable external
   behavior.
 - `release/<semver>` begins from `develop`, receives release-only stabilization,
-  lands in `main`, and merges forward into `develop`.
+  lands in `main`, merges forward into `develop`, and closes after that forward
+  merge settles.
 - `hotfix/<stable-claim-or-receipt>` begins from `main`, lands in `main`, and merges
   forward into `develop`.
 - `forecast/YYYY-qN-rN` freezes a preregistered forecast from `develop`; its
@@ -35,27 +39,53 @@ Every pull request states:
 Release and hotfix branches preserve semantic-version compatibility and
 generate a new constellation lock coordinate.
 
-## Automated dependency maintenance
+## Local proof and bounded hosted maintenance
 
-Dependabot monitors the repository's immutable GitHub Action references.
-Minor and patch updates may share one bounded pull request; major updates retain
-separate review and rollback coordinates. An automation change is identified by
-a complete branch grammar, exact pull-request author, and governed target
-together:
+Local program validation and unit tests remain the complete source-owned proof
+path. The repository has a monthly **100–300 runner-minute** allocation for one
+small pull-request proof. Pull requests targeting `develop` or `main` run the
+program aggregate, language and secret-shape checks, generated-schema equality,
+and repository regression suite on Python 3.12. One standard runner, read-only
+permissions, cancellation of superseded runs, and a ten-minute ceiling keep
+that observation bounded.
+
+The manual `Validate program specification` workflow retains the broader
+Python matrix, candidate and release coordinate paths, advisory author
+feedback, and cross-repository proof. A named receiver sets
+`ENABLE_GITHUB_ACTIONS=true`, selects `confirm_run`, and dispatches it when that
+additional evidence is material.
+
+Monthly dependency updates live in `.github/dependabot.yml`, target `develop`,
+group minor and patch updates, and keep at most two update pull requests open.
+An automation change is identified by a complete branch grammar, exact
+pull-request author, and governed target together:
 
 - Dependabot uses `dependabot/github_actions/<dependency-update>` with
   `dependabot[bot]`.
 - Renovate uses `renovate/<dependency-update>` with `renovate[bot]`.
 - Either automation flow targets `main` or `develop`.
 
-The read-only branch-policy workflow checks out the exact pull-request base
-commit into `.branch-policy-base` and executes that reviewed checker.
-Pull-request head content remains in ordinary validation; the policy gate
-receives its branch name and author as quoted event data. The gate begins
-governing subsequent proposals after the workflow reaches the default branch
-and the checker reaches each protected target branch.
+The repository-local branch checker remains available to reviewers and local
+validation. Pull requests carry their branch and author coordinates for human
+review. Setting `ENABLE_GITHUB_ACTIONS=false` rests the manual proof; repository
+settings can rest all hosted execution, and a reviewed return to
+`.github/dependabot.manual.yml` rests dependency scheduling.
 
-GitHub security updates may target the default branch. These pull requests run
-the complete validation suite and receive human review before promotion. A
-change accepted on `main` is reconciled into `develop` so the next
-specification release retains the repair.
+An activated security update may target the default branch. Its standing proof
+is the complete local validation suite plus human review before promotion. A
+change accepted on `main` is reconciled into `develop` so the next specification
+release retains the repair.
+
+## Program Pages source and publication
+
+`pages/` and the standard-library projection scripts are program source.
+Feature work begins from `develop`, returns through review, and keeps generated
+Pages bytes outside the source worktree. A clean exact `HEAD` can therefore
+produce a manifest that truthfully identifies the complete source state.
+
+The local Pages aggregate creates two isolated builds, validates both complete
+inventories, and scans their text for credential-shaped values. A later,
+separately authorized publication action can place reviewed bytes on a `docs`
+branch, activate repository Pages settings, and attach an HTTPS origin plus its
+matching CNAME. Each action keeps the accepted projection manifest as its
+recovery coordinate.

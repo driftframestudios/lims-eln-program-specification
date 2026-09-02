@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "requirements": [
     {
       "id": "SPEC-LIFE-001",
@@ -54,6 +54,24 @@
       "name": "Bounded automation caller",
       "rule_ids": ["RULE-CALL-001", "RULE-CALL-002", "RULE-CALL-003"],
       "material_effect": "A human, service, workflow, or AI caller selects a released operation while the service boundary continues to determine identity, authority, scope, effect, evidence, and recovery."
+    },
+    {
+      "id": "SPEC-DATA-001",
+      "name": "Canonical scientific and operational data primitives",
+      "rule_ids": ["RULE-DATA-001", "RULE-DATA-002", "RULE-DATA-003", "RULE-DATA-004"],
+      "material_effect": "Scientists, evaluators, and implementers share precise temporal, identity, digest, quantity, unit, vocabulary, JSON, and state semantics across code, storage, migration, and evidence."
+    },
+    {
+      "id": "SPEC-DBAS-001",
+      "name": "Enforced enterprise database boundaries",
+      "rule_ids": ["RULE-DBAS-001", "RULE-DBAS-002", "RULE-DBAS-003", "RULE-DBAS-004"],
+      "material_effect": "Tenant isolation, audit reconstruction, transactional work, and representative performance arise from enforced database contracts that remain testable under concurrency and recovery."
+    },
+    {
+      "id": "SPEC-DBMG-001",
+      "name": "Versioned database migration reconciliation and release",
+      "rule_ids": ["RULE-DBMG-001", "RULE-DBMG-002", "RULE-DBMG-003", "RULE-DBRL-001"],
+      "material_effect": "The organization can explain, rehearse, compare, recover, and approve each database change while preserving scientific meaning and a reversible release posture."
     }
   ]
 }

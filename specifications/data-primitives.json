@@ -1,0 +1,203 @@
+{
+  "contract_id": "DATA-CONTRACT-001",
+  "version": "1.0.0",
+  "status": "specified",
+  "authority": "program_specification",
+  "target_platform": {
+    "engine_family": "PostgreSQL",
+    "supported_major_policy": "Pin one community-supported major for each implementation release and exercise migrations against its predecessor release path.",
+    "reference_majors": [17, 18],
+    "timezone": "UTC for canonical instants",
+    "canonical_json_profile": "strict versioned RFC-8785-compatible profile",
+    "unit_vocabulary": "UCUM with versioned assay-specific mappings"
+  },
+  "primitive_policies": [
+    {
+      "policy_id": "DATA-TIME-001",
+      "primitive": "instant_and_calendar_date",
+      "storage": "timestamptz for instants; date for calendar dates; original source representation in a separate provenance field when source-clock meaning matters",
+      "validation": [
+        "Every instant carries an explicit offset at ingress and normalizes to UTC.",
+        "Equivalent instants share one canonical representation and digest.",
+        "Business occurrence time and server recording time remain distinct.",
+        "Precision and source clock quality are explicit."
+      ],
+      "rule_ids": ["RULE-DATA-001"],
+      "finding_ids": ["DBF-TIME-001", "DBF-TIME-002"]
+    },
+    {
+      "policy_id": "DATA-ID-001",
+      "primitive": "internal_and_external_identity",
+      "storage": "uuid for internal identity; constrained text for tenant-source-external identity",
+      "validation": [
+        "Internal and external identities use distinct value types.",
+        "External identity includes tenant and source namespace.",
+        "Whitespace, length, normalization, and collation policy are explicit.",
+        "Actor identity retains issuer and authenticated subject context."
+      ],
+      "rule_ids": ["RULE-DATA-002"],
+      "finding_ids": ["DBF-ID-001", "DBF-TEN-002"]
+    },
+    {
+      "policy_id": "DATA-DIGEST-001",
+      "primitive": "content_digest",
+      "storage": "32-byte value with algorithm, canonicalization version, and content scope",
+      "validation": [
+        "Digest length and algorithm are enforced.",
+        "The canonicalization profile and schema version participate in the evidence envelope.",
+        "Raw-byte and semantic-content digests remain distinguishable."
+      ],
+      "rule_ids": ["RULE-DATA-002"],
+      "finding_ids": ["DBF-DIGEST-001", "DBF-CANON-001"]
+    },
+    {
+      "policy_id": "DATA-MEASURE-001",
+      "primitive": "measured_quantity",
+      "storage": "finite numeric precision and scale selected by a versioned assay specification",
+      "validation": [
+        "Raw and canonical values remain linked.",
+        "Finite decimal, precision, scale, qualifier, reference range, and detection limits are explicit.",
+        "Analyte, method revision, and unit compatibility are validated.",
+        "Conversion provenance records source and canonical values."
+      ],
+      "rule_ids": ["RULE-DATA-003"],
+      "finding_ids": ["DBF-MEASURE-001", "DBF-NUM-001"]
+    },
+    {
+      "policy_id": "DATA-UNIT-001",
+      "primitive": "scientific_unit",
+      "storage": "versioned UCUM code plus original source unit",
+      "validation": [
+        "Unit mapping is assay and analyte aware.",
+        "Conversion factors and rounding policy are versioned.",
+        "Unmapped source units enter an owned exception route."
+      ],
+      "rule_ids": ["RULE-DATA-003"],
+      "finding_ids": ["DBF-MEASURE-001"]
+    },
+    {
+      "policy_id": "DATA-VOCAB-001",
+      "primitive": "controlled_vocabulary",
+      "storage": "named checks for stable operational states and versioned reference relations for evolving scientific or regulatory codes",
+      "validation": [
+        "Every code resolves to one vocabulary and version.",
+        "Source and canonical codes remain linked.",
+        "State transitions use an explicit transition contract."
+      ],
+      "rule_ids": ["RULE-DATA-004"],
+      "finding_ids": ["DBF-VOCAB-001"]
+    },
+    {
+      "policy_id": "DATA-JSON-001",
+      "primitive": "structured_envelope",
+      "storage": "jsonb for queryable versioned objects; content-addressed raw bytes for byte fidelity",
+      "validation": [
+        "Decoding rejects duplicate keys, non-finite numbers, unsupported depth, and unsupported size.",
+        "Every envelope carries a schema identity and version.",
+        "Canonical JSON uses explicit domain encoders and Unicode policy.",
+        "Raw vendor payload access follows classification, encryption, and retention policy."
+      ],
+      "rule_ids": ["RULE-DATA-004"],
+      "finding_ids": ["DBF-JSON-001", "DBF-CANON-001"]
+    },
+    {
+      "policy_id": "DATA-NULL-001",
+      "primitive": "nullability_and_discriminated_state",
+      "storage": "named table checks or state-specific relations selected by historical and query needs",
+      "validation": [
+        "Every nullable field has a documented semantic state.",
+        "Status-dependent evidence fields form one valid combination.",
+        "Accepted, quarantined, delivered, released, satisfied, and superseded states carry their required evidence."
+      ],
+      "rule_ids": ["RULE-DATA-004"],
+      "finding_ids": ["DBF-NULL-001"]
+    },
+    {
+      "policy_id": "DATA-TENANT-001",
+      "primitive": "tenant_scope",
+      "storage": "tenant identity plus composite tenant-preserving keys and forced row-level security",
+      "validation": [
+        "Authenticated context establishes one tenant scope.",
+        "Every tenant-owned relation carries tenant identity and composite referential integrity.",
+        "Default-deny row policies govern reads and writes.",
+        "Evidence records declare tenant or global program scope."
+      ],
+      "rule_ids": ["RULE-DBAS-001"],
+      "finding_ids": ["DBF-TEN-001", "DBF-TEN-002"]
+    },
+    {
+      "policy_id": "DATA-EVENT-001",
+      "primitive": "immutable_event_and_decision",
+      "storage": "append-only event and decision relations with versioned envelopes",
+      "validation": [
+        "Business and recording time, actor, authorization decision, causality, schema version, and payload digest remain linked.",
+        "Corrections supersede prior meaning while preserving the original.",
+        "Current projections reconstruct from accepted events and snapshots.",
+        "Application roles write through controlled version-guarded boundaries."
+      ],
+      "rule_ids": ["RULE-DBAS-002"],
+      "finding_ids": ["DBF-AUDIT-001", "DBF-SIGN-001", "DBF-EVENT-001"]
+    },
+    {
+      "policy_id": "DATA-IO-001",
+      "primitive": "idempotency_inbox_outbox",
+      "storage": "durable reservations, inbox arrivals, processing leases, outbox messages, attempts, and terminal dispositions",
+      "validation": [
+        "Idempotency binds tenant, operation scope, stable key, canonical request digest, and original result.",
+        "Every arrival receives one ingress identity independent of extracted vendor identity.",
+        "Claims use bounded leases and recover after worker interruption.",
+        "Aggregate state, event, and outbox message commit through one transaction boundary."
+      ],
+      "rule_ids": ["RULE-DBAS-003"],
+      "finding_ids": ["DBF-IDEM-001", "DBF-IO-001", "DBF-INGRESS-001", "DBF-ART-001"]
+    },
+    {
+      "policy_id": "DATA-EVIDENCE-001",
+      "primitive": "receipt_trace_and_open_evidence",
+      "storage": "versioned receipt, typed trace edge, status event, and closure-decision relations",
+      "validation": [
+        "Receipt schema, serialization, persistence, and release report share one compatible contract.",
+        "Typed edges preserve asserted evidence relationships.",
+        "Open status, accountable role, due or review time, closure evidence, decision, and supersession remain linked.",
+        "Receipt authority and environment remain explicit."
+      ],
+      "rule_ids": ["RULE-DBAS-002", "RULE-DBRL-001"],
+      "finding_ids": ["DBF-SCHEMA-001", "DBF-CONTRACT-001", "DBF-TRACE-001", "DBF-RECEIPT-001"]
+    },
+    {
+      "policy_id": "DATA-ACCESS-001",
+      "primitive": "index_partition_and_retention",
+      "storage": "workload-derived indexes and measured partition boundaries",
+      "validation": [
+        "Every qualified query has a representative plan and performance objective.",
+        "Partial work indexes serve pending inbox and outbox states.",
+        "Retention and archival keys preserve tenant, time, and evidence meaning.",
+        "Partitioning begins when measured volume and maintenance objectives justify it."
+      ],
+      "rule_ids": ["RULE-DBAS-004"],
+      "finding_ids": ["DBF-INDEX-001"]
+    }
+  ],
+  "entity_bindings": [
+    {"entity": "specimen_current", "system_of_record": "canonical relational projection", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-TENANT-001", "DATA-VOCAB-001"]},
+    {"entity": "specimen_event", "system_of_record": "immutable relational event stream", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-EVENT-001", "DATA-TENANT-001"]},
+    {"entity": "custody_position_and_event", "system_of_record": "relational location projection and immutable transfer event", "required_policy_ids": ["DATA-ID-001", "DATA-EVENT-001", "DATA-IO-001", "DATA-TENANT-001"]},
+    {"entity": "instrument_observation", "system_of_record": "relational observation plus content-addressed raw artifact", "required_policy_ids": ["DATA-TIME-001", "DATA-DIGEST-001", "DATA-MEASURE-001", "DATA-UNIT-001", "DATA-VOCAB-001"]},
+    {"entity": "approval_and_signature_decision", "system_of_record": "immutable decision relation", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-EVENT-001"]},
+    {"entity": "integration_inbox_outbox", "system_of_record": "transactional relational work ledger", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-IO-001", "DATA-TENANT-001"]},
+    {"entity": "artifact", "system_of_record": "object storage plus relational metadata and lineage", "required_policy_ids": ["DATA-ID-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-TENANT-001"]},
+    {"entity": "migration_control", "system_of_record": "relational migration state machine", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-EVIDENCE-001"]},
+    {"entity": "execution_and_open_receipt", "system_of_record": "versioned evidence ledger", "required_policy_ids": ["DATA-ID-001", "DATA-TIME-001", "DATA-DIGEST-001", "DATA-JSON-001", "DATA-EVIDENCE-001"]}
+  ],
+  "program_bindings": {
+    "requirement_ids": ["SPEC-DATA-001", "SPEC-DBAS-001"],
+    "rule_ids": ["RULE-DATA-001", "RULE-DATA-002", "RULE-DATA-003", "RULE-DATA-004", "RULE-DBAS-001", "RULE-DBAS-002", "RULE-DBAS-003", "RULE-DBAS-004", "RULE-DBRL-001"],
+    "scenario_ids": ["SCN-DATA-TIME-001", "SCN-DATA-MEASURE-001", "SCN-DB-TENANT-001", "SCN-DB-EVENT-001", "SCN-DB-IDEMPOTENCY-001"],
+    "open_receipt_ids": ["RCP-DB-DATA-001", "RCP-DB-TENANT-001", "RCP-DB-EVENT-001", "RCP-DB-CONCURRENCY-001"]
+  },
+  "metadata": {
+    "created_at": "2026-08-04T14:00:00Z",
+    "source_ledger_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
+    "next_review_trigger": "A supported database major, scientific unit policy, canonicalization profile, or qualified entity mapping changes."
+  }
+}

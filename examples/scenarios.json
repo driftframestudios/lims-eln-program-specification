@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "scenarios": [
     {
       "id": "SCN-LIFE-001",
@@ -228,6 +228,102 @@
       "failure_twin": "approval expires or the source snapshot mapping digest planned effect count tenant or operation version changes",
       "recovery": "keep the cutover gate closed preserve the last accepted checkpoint and route a refreshed decision packet to accountable humans",
       "acceptance_roles": ["data_migration_owner", "business_process_owner", "quality_owner", "security_owner", "operations_owner"]
+    },
+    {
+      "id": "SCN-DATA-TIME-001",
+      "requirement_id": "SPEC-DATA-001",
+      "rule_id": "RULE-DATA-001",
+      "title": "Equivalent instants share one canonical representation",
+      "given": ["two source timestamps that describe the same instant with different valid offsets", "a declared microsecond precision and UTC canonical policy"],
+      "when": ["the ingestion boundary validates and canonicalizes both values"],
+      "then": ["both values produce the same canonical instant and semantic digest", "each record retains its original source representation and server recording time"],
+      "failure_twin": "a source value carries an invalid offset or precision beyond the released policy",
+      "recovery": "route the source value to the temporal exception path with raw representation source clock identity and recording time preserved",
+      "acceptance_roles": ["scientific_data_owner", "platform_owner", "quality_owner"]
+    },
+    {
+      "id": "SCN-DATA-MEASURE-001",
+      "requirement_id": "SPEC-DATA-001",
+      "rule_id": "RULE-DATA-003",
+      "title": "Measured quantity preserves scientific precision and unit provenance",
+      "given": ["a versioned assay specification", "a finite raw decimal value unit qualifier and detection limit"],
+      "when": ["the observation maps to its canonical UCUM quantity"],
+      "then": ["raw and canonical values remain linked", "precision scale conversion method assay revision qualifier and limits remain reconstructable"],
+      "failure_twin": "the value is non-finite or the source unit lacks an approved analyte and assay mapping",
+      "recovery": "preserve the raw observation and route an owned scientific mapping exception before result acceptance",
+      "acceptance_roles": ["scientific_owner", "scientific_data_owner", "quality_owner", "instrument_integration_owner"]
+    },
+    {
+      "id": "SCN-DB-TENANT-001",
+      "requirement_id": "SPEC-DBAS-001",
+      "rule_id": "RULE-DBAS-001",
+      "title": "Forced row security preserves tenant scope across every access path",
+      "given": ["two tenants with overlapping external specimen identities", "an application role and an owner-equivalent test role", "forced default-deny row policies"],
+      "when": ["each role exercises reads writes references analytics and backup posture"],
+      "then": ["tenant-scoped operations observe and mutate only their authorized rows", "evidence records declare tenant or approved global scope", "the receipt records role policy and catalog identity"],
+      "failure_twin": "a query role or referential error reveals a cross-tenant row or identifier",
+      "recovery": "close the database release gate strengthen keys policies privileges or diagnostics and replay the adversarial suite",
+      "acceptance_roles": ["security_owner", "privacy_owner", "platform_owner", "system_owner"]
+    },
+    {
+      "id": "SCN-DB-EVENT-001",
+      "requirement_id": "SPEC-DBAS-001",
+      "rule_id": "RULE-DBAS-002",
+      "title": "Correction and approval history reconstruct from immutable decisions",
+      "given": ["a released result approval with authenticated signer meaning payload digest and recording time", "a later authorized correction"],
+      "when": ["the controlled write boundary records the correction and successor projection"],
+      "then": ["the original decision remains intact", "the successor names causality reason authorization and supersession", "projection replay reaches the same current state"],
+      "failure_twin": "an application role updates or deletes an accepted event or evidence row directly",
+      "recovery": "deny the direct mutation preserve the attempted operation in security evidence and route the correction through the released supersession operation",
+      "acceptance_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "scientific_data_owner", "security_owner"]
+    },
+    {
+      "id": "SCN-DB-IDEMPOTENCY-001",
+      "requirement_id": "SPEC-DBAS-001",
+      "rule_id": "RULE-DBAS-003",
+      "title": "Concurrent changed replay preserves one accepted effect",
+      "given": ["a tenant operation scope stable request identity and canonical request digest", "two concurrent workers and a bounded lease"],
+      "when": ["one worker commits aggregate event and outbox intent while another retries identical and changed content"],
+      "then": ["identical replay receives the original receipt", "changed replay receives a typed conflict", "lease recovery and outbox publication preserve one scientific effect"],
+      "failure_twin": "a worker interruption leaves an unowned lease or an aggregate event and outbox set with divergent visibility",
+      "recovery": "allow lease expiry resume from durable reservation and reconcile aggregate event inbox and outbox identities",
+      "acceptance_roles": ["platform_owner", "operations_owner", "scientific_data_owner"]
+    },
+    {
+      "id": "SCN-DB-MIGRATE-001",
+      "requirement_id": "SPEC-DBMG-001",
+      "rule_id": "RULE-DBMG-001",
+      "title": "Supported predecessor reaches one reviewed database head",
+      "given": ["an immutable versioned SQL set and Flyway Community 13.0.0 profile", "an empty database and every supported predecessor fixture", "reviewed SQL checksums explicit baseline mapping and database coordination policy"],
+      "when": ["Flyway validate info and migrate drive the existing parameterized migration suite through each route and a transactional failure"],
+      "then": ["every route reaches the expected head and catalog projection", "preserved data satisfies the released contract", "replay reports zero unexpected pending work and the failed route preserves its predecessor state"],
+      "failure_twin": "an applied migration checksum Flyway state catalog projection lock duration or preserved value differs from the release candidate",
+      "recovery": "retain candidate state correct the successor SQL configuration or explicit baseline mapping and repeat each affected retained scenario",
+      "acceptance_roles": ["data_migration_owner", "platform_owner", "operations_owner", "quality_owner"]
+    },
+    {
+      "id": "SCN-DB-RECON-001",
+      "requirement_id": "SPEC-DBMG-001",
+      "rule_id": "RULE-DBMG-003",
+      "title": "Representative migration reconciles scientific and operational meaning",
+      "given": ["a stable source snapshot or watermark", "a versioned transformation manifest", "approved dimension thresholds and a risk-based human sample"],
+      "when": ["bounded batches load and delta convergence completes"],
+      "then": ["identity structure semantics relationships distributions artifacts audit tenant security and human review meet their criteria", "each exception carries accountable disposition and evidence"],
+      "failure_twin": "a dimension breaches its threshold or an exception lacks accountable disposition",
+      "recovery": "keep cutover in candidate state revise the mapping threshold or source disposition through its accountable role and replay the affected dimensions",
+      "acceptance_roles": ["data_migration_owner", "scientific_owner", "scientific_data_owner", "quality_owner", "business_process_owner", "security_owner"]
+    },
+    {
+      "id": "SCN-DB-RELEASE-001",
+      "requirement_id": "SPEC-DBMG-001",
+      "rule_id": "RULE-DBRL-001",
+      "title": "Database release manifest settles observed evidence and requalification",
+      "given": ["a reviewed data contract finding ledger migration head catalog digest and database receipt registry", "current reconciliation security concurrency recovery and accountable decision evidence"],
+      "when": ["the protected release workflow assembles DATABASE-RELEASE-MANIFEST-001"],
+      "then": ["each artifact path version and digest resolves", "each required database receipt carries observed closure", "residual risks requalification triggers and immutable implementation coordinates remain visible"],
+      "failure_twin": "a contract digest migration head catalog identity receipt approval or qualified environment changes",
+      "recovery": "retain candidate state reopen the affected receipt and replay its dependent gates through the Coordination Horizon",
+      "acceptance_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "security_owner", "operations_owner", "business_owner", "platform_owner"]
     }
   ]
 }

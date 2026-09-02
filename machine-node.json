@@ -2,9 +2,9 @@
   "machine_node_id": "NODE-LIMS-ELN-PROGRAM",
   "canonical_identity": "driftframestudios/lims-eln-program-specification",
   "title": "LIMS/ELN Program Specification",
-  "purpose": "Orient collaborators to the versioned LIMS/ELN requirements, Practitioner Probes, bounded operations, simulated receipt closures, evidence posture, and accountable handoffs.",
+  "purpose": "Orient collaborators to the versioned LIMS/ELN requirements, Practitioner Probes, bounded operations, canonical data primitives, database migration and release contracts, simulated receipt closures, evidence posture, and accountable handoffs.",
   "control_plane_profile": "0.3.0",
-  "schema_release": "2.0.0",
+  "schema_release": "2.1.0",
   "repository_role": "program_specification",
   "authority": {
     "mode": "orientation_only",
@@ -21,58 +21,93 @@
     {
       "contract_id": "CALLER-CONTRACT-001",
       "version": "1.0.0",
-      "digest": "sha256:1770a721f8f11f1f38fbe8cd4e5a0967b58d1a430a6f62546e4ea8b5db7563a5"
+      "digest": "sha256:9197c9d5b0d7bfab8eead4fa97b02eaaa5af0942425dc6306ac6d9168be4a7cb"
     },
     {
       "contract_id": "LIMS-ELN-PRACTITIONER-PROBES-001",
-      "version": "0.3.0",
-      "digest": "sha256:5fd99ceb6d89b1f2c063e111d6e9cfc3f3291121104185ac83795e4c2ec6f808"
+      "version": "0.3.1",
+      "digest": "sha256:0592049ffb19b2edba60a74c1a544ab19bb9fbaafc9987c6bb16d8d773f4a345"
     },
     {
       "contract_id": "LIMS-ELN-PROOF-CLASSES-001",
-      "version": "0.3.0",
-      "digest": "sha256:1a922671dc05a87d3be997959c2d9d51409599bf08de63d8f437ef69efd661d4"
+      "version": "0.3.1",
+      "digest": "sha256:1e228859e27e431b39a6a321ea115ce5745b682c37005e5fe6c2c58c79ecf913"
     },
     {
       "contract_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
-      "version": "0.3.0",
-      "digest": "sha256:4789521c6c6729683512214fba544b3672f5e0c8f4ea1887f09d2afec17d8a1a"
+      "version": "0.3.1",
+      "digest": "sha256:1bf4064b303efc70cd59b7a9348a785f225909d6122c54d9f6222af0b1eeedd7"
     },
     {
       "contract_id": "SIMULATED-SUBSTANTIVE-CLOSURE-2028-V1",
       "version": "2.0.0",
-      "digest": "sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9"
+      "digest": "sha256:33bcc14da24309b7716728b3f0204008e8f7ebf58de75f9e40a5986b421f06b5"
     },
     {
       "contract_id": "RECEIPT-VOCABULARY-MAP-001",
       "version": "1.0.0",
-      "digest": "sha256:a2752fb31914e24a025738bfc3d5bd12e035a076934be8c27c11a5df8701f9cd"
+      "digest": "sha256:0f3be9ab956877281f9261c69a5f099547b048c1c878541a7c9c47edc5e03280"
+    },
+    {
+      "contract_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
+      "version": "1.0.0",
+      "digest": "sha256:f3fc8fd047fc69a63801fbf294deaf39502855b441bb4cd80e23656e53f939e3"
+    },
+    {
+      "contract_id": "DATABASE-CONSTELLATION-FINDING-INDEX-001",
+      "version": "1.0.0",
+      "digest": "sha256:52a753abf8d8cf4daadbd20ceedd7eb0b2052816fc537efe7621476b8b945da9"
+    },
+    {
+      "contract_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
+      "version": "1.0.0",
+      "digest": "sha256:7f55e85e0caf826acd407e48349a2cf9ddc0501c9f753067113d9321e880d21d"
+    },
+    {
+      "contract_id": "DATA-CONTRACT-001",
+      "version": "1.0.0",
+      "digest": "sha256:39faf43befe7362ee752965c819275111a9387ed8070e949ae9d80c6486d60c4"
+    },
+    {
+      "contract_id": "DATABASE-MIGRATION-CONTRACT-001",
+      "version": "1.0.0",
+      "digest": "sha256:a7c2cb283981cf80bf963fe7b0b40419f2dc63acfb1962279c6ce7aea6354a15"
+    },
+    {
+      "contract_id": "DATABASE-OPEN-RECEIPTS-001",
+      "version": "1.0.0",
+      "digest": "sha256:725725876b92557b2158dc5f46aa918ea5f6a9d8e0d113b1960a927f15ead133"
+    },
+    {
+      "contract_id": "DATABASE-RELEASE-MANIFEST-001",
+      "version": "1.0.0",
+      "digest": "sha256:8a96ccfc206021cdcf76e9db7baeb11b2bd8f751106af4fcb5359c5ca6aaf429"
     }
   ],
   "campaigns": [
     {
       "campaign_id": "LIMS-ELN-OPEN-RECEIPTS",
-      "marking_schema_version": "2.0.0",
+      "marking_schema_version": "2.1.0",
       "status": "active"
     },
     {
       "campaign_id": "COMPARATIVE-LITERACY-COLLABORATION",
-      "marking_schema_version": "2.0.0",
+      "marking_schema_version": "2.1.0",
       "status": "active"
     },
     {
       "campaign_id": "SITE-READING-SYSTEM",
-      "marking_schema_version": "2.0.0",
+      "marking_schema_version": "2.1.0",
       "status": "active"
     }
   ],
   "seed_lineage": {
-    "release": "spec-v0.2.0",
-    "commit": "fc7707134b58ed12ad349bf649d2af1c3689bd01",
-    "digest": "sha256:9e8c2e4980cfef4824b2f8f57914ab5b81eadac5d7a077b2186cbae541bfd2b1"
+    "release": "spec-v0.3.0",
+    "commit": "895b7a02ebddc9f7c2b63a2d03432775a120c119",
+    "digest": "sha256:a73935fcd6bd2cd5e8aeda48739f74f90c2d5b0faec50d8341d7315378ef5ff2"
   },
   "current_provenance": {
-    "release": "candidate-spec-v0.3.0",
+    "release": "candidate-spec-v0.3.1",
     "commit": "0000000000000000000000000000000000000000",
     "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
   },
@@ -87,6 +122,14 @@
     "RCP-SECR-001",
     "RCP-OBS-001",
     "RCP-ACPT-001",
+    "RCP-DB-DATA-001",
+    "RCP-DB-TENANT-001",
+    "RCP-DB-EVENT-001",
+    "RCP-DB-CONCURRENCY-001",
+    "RCP-DB-MIGRATION-001",
+    "RCP-DB-RECON-001",
+    "RCP-DB-RECOVERY-001",
+    "RCP-DB-RELEASE-001",
     "RCP-PROGRAM-PROMOTION-003"
   ],
   "invalidation_conditions": [
@@ -95,6 +138,7 @@
     "The canonical selected-future closure appears as environment-observed evidence or production authorization.",
     "The advisory program design and canonical selected-future closure share an identity or authority posture.",
     "A Scientific Quality or Regulatory decision appears outside its accountable human role.",
+    "A database contract binding migration head catalog identity reconciliation dimension or required database receipt changes.",
     "The governance schema release or Control Plane Profile changes."
   ],
   "downstream_consumers": [
@@ -131,9 +175,9 @@
     }
   ],
   "metadata": {
-    "schema_version": "2.0.0",
+    "schema_version": "2.1.0",
     "created_at": "2026-07-28T12:00:00Z",
-    "updated_at": "2026-07-28T20:00:00Z",
+    "updated_at": "2026-09-02T06:01:58-04:00",
     "owner": {
       "actor_id": "ACTOR-PROGRAM-OWNERS",
       "display_name": "Program repository owners",

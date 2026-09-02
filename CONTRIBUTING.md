@@ -15,10 +15,43 @@ Every contribution:
 8. preserves distinct simulated and observed receipt states;
 9. updates the Coordination Horizon when active dependencies or re-entry
    instructions materially change;
-10. passes the local validator and unit tests.
+10. passes program, language, pinned-coordinate, secret-shape, and unit-test
+    validation.
+
+For an ordinary candidate:
+
+```sh
+python3 scripts/validate_program.py
+python3 scripts/validate_pinned_sources.py --preflight-external
+python3 scripts/check_language.py
+python3 -m unittest tests.test_language_policy -v
+python3 scripts/scan_secret_shapes.py
+python3 -m unittest discover -s tests -v
+```
+
+Vale `3.15.2` can provide advisory author feedback with
+`vale --config=.vale.ini .`. The deterministic commands above remain the
+candidate-eligibility controls.
+
+The external preflight establishes coordinate readiness without requiring
+sibling checkouts. Release settlement checks out each sibling at the commit in
+`constellation.lock.json`, then supplies the complete source map:
+
+```sh
+python3 scripts/validate_pinned_sources.py --allow-pending \
+  --source simulation=../lims-eln-simulated-final-state \
+  --source implementation=../lims-eln-enterprise-implementation \
+  --source comparison=../lims-eln-comparative-evidence \
+  --source governance=../site-reading-governance
+```
+
+These paths use the standard sibling layout; another layout can provide the
+same four `ROLE=PATH` bindings.
 
 Automated maintenance follows the exact branch, bot-identity, and target
 contract in `BRANCHING.md` and retains the same validation and review path.
 
 Code comments describe the invariant that holds. A hard safety or privacy
 boundary states both the boundary and the replacement behavior.
+The exact scope, finding contract, exemption lifecycle, and exit semantics live
+in [docs/LANGUAGE_POLICY.md](docs/LANGUAGE_POLICY.md).

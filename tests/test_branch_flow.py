@@ -22,6 +22,42 @@ sys.modules[SPEC.name] = check_branch_flow
 SPEC.loader.exec_module(check_branch_flow)
 
 
+def workflow_trigger_keys(workflow: str) -> set[str]:
+    """Read the exact top-level event keys from a conventionally formatted workflow."""
+    lines = workflow.splitlines()
+    start = lines.index("on:") + 1
+    triggers: set[str] = set()
+    for line in lines[start:]:
+        if line and not line.startswith(" "):
+            break
+        match = re.fullmatch(r"""  ["']?([A-Za-z0-9_-]+)["']?:.*""", line)
+        if match:
+            triggers.add(match.group(1))
+    return triggers
+
+
+def runner_job_blocks(workflow: str) -> dict[str, str]:
+    """Return each job block that allocates a runner."""
+    lines = workflow.splitlines()
+    start = lines.index("jobs:") + 1
+    job_starts = [
+        (index, match.group(1))
+        for index in range(start, len(lines))
+        if (match := re.fullmatch(r"  ([A-Za-z0-9_-]+):", lines[index]))
+    ]
+    blocks: dict[str, str] = {}
+    for position, (index, name) in enumerate(job_starts):
+        end = (
+            job_starts[position + 1][0]
+            if position + 1 < len(job_starts)
+            else len(lines)
+        )
+        block = "\n".join(lines[index:end])
+        if re.search(r"(?m)^    runs-on:", block):
+            blocks[name] = block
+    return blocks
+
+
 class BranchFlowTests(unittest.TestCase):
     def invoke(self, base: str, head: str, author: str) -> tuple[int, str]:
         output = StringIO()
@@ -39,7 +75,7 @@ class BranchFlowTests(unittest.TestCase):
         output = StringIO()
         with redirect_stdout(output):
             result = check_branch_flow.main(
-                ["--base", "main", "--head", "release/0.3.0"]
+                ["--base", "main", "--head", "release/0.3.1"]
             )
         self.assertEqual(2, result)
 
@@ -49,7 +85,7 @@ class BranchFlowTests(unittest.TestCase):
         self.assertEqual(0, result)
         self.assertIn("Dependabot branch", output)
         self.assertEqual(1, self.invoke("main", head, "contributor")[0])
-        self.assertEqual(1, self.invoke("release/0.3.0", head, "dependabot[bot]")[0])
+        self.assertEqual(1, self.invoke("release/0.3.1", head, "dependabot[bot]")[0])
 
     def test_renovate_requires_bot_identity(self) -> None:
         result, output = self.invoke(
@@ -75,8 +111,10 @@ class BranchFlowTests(unittest.TestCase):
         self.assertEqual(1, result)
         self.assertIn("outside the branch naming contract", output)
 
-    def test_configured_ecosystem_matches_branch_grammar(self) -> None:
-        config = (ROOT / ".github" / "dependabot.yml").read_text(encoding="utf-8")
+    def test_monthly_dependency_route_matches_branch_grammar(self) -> None:
+        config_path = ROOT / ".github" / "dependabot.yml"
+        config = config_path.read_text(encoding="utf-8")
+        self.assertFalse((ROOT / ".github" / "dependabot.manual.yml").exists())
         configured = {
             item.replace("-", "_")
             for item in re.findall(
@@ -86,7 +124,15 @@ class BranchFlowTests(unittest.TestCase):
             )
         }
         self.assertEqual(check_branch_flow.DEPENDABOT_BRANCH_ECOSYSTEMS, configured)
+        self.assertIn("target-branch: develop", config)
+        self.assertIn("interval: monthly", config)
+        self.assertIn("open-pull-requests-limit: 2", config)
+        self.assertIn("github-actions-minor-patch:", config)
+        self.assertIn("update-types:\n          - minor\n          - patch", config)
         self.assertNotIn("pull-request-branch-name:", config)
+        codeowners = (ROOT / "CODEOWNERS").read_text(encoding="utf-8")
+        self.assertIn("/.github/dependabot.yml @driftframestudios", codeowners)
+        self.assertNotIn("dependabot.manual.yml", codeowners)
         self.assertEqual(
             1,
             self.invoke(
@@ -101,33 +147,85 @@ class BranchFlowTests(unittest.TestCase):
         self.assertEqual(0, self.invoke("develop", head, "contributor")[0])
         self.assertEqual(1, self.invoke("main", head, "contributor")[0])
 
-    def test_workflow_executes_only_the_base_controlled_checker(self) -> None:
-        workflow = (
-            ROOT / ".github" / "workflows" / "branch-policy.yml"
-        ).read_text(encoding="utf-8")
+    def test_hosted_proofs_keep_lightweight_and_deliberate_paths_distinct(
+        self,
+    ) -> None:
+        workflow_directory = ROOT / ".github" / "workflows"
+        workflow_paths = sorted(
+            [*workflow_directory.glob("*.yml"), *workflow_directory.glob("*.yaml")]
+        )
+        self.assertEqual(
+            ["pull-request.yml", "validate.yml"],
+            [path.name for path in workflow_paths],
+        )
+        workflows = {
+            path.name: path.read_text(encoding="utf-8") for path in workflow_paths
+        }
+        workflow = workflows["validate.yml"]
+        self.assertFalse(
+            (ROOT / ".github" / "workflows" / "branch-policy.yml").exists()
+        )
         self.assertIn("permissions:\n  contents: read", workflow)
-        self.assertIn("pull_request_target:", workflow)
-        self.assertIn(
-            "ref: ${{ github.event.pull_request.base.sha }}",
-            workflow,
+        self.assertEqual({"workflow_dispatch"}, workflow_trigger_keys(workflow))
+        self.assertIn("confirm_run:", workflow)
+        self.assertIn("vars.ENABLE_GITHUB_ACTIONS == 'true'", workflow)
+        self.assertIn("inputs.confirm_run", workflow)
+        self.assertIn("timeout-minutes: 10", workflow)
+        checkout_count = workflow.count("actions/checkout@")
+        self.assertGreater(checkout_count, 0)
+        self.assertEqual(
+            checkout_count,
+            workflow.count("persist-credentials: false"),
         )
-        self.assertIn("repository: ${{ github.repository }}", workflow)
-        self.assertIn("path: .branch-policy-base", workflow)
-        self.assertIn("sparse-checkout: scripts/check_branch_flow.py", workflow)
-        self.assertIn("sparse-checkout-cone-mode: false", workflow)
-        self.assertIn("working-directory: .branch-policy-base", workflow)
+        jobs = runner_job_blocks(workflow)
+        self.assertTrue(jobs)
+        for name, block in jobs.items():
+            with self.subTest(job=name):
+                gate = re.search(r"(?m)^    if:\s*(.+)$", block)
+                self.assertIsNotNone(gate)
+                assert gate is not None
+                self.assertIn("vars.ENABLE_GITHUB_ACTIONS == 'true'", gate.group(1))
+                self.assertIn("inputs.confirm_run", gate.group(1))
+
+        pull_request = workflows["pull-request.yml"]
+        self.assertEqual({"pull_request"}, workflow_trigger_keys(pull_request))
         self.assertIn(
-            "HEAD_REF: ${{ github.event.pull_request.head.ref }}",
-            workflow,
+            "  pull_request:\n    branches:\n      - develop\n      - main",
+            pull_request,
         )
+        self.assertIn("permissions:\n  contents: read", pull_request)
+        self.assertIn("cancel-in-progress: true", pull_request)
+        self.assertNotIn("secrets.", pull_request)
+        pull_request_jobs = runner_job_blocks(pull_request)
+        self.assertEqual({"program-pr-validation"}, set(pull_request_jobs))
+        job = pull_request_jobs["program-pr-validation"]
+        self.assertIn("runs-on: ubuntu-24.04", job)
+        timeout = re.search(r"(?m)^    timeout-minutes: ([0-9]+)$", job)
+        self.assertIsNotNone(timeout)
+        assert timeout is not None
+        self.assertLessEqual(int(timeout.group(1)), 10)
+        self.assertEqual(1, pull_request.count("actions/setup-python@"))
+        self.assertIn('python-version: "3.12"', pull_request)
+        self.assertNotIn("strategy:", pull_request)
+        self.assertNotIn("matrix:", pull_request)
+        self.assertIn("python scripts/validate_program.py", pull_request)
         self.assertIn(
-            "PR_AUTHOR: ${{ github.event.pull_request.user.login }}",
-            workflow,
+            "python scripts/generate_contract_schemas.py --check",
+            pull_request,
         )
-        self.assertIn('--author "$PR_AUTHOR"', workflow)
-        self.assertIn("persist-credentials: false", workflow)
-        self.assertEqual(1, workflow.count("actions/checkout@"))
-        self.assertNotIn("github.event.pull_request.head.sha", workflow)
+        self.assertIn("python -m unittest discover -s tests -v", pull_request)
+
+        action_reference = re.compile(r"^\s*uses:\s*([^#\s]+)", re.MULTILINE)
+        for name, content in workflows.items():
+            with self.subTest(workflow=name):
+                references = action_reference.findall(content)
+                self.assertTrue(references)
+                for reference in references:
+                    self.assertRegex(reference, r"^[^@]+@[a-f0-9]{40}$")
+                self.assertGreaterEqual(
+                    content.count("persist-credentials: false"),
+                    content.count("actions/checkout@"),
+                )
 
 
 if __name__ == "__main__":

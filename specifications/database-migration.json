@@ -1,0 +1,229 @@
+{
+  "migration_contract_id": "DATABASE-MIGRATION-CONTRACT-001",
+  "version": "1.0.0",
+  "status": "specified",
+  "authority": "program_specification",
+  "data_contract_id": "DATA-CONTRACT-001",
+  "finding_ids": [
+    "DBF-MIG-001",
+    "DBF-TIME-001",
+    "DBF-TEN-001",
+    "DBF-MODEL-001",
+    "DBF-AUDIT-001",
+    "DBF-SCHEMA-001",
+    "DBF-TEST-001",
+    "DBF-MIG-002",
+    "DBF-CUST-001",
+    "DBF-INDEX-001",
+    "DBF-MIG-003",
+    "DBF-MIG-004",
+    "DBF-FORK-001"
+  ],
+  "engine_contract": {
+    "family": "PostgreSQL",
+    "qualified_major": "selected_by_implementation_release",
+    "reference_majors": [17, 18],
+    "timezone": "UTC",
+    "encoding": "UTF8"
+  },
+  "ownership_boundaries": [
+    {
+      "boundary_id": "DB-OWNER-PROGRAM-SCHEMA",
+      "scope": "Program-owned PostgreSQL schema evolution",
+      "owner": "implementation database release",
+      "responsibilities": [
+        "author versioned SQL for program-owned schemas roles constraints policies functions and reference data",
+        "preserve immutable applied migration bytes and add forward successor migrations",
+        "exercise clean installation every supported predecessor upgrade and canonical catalog convergence"
+      ],
+      "evidence": [
+        "migration-tool validate and info output",
+        "end-to-end PostgreSQL integration suite",
+        "parameterized clean predecessor failure replay and convergence results"
+      ]
+    },
+    {
+      "boundary_id": "DB-OWNER-VENDOR-LIFECYCLE",
+      "scope": "Sapio Benchling and LabKey product lifecycle",
+      "owner": "vendor-supported platform operations",
+      "responsibilities": [
+        "apply vendor-supported upgrades configuration packages and documented compatibility paths",
+        "use released vendor APIs SDKs export and import surfaces for supported data access",
+        "retain exact vendor release tenant configuration and qualification evidence"
+      ],
+      "evidence": [
+        "vendor release and compatibility coordinates",
+        "configured-environment conformance results",
+        "vendor-supported recovery and escalation records"
+      ]
+    },
+    {
+      "boundary_id": "DB-OWNER-CROSS-VENDOR-MOVEMENT",
+      "scope": "Cross-vendor data movement and semantic reconciliation",
+      "owner": "data migration program",
+      "responsibilities": [
+        "select vendor adapters exports imports AWS DMS or DMS Schema Conversion according to source and target fit",
+        "version transformation mappings checkpoints exceptions and delta-convergence controls",
+        "reconcile scientific identity meaning relationships artifacts audit security and representative distributions"
+      ],
+      "evidence": [
+        "source and target inventory",
+        "transport and conversion assessment",
+        "dimension-level reconciliation and exception decisions"
+      ]
+    },
+    {
+      "boundary_id": "DB-OWNER-RELEASE-EVIDENCE",
+      "scope": "Database release and accountable acceptance",
+      "owner": "release governance and bounded accountable roles",
+      "responsibilities": [
+        "bind immutable implementation migration catalog environment and test coordinates",
+        "assemble recovery security observability scientific Quality and Regulatory evidence",
+        "record distinct decisions residual risks and requalification triggers"
+      ],
+      "evidence": [
+        "DATABASE-RELEASE-MANIFEST-001",
+        "current database receipt registry",
+        "role-bounded acceptance decisions"
+      ]
+    }
+  ],
+  "schema_migration_requirements": {
+    "tool_posture": "The implementation selects a maintained schema-migration product that satisfies this capability contract.",
+    "required_capabilities": [
+      "ordered versioned SQL application",
+      "durable applied history with migration checksums",
+      "database-scoped coordination for concurrent invocation",
+      "PostgreSQL transactional migration handling",
+      "explicit baseline adoption for populated predecessors",
+      "machine-readable validation status and pending migration inventory",
+      "immutable applied migrations with forward successor remediation"
+    ],
+    "review_policy": "Review SQL domain effects lock posture transaction posture and recovery before application; treat tool-owned history as evidence through its supported command surface.",
+    "catalog_gate": "The tool-reported migration state and the independently computed database catalog projection agree before application traffic begins.",
+    "recovery_policy": "PostgreSQL transactional failure preserves the predecessor state; data-aware forward remediation restore and cutback plans address effects that already reached dependent systems.",
+    "scope_boundary": "The migration product executes program-owned schema evolution while domain-model design vendor lifecycle data reconciliation restore and accountable acceptance retain their named owners."
+  },
+  "selected_implementation_profile": {
+    "profile_id": "FLYWAY-COMMUNITY-POSTGRESQL-001",
+    "product": "Flyway Community",
+    "version": "13.0.0",
+    "release_date": "2026-07-20",
+    "selection_status": "selected_for_corrective_transition",
+    "version_policy": "The implementation pins the executable version and records an immutable distribution or container digest in release evidence after resolving the exact platform artifact.",
+    "migration_pattern": "V<version>__<description>.sql",
+    "history_relation": "Flyway-owned public.flyway_schema_history",
+    "commands": [
+      "flyway validate -outputType=json",
+      "flyway info -outputType=json",
+      "flyway migrate -outputType=json"
+    ],
+    "configuration_policy": [
+      "baselineOnMigrate=false",
+      "outOfOrder=false",
+      "validateMigrationNaming=true",
+      "cleanDisabled=true in shared and release environments",
+      "connection identity and protected values arrive through the approved runtime configuration boundary"
+    ],
+    "baseline_policy": "Adopt a populated predecessor through an explicit reviewed baseline command or released baseline migration after schema fingerprint and data preflight evidence agree.",
+    "history_policy": "Use Flyway validate and info JSON as the supported history interface; preserve the Flyway-managed history relation as an internal product surface.",
+    "transaction_policy": "Keep each PostgreSQL versioned migration transactional when its statements permit; isolate operations that require a separate transaction and bind their recovery evidence.",
+    "coordination_policy": "Use Flyway database coordination for migration serialization and measure lock behavior through the existing rehearsal suite.",
+    "community_boundary": "Community commands cover add info validate repair baseline migrate and code checks; release design excludes Teams or Enterprise-only undo drift dry-run diff and generate capabilities.",
+    "transition_receipt": {
+      "receipt_id": "RCP-DB-MIGRATION-001",
+      "probability_event_id": "FLYWAY-TRANSITION-EQUIVALENCE-001",
+      "required_evidence": [
+        "Flyway 13.0.0 executable coordinate and resolved immutable artifact digest",
+        "clean and populated predecessor migration results",
+        "failure atomicity replay and zero-pending-work results",
+        "clean-versus-upgrade catalog convergence across supported PostgreSQL majors",
+        "retained domain integration and parameterized test results"
+      ]
+    }
+  },
+  "phases": [
+    {
+      "phase_id": "DB-MIG-PHASE-01",
+      "name": "baseline_and_lineage",
+      "entry_evidence": ["canonical tree decision", "DATA-CONTRACT-001", "supported engine major"],
+      "actions": ["create program-owned schemas and roles", "establish migration history", "record predecessor baseline and catalog digest"],
+      "exit_evidence": ["baseline revision", "history checksum receipt", "role and schema ownership receipt"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-02",
+      "name": "expand",
+      "entry_evidence": ["accepted baseline", "reviewed offline SQL", "change-window and lock objectives"],
+      "actions": ["add compatible types tables columns constraints and indexes", "introduce dual-write or projection adapters where required", "add constraints through staged validation when table volume warrants it"],
+      "exit_evidence": ["expand migration receipt", "predecessor compatibility tests", "query-plan review"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-03",
+      "name": "backfill_and_reconcile",
+      "entry_evidence": ["expand phase accepted", "stable source snapshot or watermark", "versioned transformation manifest"],
+      "actions": ["load bounded batches with durable compound checkpoints", "record source-to-canonical mappings and exceptions", "evaluate every reconciliation dimension"],
+      "exit_evidence": ["batch receipts", "exception dispositions", "accepted reconciliation report"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-04",
+      "name": "converge_and_shadow",
+      "entry_evidence": ["accepted reconciliation", "delta capture active", "shadow comparison plan"],
+      "actions": ["apply and reconcile deltas", "compare canonical reads events and query plans", "exercise restore rollback and data exit"],
+      "exit_evidence": ["shadow parity receipt", "restore receipt", "rollback and data-exit receipt"]
+    },
+    {
+      "phase_id": "DB-MIG-PHASE-05",
+      "name": "contract_and_release",
+      "entry_evidence": ["observed migration gates accepted", "accountable cutover decisions", "rollback checkpoint current"],
+      "actions": ["move readers and writers to the canonical boundary", "retire compatibility paths through a successor migration", "settle the database release manifest"],
+      "exit_evidence": ["immutable migration head", "DATABASE-RELEASE-MANIFEST-001", "residual risk and requalification triggers"]
+    }
+  ],
+  "reconciliation_dimensions": [
+    {"dimension_id": "RECON-IDENTITY", "measure": "source and canonical identity uniqueness and mapping coverage", "acceptance": "Every in-scope identity maps once or carries an accepted exception."},
+    {"dimension_id": "RECON-STRUCTURE", "measure": "schema field type nullability vocabulary and version coverage", "acceptance": "Every required field satisfies the released data contract or carries an accepted exception."},
+    {"dimension_id": "RECON-SEMANTIC", "measure": "scientific state quantity unit qualifier method and intended meaning", "acceptance": "Accountable scientific reviewers accept defined equality and tolerance rules."},
+    {"dimension_id": "RECON-RELATIONSHIP", "measure": "lineage custody assay approval signature artifact and trace edges", "acceptance": "Required edges preserve endpoint identity cardinality and version."},
+    {"dimension_id": "RECON-DISTRIBUTION", "measure": "counts null rates status distributions numeric summaries and exception rates", "acceptance": "Observed metrics remain within approved thresholds and every breach carries disposition."},
+    {"dimension_id": "RECON-ARTIFACT", "measure": "artifact inventory bytes digest media type and lineage", "acceptance": "Every in-scope artifact verifies its content digest or carries an accepted exception."},
+    {"dimension_id": "RECON-AUDIT", "measure": "actors times reasons authorization decisions events and supersession", "acceptance": "Representative histories reconstruct the approved business narrative."},
+    {"dimension_id": "RECON-SECURITY", "measure": "tenant scope row policies role grants redaction and retention", "acceptance": "Adversarial tests demonstrate the released tenant and privilege boundary."},
+    {"dimension_id": "RECON-HUMAN-SAMPLE", "measure": "risk-based record review by scientific laboratory Quality and business roles", "acceptance": "The approved sample completes with recorded decisions and owned exceptions."}
+  ],
+  "release_gates": [
+    {"gate_id": "DB-GATE-MIGRATION-HISTORY", "evidence": ["migration head", "revision checksums", "catalog digest", "predecessor upgrade receipt"]},
+    {"gate_id": "DB-GATE-DATA-CONTRACT", "evidence": ["DATA-CONTRACT-001", "entity mapping coverage", "primitive edge-case suite"]},
+    {"gate_id": "DB-GATE-TENANT", "evidence": ["forced row-level security catalog", "cross-tenant tests", "role grant review"]},
+    {"gate_id": "DB-GATE-CONSISTENCY", "evidence": ["concurrent idempotency tests", "aggregate event outbox atomicity tests", "direct-DML control tests"]},
+    {"gate_id": "DB-GATE-RECONCILIATION", "evidence": ["all reconciliation dimensions", "exception dispositions", "accountable review decisions"]},
+    {"gate_id": "DB-GATE-RECOVERY", "evidence": ["clean restore", "rollback", "data exit", "observed RTO and RPO"]},
+    {"gate_id": "DB-GATE-RELEASE", "evidence": ["database release manifest", "observed open-receipt closures", "immutable release coordinate"]}
+  ],
+  "verification_matrix": [
+    "Empty database reaches the expected migration head.",
+    "Every supported predecessor reaches the expected head with preserved data.",
+    "Repeated execution preserves one migration history.",
+    "Flyway validate and info JSON report one released migration set with zero unexpected pending missing failed future or out-of-order states.",
+    "Explicit baseline adoption accepts the reviewed predecessor fingerprint and rejects a divergent predecessor.",
+    "The existing end-to-end PostgreSQL integration tests retain their domain assertions while Flyway supplies migration execution.",
+    "Parameterized migration tests cover clean install populated upgrade incompatible preflight transactional failure replay and clean-versus-upgrade convergence.",
+    "Interrupted data phases resume from durable checkpoints.",
+    "Concurrent identical and conflicting requests exercise idempotency and optimistic concurrency.",
+    "Cross-tenant reads and writes exercise row policies and privileged-role posture.",
+    "Direct event and evidence mutation exercises database privilege boundaries.",
+    "Equivalent instants decimals unit mappings JSON edge cases and status invariants exercise primitive contracts.",
+    "Representative query plans exercise indexes retention and partition decisions.",
+    "Backup restore rollback and data exit reconstruct the accepted evidence boundary."
+  ],
+  "program_bindings": {
+    "requirement_ids": ["SPEC-DBMG-001"],
+    "rule_ids": ["RULE-DBMG-001", "RULE-DBMG-002", "RULE-DBMG-003", "RULE-DBRL-001"],
+    "scenario_ids": ["SCN-DB-MIGRATE-001", "SCN-DB-RECON-001", "SCN-DB-RELEASE-001"],
+    "open_receipt_ids": ["RCP-DB-MIGRATION-001", "RCP-DB-RECON-001", "RCP-DB-RECOVERY-001", "RCP-DB-RELEASE-001"]
+  },
+  "metadata": {
+    "created_at": "2026-08-04T14:00:00Z",
+    "source_ledger_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001",
+    "next_review_trigger": "The engine major, selected Flyway release, tool-neutral capability contract, vendor lifecycle boundary, source snapshot mechanism, reconciliation threshold, or release topology changes."
+  }
+}

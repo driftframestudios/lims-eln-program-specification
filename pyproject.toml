@@ -1,8 +1,30 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "lims-eln-program-specification"
-version = "0.3.0"
+version = "0.3.1"
 description = "Executable specification and forecast control plane for comparative LIMS/ELN delivery"
+authors = [{ name = "Driftframe Studios, Limited Liability Company" }]
 requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2.13,<3",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+lims_eln_contracts = [
+  "resources/*.json",
+  "resources/observations/*.json",
+  "resources/scenarios/*.json",
+  "resources/schemas/*.json",
+]
 
 [tool.unittest]
 start-directory = "tests"

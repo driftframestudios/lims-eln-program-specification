@@ -1,0 +1,320 @@
+{
+  "plan_set_id": "DATABASE-MODERNIZATION-PLAN-SET-001",
+  "version": "1.0.0",
+  "probability_of": "Given a capable hybrid team, two implementation increments, the stated gates, and a representative PostgreSQL rehearsal, the route yields a reviewable enterprise-grade database release candidate that preserves qualified scientific semantics, tenant isolation, audit reconstruction, and recoverability and passes independent principal-engineer, database, security, operations, and scientific review with follow-up limited to accepted non-critical items.",
+  "estimation_posture": {
+    "method": "structured expert judgment over the observed reference artifacts, explicit dependency assumptions, and comparative delivery risk",
+    "interpretation": "Probabilities compare routes under the same stated horizon and express planning belief rather than measured frequencies.",
+    "conditioning_assumptions": [
+      "A capable hybrid team has named owners for scientific semantics, database engineering, security, operations, and delivery coordination.",
+      "The delivery horizon contains two implementation increments with capacity for implementation, independent review, and bounded remediation.",
+      "The stated contract and release gates remain stable through the estimation horizon or trigger recalibration when they change.",
+      "A representative PostgreSQL rehearsal environment and representative data are available early enough to inform the second increment.",
+      "Independent reviewers apply shared acceptance criteria, and accepted non-critical follow-up receives an owner and Coordination Horizon."
+    ],
+    "recalibration_triggers": [
+      "The Flyway transition equivalence rehearsal changes the retained-test or migration-surface inventory.",
+      "Representative record volume and query plans become available.",
+      "The first predecessor-to-target migration rehearsal completes.",
+      "Scientific mapping exceptions or row-security defects exceed a plan threshold."
+    ]
+  },
+  "flyway_transition_estimate": {
+    "event_id": "FLYWAY-TRANSITION-EQUIVALENCE-001",
+    "probability_of": "Given the reviewed versioned PostgreSQL SQL, existing end-to-end integration suite, parameterized migration scenarios, Flyway Community 13.0.0, and one corrective tranche, the implementation replaces bespoke migration orchestration while preserving clean installation, populated predecessor upgrade, failure atomicity, replay, zero-pending-work, and clean-versus-upgrade convergence evidence without a critical domain-contract regression.",
+    "estimated_probability": 0.91,
+    "credible_range": [0.84, 0.96],
+    "relationship_to_canonical_event": "This bounded transition estimate is a conditional derivative that informs DB-PLAN-02 delivery risk and remains numerically separate from the five canonical route estimates.",
+    "basis": [
+      "The versioned SQL already expresses the reviewed PostgreSQL domain changes.",
+      "The existing end-to-end suite asserts domain behavior independently of migration orchestration.",
+      "The parameterized migration suite already covers clean populated failure replay and convergence paths.",
+      "Flyway Community supplies ordered application checksummed history database coordination validation status and explicit baselining."
+    ],
+    "falsifiers": [
+      "A retained migration scenario depends on custom-runner behavior outside the tool-neutral capability contract.",
+      "A supported predecessor cannot be mapped to an explicit reviewed Flyway baseline coordinate.",
+      "Clean and upgraded catalogs diverge after the Flyway transition.",
+      "A retained domain integration test regresses on either supported PostgreSQL major."
+    ],
+    "recalibration_triggers": [
+      "The first Flyway validate info and migrate rehearsal completes.",
+      "The custom-to-Flyway test mapping changes.",
+      "The selected Flyway version or PostgreSQL support matrix changes.",
+      "A populated predecessor reveals an unmodeled migration state."
+    ]
+  },
+  "plans": [
+    {
+      "id": "DB-PLAN-01",
+      "name": "Constrained primitive retrofit",
+      "probability": 0.54,
+      "credible_range": [0.39, 0.67],
+      "route": "Replace unsafe column types, add checks, indexes, and migration history around the current small relational shape.",
+      "strengths": [
+        "Rapidly closes text timestamp, digest, status, and counter defects.",
+        "Creates a compact first migration tranche.",
+        "Preserves a narrow review surface."
+      ],
+      "tradeoffs": [
+        "Domain-to-persistence drift remains a successor concern.",
+        "Scientific observations, approvals, and migration controls still require new relations.",
+        "A second structural migration arrives early."
+      ],
+      "best_fit": "A short-lived exemplar whose immediate audience needs corrected primitive examples before a broader reference release.",
+      "falsifiers": [
+        "More than one qualified workflow requires a missing durable entity.",
+        "Tenant or evidence policies require structural change across most tables."
+      ]
+    },
+    {
+      "id": "DB-PLAN-02",
+      "name": "Canonical relational model with migration spine",
+      "probability": 0.83,
+      "credible_range": [0.73, 0.9],
+      "route": "Define the canonical data contract, implement a PostgreSQL relational model, and make Flyway Community versioned SQL plus database integration tests the release spine.",
+      "strengths": [
+        "Aligns domain, storage, migration, and release evidence.",
+        "Makes tenant, temporal, numeric, unit, nullability, and audit semantics enforceable.",
+        "Produces a reusable enterprise reference rather than a corrected sketch."
+      ],
+      "tradeoffs": [
+        "Requires deliberate model ownership and vocabulary decisions.",
+        "Adds review work across scientific, platform, security, and Quality roles.",
+        "Representative data is needed for index and partition decisions."
+      ],
+      "best_fit": "The primary enterprise reference and implementation repository.",
+      "falsifiers": [
+        "The implementation target is intentionally single-user and disposable.",
+        "Vendor persistence remains the sole system of record for every qualified workflow."
+      ]
+    },
+    {
+      "id": "DB-PLAN-03",
+      "name": "Event-led evidence core",
+      "probability": 0.71,
+      "credible_range": [0.57, 0.82],
+      "route": "Make immutable domain and evidence events primary, derive current projections, and use relational tables for query and workflow state.",
+      "strengths": [
+        "Strengthens correction, approval, custody, and audit reconstruction.",
+        "Makes temporal and causality semantics explicit.",
+        "Supports replay and independent projection verification."
+      ],
+      "tradeoffs": [
+        "Event schema evolution and replay operations add qualification surface.",
+        "Projection consistency and retention need operational discipline.",
+        "Teams require strong event-modeling experience."
+      ],
+      "best_fit": "High-consequence records whose complete decision history materially supports scientific and Quality review.",
+      "falsifiers": [
+        "The organization lacks ownership for event versioning and replay.",
+        "Most records are authoritative vendor projections with limited local lifecycle."
+      ]
+    },
+    {
+      "id": "DB-PLAN-04",
+      "name": "Dual-run migration and reconciliation program",
+      "probability": 0.89,
+      "credible_range": [0.8, 0.95],
+      "route": "Build the canonical model and run source snapshot, delta capture, semantic reconciliation, shadow reads, restore, and rollback rehearsals before cutover.",
+      "strengths": [
+        "Provides the strongest evidence that migrated meaning survives contact with reality.",
+        "Finds mapping, distribution, attachment, signature, and workflow exceptions before release.",
+        "Creates direct executive and evaluator evidence."
+      ],
+      "tradeoffs": [
+        "Carries the highest delivery and operating cost.",
+        "Depends on representative source access and accountable reviewers.",
+        "The two-increment horizon requires early environment readiness."
+      ],
+      "best_fit": "A live regulated re-platform with material source data and a reversible cutover requirement.",
+      "falsifiers": [
+        "Representative source data and source change capture remain unavailable through the horizon.",
+        "The system remains an isolated reference artifact rather than a migration target."
+      ]
+    },
+    {
+      "id": "DB-PLAN-05",
+      "name": "Simulated final-state database twin",
+      "probability": 0.78,
+      "credible_range": [0.66, 0.87],
+      "route": "Create a complete reference schema, migration history, representative synthetic corpus, operational fixtures, and release receipts as the comparison target for incremental implementation.",
+      "strengths": [
+        "Lets the hybrid team inspect the expected end state before each implementation choice.",
+        "Supports repeatable schema, migration, reconciliation, and query-plan comparisons.",
+        "Keeps exploratory decisions separate from observed production evidence."
+      ],
+      "tradeoffs": [
+        "Synthetic distributions can underrepresent encountered edge cases.",
+        "The twin requires active synchronization with accepted decisions.",
+        "Simulation authority remains advisory until observed receipts arrive."
+      ],
+      "best_fit": "Comparative literacy, onboarding, architecture review, and staged delivery across the repository constellation.",
+      "falsifiers": [
+        "The twin diverges from released contracts for one full interstitial.",
+        "Representative observed distributions materially reverse its data-shape assumptions."
+      ]
+    }
+  ],
+  "recommended_synthesis": {
+    "recommendation_id": "DB-SYNTHESIS-001",
+    "estimated_probability": 0.88,
+    "credible_range": [0.79, 0.94],
+    "composition": [
+      {"plan_id": "DB-PLAN-02", "contribution": "Canonical relational model and migration spine"},
+      {"plan_id": "DB-PLAN-03", "contribution": "Immutable event and evidence boundaries for consequential decisions"},
+      {"plan_id": "DB-PLAN-04", "contribution": "Representative dual-run reconciliation, restore, and rollback evidence"},
+      {"plan_id": "DB-PLAN-05", "contribution": "Simulated final-state comparison target and synthetic rehearsal corpus"},
+      {"plan_id": "DB-PLAN-01", "contribution": "Early closure of unsafe primitive examples while the canonical model settles"}
+    ],
+    "rationale": "The synthesis uses a durable canonical core, applies event semantics where historical meaning warrants them, rehearses migration against representative evidence, and retains a simulated comparison target for periodic recalibration."
+  },
+  "chain_of_action": [
+    {
+      "stage_id": "DB-STAGE-01",
+      "sequence": 1,
+      "name": "Settle lineage and decision rights",
+      "actions": [
+        "Designate one canonical reference tree and record the earlier tree as historical lineage.",
+        "Assign scientific data, platform, security, migration, Quality, and operations decision rights.",
+        "Accept or reclassify every finding in the primitive ledger."
+      ],
+      "completion_evidence": [
+        "Canonical tree and supersession decision",
+        "Owned finding dispositions",
+        "Approved target engine and Flyway Community implementation profile"
+      ],
+      "interstitial": {
+        "question": "Do the selected engine, vendor-system-of-record boundaries, or accountable roles change the target model?",
+        "signals": ["engine decision", "vendor authority map", "finding disposition changes"],
+        "response": "Revise contract scope and probability estimates before schema implementation."
+      }
+    },
+    {
+      "stage_id": "DB-STAGE-02",
+      "sequence": 2,
+      "name": "Publish canonical data primitives",
+      "actions": [
+        "Bind temporal, identity, digest, measured quantity, unit, vocabulary, JSON, nullability, tenant, event, and receipt semantics.",
+        "Map every qualified domain primitive to relational, object, or event storage.",
+        "Create specification-by-example cases for equivalent instants, tenant boundaries, precision, replay, and corrections."
+      ],
+      "completion_evidence": [
+        "DATA-CONTRACT-001 accepted",
+        "Domain-to-storage mapping coverage",
+        "Primitive edge-case fixtures"
+      ],
+      "interstitial": {
+        "question": "Which primitive decisions remain scientifically ambiguous or vendor-dependent?",
+        "signals": ["unmapped domain fields", "unit exceptions", "vocabulary ownership questions"],
+        "response": "Keep affected implementation gates open and route bounded decisions to their accountable owners."
+      }
+    },
+    {
+      "stage_id": "DB-STAGE-03",
+      "sequence": 3,
+      "name": "Establish the migration control plane",
+      "actions": [
+        "Adopt the reviewed PostgreSQL SQL as Flyway versioned migrations and preserve applied bytes through forward successor scripts.",
+        "Configure Flyway Community 13.0.0 validation info migration explicit baselining and PostgreSQL transactional behavior under the tool-neutral capability contract.",
+        "Reuse the existing end-to-end and parameterized suites for empty predecessor repeated failure replay and convergence paths."
+      ],
+      "completion_evidence": [
+        "Flyway validate info and migrate JSON receipts",
+        "Retained end-to-end and parameterized PostgreSQL results",
+        "Predecessor upgrade failure replay and convergence evidence"
+      ],
+      "interstitial": {
+        "question": "Does Flyway transition evidence preserve the existing domain assertions and approved change-window posture?",
+        "signals": ["retained-test regression", "unexpected Flyway state", "lock wait", "clean-versus-upgrade catalog drift"],
+        "response": "Keep the transition candidate open, correct the SQL configuration or explicit baseline mapping, and replay the affected retained scenarios."
+      }
+    },
+    {
+      "stage_id": "DB-STAGE-04",
+      "sequence": 4,
+      "name": "Implement enforced consistency boundaries",
+      "actions": [
+        "Implement tenant-preserving keys and forced row-level security.",
+        "Commit aggregate state, immutable event, and outbox message through one guarded write boundary.",
+        "Implement inbox leases, idempotency reservations, evidence edges, approval decisions, and content-addressed artifacts."
+      ],
+      "completion_evidence": [
+        "Concurrent transaction tests",
+        "Cross-tenant adversarial tests",
+        "Direct-DML and event replay tests"
+      ],
+      "interstitial": {
+        "question": "Which consistency or security boundary depends on application convention rather than an enforced contract?",
+        "signals": ["unprivileged direct DML success", "cross-tenant visibility", "orphan event or outbox row"],
+        "response": "Strengthen database privileges, constraints, policies, or the controlled write interface before proceeding."
+      }
+    },
+    {
+      "stage_id": "DB-STAGE-05",
+      "sequence": 5,
+      "name": "Rehearse migration and semantic reconciliation",
+      "actions": [
+        "Capture a stable source snapshot and durable compound checkpoints.",
+        "Load representative data through versioned transformations and an exception work queue.",
+        "Evaluate structural, semantic, relational, distributional, artifact, audit, signature, and human-sample dimensions."
+      ],
+      "completion_evidence": [
+        "Versioned reconciliation report",
+        "Owned exception dispositions",
+        "Accepted restore and rollback rehearsal"
+      ],
+      "interstitial": {
+        "question": "Do exception rates, scientific discrepancies, or recovery objectives alter cutover fitness?",
+        "signals": ["threshold breach", "unowned exception", "restore objective variance", "mapping revision"],
+        "response": "Keep the cutover gate closed, revise the mapping or threshold with accountable approval, and repeat the affected tranche."
+      }
+    },
+    {
+      "stage_id": "DB-STAGE-06",
+      "sequence": 6,
+      "name": "Compare shadow behavior and operating characteristics",
+      "actions": [
+        "Compare canonical reads and events against the simulated final-state twin.",
+        "Measure query plans, index selectivity, retention, partition thresholds, and outbox recovery.",
+        "Exercise backup, restore, key rotation, and observability under representative load."
+      ],
+      "completion_evidence": [
+        "Paired implementation and simulation results",
+        "Representative query-plan inventory",
+        "Operational recovery receipts"
+      ],
+      "interstitial": {
+        "question": "Which observed behavior should revise the specification, implementation, simulation, or operating objective?",
+        "signals": ["paired divergence", "plan regression", "recovery variance", "retention pressure"],
+        "response": "Classify the divergence, update its owning artifact, and replay downstream gates."
+      }
+    },
+    {
+      "stage_id": "DB-STAGE-07",
+      "sequence": 7,
+      "name": "Settle the database release manifest",
+      "actions": [
+        "Bind contract, finding ledger, migration head, schema digest, reconciliation, security, restore, and acceptance receipts.",
+        "Record residual risks and requalification triggers.",
+        "Promote through the protected release path after accountable decisions settle."
+      ],
+      "completion_evidence": [
+        "DATABASE-RELEASE-MANIFEST-001 settled",
+        "Every database receipt closed with observed evidence",
+        "Immutable release coordinate"
+      ],
+      "interstitial": {
+        "question": "Does every release claim resolve to observed evidence within its declared authority and environment?",
+        "signals": ["open receipt", "digest variance", "approval expiry", "environment change"],
+        "response": "Retain candidate state and route the exact open evidence event through the Coordination Horizon."
+      }
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-08-04T14:00:00Z",
+    "evidence_mode": "planning_estimate",
+    "authority": "advisory_program_design",
+    "source_ledger_id": "LIMS-ELN-DATA-PRIMITIVE-LEDGER-001"
+  }
+}

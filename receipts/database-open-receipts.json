@@ -1,0 +1,97 @@
+{
+  "registry_id": "DATABASE-OPEN-RECEIPTS-001",
+  "version": "1.0.0",
+  "evidence_posture": "future_observed_closure",
+  "receipts": [
+    {
+      "id": "RCP-DB-DATA-001",
+      "component": "canonical_data_contract",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "Scientific data, platform, security, Quality, and migration owners accept the canonical temporal identity digest quantity unit vocabulary JSON nullability and evidence semantics.",
+      "accountable_roles": ["scientific_data_owner", "platform_owner", "security_owner", "quality_owner", "data_migration_owner"],
+      "required_evidence": ["DATA-CONTRACT-001", "complete entity-to-storage mapping", "primitive edge-case suite", "accepted vocabulary and unit decisions"],
+      "requalification_triggers": ["database major change", "canonicalization profile change", "unit or vocabulary policy change", "qualified entity mapping change"]
+    },
+    {
+      "id": "RCP-DB-TENANT-001",
+      "component": "tenant_relational_security",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "A production-equivalent PostgreSQL environment demonstrates tenant-preserving keys, forced row-level security, bounded service roles, and explicit evidence scope.",
+      "accountable_roles": ["security_owner", "privacy_owner", "platform_owner", "system_owner"],
+      "required_evidence": ["row security catalog", "cross-tenant adversarial tests", "role and grant review", "backup and privileged-reader posture"],
+      "requalification_triggers": ["tenant policy change", "service role change", "new evidence scope", "backup or analytics access-path change"]
+    },
+    {
+      "id": "RCP-DB-EVENT-001",
+      "component": "immutable_event_decision_evidence",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "Lifecycle custody approval signature correction and evidence histories reconstruct from immutable events and controlled supersession paths.",
+      "accountable_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "scientific_data_owner"],
+      "required_evidence": ["event envelope contract", "projection replay suite", "direct-DML control tests", "approval and correction history review"],
+      "requalification_triggers": ["event schema change", "projection algorithm change", "signature meaning change", "retention or correction policy change"]
+    },
+    {
+      "id": "RCP-DB-CONCURRENCY-001",
+      "component": "transaction_idempotency_inbox_outbox",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "Concurrent lifecycle, custody, ingress, artifact, idempotency, inbox, lease, outbox, and recovery cases converge on the specified effects and receipts.",
+      "accountable_roles": ["platform_owner", "operations_owner", "instrument_integration_owner", "scientific_data_owner"],
+      "required_evidence": ["concurrent PostgreSQL contract tests", "crash and lease-expiry tests", "aggregate event outbox atomicity", "changed-request replay classification"],
+      "requalification_triggers": ["transaction isolation change", "worker lease change", "idempotency scope change", "new delivery transport"]
+    },
+    {
+      "id": "RCP-DB-MIGRATION-001",
+      "component": "migration_history_and_upgrade",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "Empty and supported predecessor databases reach one expected Flyway head with stable checksums, database-scoped coordination, preserved data, and exercised forward remediation.",
+      "accountable_roles": ["data_migration_owner", "platform_owner", "operations_owner", "quality_owner"],
+      "required_evidence": ["Flyway 13.0.0 executable coordinate and resolved immutable artifact digest", "Flyway validate and info JSON with reviewed versioned SQL", "empty and predecessor upgrade receipts from the retained parameterized suite", "transactional failure replay zero-pending-work and clean-versus-upgrade convergence results"],
+      "requalification_triggers": ["migration head change", "Flyway or engine-major change", "predecessor baseline support change", "coordination transaction or deployment policy change"]
+    },
+    {
+      "id": "RCP-DB-RECON-001",
+      "component": "semantic_migration_reconciliation",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "Representative migration evidence satisfies structural semantic relationship distribution artifact audit security and human-sample dimensions with owned exceptions.",
+      "accountable_roles": ["data_migration_owner", "scientific_owner", "scientific_data_owner", "quality_owner", "business_process_owner"],
+      "required_evidence": ["stable source snapshot identity", "versioned transformation manifest", "dimension-level reconciliation report", "exception dispositions and accountable decisions"],
+      "requalification_triggers": ["mapping change", "source schema change", "threshold change", "representative population change"]
+    },
+    {
+      "id": "RCP-DB-RECOVERY-001",
+      "component": "database_restore_rollback_and_data_exit",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "A clean environment restores database, objects, configuration references, audit evidence, migration head, and neutral-reader export within approved recovery objectives.",
+      "accountable_roles": ["operations_owner", "platform_owner", "quality_owner", "business_process_owner"],
+      "required_evidence": ["clean restore receipt", "rollback rehearsal", "neutral-reader data exit", "observed RTO and RPO with reviewer decisions"],
+      "requalification_triggers": ["backup topology change", "object storage change", "recovery objective change", "encryption or key policy change"]
+    },
+    {
+      "id": "RCP-DB-RELEASE-001",
+      "component": "database_release_manifest_settlement",
+      "status": "open",
+      "evidence_mode": "observed",
+      "success_event": "The database release manifest binds contracts, migration head, catalog digest, reconciliation, tenant security, concurrency, recovery, accountable acceptance, and immutable release coordinates.",
+      "accountable_roles": ["scientific_owner", "quality_owner", "regulatory_owner", "security_owner", "operations_owner", "business_owner", "platform_owner"],
+      "required_evidence": ["DATABASE-RELEASE-MANIFEST-001", "closed database receipt registry", "accountable release decisions", "immutable implementation coordinate"],
+      "requalification_triggers": ["contract digest change", "migration head change", "catalog drift", "approval expiry", "qualified environment change"]
+    }
+  ],
+  "closure_boundary": {
+    "current_state": "Open for future observed implementation and environment evidence",
+    "simulation_use": "A simulated final-state repository can rehearse expected receipt shape and remains advisory until observed evidence closes each receipt.",
+    "production_authorization": "Accountable roles settle production authority through the released implementation and decision systems."
+  },
+  "metadata": {
+    "created_at": "2026-08-04T14:00:00Z",
+    "owner": "program governance",
+    "coordination_horizon_id": "COORD-HORIZON-2026-Q3-R1"
+  }
+}

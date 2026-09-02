@@ -2,8 +2,8 @@
   "horizon_id": "COORD-HORIZON-2026-Q3-R1",
   "title": "LIMS/ELN Coordination Horizon",
   "objective": "Keep the collaboration surface legible and coordination-only while allowing sequence, scope, and release boundaries to adapt as contract, implementation, simulation, and comparison evidence arrives.",
-  "as_of": "2026-07-28T13:00:00Z",
-  "current_item_ids": ["HORIZON-CONTRACTS"],
+  "as_of": "2026-09-02T08:39:50-04:00",
+  "current_item_ids": ["HORIZON-CONTRACTS", "HORIZON-DATABASE-CONTRACT"],
   "work_items": [
     {
       "item_id": "HORIZON-CONTRACTS",
@@ -12,23 +12,100 @@
       "state": "settling",
       "desired_state": "Promote governance-bound bounded-caller Practitioner Probe receipt and simulated-closure contracts through one reviewed immutable program coordinate.",
       "entry_evidence": [
-        "spec-v0.2.0 planning baseline",
+        "spec-v0.3.0 released baseline",
         "Enterprise Human-AI Practitioner Registry assessment"
       ],
       "completion_evidence": [
         "program validator and tests pass",
-        "the program copy of the canonical closure has digest sha256:6194029aae98f2d70f3a115eed7c0f6b191667f849c89cd548b0e575192e2af9",
+        "the program copy of the canonical closure has digest sha256:33bcc14da24309b7716728b3f0204008e8f7ebf58de75f9e40a5986b421f06b5",
         "the advisory design and canonical executed simulation retain distinct identities and authority postures",
-        "governance schema release 2.0.0 validates the canonical closure",
+        "governance schema release 2.1.0 validates the canonical closure while its historical record identity remains stable",
         "RCP-PROGRAM-PROMOTION-003 closes against the reviewed immutable coordinate"
       ],
       "owner_role": "program governance",
       "dependency_ids": []
     },
     {
+      "item_id": "HORIZON-DATABASE-CONTRACT",
+      "horizon_label": "Canonical data primitive and database contract settlement",
+      "sequence": 2,
+      "state": "settling",
+      "desired_state": "Settle the observed finding ledger probability-framed synthesis data primitive contract migration contract database scenarios open receipts and release manifest as one enforceable program surface.",
+      "entry_evidence": [
+        "cross-repository database primitive audit",
+        "approved principal and enterprise database modernization direction"
+      ],
+      "completion_evidence": [
+        "32 critical or high findings validate with stable identities",
+        "five plans and the recommended synthesis preserve one explicit probability event",
+        "data and migration contract bindings resolve by path version and digest",
+        "database requirements rules scenarios receipts and manifest pass the program suite"
+      ],
+      "owner_role": "program governance",
+      "dependency_ids": ["HORIZON-CONTRACTS"]
+    },
+    {
+      "item_id": "HORIZON-DATABASE-IMPLEMENTATION",
+      "horizon_label": "PostgreSQL schema evolution through the selected Flyway profile",
+      "sequence": 3,
+      "state": "ready",
+      "desired_state": "Project DATA-CONTRACT-001 and DATABASE-MIGRATION-CONTRACT-001 into one canonical implementation with production-equivalent PostgreSQL tests.",
+      "entry_evidence": [
+        "settled database program contracts",
+        "canonical reference tree engine-major decision and Flyway transition test map"
+      ],
+      "completion_evidence": [
+        "Flyway Community 13.0.0 executable coordinate resolved immutable artifact digest and checksummed head",
+        "existing end-to-end and parameterized migration scenarios pass through Flyway",
+        "tenant row security and database privilege evidence",
+        "concurrent event idempotency inbox and outbox contract tests",
+        "implementation database release candidate manifest"
+      ],
+      "owner_role": "platform owner",
+      "dependency_ids": ["HORIZON-DATABASE-CONTRACT"]
+    },
+    {
+      "item_id": "HORIZON-DATABASE-REHEARSAL",
+      "horizon_label": "Representative migration reconciliation and recovery",
+      "sequence": 4,
+      "state": "waiting",
+      "desired_state": "Exercise stable-snapshot migration semantic reconciliation shadow comparison clean restore rollback and neutral-reader data exit against representative evidence.",
+      "entry_evidence": [
+        "database implementation candidate",
+        "approved source inventory transformation manifest and dimension thresholds"
+      ],
+      "completion_evidence": [
+        "dimension-level reconciliation and owned exceptions",
+        "paired implementation and simulated-final-state comparison",
+        "restore rollback data-exit RTO and RPO receipts",
+        "accountable Scientific Quality Security Operations and business decisions"
+      ],
+      "owner_role": "data migration owner",
+      "dependency_ids": ["HORIZON-DATABASE-IMPLEMENTATION"]
+    },
+    {
+      "item_id": "HORIZON-DATABASE-RELEASE",
+      "horizon_label": "Observed database manifest settlement",
+      "sequence": 5,
+      "state": "waiting",
+      "desired_state": "Settle DATABASE-RELEASE-MANIFEST-001 with current observed contract migration catalog reconciliation security concurrency recovery acceptance and immutable-coordinate evidence.",
+      "entry_evidence": [
+        "accepted representative database rehearsal",
+        "current database receipt registry and accountable decision packet"
+      ],
+      "completion_evidence": [
+        "eight database receipts close with observed evidence",
+        "every release gate resolves to current artifacts",
+        "residual risks and requalification triggers remain explicit",
+        "protected implementation release coordinate is immutable"
+      ],
+      "owner_role": "program governance",
+      "dependency_ids": ["HORIZON-DATABASE-REHEARSAL"]
+    },
+    {
       "item_id": "HORIZON-VERTICAL-SLICE",
       "horizon_label": "Durable vendor and bounded-operation convergence",
-      "sequence": 2,
+      "sequence": 6,
       "state": "ready",
       "desired_state": "Exercise a durable vendor path through read narrow idempotent write and approval-gated broad-write operation boundaries.",
       "entry_evidence": [
@@ -41,12 +118,12 @@
         "independent divergence classification"
       ],
       "owner_role": "platform owner",
-      "dependency_ids": ["HORIZON-CONTRACTS"]
+      "dependency_ids": ["HORIZON-CONTRACTS", "HORIZON-DATABASE-CONTRACT"]
     },
     {
       "item_id": "HORIZON-EXTENSIONS",
       "horizon_label": "Evidence-led extension options",
-      "sequence": 3,
+      "sequence": 7,
       "state": "waiting",
       "desired_state": "Promote additional vendor adapters optional MCP projections and new probes only when encountered evidence supports their assurance cost.",
       "entry_evidence": [
@@ -63,27 +140,31 @@
     }
   ],
   "reentry_capsule": {
-    "current_state": "Specification candidate 0.3.0 is settling with bounded-caller operations, ten Practitioner Probes, an explicit receipt vocabulary map, and the exact canonical four-family selected-future closure.",
+    "current_state": "Specification candidate 0.3.1 is settling with accepted Governance 2.1.0, Implementation 0.3.2, Simulation, and Comparison release subjects; an immutable reviewed-source package coordinate; the current four-family selected-future closure; bounded-caller operations; ten Practitioner Probes; an explicit receipt vocabulary map; and an enforceable database modernization contract surface.",
     "recent_decisions": ["ADR-0005", "ADR-0006"],
-    "next_safe_action": "Validate every contract, confirm canonical digest equality across program simulation and comparator, and promote release coordinates through the protected release path.",
-    "verification": "Run the program validator, unit tests, secret-shape scan, governance schema suite, and cross-repository canonical digest comparison."
+    "next_safe_action": "Verify the coherent candidate against detached exact sibling release subjects, then carry the Program release through its authorized merge route, signed tag, and observation path.",
+    "verification": "Run the program validator, unit tests, language and secret-shape scans, database binding checks, governance schema suite, and cross-repository canonical digest comparison."
   },
   "retained_effects": [
     "Scientific Quality Regulatory Security Operations and business authority remains with accountable human roles.",
     "The canonical closure remains definitive only inside its selected future reality, has no production authorization effect, and retains a separate future observed successor.",
     "The richer program future-reality artifact remains an advisory design under a distinct identity.",
     "Service-owned operations continue to determine caller scope budget approval effects evidence and recovery.",
-    "Forecast releases preserve their original probability event assumptions falsifiers and calibration history."
+    "Forecast releases preserve their original probability event assumptions falsifiers and calibration history.",
+    "Database modernization probabilities compare routes against one declared delivery event and recalibrate at every implementation rehearsal interstitial.",
+    "Implementation and environment evidence close database receipts while this repository retains specification and orientation authority."
   ],
   "consequential_questions": [
     "Which official vendor adapter provides the first durable paired evidence bundle?",
     "Which observed divergence should revise the specification rather than the implementation or simulation?",
-    "Which optional AI-facing interface produces enough material value to justify its added qualification surface?"
+    "Which optional AI-facing interface produces enough material value to justify its added qualification surface?",
+    "Which database engine-major mapping vocabulary and representative-distribution decisions remain open before implementation projection?",
+    "Which observed database divergence belongs in the specification implementation simulated twin or operating objective?"
   ],
   "metadata": {
-    "schema_version": "2.0.0",
+    "schema_version": "2.1.0",
     "created_at": "2026-07-28T12:00:00Z",
-    "updated_at": "2026-07-28T20:00:00Z",
+    "updated_at": "2026-09-02T08:39:50-04:00",
     "owner": {
       "actor_id": "ACTOR-PROGRAM-OWNERS",
       "display_name": "Program repository owners",

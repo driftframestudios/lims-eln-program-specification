@@ -1,11 +1,13 @@
 name: Validate program specification
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
+    inputs:
+      confirm_run:
+        description: Confirm a human has allocated this remote proof
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -15,7 +17,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  author-feedback:
+    name: author-feedback (advisory)
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out the pinned source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install checksum-verified Vale
+        env:
+          VALE_ARCHIVE: vale_3.15.2_Linux_64-bit.tar.gz
+          VALE_SHA256: fc72e64454d6bd7af91905d4faebbf411bae3eec17bb572f4101311212bc0d9e
+        run: |
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            --output "$RUNNER_TEMP/$VALE_ARCHIVE" \
+            "https://github.com/vale-cli/vale/releases/download/v3.15.2/$VALE_ARCHIVE"
+          echo "$VALE_SHA256  $RUNNER_TEMP/$VALE_ARCHIVE" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/vale"
+          tar --extract --gzip --file "$RUNNER_TEMP/$VALE_ARCHIVE" \
+            --directory "$RUNNER_TEMP/vale"
+          echo "$RUNNER_TEMP/vale" >> "$GITHUB_PATH"
+      - name: Review authored prose and comments
+        continue-on-error: true
+        run: >-
+          vale --config=.vale.ini --no-global --no-exit
+          --minAlertLevel=warning .
+
   program:
+    name: program-contracts (${{ matrix.python-version }})
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
@@ -29,6 +63,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Select Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -39,8 +74,158 @@ jobs:
       - name: Validate stable identifiers and trace links
         run: python scripts/validate_program.py
 
+      - name: Validate the Program release observation state
+        run: python scripts/verify_program_release_observation.py
+
+      - name: Check negation-aware language
+        run: python scripts/check_language.py
+
       - name: Exercise program contracts
         run: python -m unittest discover -s tests -v
 
       - name: Scan secret shapes with redacted findings
         run: python scripts/scan_secret_shapes.py
+
+  candidate-coordinates:
+    name: candidate-coordinates
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/spec-v') && !startsWith(github.ref, 'refs/heads/release/') && !startsWith(github.ref, 'refs/heads/hotfix/') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out the pinned source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Validate external coordinate readiness
+        run: python scripts/validate_pinned_sources.py --preflight-external
+
+  cross-repository-contracts:
+    name: cross-repository-contracts
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/spec-v') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the program candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Require pinned external coordinates before checkout
+        run: python scripts/validate_pinned_sources.py --preflight-external
+
+      - name: Verify the selected Program release subject
+        if: ${{ startsWith(github.ref, 'refs/tags/spec-v') }}
+        run: |
+          expected_tag="$(jq -r '.specification.release' constellation.lock.json)"
+          test "$GITHUB_REF_NAME" = "$expected_tag"
+          test "$(git rev-parse "$GITHUB_REF_NAME^{commit}")" = "$GITHUB_SHA"
+          git \
+            -c gpg.format=ssh \
+            -c gpg.minTrustLevel=fully \
+            -c gpg.ssh.allowedSignersFile=release/trusted-release-signers \
+            -c gpg.ssh.revocationFile=/dev/null \
+            verify-tag "$GITHUB_REF_NAME"
+
+      - name: Resolve immutable external coordinates
+        id: coordinates
+        run: |
+          echo "simulation=$(jq -r '.simulation.commit' constellation.lock.json)" >> "$GITHUB_OUTPUT"
+          echo "implementation=$(jq -r '.implementation.commit' constellation.lock.json)" >> "$GITHUB_OUTPUT"
+          echo "comparison=$(jq -r '.comparison.commit' constellation.lock.json)" >> "$GITHUB_OUTPUT"
+          echo "governance=$(jq -r '.governance.commit' constellation.lock.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the simulation coordinate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: driftframestudios/lims-eln-simulated-final-state
+          ref: ${{ steps.coordinates.outputs.simulation }}
+          token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
+          path: constellation/simulation
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Check out the implementation coordinate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: driftframestudios/lims-eln-enterprise-implementation
+          ref: ${{ steps.coordinates.outputs.implementation }}
+          token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
+          path: constellation/implementation
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Check out the comparison coordinate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: driftframestudios/lims-eln-comparative-evidence
+          ref: ${{ steps.coordinates.outputs.comparison }}
+          token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
+          path: constellation/comparison
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Check out the governance coordinate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: driftframestudios/site-reading-governance
+          ref: ${{ steps.coordinates.outputs.governance }}
+          token: ${{ secrets.CONSTELLATION_READ_TOKEN }}
+          path: constellation/governance
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: >-
+          Validate pinned sources, historical schema compatibility, and canonical
+          closure equality
+        run: |
+          pending_mode=()
+          if jq --exit-status \
+            '.specification.coordinate_status == "pending_release_commit"' \
+            constellation.lock.json >/dev/null; then
+            pending_mode+=(--allow-pending)
+          fi
+          python scripts/validate_pinned_sources.py "${pending_mode[@]}" \
+              --source simulation=constellation/simulation \
+              --source implementation=constellation/implementation \
+              --source comparison=constellation/comparison \
+              --source governance=constellation/governance
+
+      - name: Validate program orientation against pinned governance
+        run: |
+          python constellation/governance/tools/validate_governance.py \
+            --governance-root constellation/governance \
+            --source-root . \
+            --schema-name machine-node.schema.json \
+            --document-path machine-node.json
+          python constellation/governance/tools/validate_governance.py \
+            --governance-root constellation/governance \
+            --source-root . \
+            --schema-name first-receipt.schema.json \
+            --document-path first-receipt.json
+          python constellation/governance/tools/validate_governance.py \
+            --governance-root constellation/governance \
+            --source-root . \
+            --schema-name coordination-horizon.schema.json \
+            --document-path coordination-horizon.json
+
+  program-validation:
+    name: program-validation
+    if: ${{ always() && vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run }}
+    needs:
+      - program
+      - candidate-coordinates
+      - cross-repository-contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require program and applicable coordinate checks
+        env:
+          PROGRAM_RESULT: ${{ needs.program.result }}
+          CANDIDATE_RESULT: ${{ needs.candidate-coordinates.result }}
+          CROSS_REPOSITORY_RESULT: ${{ needs.cross-repository-contracts.result }}
+        run: |
+          test "$PROGRAM_RESULT" = "success"
+          test "$CANDIDATE_RESULT" = "success" || test "$CROSS_REPOSITORY_RESULT" = "success"

@@ -6,12 +6,12 @@
   "source_contracts": [
     {
       "contract": "site-reading-governance receipt schema",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "vocabulary_scope": "individual_receipt_family"
     },
     {
       "contract": "LIMS/ELN program proof-class registry",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "vocabulary_scope": "program_proof_class"
     },
     {
@@ -93,7 +93,7 @@
     "A grouped canonical family closes only when every required constituent proof shape closes inside the same selected future reality.",
     "A closed simulation status grants no production authorization and supplies no environment-observed acceptance.",
     "An observed successor advances through its own evidence and accountable decision path.",
-    "Engineering verification supports a named family and never selects an assurance family by category alone."
+    "Engineering verification selects an assurance family only through an explicit named-family binding."
   ],
   "metadata": {
     "schema_version": "1.0.0",
