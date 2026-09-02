@@ -28,10 +28,14 @@ for the wider observation. The Program matrix installs the repository package
 before it validates the Pydantic contract boundary. Before any private sibling
 checkout, the cross-repository path authenticates `CONSTELLATION_READ_TOKEN`
 and confirms Contents read access to each exact repository and commit selected
-by the lock. The check reports only the coordinate that can be read; its
-focused error routes the receiver to the repository whose access needs
-completion while the credential value stays out of workflow output. A dispatch
-from a later carrier can set `release_tag` to the Program release
+by the lock. The check reports only the coordinate that can be read. Its
+status-only result separates successful credential authentication from a
+private-resource request that GitHub reports as forbidden or unavailable.
+Those statuses narrow the recovery checks while preserving GitHub's deliberate
+ambiguity among repository selection, Contents permission, policy, rate state,
+and coordinate availability. Response bodies, headers, account names, and the
+credential value stay in the ephemeral runner boundary. A dispatch from a
+later carrier can set `release_tag` to the Program release
 named by `constellation.lock.json`; a direct dispatch from that tag selects the
 same subject automatically. The proof requires an annotated tag, verifies its
 repository-trusted signature, and confirms that its peeled commit belongs to

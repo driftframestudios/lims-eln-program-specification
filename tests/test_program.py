@@ -2584,6 +2584,10 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             "gh api --silent user",
             cross_repository_job,
         )
+        self.assertIn(
+            "Private sibling credential authentication confirmed",
+            cross_repository_job,
+        )
         for coordinate, repository in (
             ("simulation", "driftframestudios/lims-eln-simulated-final-state"),
             (
@@ -2603,17 +2607,30 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             cross_repository_job,
         )
         self.assertIn(
-            'gh api --silent "repos/$repository/contents?ref=$commit"',
+            'gh api --include "repos/$repository/contents?ref=$commit"',
             cross_repository_job,
         )
         self.assertIn(
-            "Private sibling read access needs confirmation",
+            'status="$(awk \'/^HTTP/{code=$2} END{print code}\' '
+            '\"$response_file\")"',
+            cross_repository_job,
+        )
+        self.assertIn("403)", cross_repository_job)
+        self.assertIn("404)", cross_repository_job)
+        self.assertIn("unavailable)", cross_repository_job)
+        self.assertIn(
+            "Private sibling request is forbidden",
+            cross_repository_job,
+        )
+        self.assertIn(
+            "Private sibling coordinate is unavailable to this credential",
             cross_repository_job,
         )
         self.assertNotIn(
             'echo "$GH_TOKEN"',
             cross_repository_job,
         )
+        self.assertNotIn('cat "$response_file"', cross_repository_job)
         self.assertLess(
             cross_repository_job.index(
                 "Confirm private sibling read access"

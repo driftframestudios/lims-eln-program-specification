@@ -137,6 +137,7 @@ jobs:
             echo "::error title=Private sibling credential needs authentication::Store an active GitHub token in CONSTELLATION_READ_TOKEN, then dispatch this proof again."
             exit 1
           fi
+          echo "Private sibling credential authentication confirmed."
           for coordinate in simulation implementation comparison governance; do
             case "$coordinate" in
               simulation)
@@ -153,11 +154,30 @@ jobs:
                 ;;
             esac
             commit="$(jq -r --arg coordinate "$coordinate" '.[$coordinate].commit' constellation.lock.json)"
-            if ! gh api --silent "repos/$repository/contents?ref=$commit" >/dev/null 2>&1; then
-              echo "::error title=Private sibling read access needs confirmation::Confirm CONSTELLATION_READ_TOKEN has Contents read access to $repository and that pinned commit $commit remains available, then dispatch this proof again."
-              exit 1
+            response_file="$RUNNER_TEMP/program-sibling-$coordinate.response"
+            if gh api --include "repos/$repository/contents?ref=$commit" >"$response_file" 2>/dev/null; then
+              rm -f "$response_file"
+              echo "Confirmed private sibling read access: $coordinate@$commit"
+              continue
             fi
-            echo "Confirmed private sibling read access: $coordinate@$commit"
+            status="$(awk '/^HTTP/{code=$2} END{print code}' "$response_file")"
+            status="${status:-unavailable}"
+            rm -f "$response_file"
+            case "$status" in
+              403)
+                echo "::error title=Private sibling request is forbidden::Credential authentication is established. Confirm the token resource owner, repository selection, Contents read permission, repository policy, and current API rate state for $repository, then dispatch this proof again."
+                ;;
+              404)
+                echo "::error title=Private sibling coordinate is unavailable to this credential::Credential authentication is established. Confirm the token resource owner, select $repository with Contents read permission, and confirm pinned commit $commit remains available, then dispatch this proof again."
+                ;;
+              unavailable)
+                echo "::error title=Private sibling probe returned without an HTTP status::Credential authentication is established. Restore GitHub API connectivity, then dispatch this proof again."
+                ;;
+              *)
+                echo "::error title=Private sibling read probe received HTTP $status::Credential authentication is established. Confirm $repository and pinned commit $commit are available, then dispatch this proof again."
+                ;;
+            esac
+            exit 1
           done
 
       - name: Verify the selected Program release subject
