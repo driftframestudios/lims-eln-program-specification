@@ -1,5 +1,5 @@
 {
-  "manifest_version": "2.0.1",
+  "manifest_version": "2.1.0",
   "repository_role": "program_specification",
   "repository_release": "0.3.1",
   "external_release": "spec-v0.3.1",
@@ -19,11 +19,11 @@
   "advisory_design": {
     "simulation_id": "DESIGN-FUTURE-REALITY-CLOSURE-001",
     "future_reality_id": "FUTURE-REALITY-DESIGN-LIMS-2028-001",
-    "digest": "sha256:e2048a4754a699a1af62c8f50757d419da8b5553fc1fb3ada566fbe177f9fa98",
+    "digest": "sha256:1b023b13d740ba65052802870133fbb0bb1bd4b9bc4f95aea7b96669ac57c0be",
     "authority": "advisory_design_only"
   },
   "contract_bindings": {
-    "governance_schema": "2.0.1",
+    "governance_schema": "2.1.0",
     "control_plane_profile": "0.3.0",
     "language_policy_release": "language-policy-v1.0.0",
     "language_policy_manifest": {

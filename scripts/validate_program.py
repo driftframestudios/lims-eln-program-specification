@@ -4,6 +4,7 @@ import hashlib
 import json
 import math
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,9 +25,40 @@ from pages_projection import validate_source_contract
 
 PROGRAM_RELEASE = "0.3.1"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
-GOVERNANCE_RELEASE = "2.0.1"
+PACKAGE_SOURCE_DIGEST_ALGORITHM = "path-length-bytes-sha256-v1"
+PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
+    "file_selection": (
+        "pyproject.toml and every regular file below src/lims_eln_contracts"
+    ),
+    "path_encoding": "UTF-8 POSIX relative paths",
+    "path_order": "ascending UTF-8 byte order",
+    "length_encoding": "unsigned 8-byte big-endian",
+    "record_fields": [
+        "path_length",
+        "path_bytes",
+        "content_length",
+        "content_bytes",
+    ],
+    "exclusions": [
+        "directory entries",
+        "paths below __pycache__",
+        "files ending in .pyc or .pyo",
+    ],
+    "symlink_behavior": "reject the scope root or any selected entry",
+}
+GOVERNANCE_RELEASE = "2.1.0"
 GOVERNANCE_TAG = f"governance-v{GOVERNANCE_RELEASE}"
+GOVERNANCE_TAG_OBJECT = "1c77396e44b71719ccab138fecd02e525089e39d"
+GOVERNANCE_COMMIT = "8469c2a6b2c7f4445523cee262b961ffe3d2523b"
+GOVERNANCE_TREE_DIGEST = (
+    "git-tree-sha1:aed5d57120e15ceabe77d7bba700a43097200b19"
+)
+GOVERNANCE_ARCHIVE_FORMAT = "git-archive-tar"
+GOVERNANCE_ARCHIVE_DIGEST = (
+    "sha256:469ae49fca7d5ad6e1766080b3c39d76c46a840366b217f3839b9d34f2e77d32"
+)
 CONTROL_PLANE_PROFILE = "0.3.0"
+CANONICAL_BUNDLE_VERSION = "2.0.1"
 RECEIPT_VOCABULARY_RELEASE = "1.0.0"
 LANGUAGE_POLICY_RELEASE = "language-policy-v1.0.0"
 DATABASE_PROBABILITY_EVENT = (
@@ -376,6 +408,293 @@ def require_string_list(value: Any, label: str, *, minimum: int = 0) -> list[str
     return value
 
 
+def package_source_digest(root: Path = ROOT) -> str:
+    """Digest package metadata and import source with stable path boundaries."""
+    metadata_path = root / "pyproject.toml"
+    source_root = root / "src" / "lims_eln_contracts"
+    if metadata_path.is_symlink() or source_root.is_symlink():
+        raise ValueError("contract package source scope requires regular files")
+    if not metadata_path.is_file() or not source_root.is_dir():
+        raise ValueError("contract package source scope is incomplete")
+
+    files = [metadata_path]
+    for path in source_root.rglob("*"):
+        relative_source_path = path.relative_to(source_root)
+        if (
+            "__pycache__" in relative_source_path.parts
+            or path.suffix in {".pyc", ".pyo"}
+        ):
+            continue
+        if path.is_symlink():
+            raise ValueError("contract package source scope requires regular files")
+        if path.is_file():
+            files.append(path)
+    files.sort(key=lambda path: path.relative_to(root).as_posix().encode("utf-8"))
+
+    digest = hashlib.sha256()
+    for path in files:
+        relative = path.relative_to(root).as_posix().encode("utf-8")
+        content = path.read_bytes()
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(len(content).to_bytes(8, "big"))
+        digest.update(content)
+    return "sha256:" + digest.hexdigest()
+
+
+def package_source_digest_from_git(commit: str, root: Path = ROOT) -> str:
+    """Reproduce the scoped package digest from one locally available commit."""
+    try:
+        resolved_commit = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", f"{commit}^{{commit}}"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        listing = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "ls-tree",
+                "-r",
+                "-z",
+                commit,
+                "--",
+                "pyproject.toml",
+                "src/lims_eln_contracts",
+            ],
+            check=True,
+            capture_output=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError) as error:
+        raise ValueError(
+            "reviewed contract package commit is unavailable"
+        ) from error
+    if resolved_commit != commit:
+        raise ValueError(
+            "reviewed contract package coordinate requires the commit object"
+        )
+
+    records: list[tuple[bytes, bytes]] = []
+    observed_metadata = False
+    observed_package_file = False
+    for entry in listing.split(b"\0"):
+        if not entry:
+            continue
+        try:
+            identity, raw_path = entry.split(b"\t", 1)
+            mode, object_type, object_id = identity.split(b" ", 2)
+            relative_path = raw_path.decode("utf-8")
+        except (UnicodeError, ValueError) as error:
+            raise ValueError(
+                "reviewed contract package tree is malformed"
+            ) from error
+        if relative_path == "pyproject.toml":
+            observed_metadata = True
+        elif relative_path.startswith("src/lims_eln_contracts/"):
+            package_relative = relative_path.removeprefix(
+                "src/lims_eln_contracts/"
+            )
+            package_parts = package_relative.split("/")
+            if (
+                "__pycache__" in package_parts
+                or relative_path.endswith((".pyc", ".pyo"))
+            ):
+                continue
+            observed_package_file = True
+        else:
+            continue
+        if mode not in {b"100644", b"100755"} or object_type != b"blob":
+            raise ValueError(
+                "reviewed contract package scope requires regular files"
+            )
+        try:
+            content = subprocess.run(
+                ["git", "-C", str(root), "cat-file", "blob", object_id],
+                check=True,
+                capture_output=True,
+            ).stdout
+        except (OSError, subprocess.CalledProcessError) as error:
+            raise ValueError(
+                "reviewed contract package content is unavailable"
+            ) from error
+        records.append((raw_path, content))
+    if not observed_metadata or not observed_package_file:
+        raise ValueError("reviewed contract package source scope is incomplete")
+
+    digest = hashlib.sha256()
+    for relative, content in sorted(records, key=lambda record: record[0]):
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(len(content).to_bytes(8, "big"))
+        digest.update(content)
+    return "sha256:" + digest.hexdigest()
+
+
+def validate_contract_package_coordinate(coordinate: dict) -> None:
+    """Validate the reviewed-source distribution route without inventing its commit."""
+    require_exact_object(
+        coordinate,
+        {
+            "coordinate_version",
+            "distribution_name",
+            "import_name",
+            "package_version",
+            "repository",
+            "publication_owner",
+            "publication_state",
+            "source_commit",
+            "source_identity",
+            "transport",
+            "authentication_posture",
+            "authenticated_pep_508_template",
+            "editable_sibling_install",
+            "consumer_conformance",
+            "replacement_rule",
+        },
+        "contract_package_coordinate",
+    )
+    expected_strings = {
+        "coordinate_version": "1.0.0",
+        "distribution_name": "lims-eln-program-specification",
+        "import_name": "lims_eln_contracts",
+        "package_version": PROGRAM_RELEASE,
+        "repository": "driftframestudios/lims-eln-program-specification",
+        "publication_owner": "Program repository owners",
+        "transport": "git+https",
+        "authentication_posture": (
+            "Git supplies credentials through a configured credential helper "
+            "or short-lived GitHub App token; the requirement text carries no "
+            "credential."
+        ),
+        "authenticated_pep_508_template": (
+            "lims-eln-program-specification @ git+https://github.com/"
+            "driftframestudios/lims-eln-program-specification.git@{full_commit}"
+        ),
+        "editable_sibling_install": (
+            "python3 -m pip install -e ../lims-eln-program-specification"
+        ),
+        "replacement_rule": (
+            "A later full commit may replace this coordinate at the same "
+            "package version when its scoped package digest is identical; a "
+            "package-content change advances the version and digest, and "
+            "consumers adopt either replacement through review."
+        ),
+    }
+    for key, expected in expected_strings.items():
+        if coordinate.get(key) != expected:
+            raise ValueError(
+                f"contract package {key} differs from its distribution contract"
+            )
+
+    source_identity = require_exact_object(
+        coordinate.get("source_identity"),
+        {"scope", "algorithm", "canonicalization", "digest"},
+        "contract_package_coordinate.source_identity",
+    )
+    if source_identity.get("scope") != [
+        "pyproject.toml",
+        "src/lims_eln_contracts",
+    ]:
+        raise ValueError("contract package source scope differs")
+    if source_identity.get("algorithm") != PACKAGE_SOURCE_DIGEST_ALGORITHM:
+        raise ValueError("contract package source digest algorithm differs")
+    if (
+        source_identity.get("canonicalization")
+        != PACKAGE_SOURCE_DIGEST_CANONICALIZATION
+    ):
+        raise ValueError("contract package source canonicalization differs")
+    if source_identity.get("digest") != package_source_digest():
+        raise ValueError("contract package scoped source digest differs")
+
+    state = coordinate.get("publication_state")
+    source_commit = coordinate.get("source_commit")
+    if state == "pending_reviewed_merge_commit":
+        if source_commit is not None:
+            raise ValueError(
+                "pending contract package coordinate keeps its source commit open"
+            )
+        expected_conformance_state = "planned_after_source_commit"
+    elif state == "reviewed_source_available":
+        if (
+            not isinstance(source_commit, str)
+            or MATERIAL_COMMIT_PATTERN.fullmatch(source_commit) is None
+        ):
+            raise ValueError(
+                "reviewed contract package coordinate requires a full source commit"
+            )
+        if package_source_digest_from_git(source_commit) != source_identity["digest"]:
+            raise ValueError(
+                "reviewed contract package commit differs from its scoped digest"
+            )
+        expected_conformance_state = "required"
+    else:
+        raise ValueError("contract package publication state is unsupported")
+
+    conformance = require_exact_object(
+        coordinate.get("consumer_conformance"),
+        {
+            "state",
+            "first_consumer",
+            "environment",
+            "direct_url_record",
+            "required_observations",
+        },
+        "contract_package_coordinate.consumer_conformance",
+    )
+    if (
+        conformance.get("state") != expected_conformance_state
+        or conformance.get("first_consumer")
+        != "driftframestudios/lims-eln-enterprise-implementation"
+        or conformance.get("environment") != "clean Python 3.12 environment"
+        or conformance.get("direct_url_record") != "PEP 610 direct_url.json"
+    ):
+        raise ValueError("contract package consumer conformance state differs")
+    observations = require_string_list(
+        conformance.get("required_observations"),
+        "contract_package_coordinate.consumer_conformance.required_observations",
+        minimum=9,
+    )
+    if set(observations) != {
+        f"installed distribution version is {PROGRAM_RELEASE}",
+        f"lims_eln_contracts.__version__ is {PROGRAM_RELEASE}",
+        "lims_eln_contracts.CONTRACT_VERSION is 1.0.0",
+        "vcs_info.commit_id equals the reviewed full commit",
+        "the scoped package source digest matches the reviewed binding",
+        "the released operation catalog loads",
+        "the Golden Specimen scenario loads",
+        "the implementation and simulation shaped observations load",
+        "every released schema in SCHEMA_RESOURCE_NAMES loads as a JSON object",
+    }:
+        raise ValueError("contract package consumer observations differ")
+
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    project_match = re.search(
+        r"(?ms)^\[project\]\s*(.*?)(?=^\[|\Z)",
+        pyproject,
+    )
+    if project_match is None:
+        raise ValueError("contract package distribution metadata is absent")
+    project = {
+        key: match.group(1)
+        for key in ("name", "version")
+        if (
+            match := re.search(
+                rf'(?m)^{key}\s*=\s*"([^"]+)"\s*$',
+                project_match.group(1),
+            )
+        )
+    }
+    if (
+        project.get("name") != coordinate["distribution_name"]
+        or project.get("version") != coordinate["package_version"]
+    ):
+        raise ValueError("contract package distribution metadata differs")
+    if not (ROOT / "src" / coordinate["import_name"]).is_dir():
+        raise ValueError("contract package import directory is absent")
+
+
 def validate_core_shapes(
     *,
     constellation: dict,
@@ -456,8 +775,11 @@ def validate_core_shapes(
             "release",
             "profile",
             "schema_version",
+            "tag_object",
             "commit",
             "digest",
+            "archive_format",
+            "archive_digest",
             "coordinate_status",
         },
     }
@@ -2093,6 +2415,9 @@ def validate() -> dict[str, int]:
     machine_node = load_json("machine-node.json")
     first_receipt = load_json("first-receipt.json")
     release_role = load_json("release/repository-role.json")
+    contract_package_coordinate = load_json(
+        "release/contract-package-coordinate.json"
+    )
     promotion_receipt = load_json("receipts/promotion-receipt.json")
     status_document = load_status()
     pages_context = validate_source_contract(ROOT)
@@ -2107,6 +2432,7 @@ def validate() -> dict[str, int]:
         promotion_receipt=promotion_receipt,
         status_document=status_document,
     )
+    validate_contract_package_coordinate(contract_package_coordinate)
 
     requirement_ids = unique_ids(capabilities, "requirement")
     rule_ids = unique_ids(invariants, "rule")
@@ -2315,7 +2641,7 @@ def validate() -> dict[str, int]:
     canonical_future = governance_closure.get("future_reality", {})
     aggregate_artifacts = governance_closure.get("aggregate_artifacts", [])
     if (
-        canonical_bundle.get("bundle_version") != GOVERNANCE_RELEASE
+        canonical_bundle.get("bundle_version") != CANONICAL_BUNDLE_VERSION
         or canonical_bundle.get("source_result_digest")
         != CANONICAL_RESULT_DIGEST
         or canonical_bundle.get("governance_closure") != governance_closure
@@ -2815,6 +3141,20 @@ def validate() -> dict[str, int]:
         raise ValueError(
             "governance lock binding differs from the selected control-plane profile"
         )
+    if constellation_lock["governance"] != {
+        "release": GOVERNANCE_TAG,
+        "profile": f"Control Plane Profile {CONTROL_PLANE_PROFILE}",
+        "schema_version": GOVERNANCE_RELEASE,
+        "tag_object": GOVERNANCE_TAG_OBJECT,
+        "commit": GOVERNANCE_COMMIT,
+        "digest": GOVERNANCE_TREE_DIGEST,
+        "archive_format": GOVERNANCE_ARCHIVE_FORMAT,
+        "archive_digest": GOVERNANCE_ARCHIVE_DIGEST,
+        "coordinate_status": "pinned",
+    }:
+        raise ValueError(
+            "governance lock differs from the accepted tag, source, tree, or archive"
+        )
     if constellation_lock["comparison"]["receipt_schema"] != GOVERNANCE_RELEASE:
         raise ValueError(
             f"receipt schema differs from governance {GOVERNANCE_RELEASE}"
@@ -2906,6 +3246,7 @@ def validate() -> dict[str, int]:
         "coordination-horizon.json",
         "first-receipt.json",
         "release/repository-role.json",
+        "release/contract-package-coordinate.json",
         "receipts/promotion-receipt.json",
         "schemas/promotion-receipt.schema.json",
         "specifications/bounded-caller.json",
@@ -3117,6 +3458,7 @@ def validate() -> dict[str, int]:
         "repositories": len(repository_roles),
         "pages_sources": 1,
         "public_ready_skills": len(pages_context.public_skills),
+        "contract_package_coordinates": 1,
         **database_summary,
     }
 

@@ -10,7 +10,7 @@
   "as_if_date": "2028-06-30",
   "source_state": {
     "specification_release": "spec-v0.3.1",
-    "governance_release": "governance-v2.0.1",
+    "governance_release": "governance-v2.1.0",
     "seed_forecast_release": "forecast-2026-Q3-r1"
   },
   "canonical_execution_successor": {

@@ -1,7 +1,7 @@
 {
   "constellation_version": "0.3.1",
-  "recorded_at": "2026-07-28",
-  "content_identity": "Candidate repository coordinates use explicit zero placeholders until protected release promotion; domain artifacts retain their declared SHA-256 digests.",
+  "recorded_at": "2026-09-01",
+  "content_identity": "The accepted governance coordinate binds its annotated tag object, source commit, Git tree, and reproducible Git archive separately. Remaining candidate repository coordinates use explicit zero placeholders until protected release promotion; domain artifacts retain their declared SHA-256 digests.",
   "specification": {
     "release": "spec-v0.3.1",
     "commit": "0000000000000000000000000000000000000000",
@@ -32,15 +32,18 @@
     "coordinate_status": "pending_release_commit",
     "canonical_closure_digest": "sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb",
     "aggregate_artifact_digest": "sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61",
-    "receipt_schema": "2.0.1"
+    "receipt_schema": "2.1.0"
   },
   "governance": {
-    "release": "governance-v2.0.1",
+    "release": "governance-v2.1.0",
     "profile": "Control Plane Profile 0.3.0",
-    "schema_version": "2.0.1",
-    "commit": "0000000000000000000000000000000000000000",
-    "digest": "git-tree-sha1:0000000000000000000000000000000000000000",
-    "coordinate_status": "pending_release_commit"
+    "schema_version": "2.1.0",
+    "tag_object": "1c77396e44b71719ccab138fecd02e525089e39d",
+    "commit": "8469c2a6b2c7f4445523cee262b961ffe3d2523b",
+    "digest": "git-tree-sha1:aed5d57120e15ceabe77d7bba700a43097200b19",
+    "archive_format": "git-archive-tar",
+    "archive_digest": "sha256:469ae49fca7d5ad6e1766080b3c39d76c46a840366b217f3839b9d34f2e77d32",
+    "coordinate_status": "pinned"
   },
   "seed_lineage": [
     {
