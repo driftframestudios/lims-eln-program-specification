@@ -43,6 +43,13 @@ before a coordinated release becomes pinned. It checks exact signed release
 subjects, copied semantic artifacts, schema-era bindings, and hub summaries as
 one receiving state.
 
+Use
+[`proportionate-recovery-routing`](.agents/skills/proportionate-recovery-routing/SKILL.md)
+when a failed check, repeated retry, source loss, authority mismatch, stale
+handoff, or coordination drift prevents reliable continuation. It preserves
+the current contract, selects one smallest adequate move and owning surface,
+and returns a decision-bearing receipt with an exact re-entry event.
+
 ## Use the accepted branch route
 
 - `main` carries reviewed releases; `develop` integrates the next release.
