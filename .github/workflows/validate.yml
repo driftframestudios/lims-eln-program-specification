@@ -8,6 +8,11 @@ on:
         required: true
         default: false
         type: boolean
+      release_tag:
+        description: Optional signed Program release tag verified by this carrier
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -71,6 +76,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: ""
 
+      - name: Install the contract model boundary
+        run: python -m pip install --disable-pip-version-check .
+
       - name: Validate stable identifiers and trace links
         run: python scripts/validate_program.py
 
@@ -88,7 +96,7 @@ jobs:
 
   candidate-coordinates:
     name: candidate-coordinates
-    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/spec-v') && !startsWith(github.ref, 'refs/heads/release/') && !startsWith(github.ref, 'refs/heads/hotfix/') }}
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && inputs.release_tag == '' && github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/spec-v') && !startsWith(github.ref, 'refs/heads/release/') && !startsWith(github.ref, 'refs/heads/hotfix/') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -103,7 +111,7 @@ jobs:
 
   cross-repository-contracts:
     name: cross-repository-contracts
-    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/spec-v') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/')) }}
+    if: ${{ vars.ENABLE_GITHUB_ACTIONS == 'true' && inputs.confirm_run && (inputs.release_tag != '' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/spec-v') || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -116,18 +124,56 @@ jobs:
       - name: Require pinned external coordinates before checkout
         run: python scripts/validate_pinned_sources.py --preflight-external
 
-      - name: Verify the selected Program release subject
-        if: ${{ startsWith(github.ref, 'refs/tags/spec-v') }}
+      - name: Confirm private sibling checkout readiness
+        env:
+          CONSTELLATION_READ_TOKEN: ${{ secrets.CONSTELLATION_READ_TOKEN }}
         run: |
+          if [ -n "${CONSTELLATION_READ_TOKEN:-}" ]; then
+            echo "Private sibling checkout credential is available."
+            exit 0
+          fi
+          echo "::error title=Private sibling checkout needs a read credential::Configure the CONSTELLATION_READ_TOKEN repository secret with read access to the four pinned sibling repositories, then dispatch this proof again."
+          exit 1
+
+      - name: Verify the selected Program release subject
+        env:
+          REQUESTED_RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          selected_tag="$REQUESTED_RELEASE_TAG"
+          if [ -z "$selected_tag" ] && [[ "$GITHUB_REF" == refs/tags/spec-v* ]]; then
+            selected_tag="$GITHUB_REF_NAME"
+          fi
+          if [ -z "$selected_tag" ]; then
+            echo "Current carrier proof selected; proceeding with current source coordinates."
+            exit 0
+          fi
           expected_tag="$(jq -r '.specification.release' constellation.lock.json)"
-          test "$GITHUB_REF_NAME" = "$expected_tag"
-          test "$(git rev-parse "$GITHUB_REF_NAME^{commit}")" = "$GITHUB_SHA"
+          if [ "$selected_tag" != "$expected_tag" ]; then
+            echo "::error title=Release tag differs from the Program lock::Select the signed Program release named by constellation.lock.json, then dispatch this proof again."
+            exit 1
+          fi
+          tag_type="$(git cat-file -t "refs/tags/$selected_tag" 2>/dev/null || true)"
+          if [ "$tag_type" != "tag" ]; then
+            echo "::error title=Release subject needs an annotated tag::Create or select the signed annotated Program release recorded by the Program lock."
+            exit 1
+          fi
+          release_commit="$(git rev-parse --verify "refs/tags/$selected_tag^{commit}")"
+          carrier_commit="$(git rev-parse --verify HEAD)"
+          if [ "$carrier_commit" != "$GITHUB_SHA" ]; then
+            echo "::error title=Carrier checkout differs from the workflow context::Dispatch the proof again from the intended carrier ref."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$release_commit" "$carrier_commit"; then
+            echo "::error title=Release subject is outside the carrier lineage::Use a carrier descended from the signed Program release."
+            exit 1
+          fi
           git \
             -c gpg.format=ssh \
             -c gpg.minTrustLevel=fully \
             -c gpg.ssh.allowedSignersFile=release/trusted-release-signers \
             -c gpg.ssh.revocationFile=/dev/null \
-            verify-tag "$GITHUB_REF_NAME"
+            verify-tag "$selected_tag"
+          echo "Verified signed release subject: tag=$selected_tag release_commit=$release_commit carrier_commit=$carrier_commit"
 
       - name: Resolve immutable external coordinates
         id: coordinates

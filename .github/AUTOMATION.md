@@ -24,9 +24,19 @@ Python matrix, advisory author feedback, candidate or accepted coordinate
 checks, cross-repository checkouts, and aggregate result. A named receiver sets
 `ENABLE_GITHUB_ACTIONS=true`, selects `confirm_run`, and dispatches that proof
 when a release, compatibility question, or external-coordinate change calls
-for the wider observation. A dispatch from the planned Program tag verifies
-the selected tag name, peeled commit, and repository-trusted signature before
-the external-coordinate proof continues. After promotion, run
+for the wider observation. The Program matrix installs the repository package
+before it validates the Pydantic contract boundary. The cross-repository path
+confirms that `CONSTELLATION_READ_TOKEN` is available before any private sibling
+checkout. That readiness step reports only availability; its error routes the
+receiver to configure read access without writing the credential value. A
+dispatch from a later carrier can set `release_tag` to the Program release
+named by `constellation.lock.json`; a direct dispatch from that tag selects the
+same subject automatically. The proof requires an annotated tag, verifies its
+repository-trusted signature, and confirms that its peeled commit belongs to
+the current carrier's ancestry. The workflow success summary reports the
+validated tag and Git commit identifiers; `git verify-tag` supplies the trusted
+public-signature principal and key-fingerprint result before the
+external-coordinate proof continues. After promotion, run
 `python scripts/verify_program_release_observation.py --require-observed` from
 the later observation carrier. The verifier reproduces the tag, tree, archive,
 signature, accepted-main ancestry, and exact carrier bytes, then reports the
