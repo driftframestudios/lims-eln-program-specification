@@ -11,9 +11,11 @@ regression suite. Its parsed controls must match the source-owned
 `automation_controls` projection in `release/repository-role.json`.
 
 The pull-request path receives repository contents and proposed source through
-read-only permissions. Credentials and cross-repository coordinates stay with
-their dedicated proof paths. Monthly Dependabot updates target `develop`, group
-minor and patch updates, and keep at most two update pull requests open.
+read-only permissions. Its checkout retains complete repository history so a
+reviewed package-source commit can be reproduced from its Git tree while
+credential persistence remains disabled. Cross-repository coordinates stay
+with their dedicated proof paths. Monthly Dependabot updates target `develop`,
+group minor and patch updates, and keep at most two update pull requests open.
 
 ## Deliberate full proof
 
