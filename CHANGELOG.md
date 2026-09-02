@@ -10,8 +10,8 @@
   `lims-eln-program-specification` 0.3.1, its `lims_eln_contracts` import,
   scoped package-source SHA-256, credential-helper-backed HTTPS install,
   editable local path, publication ownership, successor rule, and receiving
-  PEP 610 conformance observation. The merge commit remains open until review
-  establishes it.
+  PEP 610 conformance observation. The reviewed `develop` merge commit now
+  supplies the immutable source coordinate.
 - Added a 32-finding cross-repository database primitive ledger with stable
   identities, evidence locations, affirmative target states, and complete
   data- or migration-contract bindings.
