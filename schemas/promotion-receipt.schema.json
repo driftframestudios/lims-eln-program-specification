@@ -13,6 +13,7 @@
     "assurance_stage",
     "candidate_coordinate",
     "release_coordinate",
+    "release_review_route",
     "required_evidence",
     "accountable_role",
     "metadata"
@@ -61,6 +62,9 @@
           "$ref": "#/$defs/releaseCoordinate"
         }
       ]
+    },
+    "release_review_route": {
+      "$ref": "#/$defs/reviewRoute"
     },
     "required_evidence": {
       "type": "array",
@@ -177,8 +181,8 @@
         "digest",
         "promoted_at",
         "check_contexts",
-        "ruleset_receipt",
-        "codeowner_resolution"
+        "pull_request",
+        "review_observation"
       ],
       "properties": {
         "tag": {
@@ -207,13 +211,32 @@
             ]
           }
         },
-        "ruleset_receipt": {
-          "type": "string",
-          "pattern": "^(?:governed|evidence)://[a-z0-9][a-z0-9._/-]*$"
+        "pull_request": {
+          "type": "integer",
+          "minimum": 1
         },
-        "codeowner_resolution": {
-          "type": "string",
-          "pattern": "^(?:governed|evidence)://[a-z0-9][a-z0-9._/-]*$"
+        "review_observation": {
+          "$ref": "#/$defs/reviewRoute"
+        }
+      }
+    },
+    "reviewRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "merge_admission",
+        "independent_review",
+        "github_review_record"
+      ],
+      "properties": {
+        "merge_admission": {
+          "const": "configured_ordinary_bypass"
+        },
+        "independent_review": {
+          "const": "deputized_independent_review_completed"
+        },
+        "github_review_record": {
+          "const": "no_formal_review_submitted"
         }
       }
     },

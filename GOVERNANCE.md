@@ -61,10 +61,12 @@ independent review for fixture and expected-result changes.
 
 A candidate carries explicit zero provenance, a settling Coordination Horizon
 item, and the open promotion receipt
-`RCP-PROGRAM-PROMOTION-003`. A released record carries material commit and tree
-coordinates, observed ruleset and CODEOWNER evidence, completed promotion
-work, local validation evidence, and the hosted contexts active for that
-release. The lightweight pull-request proof begins as an observed context with
+`RCP-PROGRAM-PROMOTION-003`. Standing branch controls retain their own record.
+This release records its configured ordinary bypass, completed deputized
+independent review, and GitHub review record as three distinct facts. A released
+record carries material commit and tree coordinates, completed promotion work,
+local validation evidence, and the hosted contexts active for that release.
+The lightweight pull-request proof begins as an observed context with
 an approved monthly budget. A required-check list remains empty until a
 separate review establishes the stable context name, useful evidence, and
 recovery route.

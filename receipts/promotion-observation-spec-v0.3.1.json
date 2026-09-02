@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/program-release-observation.v1.schema.json",
+  "schema_version": "1.0.0",
+  "release_observation_id": "OBS-PROGRAM-RELEASE-003",
+  "promotion_receipt_id": "RCP-PROGRAM-PROMOTION-003",
+  "repository": "driftframestudios/lims-eln-program-specification",
+  "target_release": "spec-v0.3.1",
+  "observation_state": "pending_post_tag",
+  "evidence_mode": "planned",
+  "assurance_stage": "specified",
+  "candidate_receipt": {
+    "path": "receipts/promotion-receipt.json",
+    "digest": "sha256:3d20ee1db9dc966929773ca97e7b365dc4bea2aaaa49b4d8f26209e8b93c1f98"
+  },
+  "candidate_source": null,
+  "release_subject": null,
+  "signature_observation": null,
+  "workflow_observation": null,
+  "review_observation": null,
+  "accountable_role": "Program release stewardship",
+  "metadata": {
+    "schema_version": "1.0.0",
+    "created_at": "2026-09-02T11:48:22Z",
+    "updated_at": "2026-09-02T12:39:50Z",
+    "owner": {
+      "actor_id": "OWNER-PROGRAM-RELEASE-OBSERVATION-003",
+      "display_name": "Program release stewardship role",
+      "role": "Release observation owner"
+    }
+  }
+}

@@ -30,18 +30,37 @@ chronology and contribution credit.
    skill when a requirement, schema, implementation result, simulated result,
    comparison report, release coordinate, or public page crosses repository
    roles.
+6. Use
+   [`constellation-coherence-reconciliation`](.agents/skills/constellation-coherence-reconciliation/SKILL.md)
+   before pinning a coordinated release whose exact source coordinates and
+   copied semantic artifacts must settle together.
 
 [`coordination-horizon.json`](coordination-horizon.json) records current and
 queued work. [`first-receipt.json`](first-receipt.json) provides a compact
 re-entry record with the current evidence status and next verified move.
 
 The current planned program release is `spec-v0.3.1`. It consumes the accepted
-governance release `governance-v2.1.0`, Control Plane Profile 0.3.0, and schema
-release `2.1.0`. The Governance coordinate in
-[`constellation.lock.json`](constellation.lock.json) binds the annotated tag
-object, accepted commit, Git tree, and reproducible Git archive as distinct
-identities. The Program release coordinate remains open until its reviewed
-promotion supplies the corresponding commit and tree.
+Governance 2.1.0, Implementation 0.3.2, Simulation 2028 selected-future, and
+Comparison 0.3.1 release subjects. Their coordinates in
+[`constellation.lock.json`](constellation.lock.json) bind signed tag objects,
+accepted commits, Git trees, and reproducible Git archives as distinct
+identities. The lock also preserves the Implementation semantic release name
+beside its actual Git tag. Its repository release, contract bindings,
+selected-future closure, and material release artifacts are checked directly
+against the tagged source. The Comparison release's compatibility binding
+points to the exact untagged Governance
+2.0.1 commit, tree, and Git archive from which the signed Comparison Machine
+Node and first receipt were validated. Governance 2.1.0 remains the Program's
+current schema authority. The Program release coordinate remains open until its
+authorized merge route and signed tag supply the corresponding commit and tree. A deliberate
+proof dispatched from that release tag also matches the selected tag name to
+the lock, confirms that the tag peels to the dispatched commit, and verifies
+its signature against the repository-trusted signer. The candidate includes a
+version-specific release-observation record. After the tag exists, a later
+commit can record the immutable release subject, hosted proof, and factual
+merge-admission and review observation while the tagged source remains unchanged. The observation
+verifier derives that later carrier's Git commit during validation, which keeps
+the record free of a self-referential commit field.
 
 The repository describes what collaborators can verify. The simulation supplies
 an executable future reality whose assumptions, synthetic decisions, and
@@ -94,6 +113,13 @@ capabilities. Contract references carry SHA-256 digests that the program
 validator recalculates. The Machine Node orients; the first receipt supplies
 safe re-entry; runtime services and accountable roles continue to own effects
 and decisions.
+
+Cross-repository validation reproduces the historical Governance 2.0.1
+coordinate as a commit without a release tag, confirms that it belongs to the
+accepted Governance 2.1.0 lineage, materializes its exact archive, and runs its
+validator against the signed Comparison `machine-node.json` and
+`first-receipt.json`. The current Program orientation continues through the
+signed Governance 2.1.0 validator.
 
 ## Practitioner Probes
 
@@ -321,7 +347,8 @@ retain their separate owners.
 preserves eight future-observed proof obligations. The digest-bound
 [`release/database-release-manifest.json`](release/database-release-manifest.json)
 joins those obligations to the contract artifacts and specification-by-example
-suite while implementation coordinates remain explicitly pending. See
+suite. Implementation 0.3.2 is pinned; migration-head, catalog, executable,
+configured-environment, and accountable-acceptance observations remain open. See
 [`docs/DATABASE_MODERNIZATION.md`](docs/DATABASE_MODERNIZATION.md) for the
 probability posture, evidence boundaries, synthesized chain, and interstitials.
 The [`database constellation ledger`](docs/DATABASE_CONSTELLATION_LEDGER.md)
@@ -360,11 +387,12 @@ closures. Every record preserves both `closed_in_future_reality` for the
 simulated branch and `open` for its future observed branch.
 
 [`simulations/simulated-receipt-closure.v2.json`](simulations/simulated-receipt-closure.v2.json)
-is the exact canonical closure emitted by the executable simulation under its
-historical governance 2.0.0 record schema and validated by governance 2.0.1.
+is the exact canonical closure emitted by the executable simulation inside the
+historical 2.0.1 bundle family and validated by the Program's accepted
+Governance 2.1.0 projection.
 Its identity is `FUTURE-REALITY-LIMS-2028-001`, and its canonical
 JSON digest is
-`sha256:c402e7a72d9066424d5b83c8fda51ca2fad43c025d017a5f5535126239c96ffb`.
+`sha256:33bcc14da24309b7716728b3f0204008e8f7ebf58de75f9e40a5986b421f06b5`.
 It contains exactly four receipt families, declares `closed_in_simulation`,
 preserves the environment-observed branch as `separate_unasserted_state`, and
 grants zero production-authorization effect. The advisory design uses the
@@ -374,9 +402,9 @@ denotes one modeled reality and authority posture.
 [`simulations/future-reality-2028-06-30-v1.json`](simulations/future-reality-2028-06-30-v1.json)
 is the byte-identical canonical bundle shared with the simulation and
 comparison surfaces. It binds reference result digest
-`sha256:9d42b972c77764c81ff32fefe8f02367a27406e9ba082a704587cc9b5a9da860`
+`sha256:5ed067887dc02d2a4c85845d3d25ab6b3fbee857011bed7e5b528e4e58c03861`
 and aggregate artifact digest
-`sha256:2d8e67ec2da8236fc23de7943e7727d2b74e0e6ee2b15afd9c765443b9c52b61`.
+`sha256:ddbce2fe891bfcd70515005714cdabf34e6430869cc2e2a4daca59016ac6ce3b`.
 
 [`specifications/receipt-vocabulary-map.v1.json`](specifications/receipt-vocabulary-map.v1.json)
 version-controls the mapping from individual governance receipt families to
@@ -388,12 +416,29 @@ the `closed_in_future_reality` → `closed_in_simulation` and observed
 
 ```sh
 python3 scripts/validate_program.py
+python3 scripts/verify_program_release_observation.py
+python3 scripts/validate_pinned_sources.py --preflight-external
 python3 scripts/check_language.py
 python3 scripts/check_language.py --format sarif
 python3 scripts/scan_secret_shapes.py
 PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
 python3 -m unittest discover -s tests -v
 ```
+
+The external preflight confirms that every sibling release coordinate is ready
+before checkout. Exact cross-repository settlement checks out each sibling at
+the commit in `constellation.lock.json`, then runs:
+
+```sh
+python3 scripts/validate_pinned_sources.py --allow-pending \
+  --source simulation=../lims-eln-simulated-final-state \
+  --source implementation=../lims-eln-enterprise-implementation \
+  --source comparison=../lims-eln-comparative-evidence \
+  --source governance=../site-reading-governance
+```
+
+The shown paths use the standard sibling layout. The four complete
+`ROLE=PATH` bindings can point to another checkout layout.
 
 The program validator uses the Python standard library and checks stable identifiers,
 cross-file references, bounded operation classes, probe levels and veracity,
@@ -445,9 +490,11 @@ publication actions.
 
 Repository skills join the generated catalog when their `SKILL.md` front matter
 declares `source_band: public_ready`. The current public-ready set contains the
-repository-local source-authority map used to follow one material object through the
-five-repository suite. Internal and public-possible sources retain their
-collaboration boundaries, and an empty public-ready set produces no catalog.
+repository-local source-authority map and constellation-coherence reconciliation
+used to trace one material object and settle a coordinated release without
+separating its coordinates from its copied meaning. Internal and public-possible
+sources retain their collaboration boundaries, and an empty public-ready set
+produces no catalog.
 
 The released projection manifest contract is `1.0.0`. It records the projection
 owner, complete file scope, verified source revision and standing, optional

@@ -101,8 +101,8 @@ class PagesProjectionTests(unittest.TestCase):
                 first, root=ROOT, allow_fixture=True
             )
             self.assertEqual("valid", summary["status"])
-            self.assertEqual(5, summary["htmlPages"])
-            self.assertEqual(1, summary["publicSkills"])
+            self.assertEqual(6, summary["htmlPages"])
+            self.assertEqual(2, summary["publicSkills"])
 
     def test_manifest_covers_the_complete_declared_scope(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -115,17 +115,27 @@ class PagesProjectionTests(unittest.TestCase):
             self.assertEqual("fixture", manifest["sourceStanding"])
             self.assertIsNone(manifest["canonicalOrigin"])
             self.assertEqual(
-                ["source-authority-mapping"],
+                [
+                    "constellation-coherence-reconciliation",
+                    "source-authority-mapping",
+                ],
                 [item["slug"] for item in manifest["publicSkills"]],
             )
             self.assertEqual(
-                [".agents/skills/source-authority-mapping/SKILL.md"],
+                [
+                    ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
+                    ".agents/skills/source-authority-mapping/SKILL.md",
+                ],
                 [item["sourcePath"] for item in manifest["publicSkills"]],
             )
             projected_paths = {item["path"] for item in manifest["files"]}
             self.assertIn("skills/index.html", projected_paths)
             self.assertIn(
                 "skills/source-authority-mapping/index.html", projected_paths
+            )
+            self.assertIn(
+                "skills/constellation-coherence-reconciliation/index.html",
+                projected_paths,
             )
             expected = {
                 path.relative_to(output).as_posix()
@@ -137,6 +147,40 @@ class PagesProjectionTests(unittest.TestCase):
                 {item["path"] for item in manifest["files"]}
                 | {pages.MANIFEST_FILENAME},
             )
+
+    def test_index_links_the_accepted_public_comparison(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = self.build(Path(temporary))
+            index = (output / "index.html").read_text(encoding="utf-8")
+            contracts = (output / "contracts" / "index.html").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn(
+                'href="https://cometspectrum.io/reports/golden-specimen/comparison.html"',
+                index,
+            )
+            self.assertIn("Implementation 0.3.2", index)
+            self.assertIn(
+                "Only the Program coordinate remains a placeholder",
+                contracts,
+            )
+            self.assertIn(
+                "Only the Program release coordinate awaits promotion",
+                contracts,
+            )
+            self.assertIn("Program release observation", contracts)
+            verification = (
+                output / "verification" / "index.html"
+            ).read_text(encoding="utf-8")
+            self.assertIn(
+                "python3 scripts/verify_program_release_observation.py",
+                verification,
+            )
+            self.assertIn(
+                "python3 scripts/validate_pinned_sources.py --preflight-external",
+                verification,
+            )
+            self.assertNotIn('target="_blank"', index)
 
     def test_fixture_standing_requires_explicit_test_authority(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
