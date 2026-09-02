@@ -3,9 +3,10 @@
 ## Unreleased
 
 - Prepared the deliberate hosted proof to install the local contract package
-  before validation and to confirm private-sibling read readiness before the
-  first external checkout. Repository read access receives a focused
-  configuration route while its credential value stays out of workflow output.
+  before validation and to confirm private-sibling read access to every locked
+  repository and commit before the first external checkout. Repository read
+  access receives a focused configuration route while its credential value
+  stays out of workflow output.
   A later carrier can now select the immutable Program release tag explicitly;
   the proof requires its signed annotated identity and confirms that the
   release commit belongs to the carrier's ancestry.

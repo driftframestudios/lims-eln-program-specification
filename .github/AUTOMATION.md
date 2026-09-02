@@ -25,11 +25,13 @@ checks, cross-repository checkouts, and aggregate result. A named receiver sets
 `ENABLE_GITHUB_ACTIONS=true`, selects `confirm_run`, and dispatches that proof
 when a release, compatibility question, or external-coordinate change calls
 for the wider observation. The Program matrix installs the repository package
-before it validates the Pydantic contract boundary. The cross-repository path
-confirms that `CONSTELLATION_READ_TOKEN` is available before any private sibling
-checkout. That readiness step reports only availability; its error routes the
-receiver to configure read access without writing the credential value. A
-dispatch from a later carrier can set `release_tag` to the Program release
+before it validates the Pydantic contract boundary. Before any private sibling
+checkout, the cross-repository path authenticates `CONSTELLATION_READ_TOKEN`
+and confirms Contents read access to each exact repository and commit selected
+by the lock. The check reports only the coordinate that can be read; its
+focused error routes the receiver to the repository whose access needs
+completion while the credential value stays out of workflow output. A dispatch
+from a later carrier can set `release_tag` to the Program release
 named by `constellation.lock.json`; a direct dispatch from that tag selects the
 same subject automatically. The proof requires an annotated tag, verifies its
 repository-trusted signature, and confirms that its peeled commit belongs to
