@@ -4,6 +4,7 @@ from copy import deepcopy
 import hashlib
 import importlib.util
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -2483,6 +2484,10 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
 
     def test_workflow_exposes_stable_aggregate_context(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
+        release_tag_input = workflow.split("      release_tag:", 1)[1].split(
+            "\n\npermissions:",
+            1,
+        )[0]
         author_job = workflow.split("  author-feedback:", 1)[1].split(
             "\n  program:",
             1,
@@ -2495,7 +2500,20 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             "\n  candidate-coordinates:",
             1,
         )[1].split("\n  cross-repository-contracts:", 1)[0]
+        cross_repository_job = workflow.split(
+            "\n  cross-repository-contracts:",
+            1,
+        )[1].split("\n  program-validation:", 1)[0]
         aggregate_job = workflow.split("\n  program-validation:", 1)[1]
+        candidate_gate = re.search(r"(?m)^    if:\s*(.+)$", candidate_job)
+        cross_repository_gate = re.search(
+            r"(?m)^    if:\s*(.+)$",
+            cross_repository_job,
+        )
+        self.assertIsNotNone(candidate_gate)
+        self.assertIsNotNone(cross_repository_gate)
+        assert candidate_gate is not None
+        assert cross_repository_gate is not None
         self.assertIn("program-validation:\n    name: program-validation", workflow)
         self.assertIn("cross-repository-contracts:", workflow)
         self.assertIn("github.ref == 'refs/heads/main'", workflow)
@@ -2510,6 +2528,72 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
         self.assertIn("--preflight-external", workflow)
         self.assertIn("--preflight-external", candidate_job)
         self.assertNotIn("--allow-pending", candidate_job)
+        self.assertIn("inputs.release_tag == ''", candidate_gate.group(1))
+        self.assertIn("inputs.release_tag != ''", cross_repository_gate.group(1))
+        feature_ref = "refs/heads/feature/program-proof-route"
+
+        def selected_coordinate_jobs(
+            ref: str,
+            release_tag: str,
+        ) -> tuple[bool, bool]:
+            named_carrier = (
+                ref == "refs/heads/main"
+                or ref.startswith("refs/tags/spec-v")
+                or ref.startswith("refs/heads/release/")
+                or ref.startswith("refs/heads/hotfix/")
+            )
+            candidate_selected = release_tag == "" and not named_carrier
+            cross_repository_selected = release_tag != "" or named_carrier
+            return candidate_selected, cross_repository_selected
+
+        self.assertEqual(
+            (False, True),
+            selected_coordinate_jobs(feature_ref, "spec-v0.3.1"),
+        )
+        self.assertEqual(
+            (True, False),
+            selected_coordinate_jobs(feature_ref, ""),
+        )
+        self.assertIn("Install the contract model boundary", program_job)
+        self.assertIn(
+            "python -m pip install --disable-pip-version-check .",
+            program_job,
+        )
+        self.assertLess(
+            program_job.index("Install the contract model boundary"),
+            program_job.index("Validate stable identifiers and trace links"),
+        )
+        self.assertLess(
+            program_job.index("Install the contract model boundary"),
+            program_job.index("Exercise program contracts"),
+        )
+        self.assertIn(
+            "Confirm private sibling checkout readiness",
+            cross_repository_job,
+        )
+        self.assertIn(
+            "CONSTELLATION_READ_TOKEN: "
+            "${{ secrets.CONSTELLATION_READ_TOKEN }}",
+            cross_repository_job,
+        )
+        self.assertIn(
+            'if [ -n "${CONSTELLATION_READ_TOKEN:-}" ]; then',
+            cross_repository_job,
+        )
+        self.assertIn(
+            "Private sibling checkout needs a read credential",
+            cross_repository_job,
+        )
+        self.assertNotIn(
+            'echo "$CONSTELLATION_READ_TOKEN"',
+            cross_repository_job,
+        )
+        self.assertLess(
+            cross_repository_job.index(
+                "Confirm private sibling checkout readiness"
+            ),
+            cross_repository_job.index("Check out the simulation coordinate"),
+        )
         self.assertIn(
             ".specification.coordinate_status == "
             '\"pending_release_commit\"',
@@ -2526,22 +2610,72 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             "startsWith(github.ref, 'refs/tags/spec-v')",
             workflow,
         )
+        self.assertIn("release_tag:", workflow)
+        self.assertIn(
+            "description: Optional signed Program release tag verified by "
+            "this carrier",
+            release_tag_input,
+        )
+        self.assertIn("required: false", release_tag_input)
+        self.assertIn('default: ""', release_tag_input)
+        self.assertIn("type: string", release_tag_input)
+        self.assertIn(
+            "REQUESTED_RELEASE_TAG: ${{ inputs.release_tag }}",
+            cross_repository_job,
+        )
+        self.assertIn(
+            'selected_tag="$REQUESTED_RELEASE_TAG"',
+            cross_repository_job,
+        )
+        self.assertIn(
+            '[[ "$GITHUB_REF" == refs/tags/spec-v* ]]',
+            cross_repository_job,
+        )
+        self.assertIn(
+            'selected_tag="$GITHUB_REF_NAME"',
+            cross_repository_job,
+        )
         self.assertIn(
             "expected_tag=\"$(jq -r '.specification.release' "
             "constellation.lock.json)\"",
             workflow,
         )
-        self.assertIn('test "$GITHUB_REF_NAME" = "$expected_tag"', workflow)
         self.assertIn(
-            'test "$(git rev-parse "$GITHUB_REF_NAME^{commit}")" = '
-            '"$GITHUB_SHA"',
-            workflow,
+            'if [ "$selected_tag" != "$expected_tag" ]; then',
+            cross_repository_job,
+        )
+        self.assertIn(
+            'git cat-file -t "refs/tags/$selected_tag"',
+            cross_repository_job,
+        )
+        self.assertIn(
+            'if [ "$tag_type" != "tag" ]; then',
+            cross_repository_job,
+        )
+        self.assertIn(
+            'git rev-parse --verify "refs/tags/$selected_tag^{commit}"',
+            cross_repository_job,
+        )
+        self.assertIn(
+            'git rev-parse --verify HEAD',
+            cross_repository_job,
+        )
+        self.assertIn(
+            'if [ "$carrier_commit" != "$GITHUB_SHA" ]; then',
+            cross_repository_job,
+        )
+        self.assertIn(
+            'git merge-base --is-ancestor "$release_commit" '
+            '"$carrier_commit"',
+            cross_repository_job,
         )
         self.assertIn(
             "gpg.ssh.allowedSignersFile=release/trusted-release-signers",
             workflow,
         )
-        self.assertIn('verify-tag "$GITHUB_REF_NAME"', workflow)
+        self.assertIn('verify-tag "$selected_tag"', workflow)
+        self.assertNotIn('echo "$REQUESTED_RELEASE_TAG"', cross_repository_job)
+        self.assertNotIn('echo "$GITHUB_REF"', cross_repository_job)
         trusted_signers = (
             ROOT / "release" / "trusted-release-signers"
         ).read_text(encoding="utf-8")

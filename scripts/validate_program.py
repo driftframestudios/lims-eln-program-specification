@@ -3637,10 +3637,15 @@ def validate() -> dict[str, int]:
     required_activation_fragments = (
         "workflow_dispatch:",
         "confirm_run:",
+        "release_tag:",
         "vars.ENABLE_GITHUB_ACTIONS == 'true'",
         "inputs.confirm_run",
         "permissions:\n  contents: read",
         "timeout-minutes: 10",
+        "Install the contract model boundary",
+        "python -m pip install --disable-pip-version-check .",
+        "Confirm private sibling checkout readiness",
+        "CONSTELLATION_READ_TOKEN: ${{ secrets.CONSTELLATION_READ_TOKEN }}",
         "python scripts/verify_program_release_observation.py",
     )
     missing_fragments = [
@@ -3654,11 +3659,22 @@ def validate() -> dict[str, int]:
     release_subject_fragments = (
         "Verify the selected Program release subject",
         "startsWith(github.ref, 'refs/tags/spec-v')",
+        "REQUESTED_RELEASE_TAG: ${{ inputs.release_tag }}",
+        'selected_tag="$REQUESTED_RELEASE_TAG"',
+        '[[ "$GITHUB_REF" == refs/tags/spec-v* ]]',
+        'selected_tag="$GITHUB_REF_NAME"',
         "expected_tag=\"$(jq -r '.specification.release' constellation.lock.json)\"",
-        'test "$GITHUB_REF_NAME" = "$expected_tag"',
-        'test "$(git rev-parse "$GITHUB_REF_NAME^{commit}")" = "$GITHUB_SHA"',
+        'if [ "$selected_tag" != "$expected_tag" ]; then',
+        'git cat-file -t "refs/tags/$selected_tag"',
+        'if [ "$tag_type" != "tag" ]; then',
+        'git rev-parse --verify "refs/tags/$selected_tag^{commit}"',
+        'git rev-parse --verify HEAD',
+        'if [ "$carrier_commit" != "$GITHUB_SHA" ]; then',
+        'git merge-base --is-ancestor "$release_commit" "$carrier_commit"',
         "gpg.ssh.allowedSignersFile=release/trusted-release-signers",
-        'verify-tag "$GITHUB_REF_NAME"',
+        'verify-tag "$selected_tag"',
+        "Verified signed release subject: tag=$selected_tag "
+        "release_commit=$release_commit carrier_commit=$carrier_commit",
     )
     missing_release_subject_fragments = [
         fragment
@@ -3669,6 +3685,20 @@ def validate() -> dict[str, int]:
         raise ValueError(
             "Program release-subject proof differs from its signed-tag boundary: "
             f"{missing_release_subject_fragments}"
+        )
+    unsafe_release_subject_output = (
+        'echo "$REQUESTED_RELEASE_TAG"',
+        'echo "$GITHUB_REF"',
+    )
+    present_unsafe_release_subject_output = [
+        fragment
+        for fragment in unsafe_release_subject_output
+        if fragment in workflow
+    ]
+    if present_unsafe_release_subject_output:
+        raise ValueError(
+            "Program release-subject proof exposes unvalidated workflow input: "
+            f"{present_unsafe_release_subject_output}"
         )
     expected_signer = (
         'release@driftframestudios.org namespaces="git" ssh-ed25519 '
@@ -3700,6 +3730,28 @@ def validate() -> dict[str, int]:
                 f"manual program proof job {name!r} requires the variable and "
                 "confirmation gate"
             )
+    candidate_job = runner_jobs.get("candidate-coordinates")
+    cross_repository_job = runner_jobs.get("cross-repository-contracts")
+    candidate_gate = (
+        re.search(r"(?m)^    if:\s*(.+)$", candidate_job)
+        if candidate_job is not None
+        else None
+    )
+    cross_repository_gate = (
+        re.search(r"(?m)^    if:\s*(.+)$", cross_repository_job)
+        if cross_repository_job is not None
+        else None
+    )
+    if (
+        candidate_gate is None
+        or "inputs.release_tag == ''" not in candidate_gate.group(1)
+        or cross_repository_gate is None
+        or "inputs.release_tag != ''" not in cross_repository_gate.group(1)
+    ):
+        raise ValueError(
+            "manual program proof release-tag input requires complementary "
+            "candidate and cross-repository routing"
+        )
 
     pull_request_workflow = workflows["pull-request.yml"]
 
