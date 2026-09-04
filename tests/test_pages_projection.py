@@ -101,8 +101,8 @@ class PagesProjectionTests(unittest.TestCase):
                 first, root=ROOT, allow_fixture=True
             )
             self.assertEqual("valid", summary["status"])
-            self.assertEqual(6, summary["htmlPages"])
-            self.assertEqual(2, summary["publicSkills"])
+            self.assertEqual(7, summary["htmlPages"])
+            self.assertEqual(3, summary["publicSkills"])
 
     def test_manifest_covers_the_complete_declared_scope(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -118,6 +118,7 @@ class PagesProjectionTests(unittest.TestCase):
                 [
                     "constellation-coherence-reconciliation",
                     "source-authority-mapping",
+                    "uv-backed-python-execution",
                 ],
                 [item["slug"] for item in manifest["publicSkills"]],
             )
@@ -125,6 +126,7 @@ class PagesProjectionTests(unittest.TestCase):
                 [
                     ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
                     ".agents/skills/source-authority-mapping/SKILL.md",
+                    ".agents/skills/uv-backed-python-execution/SKILL.md",
                 ],
                 [item["sourcePath"] for item in manifest["publicSkills"]],
             )
@@ -135,6 +137,10 @@ class PagesProjectionTests(unittest.TestCase):
             )
             self.assertIn(
                 "skills/constellation-coherence-reconciliation/index.html",
+                projected_paths,
+            )
+            self.assertIn(
+                "skills/uv-backed-python-execution/index.html",
                 projected_paths,
             )
             expected = {
@@ -183,11 +189,15 @@ class PagesProjectionTests(unittest.TestCase):
                 output / "verification" / "index.html"
             ).read_text(encoding="utf-8")
             self.assertIn(
-                "python3 scripts/verify_program_release_observation.py",
+                "uv run --isolated --no-project --python 3.12 --managed-python "
+                "--with-editable . -- python "
+                "scripts/verify_program_release_observation.py",
                 verification,
             )
             self.assertIn(
-                "python3 scripts/validate_pinned_sources.py --preflight-external",
+                "uv run --isolated --no-project --python 3.12 --managed-python "
+                "--with-editable . -- python "
+                "scripts/validate_pinned_sources.py --preflight-external",
                 verification,
             )
             self.assertNotIn('target="_blank"', index)

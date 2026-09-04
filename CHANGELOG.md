@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added the public-ready `uv-backed-python-execution` skill and aligned local
+  validation guidance with an isolated uv-managed Python 3.12 environment. The
+  route keeps the operating system's base Python and global packages in their
+  current state, makes lockless dependency evidence explicit, and distinguishes
+  tracked source cleanliness from ignored build-backend material.
 - Added repository-local re-entry and contextual jargon scan skills so an
   isolated Program checkout can recover current source and suite state and
   revise shorthand into wording the repository itself explains.

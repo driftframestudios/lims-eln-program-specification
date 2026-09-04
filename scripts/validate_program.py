@@ -85,6 +85,21 @@ COLLABORATION_SKILL_CONTRACTS = {
             "1420eaee7f6d58805c29eaff23644d4982fdf1f12d2f6ce3cc39c65791939aff"
         ),
     },
+    "uv-backed-python-execution": {
+        "source_band": "public_ready",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_derivative",
+        "upstream_repository": (
+            "https://github.com/driftframestudios/"
+            "human-ai-systems-exemplars.git"
+        ),
+        "upstream_path": ".agents/skills/uv-backed-python-execution/SKILL.md",
+        "upstream_revision": "0ed54696e01babe3020cd7b0e38bc06eeab64e67",
+        "upstream_blob_sha1": "b8fb9d34ed16146f22cfbbccad954ae4419a1692",
+        "upstream_sha256": (
+            "e9d788cae6d2ceb1ed328f8c5ce70c0c34c18d1e0849b4804d89ade6ed42f414"
+        ),
+    },
 }
 SKILL_REQUIRED_SECTIONS = (
     "## Contract",
@@ -3700,6 +3715,7 @@ def validate() -> dict[str, int]:
         ".agents/skills/proportionate-recovery-routing/SKILL.md",
         ".agents/skills/repository-reentry/SKILL.md",
         ".agents/skills/source-authority-mapping/SKILL.md",
+        ".agents/skills/uv-backed-python-execution/SKILL.md",
         "AGENTS.md",
         "CHANGELOG.md",
         "README.md",
