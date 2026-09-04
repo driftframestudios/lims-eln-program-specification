@@ -20,12 +20,12 @@
     {
       "bytes": 9315,
       "path": "contracts/index.html",
-      "sha256": "223cb6c4e6b365497581741b938355814193e8460c1d229a342a84bfd70699af"
+      "sha256": "c90f15ac9d3b03330217cb9599395ebc580beb0a0761a44bddd27abf743f5cd2"
     },
     {
       "bytes": 8782,
       "path": "index.html",
-      "sha256": "9c293f8d8014b4e5985c24ed9a8a960550d2db8fd67db0ce98cd4cf3557dde82"
+      "sha256": "d9be44e6f3301c60685910f9bef907f83fe8fb8a75fd5ec461dab3ee80935fbb"
     },
     {
       "bytes": 6522,
@@ -33,24 +33,24 @@
       "sha256": "b4e039d4ca623cf7a1d991f1b9401d60823ddc77d7bc1dbe9503f3927df91fb9"
     },
     {
-      "bytes": 10955,
+      "bytes": 10911,
       "path": "skills/constellation-coherence-reconciliation/index.html",
-      "sha256": "20009ce5736d03fed5843d29e60b05aa1f00cc52abc792d28aacb949fd7e0dbe"
+      "sha256": "03fa3098d7739a9238d2966e360066818077fe940fa1b080bce15dc1802d7f66"
     },
     {
       "bytes": 4777,
       "path": "skills/index.html",
-      "sha256": "243bc4bf268b680c7d0a3e5556a2800e25868d20956663c868becd02e63fa82b"
+      "sha256": "25588dfd43bdc2fad126a8d87e286abacbd4e709cf33617e4084d721e108d46e"
     },
     {
-      "bytes": 13051,
+      "bytes": 13029,
       "path": "skills/source-authority-mapping/index.html",
-      "sha256": "6c32619d69fb1e801b99b3f2c7224b54a2d76bc4b11acfb411e1311f96827aaa"
+      "sha256": "86fc1ea7a8bd3bc5193c6c72bcb89cbfe591a13a8764761aa2d0ebc06d26ae3c"
     },
     {
       "bytes": 6157,
       "path": "verification/index.html",
-      "sha256": "49928002c6245b54228632046b4f17546489f8320d274e6a2c41e8902668cef9"
+      "sha256": "9d71d554771cc5811639adc299211a29a88ef57f7cb8ee35dc99b60a44435bf1"
     }
   ],
   "manifestVersion": "1.0.0",
@@ -66,21 +66,21 @@
       "pagePath": "skills/constellation-coherence-reconciliation/index.html",
       "slug": "constellation-coherence-reconciliation",
       "sourcePath": ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
-      "sourceSha256": "sha256:0c432287d4c5030ad34e7f05dd77aa9ee86c7d3b882ef3388ff2ca9471c2b912"
+      "sourceSha256": "sha256:829a7a164827255b1977ee6e5b9c76753cedd8d63b270b611dc019c3e9d257ce"
     },
     {
       "name": "source-authority-mapping",
       "pagePath": "skills/source-authority-mapping/index.html",
       "slug": "source-authority-mapping",
       "sourcePath": ".agents/skills/source-authority-mapping/SKILL.md",
-      "sourceSha256": "sha256:b89d4c47342d36d7571767a88fc5967bc42d87a7b3c0261ecaf2b7a9555f3eac"
+      "sourceSha256": "sha256:0f19810c46a4cbafdffa103565464ad0d954ee735fde960b464b1d61ed43dbf7"
     }
   ],
   "sourceProof": {
     "method": "git-exact-head-v1",
-    "revision": "862938a69bb19281f8e4062f1f239a471b933221",
+    "revision": "c9216ad1f602f2399424a0bbeaea42a4f4dbce70",
     "standing": "clean"
   },
-  "sourceRevision": "862938a69bb19281f8e4062f1f239a471b933221",
+  "sourceRevision": "c9216ad1f602f2399424a0bbeaea42a4f4dbce70",
   "sourceStanding": "clean"
 }
