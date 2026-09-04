@@ -706,6 +706,24 @@ class PagesProjectionTests(unittest.TestCase):
                 ):
                     self.build(base, root=source, name="projection")
 
+    def test_public_ready_skill_uses_ordinary_markdown_structure(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            source = self.copy_source_fixture(base / "source")
+            skill = source / ".agents" / "skills" / "public-guide" / "SKILL.md"
+            skill.parent.mkdir(parents=True)
+            skill.write_text(
+                "---\nname: Public guide\ndescription: A public guide.\n"
+                "source_band: public_ready\n---\n# Public guide\n\n"
+                "Given a useful source exists<br>\nThen publish it.\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                pages.ProjectionError,
+                "public-ready skill source uses an HTML break tag",
+            ):
+                self.build(base, root=source, name="projection")
+
     def test_public_skill_inventory_mutation_is_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = self.build(Path(temporary))
