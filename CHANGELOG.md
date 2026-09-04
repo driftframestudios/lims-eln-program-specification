@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Moved every Program skill's publication standing, version, adaptation, and
+  upstream identities into the standard front-matter `metadata` mapping.
+  Standard skill tooling and the Program validator now read one portable
+  package shape while Pages retains the same public-ready selection.
 - Added the public-ready `uv-backed-python-execution` skill and aligned local
   validation guidance with an isolated uv-managed Python 3.12 environment. The
   route keeps the operating system's base Python and global packages in their

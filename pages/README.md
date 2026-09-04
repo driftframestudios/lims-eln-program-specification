@@ -40,8 +40,11 @@ reviewed bytes on the builder-owned `pages` branch and attach Pages settings or
 a custom domain.
 
 The generated catalog currently selects repository skills whose `SKILL.md`
-front matter declares `source_band: public_ready`. Public-possible guidance is
-also suitable for public use and refinement; a later catalog can include it
-when that serves the visitor route. A present selected set receives a catalog
-and one source-faithful page per skill. An empty set produces no skill catalog.
-Internal, unknown, and absent bands remain outside the projection.
+front matter declares `metadata.source_band: public_ready`. Publication,
+version, adaptation, and upstream identities share that standard `metadata`
+mapping. Public-possible guidance is also suitable for public use and
+refinement; a later catalog can include it when that serves the visitor route.
+A present selected set receives a catalog and one source-faithful page per
+skill. An empty set produces no skill catalog. A skill with no band remains
+outside the projection; a present band uses the exact `public_ready` or
+`public_possible` value.

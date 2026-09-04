@@ -20,7 +20,11 @@ from automation_contract import (
     MISSING_AUTOMATION_CONTROLS,
     validate_repository_automation,
 )
-from pages_projection import parse_skill_front_matter, validate_source_contract
+from pages_projection import (
+    parse_skill_front_matter,
+    skill_package_metadata,
+    validate_source_contract,
+)
 from verify_program_release_observation import (
     OBSERVATION_SCHEMA_PATH,
     candidate_receipt_digest,
@@ -1615,17 +1619,15 @@ def validate_collaboration_workbench(
     for slug, expected_metadata in COLLABORATION_SKILL_CONTRACTS.items():
         relative_path = f".agents/skills/{slug}/SKILL.md"
         source = (root / relative_path).read_text(encoding="utf-8")
-        metadata = parse_skill_front_matter(source, relative_path)
-        if metadata is None:
+        front_matter = parse_skill_front_matter(source, relative_path)
+        if front_matter is None:
             raise ValueError(f"skill metadata is absent: {slug}")
-        if metadata.get("name") != slug:
+        if front_matter.get("name") != slug:
             raise ValueError(f"skill name differs from its route: {slug}")
-        description = metadata.get("description")
+        description = front_matter.get("description")
         if not isinstance(description, str) or len(description.split()) < 8:
             raise ValueError(f"skill description requires a substantive reader job: {slug}")
-        observed_metadata = {
-            field: metadata.get(field) for field in expected_metadata
-        }
+        observed_metadata = skill_package_metadata(front_matter, relative_path)
         if observed_metadata != expected_metadata:
             raise ValueError(f"skill metadata or lineage differs: {slug}")
         observed_bands.append(expected_metadata["source_band"])

@@ -1,9 +1,10 @@
 ---
 name: constellation-coherence-reconciliation
 description: Reconciles exact release coordinates with the copied artifacts, schema-era bindings, and semantic identities carried by a multi-repository hub. Applies before a coordinated release is marked pinned or a hub projection claims current constellation state.
-source_band: public_ready
-skill_version: 0.1.0
-adaptation_relation: repository_local_original
+metadata:
+  source_band: public_ready
+  skill_version: 0.1.0
+  adaptation_relation: repository_local_original
 ---
 
 # Constellation coherence reconciliation

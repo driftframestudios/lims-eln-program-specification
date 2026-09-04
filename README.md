@@ -518,13 +518,24 @@ Branch creation, Pages activation, and domain configuration remain separate
 publication actions.
 
 The generated catalog currently selects repository skills whose `SKILL.md`
-front matter declares `source_band: public_ready`. Public-possible guidance is
-also suitable for public use and refinement; it can join a later catalog when
-that serves the visitor route. The current selection keeps the repository-local
-source-authority map, constellation-coherence reconciliation, and uv-backed
-Python execution guide in the catalog.
-Sources marked `internal`, carrying an unknown band, or carrying no band remain
-outside the projection. An empty selected set produces no catalog.
+front matter declares `metadata.source_band: public_ready`. Publication,
+version, adaptation, and upstream identities share that standard
+`metadata` mapping so standard skill tools and the Program projection read the
+same source. Public-possible guidance is also suitable for public use and
+refinement; it can join a later catalog when that serves the visitor route. The
+current selection keeps the repository-local source-authority map,
+constellation-coherence reconciliation, and uv-backed Python execution guide in
+the catalog.
+The declared band domain is `public_ready` and `public_possible`. A skill with
+no band remains outside the projection; a present band uses one of those exact
+values so a spelling variation cannot silently change publication standing. An
+empty selected set produces no catalog.
+
+The [Agent Skills specification](https://agentskills.io/specification) also
+defines optional top-level fields. This repository currently uses the smaller
+`name`, `description`, and `metadata` profile. A new optional field joins that
+profile when a repository contract defines how Program collaborators and the
+public projection should interpret it.
 
 The released projection manifest contract is `1.0.0`. It records the projection
 owner, complete file scope, verified source revision and standing, optional

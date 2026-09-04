@@ -72,6 +72,13 @@ Both source bands are suitable for public collaboration. `public_possible`
 identifies guidance available for use and refinement; `public_ready` identifies
 guidance reviewed for a defined reader and navigation path. A publication
 surface can select the subset that serves its current visitor job.
+Keep skill-package `name` and `description` at the top level of front matter.
+Place Program publication standing, version, adaptation relation, and upstream
+identities inside the standard `metadata` mapping so standard skill tools
+and the Program projection read one source. The current Program profile accepts
+only top-level `name`, `description`, and scalar `metadata`; introduce another
+optional skill-package field through a named repository contract before using
+it here.
 
 ## Use the accepted branch route
 
