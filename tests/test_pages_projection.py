@@ -456,7 +456,7 @@ class PagesProjectionTests(unittest.TestCase):
             skill.parent.mkdir(parents=True)
             skill.write_text(
                 "---\nname: Hidden\ndescription: Ignored source.\n"
-                "source_band: public_ready\n---\n# Hidden\n",
+                "metadata:\n  source_band: public_ready\n---\n# Hidden\n",
                 encoding="utf-8",
             )
             standing = subprocess.run(
@@ -651,19 +651,13 @@ class PagesProjectionTests(unittest.TestCase):
             skill_sources = {
                 "public-guide": (
                     "---\nname: Public guide\ndescription: A public collaboration guide.\n"
-                    "source_band: public_ready\n---\n# Public guide\n\nUse this guide.\n"
+                    "metadata:\n  source_band: public_ready\n"
+                    "---\n# Public guide\n\nUse this guide.\n"
                 ),
                 "working-guide": (
                     "---\nname: Working guide\ndescription: A collaboration draft.\n"
-                    "source_band: public_possible\n---\n# Working guide\n"
-                ),
-                "internal-guide": (
-                    "---\nname: Internal guide\ndescription: An internal collaboration source.\n"
-                    "source_band: internal\n---\n# Internal guide\n"
-                ),
-                "unknown-guide": (
-                    "---\nname: Unknown guide\ndescription: A source with another band.\n"
-                    "source_band: experimental\n---\n# Unknown guide\n"
+                    "metadata:\n  source_band: public_possible\n"
+                    "---\n# Working guide\n"
                 ),
                 "unbanded-guide": (
                     "---\nname: Unbanded guide\ndescription: A source without a band.\n"
@@ -688,15 +682,13 @@ class PagesProjectionTests(unittest.TestCase):
             )
             self.assertIn("Public guide", combined_html)
             self.assertNotIn("Working guide", combined_html)
-            self.assertNotIn("Internal guide", combined_html)
-            self.assertNotIn("Unknown guide", combined_html)
             self.assertNotIn("Unbanded guide", combined_html)
             summary = pages.validate_projection(
                 output, root=source, allow_fixture=True
             )
             self.assertEqual(1, summary["publicSkills"])
 
-    def test_ambiguous_public_skill_band_is_closed(self) -> None:
+    def test_list_valued_public_skill_band_is_closed(self) -> None:
         for bands in (
             "[public_ready, public_possible]",
             "[public_ready, internal]",
@@ -708,13 +700,143 @@ class PagesProjectionTests(unittest.TestCase):
                 skill.parent.mkdir(parents=True)
                 skill.write_text(
                     "---\nname: Ambiguous\ndescription: Ambiguous maturity.\n"
-                    f"source_band: {bands}\n---\n# Ambiguous\n",
+                    f"metadata:\n  source_band: {bands}\n---\n# Ambiguous\n",
                     encoding="utf-8",
                 )
                 with self.assertRaisesRegex(
-                    pages.ProjectionError, "one unambiguous source band"
+                    pages.ProjectionError, "safe plain-string values"
                 ):
                     self.build(base, root=source, name="projection")
+
+    def test_present_source_band_uses_the_declared_exact_domain(self) -> None:
+        for band in ("internal", "experimental", "public-ready", "Public Ready"):
+            with self.subTest(band=band), tempfile.TemporaryDirectory() as temporary:
+                base = Path(temporary)
+                source = self.copy_source_fixture(base / "source")
+                skill = source / ".agents" / "skills" / "unknown" / "SKILL.md"
+                skill.parent.mkdir(parents=True)
+                skill.write_text(
+                    "---\nname: Unknown\ndescription: A skill with another band.\n"
+                    f"metadata:\n  source_band: {band}\n---\n# Unknown\n",
+                    encoding="utf-8",
+                )
+                with self.assertRaisesRegex(
+                    pages.ProjectionError, "unknown source band"
+                ):
+                    self.build(base, root=source, name="projection")
+
+    def test_portable_skill_metadata_preserves_scalar_lineage(self) -> None:
+        digest = "a" * 64
+        front_matter = pages.parse_skill_front_matter(
+            "---\n"
+            "name: Portable guide\n"
+            "description: A portable collaboration guide with exact lineage.\n"
+            "metadata:\n"
+            "  source_band: public_ready\n"
+            "  upstream_repository: https://github.com/example/source.git\n"
+            "  upstream_path: .agents/skills/source/SKILL.md\n"
+            f"  upstream_sha256: {digest}\n"
+            "---\n"
+            "# Portable guide\n",
+            "portable/SKILL.md",
+        )
+        self.assertIsNotNone(front_matter)
+        assert front_matter is not None
+        self.assertEqual(
+            {
+                "source_band": "public_ready",
+                "upstream_repository": "https://github.com/example/source.git",
+                "upstream_path": ".agents/skills/source/SKILL.md",
+                "upstream_sha256": digest,
+            },
+            pages.skill_package_metadata(front_matter, "portable/SKILL.md"),
+        )
+
+    def test_portable_skill_metadata_accepts_explicit_string_quotes(self) -> None:
+        front_matter = pages.parse_skill_front_matter(
+            "---\n"
+            "name: \"Portable guide\"\n"
+            "description: 'A visitor''s portable collaboration guide.'\n"
+            "metadata:\n"
+            "  source_band: public_ready\n"
+            "  numeric_identifier: \"123456\"\n"
+            "---\n"
+            "# Portable guide\n",
+            "portable/SKILL.md",
+        )
+        self.assertIsNotNone(front_matter)
+        assert front_matter is not None
+        self.assertEqual("Portable guide", front_matter["name"])
+        self.assertEqual(
+            "A visitor's portable collaboration guide.",
+            front_matter["description"],
+        )
+        self.assertEqual(
+            "123456",
+            pages.skill_package_metadata(front_matter, "portable/SKILL.md")[
+                "numeric_identifier"
+            ],
+        )
+
+    def test_skill_metadata_subset_closes_parser_differentials(self) -> None:
+        invalid_fragments = {
+            "three-space nesting": "metadata:\n   source_band: public_ready",
+            "deeper nesting": "metadata:\n    source_band: public_ready",
+            "block sequence": "metadata:\n  - source_band: public_ready",
+            "inline mapping": "metadata:\n  source_band: {value: public_ready}",
+            "empty value": "metadata:\n  source_band:",
+            "quoted value": 'metadata:\n  source_band: "public_ready',
+            "tagged value": "metadata:\n  source_band: !tag public_ready",
+            "anchored value": "metadata:\n  source_band: &band public_ready",
+            "alias value": "metadata:\n  source_band: *band",
+            "duplicate child": (
+                "metadata:\n  source_band: public_ready\n"
+                "  source_band: public_possible"
+            ),
+        }
+        for label, fragment in invalid_fragments.items():
+            with self.subTest(label=label), self.assertRaises(pages.ProjectionError):
+                pages.parse_skill_front_matter(
+                    "---\nname: Guide\ndescription: A bounded guide.\n"
+                    f"{fragment}\n---\n# Guide\n",
+                    "guide/SKILL.md",
+                )
+
+    def test_custom_top_level_skill_metadata_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            source = self.copy_source_fixture(base / "source")
+            skill = source / ".agents" / "skills" / "legacy-guide" / "SKILL.md"
+            skill.parent.mkdir(parents=True)
+            skill.write_text(
+                "---\nname: Legacy guide\ndescription: A legacy metadata location.\n"
+                "source_band: public_ready\n---\n# Legacy guide\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                pages.ProjectionError,
+                "unsupported top-level front matter",
+            ):
+                self.build(base, root=source, name="projection")
+
+    def test_permission_bearing_skill_field_requires_a_program_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            source = self.copy_source_fixture(base / "source")
+            skill = source / ".agents" / "skills" / "tool-guide" / "SKILL.md"
+            skill.parent.mkdir(parents=True)
+            skill.write_text(
+                "---\nname: Tool guide\ndescription: A guide requesting a tool scope.\n"
+                "allowed-tools: Bash(git:*)\n"
+                "metadata:\n  source_band: public_ready\n"
+                "---\n# Tool guide\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                pages.ProjectionError,
+                "unsupported top-level front matter",
+            ):
+                self.build(base, root=source, name="projection")
 
     def test_public_ready_skill_uses_ordinary_markdown_structure(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -724,7 +846,8 @@ class PagesProjectionTests(unittest.TestCase):
             skill.parent.mkdir(parents=True)
             skill.write_text(
                 "---\nname: Public guide\ndescription: A public guide.\n"
-                "source_band: public_ready\n---\n# Public guide\n\n"
+                "metadata:\n  source_band: public_ready\n"
+                "---\n# Public guide\n\n"
                 "Given a useful source exists<br>\nThen publish it.\n",
                 encoding="utf-8",
             )

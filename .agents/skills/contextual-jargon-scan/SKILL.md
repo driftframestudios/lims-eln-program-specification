@@ -1,14 +1,15 @@
 ---
 name: contextual-jargon-scan
 description: Classifies specialist and collaboration-local wording in a bounded Program Specification corpus and revises replaceable shorthand into ordinary language. Applies in stride when public orientation, contracts, release prose, or cross-repository instructions may assume context the reader does not share.
-source_band: public_possible
-skill_version: 0.1.0
-upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
-upstream_path: .agents/skills/contextual-jargon-scan/SKILL.md
-upstream_revision: 0c023343e46cd9b1333a63c2d509787352fbad14
-upstream_blob_sha1: 3c3a94db99152385253e0281c8afa8fea8208ac5
-upstream_sha256: da383f99eaff364d7e17c3bff93d8da618ec95894a45ff78a9620d8d7fc81523
-adaptation_relation: repository_local_derivative
+metadata:
+  source_band: public_possible
+  skill_version: 0.1.0
+  upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
+  upstream_path: .agents/skills/contextual-jargon-scan/SKILL.md
+  upstream_revision: 0c023343e46cd9b1333a63c2d509787352fbad14
+  upstream_blob_sha1: 3c3a94db99152385253e0281c8afa8fea8208ac5
+  upstream_sha256: da383f99eaff364d7e17c3bff93d8da618ec95894a45ff78a9620d8d7fc81523
+  adaptation_relation: repository_local_derivative
 ---
 
 # Program Specification contextual jargon scan

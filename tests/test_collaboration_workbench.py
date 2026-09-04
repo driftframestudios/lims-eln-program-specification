@@ -59,6 +59,36 @@ class CollaborationWorkbenchTests(unittest.TestCase):
                     source, public_skills
                 )
 
+    def test_yaml_comment_or_control_cannot_supply_a_description(self) -> None:
+        invalid_descriptions = (
+            "description: # one two three four five six seven eight",
+            "description: \tA portable description with eight ordinary words after it",
+            "description: A portable\tdescription with eight ordinary words after it",
+        )
+        for invalid_description in invalid_descriptions:
+            with self.subTest(value=invalid_description):
+                with tempfile.TemporaryDirectory() as temporary:
+                    source = self.copy_workbench(Path(temporary))
+                    skill_path = (
+                        source
+                        / ".agents"
+                        / "skills"
+                        / "contextual-jargon-scan"
+                        / "SKILL.md"
+                    )
+                    source_text = skill_path.read_text(encoding="utf-8")
+                    description = next(
+                        line
+                        for line in source_text.splitlines()
+                        if line.startswith("description:")
+                    )
+                    skill_path.write_text(
+                        source_text.replace(description, invalid_description, 1),
+                        encoding="utf-8",
+                    )
+                    with self.assertRaises(pages_projection.ProjectionError):
+                        pages_projection.discover_public_skills(source)
+
 
 if __name__ == "__main__":
     unittest.main()
