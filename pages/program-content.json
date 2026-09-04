@@ -93,18 +93,18 @@
     }
   ],
   "verification": {
-    "buildCommand": "python3 scripts/build_pages.py --output ../program-pages-build",
-    "validateCommand": "python3 scripts/validate_projection.py ../program-pages-build",
-    "aggregateCommand": "python3 scripts/verify_pages.py",
-    "serveCommand": "python3 -m http.server --directory ../program-pages-build 8000",
+    "buildCommand": "uv run --isolated --no-project --python 3.12 --managed-python -- python scripts/build_pages.py --output ../program-pages-build",
+    "validateCommand": "uv run --isolated --no-project --python 3.12 --managed-python -- python scripts/validate_projection.py ../program-pages-build",
+    "aggregateCommand": "uv run --isolated --no-project --python 3.12 --managed-python -- python scripts/verify_pages.py",
+    "serveCommand": "uv run --isolated --no-project --python 3.12 --managed-python -- python -m http.server --directory ../program-pages-build 8000",
     "repositoryCommands": [
-      "python3 scripts/validate_program.py",
-      "python3 scripts/verify_program_release_observation.py",
-      "python3 scripts/validate_pinned_sources.py --preflight-external",
-      "python3 scripts/check_language.py",
-      "python3 scripts/scan_secret_shapes.py",
-      "PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check",
-      "python3 -m unittest discover -s tests -v"
+      "uv run --isolated --no-project --python 3.12 --managed-python --with-editable . -- python scripts/validate_program.py",
+      "uv run --isolated --no-project --python 3.12 --managed-python --with-editable . -- python scripts/verify_program_release_observation.py",
+      "uv run --isolated --no-project --python 3.12 --managed-python --with-editable . -- python scripts/validate_pinned_sources.py --preflight-external",
+      "uv run --isolated --no-project --python 3.12 --managed-python --with-editable . -- python scripts/check_language.py",
+      "uv run --isolated --no-project --python 3.12 --managed-python --with-editable . -- python scripts/scan_secret_shapes.py",
+      "uv run --isolated --no-project --python 3.12 --managed-python --with-editable . -- python scripts/generate_contract_schemas.py --check",
+      "uv run --isolated --no-project --python 3.12 --managed-python --with-editable . -- python -m unittest discover -s tests -v"
     ],
     "coverage": "The local Pages aggregate creates two isolated sites, compares every byte, validates the complete file manifest and visitor links, and scans the generated text for credential-shaped values. Browser rendering, hosted responses, domain configuration, and publication approval remain with their fitting later observations."
   }

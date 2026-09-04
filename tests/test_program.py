@@ -130,9 +130,9 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["database_release_gates"], 7)
         self.assertEqual(summary["database_open_receipts"], 8)
         self.assertEqual(summary["pages_sources"], 1)
-        self.assertEqual(summary["published_skills"], 2)
+        self.assertEqual(summary["published_skills"], 3)
         self.assertEqual(summary["public_possible_skills"], 3)
-        self.assertEqual(summary["public_ready_skills"], 2)
+        self.assertEqual(summary["public_ready_skills"], 3)
         self.assertEqual(summary["contract_package_coordinates"], 1)
 
     def test_database_finding_ledger_is_complete_and_contract_bound(self) -> None:

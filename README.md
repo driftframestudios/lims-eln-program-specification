@@ -18,8 +18,10 @@ chronology and contribution credit.
    the repository that can establish the behavior you need. Use
    [`constellation.lock.json`](constellation.lock.json) when an exact release
    tag, commit, or digest affects the decision.
-3. Use Python 3.12, run `python3 -m pip install -e .`, and begin with
-   `python3 scripts/validate_program.py`. The complete candidate proof is in
+3. Use
+   [`uv-backed-python-execution`](.agents/skills/uv-backed-python-execution/SKILL.md)
+   to select Python 3.12, prepare an isolated dependency environment, and begin
+   with `scripts/validate_program.py`. The complete candidate proof is in
    [Validation](#validation).
 4. Start changes from `develop` using the branch forms in
    [`BRANCHING.md`](BRANCHING.md), follow the contribution contract in
@@ -303,8 +305,10 @@ After a deliberate model revision, render them once; routine validation checks
 that the committed projection remains current.
 
 ```sh
-PYTHONPATH=src python3 scripts/generate_contract_schemas.py
-PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_contract_schemas.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_contract_schemas.py --check
 ```
 
 ## Bounded callers
@@ -428,14 +432,22 @@ the `closed_in_future_reality` → `closed_in_simulation` and observed
 ## Validation
 
 ```sh
-python3 scripts/validate_program.py
-python3 scripts/verify_program_release_observation.py
-python3 scripts/validate_pinned_sources.py --preflight-external
-python3 scripts/check_language.py
-python3 scripts/check_language.py --format sarif
-python3 scripts/scan_secret_shapes.py
-PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
-python3 -m unittest discover -s tests -v
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/validate_program.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/verify_program_release_observation.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/validate_pinned_sources.py --preflight-external
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/check_language.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/check_language.py --format sarif
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/scan_secret_shapes.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_contract_schemas.py --check
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python -m unittest discover -s tests -v
 ```
 
 The external preflight confirms that every sibling release coordinate is ready
@@ -443,7 +455,8 @@ before checkout. Exact cross-repository settlement checks out each sibling at
 the commit in `constellation.lock.json`, then runs:
 
 ```sh
-python3 scripts/validate_pinned_sources.py --allow-pending \
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/validate_pinned_sources.py --allow-pending \
   --source simulation=../lims-eln-simulated-final-state \
   --source implementation=../lims-eln-enterprise-implementation \
   --source comparison=../lims-eln-comparative-evidence \
@@ -483,8 +496,10 @@ A clean checkout can create and validate one local projection outside the
 worktree:
 
 ```sh
-python3 scripts/build_pages.py --output ../program-pages-build
-python3 scripts/validate_projection.py ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/build_pages.py --output ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/validate_projection.py ../program-pages-build
 ```
 
 The aggregate creates two isolated builds, compares every projected byte,
@@ -492,7 +507,8 @@ validates their manifests and relative links, and scans generated text for
 credential-shaped values:
 
 ```sh
-python3 scripts/verify_pages.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/verify_pages.py
 ```
 
 The default build remains portable and carries no domain claim. A publication
@@ -505,7 +521,8 @@ The generated catalog currently selects repository skills whose `SKILL.md`
 front matter declares `source_band: public_ready`. Public-possible guidance is
 also suitable for public use and refinement; it can join a later catalog when
 that serves the visitor route. The current selection keeps the repository-local
-source-authority map and constellation-coherence reconciliation in the catalog.
+source-authority map, constellation-coherence reconciliation, and uv-backed
+Python execution guide in the catalog.
 Sources marked `internal`, carrying an unknown band, or carrying no band remain
 outside the projection. An empty selected set produces no catalog.
 

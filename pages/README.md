@@ -8,8 +8,10 @@ supply the authority coordinates used by the builder.
 The standard-library builder creates a local candidate outside the worktree:
 
 ```sh
-python3 scripts/build_pages.py --output ../program-pages-build
-python3 scripts/validate_projection.py ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/build_pages.py --output ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/validate_projection.py ../program-pages-build
 ```
 
 The aggregate creates two isolated builds, compares their complete byte
@@ -17,7 +19,8 @@ inventories, validates each projection, and applies the repository secret-shape
 scanner to the generated text:
 
 ```sh
-python3 scripts/verify_pages.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/verify_pages.py
 ```
 
 Each ordinary build requires a clean Git worktree and records the verified

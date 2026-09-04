@@ -29,9 +29,9 @@ class CollaborationWorkbenchTests(unittest.TestCase):
         )
         self.assertEqual(
             {
-                "published_skills": 2,
+                "published_skills": 3,
                 "public_possible_skills": 3,
-                "public_ready_skills": 2,
+                "public_ready_skills": 3,
             },
             summary,
         )
