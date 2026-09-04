@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Render public-ready skill scenarios as ordinary Markdown lists and reject
+  HTML break tags at the selected source boundary so exact-source Pages remain
+  readable without changing their escaping or byte-fidelity contract.
 - Added repository-local re-entry and contextual jargon scan skills so an
   isolated Program checkout can recover current source and suite state and
   revise shorthand into wording the repository itself explains.

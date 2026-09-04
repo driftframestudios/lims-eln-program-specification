@@ -154,20 +154,20 @@ Reopen when:
 
 ### Scenario: The Golden Specimen crosses four receiving roles
 
-Given
-`src/lims_eln_contracts/resources/scenarios/golden-specimen.v1.json` defines the
-released synthetic journey and carries its canonical digest<br>
-And the packaged result schema defines the shared comparison shape<br>
-When implementation and simulation produce their shaped observations and the
-comparison repository evaluates the pinned pair<br>
-Then the map records the Program scenario and schema source, each producer's
-full release coordinate and evidence mode, and the comparator's pinned input
-coordinates<br>
-And implementation retains authority for configured-environment observations,
-simulation retains authority inside the selected future, and comparison retains
-authority for the resulting difference classification<br>
-And any revision to the scenario, schema, producer result, or comparison input
-reopens the map from the changed source coordinate
+- Given
+  `src/lims_eln_contracts/resources/scenarios/golden-specimen.v1.json` defines the
+  released synthetic journey and carries its canonical digest
+- And the packaged result schema defines the shared comparison shape
+- When implementation and simulation produce their shaped observations and the
+  comparison repository evaluates the pinned pair
+- Then the map records the Program scenario and schema source, each producer's
+  full release coordinate and evidence mode, and the comparator's pinned input
+  coordinates
+- And implementation retains authority for configured-environment observations,
+  simulation retains authority inside the selected future, and comparison retains
+  authority for the resulting difference classification
+- And any revision to the scenario, schema, producer result, or comparison input
+  reopens the map from the changed source coordinate
 
 ## Adaptation lineage
 
