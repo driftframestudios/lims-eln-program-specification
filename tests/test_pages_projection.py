@@ -164,7 +164,11 @@ class PagesProjectionTests(unittest.TestCase):
                 index,
             )
             self.assertIn("Idempotency implementation from release 0.3.2", index)
-            self.assertIn("complete 94-line implementation", index)
+            self.assertIn("complete 94-line in-memory idempotency ledger", index)
+            self.assertIn(
+                "Source: Enterprise implementation; public projection: Gist Registry",
+                index,
+            )
             self.assertIn("Implementation 0.3.2", index)
             self.assertIn(
                 "Only the Program coordinate remains a placeholder",
