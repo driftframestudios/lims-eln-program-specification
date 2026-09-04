@@ -13,6 +13,9 @@
   stale handoff, or coordination drift into one smallest adequate move, an
   owning surface, a decision-bearing receipt, and an exact re-entry event while
   preserving accepted source, identity, permission, and publication boundaries.
+- Render public-ready skill scenarios as ordinary Markdown lists and reject
+  HTML break tags at the selected source boundary so exact-source Pages remain
+  readable without changing their escaping or byte-fidelity contract.
 - Added the release-bound Enterprise Implementation idempotency example to the
   Program Pages discovery route, preserving the source repository's runtime
   authority while Gist Registry supplies the exact public projection and its
