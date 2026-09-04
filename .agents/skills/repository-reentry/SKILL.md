@@ -1,14 +1,15 @@
 ---
 name: repository-reentry
 description: Reconstructs current Program Specification truth across source, branch state, suite coordinates, shared contracts, signed release evidence, current coordination records, and public projection. Applies when work resumes, records disagree, or a program, release, or publication task needs an exact starting point.
-source_band: public_possible
-skill_version: 0.1.0
-upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
-upstream_path: .agents/skills/repository-reentry/SKILL.md
-upstream_revision: 0c023343e46cd9b1333a63c2d509787352fbad14
-upstream_blob_sha1: ac2c3732826c515b236598af10e0a204dbe14ace
-upstream_sha256: c60bb1bac3a993c78d94b1d05aaa7a97761b99275fc9acdc8285acba6f688f02
-adaptation_relation: repository_local_derivative
+metadata:
+  source_band: public_possible
+  skill_version: 0.1.0
+  upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
+  upstream_path: .agents/skills/repository-reentry/SKILL.md
+  upstream_revision: 0c023343e46cd9b1333a63c2d509787352fbad14
+  upstream_blob_sha1: ac2c3732826c515b236598af10e0a204dbe14ace
+  upstream_sha256: c60bb1bac3a993c78d94b1d05aaa7a97761b99275fc9acdc8285acba6f688f02
+  adaptation_relation: repository_local_derivative
 ---
 
 # Program Specification repository re-entry

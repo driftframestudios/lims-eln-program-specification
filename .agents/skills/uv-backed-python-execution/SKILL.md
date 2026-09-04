@@ -1,14 +1,15 @@
 ---
 name: uv-backed-python-execution
 description: Resolves and runs Program Specification Python checks through uv while preserving the host's base Python installation. Applies when Python 3.12 or 3.13, a project without a uv.lock, an isolated dependency environment, or uv storage needs a clear choice before validation.
-source_band: public_ready
-skill_version: 0.1.0
-upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
-upstream_path: .agents/skills/uv-backed-python-execution/SKILL.md
-upstream_revision: 0ed54696e01babe3020cd7b0e38bc06eeab64e67
-upstream_blob_sha1: b8fb9d34ed16146f22cfbbccad954ae4419a1692
-upstream_sha256: e9d788cae6d2ceb1ed328f8c5ce70c0c34c18d1e0849b4804d89ade6ed42f414
-adaptation_relation: repository_local_derivative
+metadata:
+  source_band: public_ready
+  skill_version: 0.1.0
+  upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
+  upstream_path: .agents/skills/uv-backed-python-execution/SKILL.md
+  upstream_revision: 0ed54696e01babe3020cd7b0e38bc06eeab64e67
+  upstream_blob_sha1: b8fb9d34ed16146f22cfbbccad954ae4419a1692
+  upstream_sha256: e9d788cae6d2ceb1ed328f8c5ce70c0c34c18d1e0849b4804d89ade6ed42f414
+  adaptation_relation: repository_local_derivative
 ---
 
 # Program Specification uv-backed Python execution

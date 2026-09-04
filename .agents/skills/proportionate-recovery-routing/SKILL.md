@@ -1,9 +1,10 @@
 ---
 name: proportionate-recovery-routing
 description: Routes a consequential collaboration strain to the smallest adequate recovery move, owning surface, verification signal, and exact re-entry point. Applies when a failed check, repeated retry, source or context loss, authority mismatch, stale handoff, or coordination drift prevents reliable continuation.
-source_band: public_possible
-skill_version: 0.1.0
-adaptation_relation: repository_local_original
+metadata:
+  source_band: public_possible
+  skill_version: 0.1.0
+  adaptation_relation: repository_local_original
 ---
 
 # Proportionate recovery routing
