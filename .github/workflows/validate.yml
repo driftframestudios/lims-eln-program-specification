@@ -154,6 +154,18 @@ jobs:
                 ;;
             esac
             commit="$(jq -r --arg coordinate "$coordinate" '.[$coordinate].commit' constellation.lock.json)"
+            metadata_response_file="$RUNNER_TEMP/program-sibling-$coordinate-metadata.response"
+            if ! gh api --include "repos/$repository" >"$metadata_response_file" 2>/dev/null; then
+              metadata_status="$(awk '/^HTTP/{code=$2} END{print code}' "$metadata_response_file")"
+              metadata_status="${metadata_status:-unavailable}"
+              metadata_diagnostic="$(python scripts/summarize_github_api_response.py "$metadata_response_file")"
+              rm -f "$metadata_response_file"
+              echo "Normalized GitHub API metadata response: $metadata_diagnostic"
+              echo "::error title=Private sibling repository metadata is unavailable::Credential authentication is established; the metadata request returned HTTP $metadata_status. Use the normalized rate, retry, and SSO states above, then confirm the token resource owner, repository selection, approval state, and repository token policy for $repository before dispatching this proof again."
+              exit 1
+            fi
+            rm -f "$metadata_response_file"
+            echo "Confirmed private sibling repository metadata access: $coordinate"
             response_file="$RUNNER_TEMP/program-sibling-$coordinate.response"
             if gh api --include "repos/$repository/contents?ref=$commit" >"$response_file" 2>/dev/null; then
               rm -f "$response_file"
@@ -162,13 +174,15 @@ jobs:
             fi
             status="$(awk '/^HTTP/{code=$2} END{print code}' "$response_file")"
             status="${status:-unavailable}"
+            diagnostic="$(python scripts/summarize_github_api_response.py "$response_file")"
             rm -f "$response_file"
+            echo "Normalized GitHub API Contents response: $diagnostic"
             case "$status" in
               403)
-                echo "::error title=Private sibling request is forbidden::Credential authentication is established. Confirm the token resource owner, repository selection, Contents read permission, repository policy, and current API rate state for $repository, then dispatch this proof again."
+                echo "::error title=Private sibling Contents request is forbidden::Credential authentication and repository metadata access are established. Use the normalized rate, retry, SSO, and accepted-permission states above, then ensure Contents read permission and repository policy admit $repository before dispatching this proof again."
                 ;;
               404)
-                echo "::error title=Private sibling coordinate is unavailable to this credential::Credential authentication is established. Confirm the token resource owner, select $repository with Contents read permission, and confirm pinned commit $commit remains available, then dispatch this proof again."
+                echo "::error title=Private sibling coordinate is unavailable to this credential::Credential authentication and repository metadata access are established. Use the normalized response above, then ensure Contents read permission is active and confirm pinned commit $commit remains available before dispatching this proof again."
                 ;;
               unavailable)
                 echo "::error title=Private sibling probe returned without an HTTP status::Credential authentication is established. Restore GitHub API connectivity, then dispatch this proof again."
