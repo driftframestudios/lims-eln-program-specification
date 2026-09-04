@@ -148,7 +148,7 @@ class PagesProjectionTests(unittest.TestCase):
                 | {pages.MANIFEST_FILENAME},
             )
 
-    def test_index_links_the_accepted_public_comparison(self) -> None:
+    def test_index_links_the_selected_public_routes(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = self.build(Path(temporary))
             index = (output / "index.html").read_text(encoding="utf-8")
@@ -157,6 +157,16 @@ class PagesProjectionTests(unittest.TestCase):
             )
             self.assertIn(
                 'href="https://cometspectrum.io/reports/golden-specimen/comparison.html"',
+                index,
+            )
+            self.assertIn(
+                'href="https://kindlight.io/snippets/lims-eln-enterprise-implementation/0.3.2/"',
+                index,
+            )
+            self.assertIn("Idempotency implementation from release 0.3.2", index)
+            self.assertIn("complete 94-line in-memory idempotency ledger", index)
+            self.assertIn(
+                "Source: Enterprise implementation; public projection: Gist Registry",
                 index,
             )
             self.assertIn("Implementation 0.3.2", index)

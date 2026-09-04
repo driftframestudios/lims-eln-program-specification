@@ -84,8 +84,9 @@ Pages bytes outside the source worktree. A clean exact `HEAD` can therefore
 produce a manifest that truthfully identifies the complete source state.
 
 The local Pages aggregate creates two isolated builds, validates both complete
-inventories, and scans their text for credential-shaped values. A later,
-separately authorized publication action can place reviewed bytes on a `docs`
-branch, activate repository Pages settings, and attach an HTTPS origin plus its
-matching CNAME. Each action keeps the accepted projection manifest as its
-recovery coordinate.
+inventories, and scans their text for credential-shaped values. The
+builder-owned `pages` branch carries the complete reviewed projection for the
+activated site. A separately authorized publication action replaces that tree
+from one clean source revision and attaches an HTTPS origin plus its matching
+CNAME. Each action keeps the accepted projection manifest as its recovery
+coordinate.

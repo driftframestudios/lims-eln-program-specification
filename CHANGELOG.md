@@ -13,6 +13,12 @@
   stale handoff, or coordination drift into one smallest adequate move, an
   owning surface, a decision-bearing receipt, and an exact re-entry event while
   preserving accepted source, identity, permission, and publication boundaries.
+- Added the release-bound Enterprise Implementation idempotency example to the
+  Program Pages discovery route, preserving the source repository's runtime
+  authority while Gist Registry supplies the exact public projection and its
+  release, digest, license, attribution, and test coordinates. The documented
+  publication topology now names the builder-owned `pages` branch used by the
+  activated site.
 - Prepared the deliberate hosted proof to install the local contract package
   before validation and to confirm private-sibling read access to every locked
   repository and commit before the first external checkout. Repository read

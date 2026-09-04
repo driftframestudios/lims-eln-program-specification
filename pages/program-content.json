@@ -47,6 +47,12 @@
       "owner": "Comparative evidence",
       "summary": "Read the accepted paired report, its agreement and divergence classifications, and the evidence boundary for the selected implementation and simulation observations.",
       "url": "https://cometspectrum.io/reports/golden-specimen/comparison.html"
+    },
+    {
+      "name": "Idempotency implementation from release 0.3.2",
+      "owner": "Source: Enterprise implementation; public projection: Gist Registry",
+      "summary": "Read the complete 94-line in-memory idempotency ledger beside the exact 0.3.2 release, source digest, license, attribution, and focused test coordinates.",
+      "url": "https://kindlight.io/snippets/lims-eln-enterprise-implementation/0.3.2/"
     }
   ],
   "contracts": [
