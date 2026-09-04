@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Render public-ready skill scenarios as ordinary Markdown lists and reject
+  HTML break tags at the selected source boundary so exact-source Pages remain
+  readable without changing their escaping or byte-fidelity contract.
 - Added the release-bound Enterprise Implementation idempotency example to the
   Program Pages discovery route, preserving the source repository's runtime
   authority while Gist Registry supplies the exact public projection and its
