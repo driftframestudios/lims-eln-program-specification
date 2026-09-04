@@ -2609,7 +2609,23 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             cross_repository_job,
         )
         self.assertIn(
+            'gh api --include "repos/$repository"',
+            cross_repository_job,
+        )
+        self.assertIn(
+            "Confirmed private sibling repository metadata access",
+            cross_repository_job,
+        )
+        self.assertIn(
             'gh api --include "repos/$repository/contents?ref=$commit"',
+            cross_repository_job,
+        )
+        self.assertIn(
+            "scripts/summarize_github_api_response.py",
+            cross_repository_job,
+        )
+        self.assertIn(
+            "Normalized GitHub API Contents response",
             cross_repository_job,
         )
         self.assertIn(
@@ -2621,7 +2637,7 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
         self.assertIn("404)", cross_repository_job)
         self.assertIn("unavailable)", cross_repository_job)
         self.assertIn(
-            "Private sibling request is forbidden",
+            "Private sibling Contents request is forbidden",
             cross_repository_job,
         )
         self.assertIn(
@@ -2633,6 +2649,17 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             cross_repository_job,
         )
         self.assertNotIn('cat "$response_file"', cross_repository_job)
+        self.assertNotIn('cat "$metadata_response_file"', cross_repository_job)
+        self.assertLess(
+            cross_repository_job.index("gh api --silent user"),
+            cross_repository_job.index('gh api --include "repos/$repository"'),
+        )
+        self.assertLess(
+            cross_repository_job.index('gh api --include "repos/$repository"'),
+            cross_repository_job.index(
+                'gh api --include "repos/$repository/contents?ref=$commit"'
+            ),
+        )
         self.assertLess(
             cross_repository_job.index(
                 "Confirm private sibling read access"

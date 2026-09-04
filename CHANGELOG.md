@@ -13,6 +13,11 @@
   stale handoff, or coordination drift into one smallest adequate move, an
   owning surface, a decision-bearing receipt, and an exact re-entry event while
   preserving accepted source, identity, permission, and publication boundaries.
+- Refined the deliberate private-sibling proof to establish authentication,
+  repository metadata access, and exact Contents access as separate
+  dimensions. A failed request now yields only normalized status, rate,
+  retry-window, SSO-clue, and endpoint-permission states while response
+  material and credential values remain in the ephemeral runner boundary.
 - Render public-ready skill scenarios as ordinary Markdown lists and reject
   HTML break tags at the selected source boundary so exact-source Pages remain
   readable without changing their escaping or byte-fidelity contract.
