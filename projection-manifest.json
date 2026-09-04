@@ -1,0 +1,86 @@
+{
+  "canonicalOrigin": "https://cometspectrum.org",
+  "fileScope": "all-projection-files-except-manifest-v1",
+  "files": [
+    {
+      "bytes": 0,
+      "path": ".nojekyll",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 18,
+      "path": "CNAME",
+      "sha256": "0c45b45fcd0c25cca7c95a3adffac978ef9e895222d7adc8e12fb72fc8aa0ce6"
+    },
+    {
+      "bytes": 4592,
+      "path": "assets/styles.css",
+      "sha256": "dbc2709d225756acffa77bc133784a2d5d6d2d05d51828a9c68308835fbdbb1d"
+    },
+    {
+      "bytes": 9315,
+      "path": "contracts/index.html",
+      "sha256": "223cb6c4e6b365497581741b938355814193e8460c1d229a342a84bfd70699af"
+    },
+    {
+      "bytes": 8782,
+      "path": "index.html",
+      "sha256": "9c293f8d8014b4e5985c24ed9a8a960550d2db8fd67db0ce98cd4cf3557dde82"
+    },
+    {
+      "bytes": 6522,
+      "path": "program-content.json",
+      "sha256": "b4e039d4ca623cf7a1d991f1b9401d60823ddc77d7bc1dbe9503f3927df91fb9"
+    },
+    {
+      "bytes": 10955,
+      "path": "skills/constellation-coherence-reconciliation/index.html",
+      "sha256": "20009ce5736d03fed5843d29e60b05aa1f00cc52abc792d28aacb949fd7e0dbe"
+    },
+    {
+      "bytes": 4777,
+      "path": "skills/index.html",
+      "sha256": "243bc4bf268b680c7d0a3e5556a2800e25868d20956663c868becd02e63fa82b"
+    },
+    {
+      "bytes": 13051,
+      "path": "skills/source-authority-mapping/index.html",
+      "sha256": "6c32619d69fb1e801b99b3f2c7224b54a2d76bc4b11acfb411e1311f96827aaa"
+    },
+    {
+      "bytes": 6157,
+      "path": "verification/index.html",
+      "sha256": "49928002c6245b54228632046b4f17546489f8320d274e6a2c41e8902668cef9"
+    }
+  ],
+  "manifestVersion": "1.0.0",
+  "programContent": {
+    "projectedPath": "program-content.json",
+    "sha256": "sha256:b4e039d4ca623cf7a1d991f1b9401d60823ddc77d7bc1dbe9503f3927df91fb9",
+    "sourcePath": "pages/program-content.json"
+  },
+  "projectionOwner": "driftframestudios/lims-eln-program-specification",
+  "publicSkills": [
+    {
+      "name": "constellation-coherence-reconciliation",
+      "pagePath": "skills/constellation-coherence-reconciliation/index.html",
+      "slug": "constellation-coherence-reconciliation",
+      "sourcePath": ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
+      "sourceSha256": "sha256:0c432287d4c5030ad34e7f05dd77aa9ee86c7d3b882ef3388ff2ca9471c2b912"
+    },
+    {
+      "name": "source-authority-mapping",
+      "pagePath": "skills/source-authority-mapping/index.html",
+      "slug": "source-authority-mapping",
+      "sourcePath": ".agents/skills/source-authority-mapping/SKILL.md",
+      "sourceSha256": "sha256:b89d4c47342d36d7571767a88fc5967bc42d87a7b3c0261ecaf2b7a9555f3eac"
+    }
+  ],
+  "sourceProof": {
+    "method": "git-exact-head-v1",
+    "revision": "862938a69bb19281f8e4062f1f239a471b933221",
+    "standing": "clean"
+  },
+  "sourceRevision": "862938a69bb19281f8e4062f1f239a471b933221",
+  "sourceStanding": "clean"
+}
