@@ -112,14 +112,14 @@ accepted source semantic state during coordinate settlement.
 
 ### Scenario: Current coordinates accompany an older copied closure
 
-Given a Program hub is ready to pin signed Simulation and Comparison releases<br>
-And both releases carry one accepted selected-future bundle<br>
-And the Program still carries an earlier version of that bundle<br>
-When constellation reconciliation compares coordinates and copied semantics<br>
-Then Program replaces its projection from the accepted source<br>
-And updates dependent digests, schema-era bindings, summaries, and validators
-as one candidate<br>
-And the external roles become pinned only after detached-source equality passes
+- Given a Program hub is ready to pin signed Simulation and Comparison releases
+- And both releases carry one accepted selected-future bundle
+- And the Program still carries an earlier version of that bundle
+- When constellation reconciliation compares coordinates and copied semantics
+- Then Program replaces its projection from the accepted source
+- And updates dependent digests, schema-era bindings, summaries, and validators
+  as one candidate
+- And the external roles become pinned only after detached-source equality passes
 
 ## Completion
 
