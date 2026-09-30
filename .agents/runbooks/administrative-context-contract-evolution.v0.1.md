@@ -240,16 +240,15 @@ observation and planning routes can remain active.
 
 **Source owner:** Program Issue #50
 
-The exercise authored a Program-owned synthetic fixture beside a metadata-only
-Synthetic Hospital source manifest. The upstream database was neither
-downloaded nor executed, and no upstream `insurance` value enters the Program
-fixture. The manifest and fixture therefore exercise separate source and local
-meaning paths:
+The exercise authored a Program-owned synthetic fixture and a source-neutral
+administrative adapter contract. The representative inputs, transformation
+stages, policy behavior, and claim boundary remain local Program meanings:
 
-1. `ExternalSourceManifest` binds the upstream release and API-observed asset
-   coordinate.
-2. `ProvenanceAssertion` records API-observed release metadata separately from
-   independently authored fixture formation.
+1. `AdministrativeAdapterContract` carries representative input records,
+   connected extract-through-emit stages, required enrichment, replay identity,
+   and the requirement that duplicate input converge without an additional
+   effect. Configured execution evidence remains with a receiver.
+2. `ProvenanceAssertion` records independently authored fixture formation.
 3. `InsuranceClassification` preserves a present raw label, represents absent
    source evidence as `unknown`, and can emit one term, multiple terms,
    ambiguity, or `abstain` under independently versioned vocabulary and method

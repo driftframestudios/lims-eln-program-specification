@@ -16,9 +16,9 @@ from lims_eln_contracts import (  # noqa: E402
     ScenarioContract,
     canonical_sha256,
     generated_schema_bytes,
+    load_administrative_adapter_contract_example,
     load_administrative_counterfactual_example,
     load_external_administrative_contract_set,
-    load_external_source_manifest_example,
     load_generated_schema,
     load_golden_specimen_observation_example,
     load_golden_specimen_scenario,
@@ -35,13 +35,13 @@ class ReleasedResourceTests(unittest.TestCase):
         self,
     ) -> None:
         contract_set = load_external_administrative_contract_set()
-        source = load_external_source_manifest_example()
+        adapter = load_administrative_adapter_contract_example()
         independent = load_independent_multilabel_policy_example()
         counterfactual = load_administrative_counterfactual_example()
 
         self.assertEqual("1.0.0", contract_set.contract_set_version)
-        self.assertEqual(source, contract_set.source_manifests[0])
-        self.assertEqual((), independent.source_manifests)
+        self.assertEqual(adapter, contract_set.adapter_contracts[0])
+        self.assertEqual(adapter, independent.adapter_contracts[0])
         self.assertEqual(counterfactual, contract_set.impact_observations[0])
 
     def test_operation_catalog_preserves_program_operation_semantics(self) -> None:

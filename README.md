@@ -226,8 +226,8 @@ JSON Schema validation.
 
 The versioned
 [`external-administrative-contracts.v1.json`](src/lims_eln_contracts/resources/external-administrative-contracts.v1.json)
-canonical conformance bundle leads to the external-source manifest,
-administrative context,
+canonical conformance bundle leads to the source-neutral administrative
+adapter, administrative context,
 raw-preserving insurance classification, coverage enrollment, declared policy,
 reviewed decision, impact observation, population scenario, and provenance
 contracts. It also records compatibility, invalidation, ownership, examples,
@@ -236,20 +236,20 @@ three files under `resources/administrative/` are deterministic, byte-checked
 reader projections of this one authored bundle.
 
 The generated
-[`external-source-manifest.v1.schema.json`](src/lims_eln_contracts/resources/schemas/external-source-manifest.v1.schema.json)
-supports intake as a stand-alone boundary. The generated
+[`administrative-adapter-contract.v1.schema.json`](src/lims_eln_contracts/resources/schemas/administrative-adapter-contract.v1.schema.json)
+supports adapter design and replay behavior as a stand-alone boundary. The generated
 [`external-administrative-contract-set.v1.schema.json`](src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json)
 provides the dependency-closed family. Open domain vocabularies retain system,
 version, code, and display identity; closed workflow states remain explicit.
 The [`schema index`](schemas/README.md) places both roots beside the Program's
 release and promotion schemas and names each behavior authority.
 
-The
-[`Synthetic Hospital v1.3`](src/lims_eln_contracts/resources/administrative/synthetic-hospital-v1.3.v1.json)
-example records its exact public source and asset coordinate without carrying
-the database. The upstream description of a generated `insurance` field
-remains a bounded source fact; no upstream value enters the Program fixture.
-The
+The repository-owned
+[`insurance and administrative adapter`](src/lims_eln_contracts/resources/administrative/insurance-administrative-adapter.v1.json)
+example describes representative raw records, six connected ETL stages, and a
+convergent replay requirement. It is a design contract rather than an executed
+adapter; its local synthetic inputs illustrate mechanics without binding this
+family to a particular repository, release, dataset, or runtime. The
 independently authored
 [`multi-label policy example`](src/lims_eln_contracts/resources/administrative/independent-multilabel-policy.v1.json)
 exercises accepted single- and multi-label classifications, unknown and

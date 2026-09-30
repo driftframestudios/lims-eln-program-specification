@@ -23,7 +23,7 @@ The external benchmark and administrative-context family begins with:
 
 | Schema | Canonical identity | Use |
 | --- | --- | --- |
-| [`external-source-manifest.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/external-source-manifest.v1.schema.json) | `urn:driftframe:lims-eln:external-source-manifest:1.0.0` | Validate a source intake coordinate independently. |
+| [`administrative-adapter-contract.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/administrative-adapter-contract.v1.schema.json) | `urn:driftframe:lims-eln:administrative-adapter-contract:1.0.0` | Validate a source-neutral administrative adapter and its replay-safe stage design independently. |
 | [`external-administrative-contract-set.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json) | `urn:driftframe:lims-eln:external-administrative-contract-set:1.0.0` | Validate the dependency-closed family; Python enforces declared referential and temporal invariants. |
 
 The

@@ -58,6 +58,356 @@
       "title": "AccountableReview",
       "type": "object"
     },
+    "AdapterEnrichmentRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "field_name": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Field Name",
+          "type": "string"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/AdapterEnrichmentSource"
+        }
+      },
+      "required": [
+        "field_name",
+        "source",
+        "purpose"
+      ],
+      "title": "AdapterEnrichmentRequirement",
+      "type": "object"
+    },
+    "AdapterEnrichmentSource": {
+      "enum": [
+        "receiver_configuration",
+        "authorized_runtime_input",
+        "governed_vocabulary",
+        "accountable_review"
+      ],
+      "title": "AdapterEnrichmentSource",
+      "type": "string"
+    },
+    "AdapterFieldValue": {
+      "additionalProperties": false,
+      "properties": {
+        "field_name": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Field Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "field_name",
+        "value"
+      ],
+      "title": "AdapterFieldValue",
+      "type": "object"
+    },
+    "AdapterIdempotencyContract": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint_strategy": {
+          "minLength": 1,
+          "title": "Checkpoint Strategy",
+          "type": "string"
+        },
+        "duplicate_input_effect": {
+          "const": "same_output_no_additional_effect",
+          "default": "same_output_no_additional_effect",
+          "title": "Duplicate Input Effect",
+          "type": "string"
+        },
+        "key_fields": {
+          "items": {
+            "maxLength": 96,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Key Fields",
+          "type": "array"
+        },
+        "replay_scope": {
+          "minLength": 1,
+          "title": "Replay Scope",
+          "type": "string"
+        },
+        "retry_behavior": {
+          "minLength": 1,
+          "title": "Retry Behavior",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key_fields",
+        "replay_scope",
+        "checkpoint_strategy",
+        "retry_behavior"
+      ],
+      "title": "AdapterIdempotencyContract",
+      "type": "object"
+    },
+    "AdapterInputRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "input_version": {
+          "minLength": 1,
+          "title": "Input Version",
+          "type": "string"
+        },
+        "record_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "$ref": "#/$defs/AdapterFieldValue"
+          },
+          "minItems": 1,
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "record_id",
+        "input_version",
+        "values"
+      ],
+      "title": "AdapterInputRecord",
+      "type": "object"
+    },
+    "AdapterStage": {
+      "additionalProperties": false,
+      "properties": {
+        "idempotent": {
+          "const": true,
+          "default": true,
+          "title": "Idempotent",
+          "type": "boolean"
+        },
+        "implementation_pattern": {
+          "enum": [
+            "declarative_contract",
+            "idempotent_script"
+          ],
+          "title": "Implementation Pattern",
+          "type": "string"
+        },
+        "input_resource": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Input Resource",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/AdapterStageKind"
+        },
+        "operation": {
+          "minLength": 1,
+          "title": "Operation",
+          "type": "string"
+        },
+        "output_resource": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Output Resource",
+          "type": "string"
+        },
+        "sequence": {
+          "exclusiveMinimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "stage_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Stage Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage_id",
+        "sequence",
+        "kind",
+        "input_resource",
+        "output_resource",
+        "operation",
+        "implementation_pattern"
+      ],
+      "title": "AdapterStage",
+      "type": "object"
+    },
+    "AdapterStageKind": {
+      "enum": [
+        "extract",
+        "validate",
+        "normalize",
+        "classify",
+        "map_contract",
+        "emit"
+      ],
+      "title": "AdapterStageKind",
+      "type": "string"
+    },
+    "AdministrativeAdapterContract": {
+      "additionalProperties": false,
+      "description": "Source-neutral, replay-safe design for an administrative data adapter.",
+      "properties": {
+        "adapter_contract_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "title": "Adapter Contract Version",
+          "type": "string"
+        },
+        "adapter_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Adapter Id",
+          "type": "string"
+        },
+        "claim_boundary": {
+          "minLength": 1,
+          "title": "Claim Boundary",
+          "type": "string"
+        },
+        "data_standing": {
+          "const": "program_authored_synthetic",
+          "title": "Data Standing",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "execution_standing": {
+          "const": "design_only",
+          "default": "design_only",
+          "title": "Execution Standing",
+          "type": "string"
+        },
+        "idempotency": {
+          "$ref": "#/$defs/AdapterIdempotencyContract"
+        },
+        "input_contract_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Input Contract Id",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "output_bundle_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Output Bundle Id",
+          "type": "string"
+        },
+        "output_object_names": {
+          "items": {
+            "enum": [
+              "AdministrativeContext",
+              "InsuranceClassification",
+              "CoverageEnrollment"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Output Object Names",
+          "type": "array"
+        },
+        "provenance_refs": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Provenance Refs",
+          "type": "array"
+        },
+        "representative_records": {
+          "items": {
+            "$ref": "#/$defs/AdapterInputRecord"
+          },
+          "minItems": 1,
+          "title": "Representative Records",
+          "type": "array"
+        },
+        "required_enrichments": {
+          "items": {
+            "$ref": "#/$defs/AdapterEnrichmentRequirement"
+          },
+          "minItems": 1,
+          "title": "Required Enrichments",
+          "type": "array"
+        },
+        "stages": {
+          "items": {
+            "$ref": "#/$defs/AdapterStage"
+          },
+          "minItems": 1,
+          "title": "Stages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "adapter_id",
+        "name",
+        "description",
+        "data_standing",
+        "input_contract_id",
+        "representative_records",
+        "stages",
+        "idempotency",
+        "output_bundle_id",
+        "output_object_names",
+        "required_enrichments",
+        "provenance_refs",
+        "claim_boundary"
+      ],
+      "title": "AdministrativeAdapterContract",
+      "type": "object"
+    },
     "AdministrativeContext": {
       "additionalProperties": false,
       "properties": {
@@ -257,7 +607,7 @@
     },
     "AdministrativeSourceClass": {
       "enum": [
-        "external_synthetic_release",
+        "observed_external_source",
         "independently_authored_synthetic",
         "authorized_operational"
       ],
@@ -310,14 +660,6 @@
         "retired"
       ],
       "title": "AdoptionState",
-      "type": "string"
-    },
-    "AssetObservationKind": {
-      "enum": [
-        "api_reported_metadata",
-        "locally_hashed"
-      ],
-      "title": "AssetObservationKind",
       "type": "string"
     },
     "ChangedAdministrativeVariable": {
@@ -876,7 +1218,7 @@
         },
         "root_object": {
           "enum": [
-            "ExternalSourceManifest",
+            "AdministrativeAdapterContract",
             "ExternalAdministrativeContractSet",
             "DecisionImpactObservation"
           ],
@@ -891,213 +1233,6 @@
         "purpose"
       ],
       "title": "ExampleResourceRef",
-      "type": "object"
-    },
-    "ExternalAssetDescriptor": {
-      "additionalProperties": false,
-      "properties": {
-        "asset_name": {
-          "maxLength": 512,
-          "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-          "title": "Asset Name",
-          "type": "string"
-        },
-        "byte_count": {
-          "exclusiveMinimum": 0,
-          "title": "Byte Count",
-          "type": "integer"
-        },
-        "digest": {
-          "pattern": "^sha256:[a-f0-9]{64}$",
-          "title": "Digest",
-          "type": "string"
-        },
-        "download_url": {
-          "maxLength": 2048,
-          "minLength": 9,
-          "pattern": "^https://[^\\s]+$",
-          "title": "Download Url",
-          "type": "string"
-        },
-        "inclusion_mode": {
-          "const": "metadata_only",
-          "default": "metadata_only",
-          "title": "Inclusion Mode",
-          "type": "string"
-        },
-        "media_type": {
-          "minLength": 1,
-          "title": "Media Type",
-          "type": "string"
-        },
-        "payload_included": {
-          "const": false,
-          "default": false,
-          "title": "Payload Included",
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "asset_name",
-        "byte_count",
-        "digest",
-        "media_type",
-        "download_url"
-      ],
-      "title": "ExternalAssetDescriptor",
-      "type": "object"
-    },
-    "ExternalAssetObservation": {
-      "additionalProperties": false,
-      "properties": {
-        "download_performed": {
-          "title": "Download Performed",
-          "type": "boolean"
-        },
-        "execution_performed": {
-          "title": "Execution Performed",
-          "type": "boolean"
-        },
-        "observation_kind": {
-          "$ref": "#/$defs/AssetObservationKind"
-        },
-        "observation_source": {
-          "maxLength": 2048,
-          "minLength": 9,
-          "pattern": "^https://[^\\s]+$",
-          "title": "Observation Source",
-          "type": "string"
-        },
-        "observed_at": {
-          "maxLength": 27,
-          "minLength": 20,
-          "title": "Observed At",
-          "type": "string"
-        }
-      },
-      "required": [
-        "observed_at",
-        "observation_kind",
-        "observation_source",
-        "download_performed",
-        "execution_performed"
-      ],
-      "title": "ExternalAssetObservation",
-      "type": "object"
-    },
-    "ExternalSourceManifest": {
-      "additionalProperties": false,
-      "description": "Immutable source coordinates without embedding the source asset bytes.",
-      "properties": {
-        "asset": {
-          "$ref": "#/$defs/ExternalAssetDescriptor"
-        },
-        "asset_observation": {
-          "$ref": "#/$defs/ExternalAssetObservation"
-        },
-        "local_adapter_id": {
-          "maxLength": 128,
-          "minLength": 3,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
-          "title": "Local Adapter Id",
-          "type": "string"
-        },
-        "local_adapter_version": {
-          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
-          "title": "Local Adapter Version",
-          "type": "string"
-        },
-        "manifest_id": {
-          "maxLength": 128,
-          "minLength": 3,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
-          "title": "Manifest Id",
-          "type": "string"
-        },
-        "manifest_version": {
-          "const": "1.0.0",
-          "default": "1.0.0",
-          "title": "Manifest Version",
-          "type": "string"
-        },
-        "pinned_documents": {
-          "items": {
-            "$ref": "#/$defs/PinnedSourceDocument"
-          },
-          "minItems": 1,
-          "title": "Pinned Documents",
-          "type": "array"
-        },
-        "reception_mode": {
-          "$ref": "#/$defs/ReceptionMode"
-        },
-        "release_commit": {
-          "pattern": "^[a-f0-9]{40}$",
-          "title": "Release Commit",
-          "type": "string"
-        },
-        "release_tag": {
-          "minLength": 1,
-          "title": "Release Tag",
-          "type": "string"
-        },
-        "release_url": {
-          "maxLength": 2048,
-          "minLength": 9,
-          "pattern": "^https://[^\\s]+$",
-          "title": "Release Url",
-          "type": "string"
-        },
-        "repository_id": {
-          "maxLength": 128,
-          "minLength": 3,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
-          "title": "Repository Id",
-          "type": "string"
-        },
-        "repository_url": {
-          "maxLength": 2048,
-          "minLength": 9,
-          "pattern": "^https://[^\\s]+$",
-          "title": "Repository Url",
-          "type": "string"
-        },
-        "retrieved_on": {
-          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-          "title": "Retrieved On",
-          "type": "string"
-        },
-        "source_claim_boundary": {
-          "minLength": 1,
-          "title": "Source Claim Boundary",
-          "type": "string"
-        },
-        "upstream_limitations": {
-          "items": {
-            "$ref": "#/$defs/UpstreamLimitation"
-          },
-          "title": "Upstream Limitations",
-          "type": "array"
-        }
-      },
-      "required": [
-        "manifest_id",
-        "repository_id",
-        "repository_url",
-        "release_tag",
-        "release_commit",
-        "release_url",
-        "asset",
-        "asset_observation",
-        "pinned_documents",
-        "retrieved_on",
-        "local_adapter_id",
-        "local_adapter_version",
-        "reception_mode",
-        "source_claim_boundary"
-      ],
-      "title": "ExternalSourceManifest",
       "type": "object"
     },
     "IdentifiedTerm": {
@@ -1440,62 +1575,6 @@
         "availability"
       ],
       "title": "NamedPolicyInput",
-      "type": "object"
-    },
-    "PinnedDocumentRole": {
-      "enum": [
-        "data_card",
-        "license",
-        "citation"
-      ],
-      "title": "PinnedDocumentRole",
-      "type": "string"
-    },
-    "PinnedSourceDocument": {
-      "additionalProperties": false,
-      "properties": {
-        "blob_sha": {
-          "pattern": "^[a-f0-9]{40}$",
-          "title": "Blob Sha",
-          "type": "string"
-        },
-        "byte_count": {
-          "exclusiveMinimum": 0,
-          "title": "Byte Count",
-          "type": "integer"
-        },
-        "commit": {
-          "pattern": "^[a-f0-9]{40}$",
-          "title": "Commit",
-          "type": "string"
-        },
-        "path": {
-          "maxLength": 512,
-          "minLength": 1,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
-          "title": "Path",
-          "type": "string"
-        },
-        "role": {
-          "$ref": "#/$defs/PinnedDocumentRole"
-        },
-        "url": {
-          "maxLength": 2048,
-          "minLength": 9,
-          "pattern": "^https://[^\\s]+$",
-          "title": "Url",
-          "type": "string"
-        }
-      },
-      "required": [
-        "role",
-        "path",
-        "commit",
-        "blob_sha",
-        "byte_count",
-        "url"
-      ],
-      "title": "PinnedSourceDocument",
       "type": "object"
     },
     "PolicyEvaluation": {
@@ -2206,7 +2285,7 @@
       "properties": {
         "object_name": {
           "enum": [
-            "ExternalSourceManifest",
+            "AdministrativeAdapterContract",
             "AdministrativeContext",
             "InsuranceClassification",
             "CoverageEnrollment",
@@ -2239,16 +2318,6 @@
       ],
       "title": "PublicObjectDescriptor",
       "type": "object"
-    },
-    "ReceptionMode": {
-      "enum": [
-        "reference_only",
-        "adapter_probe",
-        "derived_scenario",
-        "held_for_review"
-      ],
-      "title": "ReceptionMode",
-      "type": "string"
     },
     "RecourseRoute": {
       "additionalProperties": false,
@@ -2314,7 +2383,7 @@
           "title": "Release Id",
           "type": "string"
         },
-        "source_manifest_ref": {
+        "source_observation_ref": {
           "anyOf": [
             {
               "maxLength": 128,
@@ -2327,7 +2396,7 @@
             }
           ],
           "default": null,
-          "title": "Source Manifest Ref"
+          "title": "Source Observation Ref"
         }
       },
       "required": [
@@ -2392,7 +2461,7 @@
         },
         "root_object": {
           "enum": [
-            "ExternalSourceManifest",
+            "AdministrativeAdapterContract",
             "ExternalAdministrativeContractSet"
           ],
           "title": "Root Object",
@@ -2473,62 +2542,118 @@
         "record": {
           "$ref": "#/$defs/ReleaseScopedIdentifier"
         },
-        "source_manifest_ref": {
+        "source_observation_ref": {
           "maxLength": 128,
           "minLength": 3,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
-          "title": "Source Manifest Ref",
+          "title": "Source Observation Ref",
           "type": "string"
         }
       },
       "required": [
-        "source_manifest_ref",
+        "source_observation_ref",
         "record",
         "field_path"
       ],
       "title": "SourceFieldCoordinate",
       "type": "object"
     },
-    "UpstreamIssueState": {
+    "SourceIntegrityStanding": {
       "enum": [
-        "open",
-        "closed"
+        "reported_digest",
+        "locally_computed_digest"
       ],
-      "title": "UpstreamIssueState",
+      "title": "SourceIntegrityStanding",
       "type": "string"
     },
-    "UpstreamLimitation": {
+    "SourceObservation": {
       "additionalProperties": false,
+      "description": "Source-neutral integrity observation used only when a claim needs it.",
       "properties": {
-        "issue_number": {
-          "exclusiveMinimum": 0,
-          "title": "Issue Number",
-          "type": "integer"
-        },
-        "issue_url": {
-          "maxLength": 2048,
-          "minLength": 9,
-          "pattern": "^https://[^\\s]+$",
-          "title": "Issue Url",
-          "type": "string"
-        },
-        "limitation": {
+        "claim_boundary": {
           "minLength": 1,
-          "title": "Limitation",
+          "title": "Claim Boundary",
           "type": "string"
         },
-        "state": {
-          "$ref": "#/$defs/UpstreamIssueState"
+        "content_digest": {
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "execution_observed": {
+          "title": "Execution Observed",
+          "type": "boolean"
+        },
+        "integrity_standing": {
+          "$ref": "#/$defs/SourceIntegrityStanding"
+        },
+        "observation_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Observation Id",
+          "type": "string"
+        },
+        "observation_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "title": "Observation Version",
+          "type": "string"
+        },
+        "observed_at": {
+          "maxLength": 27,
+          "minLength": 20,
+          "title": "Observed At",
+          "type": "string"
+        },
+        "payload_observed": {
+          "title": "Payload Observed",
+          "type": "boolean"
+        },
+        "source_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_version": {
+          "minLength": 1,
+          "title": "Source Version",
+          "type": "string"
+        },
+        "supported_claims": {
+          "items": {
+            "$ref": "#/$defs/SourceObservationClaim"
+          },
+          "minItems": 1,
+          "title": "Supported Claims",
+          "type": "array"
         }
       },
       "required": [
-        "issue_number",
-        "issue_url",
-        "state",
-        "limitation"
+        "observation_id",
+        "source_id",
+        "source_version",
+        "observed_at",
+        "integrity_standing",
+        "content_digest",
+        "payload_observed",
+        "execution_observed",
+        "supported_claims",
+        "claim_boundary"
       ],
-      "title": "UpstreamLimitation",
+      "title": "SourceObservation",
       "type": "object"
+    },
+    "SourceObservationClaim": {
+      "enum": [
+        "source_field_provenance",
+        "administrative_context",
+        "population_calibration"
+      ],
+      "title": "SourceObservationClaim",
+      "type": "string"
     },
     "VersionedArtifactRef": {
       "additionalProperties": false,
@@ -2565,6 +2690,14 @@
   "additionalProperties": false,
   "description": "Dependency-closed v1 validation bundle for the administrative family.",
   "properties": {
+    "adapter_contracts": {
+      "items": {
+        "$ref": "#/$defs/AdministrativeAdapterContract"
+      },
+      "minItems": 1,
+      "title": "Adapter Contracts",
+      "type": "array"
+    },
     "administrative_contexts": {
       "items": {
         "$ref": "#/$defs/AdministrativeContext"
@@ -2680,11 +2813,11 @@
       "title": "Schema Roots",
       "type": "array"
     },
-    "source_manifests": {
+    "source_observations": {
       "items": {
-        "$ref": "#/$defs/ExternalSourceManifest"
+        "$ref": "#/$defs/SourceObservation"
       },
-      "title": "Source Manifests",
+      "title": "Source Observations",
       "type": "array"
     }
   },
@@ -2696,6 +2829,7 @@
     "compatibility",
     "invalidation_triggers",
     "adoption_event",
+    "adapter_contracts",
     "population_scenarios",
     "administrative_contexts",
     "insurance_classifications",
@@ -2708,9 +2842,9 @@
   "title": "ExternalAdministrativeContractSet",
   "type": "object",
   "x-semantic-invariants": [
-    "all public object identifiers are unique and every cross-record reference resolves",
-    "external subject and episode identifiers retain manifest namespace and release tag",
-    "population calibration standing determines whether source and evidence references are absent or jointly present",
+    "all contract record identifiers are unique and every cross-record reference resolves",
+    "the administrative adapter remains source-neutral and binds only repository-owned representative records",
+    "population calibration standing determines whether source and evidence references are absent or jointly present; calibration observations declare support and scenario-bound evidence traces exactly to them",
     "final classifications and final administrative decisions carry accountable, authorizing review",
     "decision proposal, review, and final transitions bind their declared actor identities; evaluation precedes proposal and review stays within its review interval",
     "policy evaluations occur during policy effectivity; a named profile binds cited normalized inputs, declared predicates derive match and conflict sets, selected-rule and evaluation outcomes agree, and only an authorizing revise review may change the final decision outcome",

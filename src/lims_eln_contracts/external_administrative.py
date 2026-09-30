@@ -1,4 +1,4 @@
-"""External-source and administrative-context contracts.
+"""Administrative-adapter and administrative-context contracts.
 
 The objects in this module keep source formation, clinical evidence,
 administrative interpretation, and accountable decisions independently
@@ -11,8 +11,6 @@ from __future__ import annotations
 from datetime import date, datetime
 from enum import StrEnum
 from typing import Annotated, Literal
-from urllib.parse import urlsplit
-
 from pydantic import AfterValidator, Field, PositiveInt, StringConstraints, model_validator
 
 from .canonical import canonical_sha256
@@ -39,29 +37,11 @@ def _utc_instant(value: str) -> datetime:
     return datetime.fromisoformat(value.removesuffix("Z") + "+00:00")
 
 
-def _public_https_url_remains_stable(value: str) -> str:
-    parsed = urlsplit(value)
-    if parsed.scheme != "https" or parsed.hostname is None:
-        raise ValueError("public locator uses HTTPS with a named host")
-    if parsed.username is not None or parsed.password is not None:
-        raise ValueError("public locator carries no user information")
-    if parsed.query:
-        raise ValueError("public locator carries no query string")
-    return value
-
-
 CalendarDate = Annotated[
     str,
     StringConstraints(pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"),
     AfterValidator(_calendar_date_remains_valid),
 ]
-HttpsUrl = Annotated[
-    str,
-    StringConstraints(min_length=9, max_length=2048, pattern=r"^https://[^\s]+$"),
-    AfterValidator(_public_https_url_remains_stable),
-]
-GitCommit = Annotated[str, StringConstraints(pattern=r"^[a-f0-9]{40}$")]
-GitBlobSha = Annotated[str, StringConstraints(pattern=r"^[a-f0-9]{40}$")]
 RepositoryPath = Annotated[
     str,
     StringConstraints(
@@ -128,127 +108,205 @@ class ReleaseScopedIdentifier(ContractModel):
     release_id: NonEmptyText
     record_type: IdentifiedTerm
     local_id: NonEmptyText
-    source_manifest_ref: Identifier | None = None
+    source_observation_ref: Identifier | None = None
 
 
-class PinnedDocumentRole(StrEnum):
-    DATA_CARD = "data_card"
-    LICENSE = "license"
-    CITATION = "citation"
+class SourceIntegrityStanding(StrEnum):
+    REPORTED_DIGEST = "reported_digest"
+    LOCALLY_COMPUTED_DIGEST = "locally_computed_digest"
 
 
-class PinnedSourceDocument(ContractModel):
-    role: PinnedDocumentRole
-    path: RepositoryPath
-    commit: GitCommit
-    blob_sha: GitBlobSha
-    byte_count: PositiveInt
-    url: HttpsUrl
+class SourceObservationClaim(StrEnum):
+    SOURCE_FIELD_PROVENANCE = "source_field_provenance"
+    ADMINISTRATIVE_CONTEXT = "administrative_context"
+    POPULATION_CALIBRATION = "population_calibration"
 
 
-class ExternalAssetDescriptor(ContractModel):
-    asset_name: RepositoryPath
-    byte_count: PositiveInt
-    digest: Sha256Digest
-    media_type: NonEmptyText
-    download_url: HttpsUrl
-    inclusion_mode: Literal["metadata_only"] = "metadata_only"
-    payload_included: Literal[False] = False
+class SourceObservation(ContractModel):
+    """Source-neutral integrity observation used only when a claim needs it."""
 
-
-class AssetObservationKind(StrEnum):
-    API_REPORTED_METADATA = "api_reported_metadata"
-    LOCALLY_HASHED = "locally_hashed"
-
-
-class ExternalAssetObservation(ContractModel):
+    observation_version: Literal["1.0.0"] = "1.0.0"
+    observation_id: Identifier
+    source_id: Identifier
+    source_version: NonEmptyText
     observed_at: UtcTimestamp
-    observation_kind: AssetObservationKind
-    observation_source: HttpsUrl
-    download_performed: bool
-    execution_performed: bool
-
-
-class ReceptionMode(StrEnum):
-    REFERENCE_ONLY = "reference_only"
-    ADAPTER_PROBE = "adapter_probe"
-    DERIVED_SCENARIO = "derived_scenario"
-    HELD_FOR_REVIEW = "held_for_review"
-
-
-class UpstreamIssueState(StrEnum):
-    OPEN = "open"
-    CLOSED = "closed"
-
-
-class UpstreamLimitation(ContractModel):
-    issue_number: PositiveInt
-    issue_url: HttpsUrl
-    state: UpstreamIssueState
-    limitation: NonEmptyText
-
-
-class ExternalSourceManifest(ContractModel):
-    """Immutable source coordinates without embedding the source asset bytes."""
-
-    manifest_version: Literal["1.0.0"] = "1.0.0"
-    manifest_id: Identifier
-    repository_id: Identifier
-    repository_url: HttpsUrl
-    release_tag: NonEmptyText
-    release_commit: GitCommit
-    release_url: HttpsUrl
-    asset: ExternalAssetDescriptor
-    asset_observation: ExternalAssetObservation
-    pinned_documents: tuple[PinnedSourceDocument, ...] = Field(min_length=1)
-    upstream_limitations: tuple[UpstreamLimitation, ...] = Field(default_factory=tuple)
-    retrieved_on: CalendarDate
-    local_adapter_id: Identifier
-    local_adapter_version: SemanticVersion
-    reception_mode: ReceptionMode
-    source_claim_boundary: NonEmptyText
+    integrity_standing: SourceIntegrityStanding
+    content_digest: Sha256Digest
+    payload_observed: bool
+    execution_observed: bool
+    supported_claims: tuple[SourceObservationClaim, ...] = Field(min_length=1)
+    claim_boundary: NonEmptyText
 
     @model_validator(mode="after")
-    def pinned_coordinates_remain_coherent(self) -> "ExternalSourceManifest":
-        roles = [document.role for document in self.pinned_documents]
-        paths = [document.path for document in self.pinned_documents]
-        issue_numbers = [issue.issue_number for issue in self.upstream_limitations]
-        if len(roles) != len(set(roles)):
-            raise ValueError("pinned document roles remain unique")
-        if set(roles) != {
-            PinnedDocumentRole.DATA_CARD,
-            PinnedDocumentRole.LICENSE,
-            PinnedDocumentRole.CITATION,
+    def integrity_evidence_remains_explicit(self) -> "SourceObservation":
+        if len(self.supported_claims) != len(set(self.supported_claims)):
+            raise ValueError("source observation supported claims remain unique")
+        if (
+            self.integrity_standing
+            is SourceIntegrityStanding.LOCALLY_COMPUTED_DIGEST
+            and not self.payload_observed
+        ):
+            raise ValueError(
+                "a locally computed digest carries a payload observation"
+            )
+        if self.execution_observed and not self.payload_observed:
+            raise ValueError("an execution observation carries a payload observation")
+        return self
+
+
+class AdapterFieldValue(ContractModel):
+    field_name: FieldName
+    value: NonEmptyText | bool | None
+
+
+class AdapterInputRecord(ContractModel):
+    record_id: Identifier
+    input_version: NonEmptyText
+    values: tuple[AdapterFieldValue, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def field_names_remain_unique(self) -> "AdapterInputRecord":
+        field_names = [item.field_name for item in self.values]
+        if len(field_names) != len(set(field_names)):
+            raise ValueError("adapter input field names remain unique")
+        return self
+
+
+class AdapterStageKind(StrEnum):
+    EXTRACT = "extract"
+    VALIDATE = "validate"
+    NORMALIZE = "normalize"
+    CLASSIFY = "classify"
+    MAP_CONTRACT = "map_contract"
+    EMIT = "emit"
+
+
+class AdapterStage(ContractModel):
+    stage_id: Identifier
+    sequence: PositiveInt
+    kind: AdapterStageKind
+    input_resource: Identifier
+    output_resource: Identifier
+    operation: NonEmptyText
+    implementation_pattern: Literal["declarative_contract", "idempotent_script"]
+    idempotent: Literal[True] = True
+
+
+class AdapterIdempotencyContract(ContractModel):
+    key_fields: tuple[FieldName, ...] = Field(min_length=1)
+    duplicate_input_effect: Literal["same_output_no_additional_effect"] = (
+        "same_output_no_additional_effect"
+    )
+    replay_scope: NonEmptyText
+    checkpoint_strategy: NonEmptyText
+    retry_behavior: NonEmptyText
+
+    @model_validator(mode="after")
+    def key_fields_remain_unique(self) -> "AdapterIdempotencyContract":
+        if len(self.key_fields) != len(set(self.key_fields)):
+            raise ValueError("adapter idempotency key fields remain unique")
+        return self
+
+
+AdapterOutputObject = Literal[
+    "AdministrativeContext",
+    "InsuranceClassification",
+    "CoverageEnrollment",
+]
+
+
+class AdapterEnrichmentSource(StrEnum):
+    RECEIVER_CONFIGURATION = "receiver_configuration"
+    AUTHORIZED_RUNTIME_INPUT = "authorized_runtime_input"
+    GOVERNED_VOCABULARY = "governed_vocabulary"
+    ACCOUNTABLE_REVIEW = "accountable_review"
+
+
+class AdapterEnrichmentRequirement(ContractModel):
+    field_name: FieldName
+    source: AdapterEnrichmentSource
+    purpose: NonEmptyText
+
+
+class AdministrativeAdapterContract(ContractModel):
+    """Source-neutral, replay-safe design for an administrative data adapter."""
+
+    adapter_contract_version: Literal["1.0.0"] = "1.0.0"
+    adapter_id: Identifier
+    name: NonEmptyText
+    description: NonEmptyText
+    data_standing: Literal["program_authored_synthetic"]
+    execution_standing: Literal["design_only"] = "design_only"
+    input_contract_id: Identifier
+    representative_records: tuple[AdapterInputRecord, ...] = Field(min_length=1)
+    stages: tuple[AdapterStage, ...] = Field(min_length=1)
+    idempotency: AdapterIdempotencyContract
+    output_bundle_id: Identifier
+    output_object_names: tuple[AdapterOutputObject, ...] = Field(min_length=1)
+    required_enrichments: tuple[AdapterEnrichmentRequirement, ...] = Field(
+        min_length=1
+    )
+    provenance_refs: tuple[Identifier, ...] = Field(min_length=1)
+    claim_boundary: NonEmptyText
+
+    @model_validator(mode="after")
+    def modular_replay_contract_remains_coherent(
+        self,
+    ) -> "AdministrativeAdapterContract":
+        record_ids = [item.record_id for item in self.representative_records]
+        stage_ids = [item.stage_id for item in self.stages]
+        output_names = list(self.output_object_names)
+        enrichment_names = [item.field_name for item in self.required_enrichments]
+        if len(record_ids) != len(set(record_ids)):
+            raise ValueError("representative adapter record identifiers remain unique")
+        if len(stage_ids) != len(set(stage_ids)):
+            raise ValueError("adapter stage identifiers remain unique")
+        if len(output_names) != len(set(output_names)):
+            raise ValueError("adapter output object names remain unique")
+        if set(output_names) != {
+            "AdministrativeContext",
+            "InsuranceClassification",
+            "CoverageEnrollment",
         }:
             raise ValueError(
-                "pinned documents include the data card, license, and citation"
+                "adapter output names the context, classification, and enrollment objects"
             )
-        if len(paths) != len(set(paths)):
-            raise ValueError("pinned document paths remain unique")
-        if len(issue_numbers) != len(set(issue_numbers)):
-            raise ValueError("upstream issue numbers remain unique")
-        if any(document.commit != self.release_commit for document in self.pinned_documents):
-            raise ValueError("pinned documents retain the manifest release commit")
-        if (
-            self.asset_observation.observation_kind
-            is AssetObservationKind.API_REPORTED_METADATA
-            and self.asset_observation.download_performed
-        ):
+        if len(enrichment_names) != len(set(enrichment_names)):
+            raise ValueError("adapter enrichment field names remain unique")
+        expected_kinds = (
+            AdapterStageKind.EXTRACT,
+            AdapterStageKind.VALIDATE,
+            AdapterStageKind.NORMALIZE,
+            AdapterStageKind.CLASSIFY,
+            AdapterStageKind.MAP_CONTRACT,
+            AdapterStageKind.EMIT,
+        )
+        if tuple(item.kind for item in self.stages) != expected_kinds:
             raise ValueError(
-                "API-reported metadata observation remains distinct from a download"
+                "adapter stages retain extract, validate, normalize, classify, "
+                "contract-map, and emit order"
             )
-        if (
-            self.asset_observation.observation_kind
-            is AssetObservationKind.LOCALLY_HASHED
-            and not self.asset_observation.download_performed
+        if tuple(item.sequence for item in self.stages) != tuple(
+            range(1, len(self.stages) + 1)
         ):
+            raise ValueError("adapter stage sequence remains contiguous from one")
+        if len(self.provenance_refs) != len(set(self.provenance_refs)):
+            raise ValueError("adapter provenance references remain unique")
+        if self.stages[0].input_resource != self.input_contract_id:
             raise ValueError(
-                "local asset hashing requires a separately recorded download"
+                "the first adapter stage begins at the declared input contract"
             )
-        if self.asset_observation.execution_performed and not (
-            self.asset_observation.download_performed
-        ):
-            raise ValueError("asset execution requires a separately recorded download")
+        if self.stages[-1].output_resource != self.output_bundle_id:
+            raise ValueError(
+                "the final adapter stage ends at the declared output bundle"
+            )
+        for previous, current in zip(self.stages, self.stages[1:]):
+            if previous.output_resource != current.input_resource:
+                raise ValueError("adjacent adapter stages share one resource boundary")
+        if set(self.idempotency.key_fields) != {"record_id", "input_version"}:
+            raise ValueError(
+                "adapter replay identity uses record_id and input_version"
+            )
         return self
 
 
@@ -367,7 +425,7 @@ class PopulationScenario(ContractModel):
 
 
 class AdministrativeSourceClass(StrEnum):
-    EXTERNAL_SYNTHETIC_RELEASE = "external_synthetic_release"
+    OBSERVED_EXTERNAL_SOURCE = "observed_external_source"
     INDEPENDENTLY_AUTHORED_SYNTHETIC = "independently_authored_synthetic"
     AUTHORIZED_OPERATIONAL = "authorized_operational"
 
@@ -405,22 +463,25 @@ class AdministrativeContext(ContractModel):
             raise ValueError("subject and episode retain one release namespace")
         if self.subject.release_id != self.episode.release_id:
             raise ValueError("subject and episode retain one release identity")
-        source_refs = {self.subject.source_manifest_ref, self.episode.source_manifest_ref}
-        if self.source_class is AdministrativeSourceClass.EXTERNAL_SYNTHETIC_RELEASE:
+        source_refs = {
+            self.subject.source_observation_ref,
+            self.episode.source_observation_ref,
+        }
+        if self.source_class is AdministrativeSourceClass.OBSERVED_EXTERNAL_SOURCE:
             if None in source_refs or len(source_refs) != 1:
                 raise ValueError(
-                    "external context subject and episode retain one source manifest"
+                    "an externally observed context retains one source observation"
                 )
             if self.evidence_standing not in {
                 ContextEvidenceStanding.SOURCE_REPORTED,
                 ContextEvidenceStanding.ARTIFACT_VERIFIED,
             }:
                 raise ValueError(
-                    "external contexts retain source-reported or artifact-verified evidence"
+                    "an externally observed context retains source-reported or artifact-verified evidence"
                 )
         elif any(reference is not None for reference in source_refs):
             raise ValueError(
-                "locally authored or authorized contexts use their local release namespace"
+                "local synthetic and operational contexts use their local release namespace"
             )
         elif (
             self.source_class
@@ -1071,14 +1132,14 @@ class ProvenanceResolutionStatus(StrEnum):
 
 
 class SourceFieldCoordinate(ContractModel):
-    source_manifest_ref: Identifier
+    source_observation_ref: Identifier
     record: ReleaseScopedIdentifier
     field_path: NonEmptyText
 
     @model_validator(mode="after")
-    def record_uses_coordinate_manifest(self) -> "SourceFieldCoordinate":
-        if self.record.source_manifest_ref != self.source_manifest_ref:
-            raise ValueError("source field record retains the coordinate manifest")
+    def record_uses_coordinate_observation(self) -> "SourceFieldCoordinate":
+        if self.record.source_observation_ref != self.source_observation_ref:
+            raise ValueError("source field record retains the source observation")
         return self
 
 
@@ -1172,7 +1233,7 @@ class ProvenanceAssertion(ContractModel):
 
 
 PublicObjectName = Literal[
-    "ExternalSourceManifest",
+    "AdministrativeAdapterContract",
     "AdministrativeContext",
     "InsuranceClassification",
     "CoverageEnrollment",
@@ -1194,7 +1255,7 @@ class SchemaProjectionRef(ContractModel):
     schema_name: RepositoryPath
     schema_id: Identifier
     root_object: Literal[
-        "ExternalSourceManifest",
+        "AdministrativeAdapterContract",
         "ExternalAdministrativeContractSet",
     ]
     projection_mode: Literal["validation_input"] = "validation_input"
@@ -1205,7 +1266,7 @@ class ExampleResourceRef(ContractModel):
     example_id: Identifier
     path: RepositoryPath
     root_object: Literal[
-        "ExternalSourceManifest",
+        "AdministrativeAdapterContract",
         "ExternalAdministrativeContractSet",
         "DecisionImpactObservation",
     ]
@@ -1389,7 +1450,8 @@ class ExternalAdministrativeContractSet(ContractModel):
     compatibility: CompatibilityContract
     invalidation_triggers: tuple[InvalidationTrigger, ...] = Field(min_length=1)
     adoption_event: AdoptionEvent
-    source_manifests: tuple[ExternalSourceManifest, ...] = Field(default_factory=tuple)
+    source_observations: tuple[SourceObservation, ...] = Field(default_factory=tuple)
+    adapter_contracts: tuple[AdministrativeAdapterContract, ...] = Field(min_length=1)
     population_scenarios: tuple[PopulationScenario, ...] = Field(min_length=1)
     administrative_contexts: tuple[AdministrativeContext, ...] = Field(min_length=1)
     insurance_classifications: tuple[InsuranceClassification, ...] = Field(min_length=1)
@@ -1405,7 +1467,7 @@ class ExternalAdministrativeContractSet(ContractModel):
     ) -> "ExternalAdministrativeContractSet":
         object_names = [item.object_name for item in self.public_objects]
         expected_object_names = {
-            "ExternalSourceManifest",
+            "AdministrativeAdapterContract",
             "AdministrativeContext",
             "InsuranceClassification",
             "CoverageEnrollment",
@@ -1430,9 +1492,9 @@ class ExternalAdministrativeContractSet(ContractModel):
             for item in self.schema_roots
         }
         if schema_index != {
-            "external-source-manifest.v1.schema.json": (
-                "urn:driftframe:lims-eln:external-source-manifest:1.0.0",
-                "ExternalSourceManifest",
+            "administrative-adapter-contract.v1.schema.json": (
+                "urn:driftframe:lims-eln:administrative-adapter-contract:1.0.0",
+                "AdministrativeAdapterContract",
             ),
             "external-administrative-contract-set.v1.schema.json": (
                 "urn:driftframe:lims-eln:external-administrative-contract-set:1.0.0",
@@ -1453,9 +1515,9 @@ class ExternalAdministrativeContractSet(ContractModel):
             item.path: (item.example_id, item.root_object) for item in self.examples
         }
         if example_index != {
-            "administrative/synthetic-hospital-v1.3.v1.json": (
-                "EXAMPLE-SYNTHETIC-HOSPITAL-V1-3",
-                "ExternalSourceManifest",
+            "administrative/insurance-administrative-adapter.v1.json": (
+                "EXAMPLE-INSURANCE-ADMINISTRATIVE-ADAPTER",
+                "AdministrativeAdapterContract",
             ),
             "administrative/independent-multilabel-policy.v1.json": (
                 "EXAMPLE-INDEPENDENT-MULTILABEL-POLICY",
@@ -1475,8 +1537,11 @@ class ExternalAdministrativeContractSet(ContractModel):
             raise ValueError("invalidation-trigger identifiers remain unique")
 
         collections = {
-            "source manifest": {
-                item.manifest_id: item for item in self.source_manifests
+            "source observation": {
+                item.observation_id: item for item in self.source_observations
+            },
+            "adapter contract": {
+                item.adapter_id: item for item in self.adapter_contracts
             },
             "population scenario": {
                 item.scenario_id: item for item in self.population_scenarios
@@ -1506,7 +1571,8 @@ class ExternalAdministrativeContractSet(ContractModel):
         }
         for label, mapping in collections.items():
             expected = {
-                "source manifest": len(self.source_manifests),
+                "source observation": len(self.source_observations),
+                "adapter contract": len(self.adapter_contracts),
                 "population scenario": len(self.population_scenarios),
                 "administrative context": len(self.administrative_contexts),
                 "insurance classification": len(self.insurance_classifications),
@@ -1523,9 +1589,9 @@ class ExternalAdministrativeContractSet(ContractModel):
         for mapping in collections.values():
             all_ids.extend(mapping)
         if len(all_ids) != len(set(all_ids)):
-            raise ValueError("public object identifiers remain unique across the contract set")
+            raise ValueError("contract record identifiers remain unique across the set")
 
-        manifests = collections["source manifest"]
+        source_observations = collections["source observation"]
         scenarios = collections["population scenario"]
         contexts = collections["administrative context"]
         classifications = collections["insurance classification"]
@@ -1553,31 +1619,65 @@ class ExternalAdministrativeContractSet(ContractModel):
                         "as a subject"
                     )
 
+        for adapter in self.adapter_contracts:
+            require_subject_provenance(adapter.provenance_refs, adapter.adapter_id)
+
         for scenario in self.population_scenarios:
             require_subject_provenance(
                 scenario.provenance_refs, scenario.scenario_id
             )
             for reference in scenario.calibration_source_refs:
-                require(reference, manifests, "population calibration source")
+                require(reference, source_observations, "population calibration source")
+                if (
+                    SourceObservationClaim.POPULATION_CALIBRATION
+                    not in source_observations[reference].supported_claims
+                ):
+                    raise ValueError(
+                        "population calibration source observation supports the calibration claim"
+                    )
             require_provenance(
                 scenario.calibration_evidence_refs,
                 f"{scenario.scenario_id} calibration evidence",
             )
+            for reference in scenario.calibration_evidence_refs:
+                if scenario.scenario_id not in provenance[reference].subject_refs:
+                    raise ValueError(
+                        "population calibration evidence names the population scenario as a subject"
+                    )
 
         for context in self.administrative_contexts:
             require(context.population_scenario_ref, scenarios, "population scenario")
             require_subject_provenance(context.provenance_refs, context.context_id)
             for scoped in (context.subject, context.episode):
-                if scoped.source_manifest_ref is not None:
-                    require(scoped.source_manifest_ref, manifests, "source manifest")
-                    manifest = manifests[scoped.source_manifest_ref]
-                    if scoped.namespace_id != manifest.manifest_id:
+                if scoped.source_observation_ref is not None:
+                    require(
+                        scoped.source_observation_ref,
+                        source_observations,
+                        "context source observation",
+                    )
+                    observation = source_observations[scoped.source_observation_ref]
+                    if (
+                        SourceObservationClaim.ADMINISTRATIVE_CONTEXT
+                        not in observation.supported_claims
+                    ):
                         raise ValueError(
-                            "external record namespace equals its source manifest identity"
+                            "context source observation supports an administrative-context claim"
                         )
-                    if scoped.release_id != manifest.release_tag:
+                    if (
+                        scoped.namespace_id != observation.source_id
+                        or scoped.release_id != observation.source_version
+                    ):
                         raise ValueError(
-                            "external record release equals its source manifest tag"
+                            "external context records retain observed source identity and version"
+                        )
+                    if (
+                        context.evidence_standing
+                        is ContextEvidenceStanding.ARTIFACT_VERIFIED
+                        and observation.integrity_standing
+                        is not SourceIntegrityStanding.LOCALLY_COMPUTED_DIGEST
+                    ):
+                        raise ValueError(
+                            "artifact-verified context requires a locally computed digest"
                         )
 
         for classification in self.insurance_classifications:
@@ -1801,28 +1901,6 @@ class ExternalAdministrativeContractSet(ContractModel):
             if arm_contexts[0].episode != arm_contexts[1].episode:
                 raise ValueError("counterfactual arms retain one release-scoped episode")
 
-        for context in self.administrative_contexts:
-            if (
-                context.source_class
-                is AdministrativeSourceClass.EXTERNAL_SYNTHETIC_RELEASE
-            ):
-                source_manifest_ref = context.subject.source_manifest_ref
-                assert source_manifest_ref is not None
-                require(source_manifest_ref, manifests, "administrative context source")
-                if (
-                    context.evidence_standing
-                    is ContextEvidenceStanding.ARTIFACT_VERIFIED
-                ):
-                    observation = manifests[source_manifest_ref].asset_observation
-                    if (
-                        observation.observation_kind
-                        is not AssetObservationKind.LOCALLY_HASHED
-                        or not observation.download_performed
-                    ):
-                        raise ValueError(
-                            "artifact-verified external context requires a locally hashed download"
-                        )
-
         public_subject_ids = set(all_ids)
         for assertion in self.provenance_assertions:
             for reference in assertion.subject_refs:
@@ -1831,27 +1909,32 @@ class ExternalAdministrativeContractSet(ContractModel):
             for reference in assertion.derived_from_assertion_refs:
                 require(reference, provenance, "provenance parent")
             if assertion.source_coordinate is not None:
-                source_ref = assertion.source_coordinate.source_manifest_ref
-                require(source_ref, manifests, "provenance source manifest")
-                manifest = manifests[source_ref]
-                record = assertion.source_coordinate.record
+                source_ref = assertion.source_coordinate.source_observation_ref
+                require(source_ref, source_observations, "provenance source observation")
+                observation = source_observations[source_ref]
                 if (
-                    record.namespace_id != manifest.manifest_id
-                    or record.release_id != manifest.release_tag
+                    SourceObservationClaim.SOURCE_FIELD_PROVENANCE
+                    not in observation.supported_claims
                 ):
                     raise ValueError(
-                        "provenance source record retains manifest namespace and release"
+                        "provenance source observation supports a source-field claim"
                     )
-                if assertion.standing is ProvenanceStanding.ARTIFACT_VERIFIED:
-                    observation = manifest.asset_observation
-                    if (
-                        observation.observation_kind
-                        is not AssetObservationKind.LOCALLY_HASHED
-                        or not observation.download_performed
-                    ):
-                        raise ValueError(
-                            "artifact-verified source provenance requires a locally hashed download"
-                        )
+                record = assertion.source_coordinate.record
+                if (
+                    record.namespace_id != observation.source_id
+                    or record.release_id != observation.source_version
+                ):
+                    raise ValueError(
+                        "provenance source record retains observed source identity and version"
+                    )
+                if (
+                    assertion.standing is ProvenanceStanding.ARTIFACT_VERIFIED
+                    and observation.integrity_standing
+                    is not SourceIntegrityStanding.LOCALLY_COMPUTED_DIGEST
+                ):
+                    raise ValueError(
+                        "artifact-verified provenance requires a locally computed digest"
+                    )
             if assertion.review is not None:
                 require_provenance(
                     assertion.review.evidence_refs,
@@ -1875,23 +1958,55 @@ class ExternalAdministrativeContractSet(ContractModel):
 
         for assertion_id in provenance:
             visit(assertion_id)
+
+        source_lineage_cache: dict[str, frozenset[str]] = {}
+
+        def source_lineage(assertion_id: str) -> frozenset[str]:
+            if assertion_id in source_lineage_cache:
+                return source_lineage_cache[assertion_id]
+            assertion = provenance[assertion_id]
+            observed_sources: set[str] = set()
+            if assertion.source_coordinate is not None:
+                observed_sources.add(
+                    assertion.source_coordinate.source_observation_ref
+                )
+            for parent in assertion.derived_from_assertion_refs:
+                observed_sources.update(source_lineage(parent))
+            result = frozenset(observed_sources)
+            source_lineage_cache[assertion_id] = result
+            return result
+
+        for scenario in self.population_scenarios:
+            if (
+                scenario.calibration_standing
+                is PopulationCalibrationStanding.NOT_CALIBRATED
+            ):
+                continue
+            evidence_sources: set[str] = set()
+            for reference in scenario.calibration_evidence_refs:
+                evidence_sources.update(source_lineage(reference))
+            if evidence_sources != set(scenario.calibration_source_refs):
+                raise ValueError(
+                    "population calibration evidence traces exactly to its declared source observations"
+                )
         return self
 
 
-EXTERNAL_SOURCE_MANIFEST_SCHEMA_ID = (
-    "urn:driftframe:lims-eln:external-source-manifest:1.0.0"
+ADMINISTRATIVE_ADAPTER_CONTRACT_SCHEMA_ID = (
+    "urn:driftframe:lims-eln:administrative-adapter-contract:1.0.0"
 )
 EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SCHEMA_ID = (
     "urn:driftframe:lims-eln:external-administrative-contract-set:1.0.0"
 )
-EXTERNAL_SOURCE_MANIFEST_SEMANTIC_INVARIANTS = (
-    "data-card, license, and citation documents are pinned exactly once and retain release_commit",
-    "API-reported asset metadata remains distinct from download or execution evidence",
+ADMINISTRATIVE_ADAPTER_CONTRACT_SEMANTIC_INVARIANTS = (
+    "representative records retain unique local identities and unique field names",
+    "adapter stages form one contiguous extract, validate, normalize, classify, contract-map, and emit chain",
+    "replay identity uses record_id and input_version; duplicate input converges without an additional effect",
 )
 EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SEMANTIC_INVARIANTS = (
-    "all public object identifiers are unique and every cross-record reference resolves",
-    "external subject and episode identifiers retain manifest namespace and release tag",
-    "population calibration standing determines whether source and evidence references are absent or jointly present",
+    "all contract record identifiers are unique and every cross-record reference resolves",
+    "the administrative adapter remains source-neutral and binds only repository-owned representative records",
+    "population calibration standing determines whether source and evidence references are absent or jointly present; calibration observations declare support and scenario-bound evidence traces exactly to them",
     "final classifications and final administrative decisions carry accountable, authorizing review",
     "decision proposal, review, and final transitions bind their declared actor identities; evaluation precedes proposal and review stays within its review interval",
     "policy evaluations occur during policy effectivity; a named profile binds cited normalized inputs, declared predicates derive match and conflict sets, selected-rule and evaluation outcomes agree, and only an authorizing revise review may change the final decision outcome",
@@ -1909,7 +2024,7 @@ def external_administrative_schema_documents() -> dict[str, dict]:
     from .schema_artifacts import SCHEMA_ARTIFACTS
 
     external_filenames = {
-        "external-source-manifest.v1.schema.json",
+        "administrative-adapter-contract.v1.schema.json",
         "external-administrative-contract-set.v1.schema.json",
     }
     return {

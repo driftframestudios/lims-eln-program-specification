@@ -87,7 +87,7 @@ class ExternalBenchmarkCollaborationSurfaceTests(unittest.TestCase):
             "task_type": "operational_collaboration",
         }
         expected_status = {
-            "external-benchmark-intake.v0.1.md": "exercised",
+            "external-benchmark-intake.v0.1.md": "working",
             "administrative-context-contract-evolution.v0.1.md": "exercised",
             "constellation-contract-release-handoff.v0.1.md": "working",
         }
@@ -155,7 +155,7 @@ class ExternalBenchmarkCollaborationSurfaceTests(unittest.TestCase):
         self.assertIn("lims-eln-simulated-final-state/issues/38", readme)
         self.assertIn("lims-eln-comparative-evidence/issues/41", readme)
 
-    def test_contract_evolution_exercise_keeps_source_and_fixture_distinct(
+    def test_contract_evolution_exercise_keeps_adapter_and_claims_distinct(
         self,
     ) -> None:
         source = (
@@ -165,8 +165,8 @@ class ExternalBenchmarkCollaborationSurfaceTests(unittest.TestCase):
         for statement in (
             "**Action mode:** `implementation_authorized`",
             "Program-owned synthetic fixture",
-            "upstream database was neither\ndownloaded nor executed",
-            "no upstream `insurance` value enters the Program\nfixture",
+            "source-neutral\nadministrative adapter contract",
+            "connected extract-through-emit stages",
             "precedence-resolved rule conflict",
             "reviewed\nrevision",
         ):

@@ -1,7 +1,7 @@
 ---
 title: External benchmark intake
 version: 0.1.0
-status: exercised
+status: working
 audience: human_and_ai_collaborators
 source_band: public_possible
 task_type: operational_collaboration
@@ -236,94 +236,15 @@ distinct contract.
 **Stop condition:** The route stops when the intake has one capable receiver or
 a deliberate hold with a named release event.
 
-## Read-only exercise — Synthetic Hospital v1.3
+## Current standing
 
-**Exercise date:** 2026-09-29
-
-**Action mode:** `observation_only`
-
-**Receiving question:** Can this source supply a pinned benchmark reference and
-a narrow interoperability probe for the administrative-context contract in
-Issue #50?
-
-### Bound subject
-
-| Coordinate | Read-only observation |
-| --- | --- |
-| Repository | [`sparkcpark/synthetic_hospital`](https://github.com/sparkcpark/synthetic_hospital) |
-| Release | [`v1.3`](https://github.com/sparkcpark/synthetic_hospital/releases/tag/v1.3), published 2026-09-25 |
-| Peeled tag commit | `77cc57e9c595ce731bbdde4fabdcbd25a8458ae2` |
-| Release asset | `benchmark_v1.3.db`; GitHub API reports `application/octet-stream`, 92,430,336 bytes, and `sha256:8fb8eb114508f272588b6121ca78cff53a6fc2e5f47d7aa01bfbb5bcef4e6ddb` |
-| Citation | Repository `CITATION.cff` and the paper named by the repository |
-| Code terms | MIT license at the pinned commit |
-
-The pass inspected release metadata, the pinned source tree, README, data card,
-root test configuration, patient-profile generation source, FHIR capability
-source, and upstream Issues
-[#2](https://github.com/sparkcpark/synthetic_hospital/issues/2) and
-[#3](https://github.com/sparkcpark/synthetic_hospital/issues/3). It did not
-download or execute the 92 MB database. The asset digest and byte count are
-therefore API-observed release metadata rather than a locally computed byte
-observation.
-
-### Decision-changing findings
-
-- The released surface describes 1,268 synthetic patients, 5,602 encounters,
-  four longitudinal-chart task families, a FastAPI simulator, FHIR R4-shaped
-  resources, evaluation code, and separate training, public, and held-out
-  splits.
-- Root `pytest.ini` discovers `eval/tests` and `epic_sim/tests`; ETL tests are a
-  separate explicit surface. Released database use and full source-corpus ETL
-  reproduction therefore have different boundaries.
-- Some terminology loading requires separately obtained SNOMED CT and LOINC
-  material. The code's MIT license does not by itself settle those terminology
-  obligations or a future redistribution choice.
-- Patient clustering is deterministic in Stage 8a. Stage 8b instructs an LLM
-  to generate fictional `occupation`, `insurance`, and `race_ethnicity`
-  details. Profile validation checks required keys, approximate age, and sex;
-  it does not establish insurance classification or enrollment truth.
-- A generated `insurance` value can become source-exact raw input with
-  `generated` provenance after a named value is observed. This metadata-only
-  pass observed the field's formation path rather than a database value. Such
-  a value would not establish eligibility, enrollment, coverage,
-  authorization, claim disposition, payment, population prevalence, or payer
-  behavior.
-- The capability source advertises Patient, Encounter, Condition, Observation,
-  DiagnosticReport, ServiceRequest, DocumentReference, MedicationRequest,
-  AllergyIntolerance, CodeSystem, and ValueSet. Coverage, Specimen, Task,
-  Provenance, Consent, Organization, and Practitioner are absent from that
-  advertised resource list. FHIR remains an adapter surface rather than the
-  complete LIMS/ELN domain contract.
-- Upstream Issue #3 records missing encounter references and dates for
-  Condition and Observation. Any probe that relies on encounter-local temporal
-  joins carries that known limit.
-
-### Disposition
-
-- **Release:** `reference_only` as a pinned external benchmark subject.
-- **Interface slice:** `adapter_probe` for the read-only
-  ServiceRequest → Observation → DiagnosticReport → DocumentReference path,
-  with absent LIMS/ELN and administrative objects represented explicitly.
-- **Insurance field:** retained as a documented candidate input. A retrieved
-  value would retain a source-exact coordinate and generated provenance. A
-  locally versioned classification or scenario begins through an independently
-  authored fixture or a separately authorized observation after Issue #50
-  accepts its raw/normalized/assignment/policy/decision distinctions.
-- **Material reuse:** retained for separate review if a future task proposes
-  copying database, terminology, model, or source-corpus material.
-
-The exact Program question returned to Issue #50 is: which versioned manifest,
-provenance, administrative-context, and adapter-gap fields let a receiver bind
-this release and preserve a later observed generated insurance value without
-elevating it into an accepted administrative or population claim?
-
-### Exercise observation
-
-The exercise added two decision-changing protections to the route: integrity
-evidence identifies whether a digest is source/API-reported or locally
-computed, and terms are reviewed per material class rather than inferred from
-the code license. This route is `exercised`; the separate contract release
-handoff remains `working` until an accepted Program contract enters it.
+This route remains `working`. The Program's administrative contract family now
+uses a repository-owned, source-neutral adapter fixture, so it supplies no
+external-subject exercise for this intake procedure. A future benchmark enters
+only when a receiving claim depends on that external identity and the user has
+authorized the applicable observations. That future pass will name its own
+coordinate, terms, integrity evidence, reception mode, claim ceiling, and next
+receiver.
 
 ## Handback
 

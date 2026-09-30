@@ -8,9 +8,9 @@ from typing import Final, Literal
 from .bounded_call import OperationCatalog
 from .canonical import model_from_strict_json, strict_json_loads
 from .external_administrative import (
+    AdministrativeAdapterContract,
     DecisionImpactObservation,
     ExternalAdministrativeContractSet,
-    ExternalSourceManifest,
 )
 from .golden_specimen import GoldenSpecimenObservation
 from .scenario import ScenarioContract
@@ -25,8 +25,8 @@ GOLDEN_OBSERVATION_EXAMPLE_RESOURCES: Final = {
 EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_RESOURCE: Final = (
     "external-administrative-contracts.v1.json"
 )
-EXTERNAL_SOURCE_MANIFEST_EXAMPLE_RESOURCE: Final = (
-    "administrative/synthetic-hospital-v1.3.v1.json"
+ADMINISTRATIVE_ADAPTER_CONTRACT_EXAMPLE_RESOURCE: Final = (
+    "administrative/insurance-administrative-adapter.v1.json"
 )
 INDEPENDENT_MULTILABEL_POLICY_EXAMPLE_RESOURCE: Final = (
     "administrative/independent-multilabel-policy.v1.json"
@@ -38,7 +38,7 @@ SCHEMA_RESOURCE_NAMES: Final = (
     "bounded-call-receipt.v1.schema.json",
     "bounded-call-request.v1.schema.json",
     "external-administrative-contract-set.v1.schema.json",
-    "external-source-manifest.v1.schema.json",
+    "administrative-adapter-contract.v1.schema.json",
     "golden-specimen-result-projection.v1.schema.json",
     "observation-envelope.v1.schema.json",
     "operation-catalog.v1.schema.json",
@@ -91,10 +91,10 @@ def load_external_administrative_contract_set(
     )
 
 
-def load_external_source_manifest_example() -> ExternalSourceManifest:
+def load_administrative_adapter_contract_example() -> AdministrativeAdapterContract:
     return model_from_strict_json(
-        ExternalSourceManifest,
-        _resource_bytes(EXTERNAL_SOURCE_MANIFEST_EXAMPLE_RESOURCE),
+        AdministrativeAdapterContract,
+        _resource_bytes(ADMINISTRATIVE_ADAPTER_CONTRACT_EXAMPLE_RESOURCE),
     )
 
 

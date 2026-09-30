@@ -31,7 +31,7 @@
       ],
       "symlink_behavior": "reject the scope root or any selected entry"
     },
-    "digest": "sha256:b162e5a9760eff9fad41b57224ecc678915fc5b8e8a7a2332d09046c9387c0b3"
+    "digest": "sha256:41b46ebf96cff4192984b8b38f5fd4c4b55a312fda265d24f5329170ece5ab47"
   },
   "transport": "git+https",
   "authentication_posture": "Git supplies credentials through a configured credential helper or short-lived GitHub App token; the requirement text carries no credential.",

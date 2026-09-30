@@ -18,6 +18,7 @@ from lims_eln_contracts.canonical import (  # noqa: E402
     strict_json_loads,
 )
 from lims_eln_contracts.external_administrative import (  # noqa: E402
+    AdministrativeAdapterContract,
     AdministrativeContext,
     AdministrativeDecision,
     ClassificationDisposition,
@@ -26,7 +27,6 @@ from lims_eln_contracts.external_administrative import (  # noqa: E402
     CoverageEnrollment,
     DecisionImpactObservation,
     ExternalAdministrativeContractSet,
-    ExternalSourceManifest,
     InsuranceClassification,
     MissingInputBehavior,
     PolicyEvaluation,
@@ -47,8 +47,8 @@ from lims_eln_contracts.external_administrative import (  # noqa: E402
 
 RESOURCE_ROOT = ROOT / "src" / "lims_eln_contracts" / "resources"
 CONTRACT_SET_PATH = RESOURCE_ROOT / "external-administrative-contracts.v1.json"
-SOURCE_EXAMPLE_PATH = (
-    RESOURCE_ROOT / "administrative" / "synthetic-hospital-v1.3.v1.json"
+ADAPTER_EXAMPLE_PATH = (
+    RESOURCE_ROOT / "administrative" / "insurance-administrative-adapter.v1.json"
 )
 POLICY_EXAMPLE_PATH = (
     RESOURCE_ROOT / "administrative" / "independent-multilabel-policy.v1.json"
@@ -70,6 +70,78 @@ def parse(model, value: dict):
     return model_from_strict_json(model, json.dumps(value))
 
 
+def source_calibrated_contract(value: dict) -> dict:
+    contract = deepcopy(value)
+    scenario = contract["population_scenarios"][0]
+    scenario_id = scenario["scenario_id"]
+    observation_id = "OBSERVATION-POPULATION-CALIBRATION-V1"
+    source_id = "SOURCE-POPULATION-CALIBRATION-V1"
+    source_assertion_id = "PROV-POPULATION-CALIBRATION-SOURCE-001"
+    scenario_assertion_id = scenario["provenance_refs"][0]
+    contract["source_observations"] = [
+        {
+            "observation_version": "1.0.0",
+            "observation_id": observation_id,
+            "source_id": source_id,
+            "source_version": "1",
+            "observed_at": "2026-09-30T12:00:00Z",
+            "integrity_standing": "locally_computed_digest",
+            "content_digest": "sha256:" + "3" * 64,
+            "payload_observed": True,
+            "execution_observed": False,
+            "supported_claims": [
+                "source_field_provenance",
+                "population_calibration",
+            ],
+            "claim_boundary": "The observation supports only the named population-calibration evidence route.",
+        }
+    ]
+    contract["provenance_assertions"].append(
+        {
+            "assertion_version": "1.0.0",
+            "assertion_id": source_assertion_id,
+            "subject_refs": [observation_id],
+            "formation": "source_exact",
+            "standing": "artifact_verified",
+            "resolution_status": "resolved",
+            "claim": "The observed source bytes supply the declared calibration input.",
+            "source_coordinate": {
+                "source_observation_ref": observation_id,
+                "record": {
+                    "namespace_id": source_id,
+                    "release_id": "1",
+                    "record_type": {
+                        "term_id": "record-type:calibration-input",
+                        "label": "Calibration input",
+                        "vocabulary_id": "urn:driftframe:record-types",
+                        "vocabulary_version": "1.0.0",
+                    },
+                    "local_id": "CALIBRATION-INPUT-001",
+                    "source_observation_ref": observation_id,
+                },
+                "field_path": "population_dimensions",
+            },
+            "method": None,
+            "derived_from_assertion_refs": [],
+            "evidence_digest": "sha256:" + "4" * 64,
+            "review": None,
+        }
+    )
+    scenario_assertion = next(
+        item
+        for item in contract["provenance_assertions"]
+        if item["assertion_id"] == scenario_assertion_id
+    )
+    scenario_assertion["derived_from_assertion_refs"] = [source_assertion_id]
+    scenario["calibration_standing"] = "source_calibrated"
+    scenario["calibration_source_refs"] = [observation_id]
+    scenario["calibration_evidence_refs"] = [scenario_assertion_id]
+    scenario["claim_boundary"] = (
+        "The scenario calibration claim is limited to the observed source and evidence route."
+    )
+    return contract
+
+
 class ReleasedExampleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -82,7 +154,7 @@ class ReleasedExampleTests(unittest.TestCase):
     def test_nine_public_objects_and_three_examples_are_indexed(self) -> None:
         self.assertEqual(
             {
-                "ExternalSourceManifest",
+                "AdministrativeAdapterContract",
                 "AdministrativeContext",
                 "InsuranceClassification",
                 "CoverageEnrollment",
@@ -96,7 +168,7 @@ class ReleasedExampleTests(unittest.TestCase):
         )
         self.assertEqual(
             {
-                "administrative/synthetic-hospital-v1.3.v1.json",
+                "administrative/insurance-administrative-adapter.v1.json",
                 "administrative/independent-multilabel-policy.v1.json",
                 "administrative/administrative-counterfactual.v1.json",
             },
@@ -104,66 +176,34 @@ class ReleasedExampleTests(unittest.TestCase):
         )
         self.assertEqual("pending_reviewed_merge", self.contract.adoption_event.state)
 
-    def test_source_example_pins_exact_v1_3_coordinates_without_database_bytes(
-        self,
-    ) -> None:
-        source = model_from_strict_json(
-            ExternalSourceManifest,
-            SOURCE_EXAMPLE_PATH.read_bytes(),
+    def test_adapter_example_is_source_neutral_modular_and_replay_safe(self) -> None:
+        adapter = model_from_strict_json(
+            AdministrativeAdapterContract,
+            ADAPTER_EXAMPLE_PATH.read_bytes(),
         )
-        self.assertEqual("v1.3", source.release_tag)
+        self.assertEqual("program_authored_synthetic", adapter.data_standing)
+        self.assertEqual("design_only", adapter.execution_standing)
         self.assertEqual(
-            "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
-            source.release_commit,
+            ("extract", "validate", "normalize", "classify", "map_contract", "emit"),
+            tuple(stage.kind.value for stage in adapter.stages),
         )
-        self.assertEqual("benchmark_v1.3.db", source.asset.asset_name)
-        self.assertEqual("application/octet-stream", source.asset.media_type)
-        self.assertEqual(92_430_336, source.asset.byte_count)
+        self.assertTrue(all(stage.idempotent for stage in adapter.stages))
         self.assertEqual(
-            "sha256:8fb8eb114508f272588b6121ca78cff53a6fc2e5f47d7aa01bfbb5bcef4e6ddb",
-            source.asset.digest,
+            ("record_id", "input_version"),
+            adapter.idempotency.key_fields,
         )
-        self.assertEqual("metadata_only", source.asset.inclusion_mode)
-        self.assertFalse(source.asset.payload_included)
-        self.assertFalse(source.asset_observation.download_performed)
-        self.assertFalse(source.asset_observation.execution_performed)
-        self.assertEqual("api_reported_metadata", source.asset_observation.observation_kind)
-        documents = {item.role.value: item for item in source.pinned_documents}
         self.assertEqual(
-            {
-                "data_card": (
-                    "DATA_CARD.md",
-                    "310457cad3ebd66fe135bb2a45a4332957e2d750",
-                    9639,
-                ),
-                "license": (
-                    "LICENSE",
-                    "5954e9b76b3e647ab0606811efce40407d28ba52",
-                    1067,
-                ),
-                "citation": (
-                    "CITATION.cff",
-                    "249b36a010ab5970470ee2a22558e77a78a299e2",
-                    1049,
-                ),
-            },
-            {
-                role: (item.path, item.blob_sha, item.byte_count)
-                for role, item in documents.items()
-            },
+            "same_output_no_additional_effect",
+            adapter.idempotency.duplicate_input_effect,
         )
-        self.assertEqual(1, len(source.upstream_limitations))
-        self.assertEqual(3, source.upstream_limitations[0].issue_number)
-        self.assertEqual("open", source.upstream_limitations[0].state)
-        self.assertIn("FHIR", source.upstream_limitations[0].limitation)
-        self.assertEqual(source, self.contract.source_manifests[0])
-        source_assertion = next(
+        self.assertEqual(adapter, self.contract.adapter_contracts[0])
+        adapter_assertion = next(
             item
             for item in self.contract.provenance_assertions
-            if item.assertion_id == "PROV-SOURCE-MANIFEST-001"
+            if item.assertion_id == "PROV-ADAPTER-CONTRACT-001"
         )
-        self.assertEqual("source_reported", source_assertion.standing.value)
-        self.assertLess(SOURCE_EXAMPLE_PATH.stat().st_size, 10_000)
+        self.assertEqual("constellation_derived", adapter_assertion.standing.value)
+        self.assertLess(ADAPTER_EXAMPLE_PATH.stat().st_size, 10_000)
 
     def test_population_scenario_declares_its_calibration_boundary(self) -> None:
         scenario = self.contract.population_scenarios[0]
@@ -181,7 +221,7 @@ class ReleasedExampleTests(unittest.TestCase):
             ExternalAdministrativeContractSet,
             POLICY_EXAMPLE_PATH.read_bytes(),
         )
-        self.assertEqual((), example.source_manifests)
+        self.assertEqual(self.contract.adapter_contracts, example.adapter_contracts)
         classifications = {
             item.classification_id: item for item in example.insurance_classifications
         }
@@ -330,41 +370,44 @@ class StrictBoundaryTests(unittest.TestCase):
     def setUp(self) -> None:
         self.contract_document = document(CONTRACT_SET_PATH)
 
-    def test_external_manifest_rejects_coercion_and_unknown_fields(self) -> None:
-        source = document(SOURCE_EXAMPLE_PATH)
-        coerced = deepcopy(source)
-        coerced["asset"]["byte_count"] = "92430336"
+    def test_adapter_contract_rejects_coercion_and_unknown_fields(self) -> None:
+        adapter = document(ADAPTER_EXAMPLE_PATH)
+        coerced = deepcopy(adapter)
+        coerced["stages"][0]["sequence"] = "1"
         with self.assertRaises(ValidationError):
-            parse(ExternalSourceManifest, coerced)
+            parse(AdministrativeAdapterContract, coerced)
 
-        expanded = deepcopy(source)
-        expanded["asset"]["database_bytes"] = "not carried"
+        expanded = deepcopy(adapter)
+        expanded["repository_url"] = "https://example.invalid/source"
         with self.assertRaises(ValidationError):
-            parse(ExternalSourceManifest, expanded)
+            parse(AdministrativeAdapterContract, expanded)
 
-    def test_external_manifest_requires_all_three_pinned_document_roles(self) -> None:
-        source = document(SOURCE_EXAMPLE_PATH)
-        source["pinned_documents"] = [
-            item for item in source["pinned_documents"] if item["role"] != "citation"
-        ]
-        with self.assertRaisesRegex(
-            ValidationError,
-            "data card, license, and citation",
-        ):
-            parse(ExternalSourceManifest, source)
+    def test_adapter_contract_requires_the_modular_stage_order(self) -> None:
+        adapter = document(ADAPTER_EXAMPLE_PATH)
+        adapter["stages"][2]["kind"] = "classify"
+        with self.assertRaisesRegex(ValidationError, "adapter stages retain"):
+            parse(AdministrativeAdapterContract, adapter)
 
-    def test_local_hash_observation_requires_a_recorded_download(self) -> None:
-        source = document(SOURCE_EXAMPLE_PATH)
-        source["asset_observation"]["observation_kind"] = "locally_hashed"
-        with self.assertRaisesRegex(ValidationError, "requires.*download"):
-            parse(ExternalSourceManifest, source)
+    def test_adapter_contract_requires_a_connected_replay_safe_chain(self) -> None:
+        adapter = document(ADAPTER_EXAMPLE_PATH)
+        adapter["stages"][1]["input_resource"] = "UNRELATED-RESOURCE-V1"
+        with self.assertRaisesRegex(ValidationError, "share one resource boundary"):
+            parse(AdministrativeAdapterContract, adapter)
 
-        aggregate = deepcopy(self.contract_document)
-        aggregate["source_manifests"][0]["asset_observation"][
-            "observation_kind"
-        ] = "locally_hashed"
-        with self.assertRaisesRegex(ValidationError, "requires.*download"):
-            parse(ExternalAdministrativeContractSet, aggregate)
+        changed_key = document(ADAPTER_EXAMPLE_PATH)
+        changed_key["idempotency"]["key_fields"] = ["record_id"]
+        with self.assertRaisesRegex(ValidationError, "record_id and input_version"):
+            parse(AdministrativeAdapterContract, changed_key)
+
+        changed_input = document(ADAPTER_EXAMPLE_PATH)
+        changed_input["input_contract_id"] = "UNRELATED-INPUT-V1"
+        with self.assertRaisesRegex(ValidationError, "declared input contract"):
+            parse(AdministrativeAdapterContract, changed_input)
+
+        changed_output = document(ADAPTER_EXAMPLE_PATH)
+        changed_output["output_bundle_id"] = "UNRELATED-OUTPUT-V1"
+        with self.assertRaisesRegex(ValidationError, "declared output bundle"):
+            parse(AdministrativeAdapterContract, changed_output)
 
     def test_bundle_index_binds_schema_and_example_carriers(self) -> None:
         swapped_schema_roots = deepcopy(self.contract_document)
@@ -390,25 +433,6 @@ class StrictBoundaryTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValidationError, "example index binds"):
             parse(ExternalAdministrativeContractSet, swapped_example_roots)
-
-    def test_public_https_locators_reject_userinfo_and_queries(self) -> None:
-        source = document(SOURCE_EXAMPLE_PATH)
-        with_userinfo = deepcopy(source)
-        with_userinfo["repository_url"] = (
-            "https://reader@github.com/sparkcpark/synthetic_hospital"
-        )
-        with self.assertRaisesRegex(ValidationError, "no user information"):
-            parse(ExternalSourceManifest, with_userinfo)
-
-        with_query = deepcopy(source)
-        with_query["release_url"] += "?token=unstable"
-        with self.assertRaisesRegex(ValidationError, "no query string"):
-            parse(ExternalSourceManifest, with_query)
-
-        with_fragment = deepcopy(source)
-        with_fragment["release_url"] += "#release-notes"
-        parsed = parse(ExternalSourceManifest, with_fragment)
-        self.assertTrue(parsed.release_url.endswith("#release-notes"))
 
     def test_open_terms_remain_identified_records(self) -> None:
         classification = deepcopy(self.contract_document["insurance_classifications"][0])
@@ -586,7 +610,7 @@ class StrictBoundaryTests(unittest.TestCase):
             self.contract_document["population_scenarios"][0]
         )
         uncalibrated_with_source["calibration_source_refs"] = [
-            "EXTSRC-SYNTHETIC-HOSPITAL-V1-3"
+            "ADAPTER-INSURANCE-ADMINISTRATIVE-V1"
         ]
         with self.assertRaisesRegex(ValidationError, "references empty"):
             parse(PopulationScenario, uncalibrated_with_source)
@@ -632,8 +656,26 @@ class StrictBoundaryTests(unittest.TestCase):
         source_exact = next(
             deepcopy(item)
             for item in self.contract_document["provenance_assertions"]
-            if item["assertion_id"] == "PROV-SOURCE-MANIFEST-001"
+            if item["assertion_id"] == "PROV-ADAPTER-CONTRACT-001"
         )
+        source_exact["formation"] = "source_exact"
+        source_exact["standing"] = "source_reported"
+        source_exact["source_coordinate"] = {
+            "source_observation_ref": "OBSERVATION-REPRESENTATIVE-INPUT-V1",
+            "record": {
+                "namespace_id": "SOURCE-REPRESENTATIVE-INPUT-V1",
+                "release_id": "1",
+                "record_type": {
+                    "term_id": "record-type:adapter-input",
+                    "label": "Adapter input",
+                    "vocabulary_id": "urn:driftframe:record-types",
+                    "vocabulary_version": "1.0.0"
+                },
+                "local_id": "ADAPTER-INPUT-MULTILABEL-001",
+                "source_observation_ref": "OBSERVATION-REPRESENTATIVE-INPUT-V1"
+            },
+            "field_path": "values.raw_insurance_label"
+        }
         source_exact["method"] = deepcopy(
             self.contract_document["population_scenarios"][0][
                 "construction_method"
@@ -684,42 +726,161 @@ class RelationshipTests(unittest.TestCase):
     def setUp(self) -> None:
         self.contract_document = document(CONTRACT_SET_PATH)
 
-    def test_release_scoped_source_coordinates_must_match_manifest(self) -> None:
+    def test_adapter_records_and_stages_keep_unique_identities(self) -> None:
+        duplicate_record = deepcopy(self.contract_document)
+        records = duplicate_record["adapter_contracts"][0]["representative_records"]
+        records[1]["record_id"] = records[0]["record_id"]
+        with self.assertRaisesRegex(ValidationError, "record identifiers remain unique"):
+            parse(ExternalAdministrativeContractSet, duplicate_record)
+
+        duplicate_stage = deepcopy(self.contract_document)
+        stages = duplicate_stage["adapter_contracts"][0]["stages"]
+        stages[1]["stage_id"] = stages[0]["stage_id"]
+        with self.assertRaisesRegex(ValidationError, "stage identifiers remain unique"):
+            parse(ExternalAdministrativeContractSet, duplicate_stage)
+
+    def test_population_calibration_resolves_a_source_observation(self) -> None:
         broken = deepcopy(self.contract_document)
-        source_assertion = next(
-            item
-            for item in broken["provenance_assertions"]
-            if item["assertion_id"] == "PROV-SOURCE-MANIFEST-001"
-        )
-        source_assertion["source_coordinate"]["record"]["release_id"] = "v1.2"
-        with self.assertRaisesRegex(ValidationError, "manifest namespace and release"):
+        scenario = broken["population_scenarios"][0]
+        scenario["calibration_standing"] = "source_calibrated"
+        scenario["calibration_source_refs"] = [
+            "ADAPTER-INSURANCE-ADMINISTRATIVE-V1"
+        ]
+        scenario["calibration_evidence_refs"] = ["PROV-ADAPTER-CONTRACT-001"]
+        with self.assertRaisesRegex(ValidationError, "calibration source reference"):
             parse(ExternalAdministrativeContractSet, broken)
 
-    def test_api_metadata_cannot_claim_artifact_verified_provenance(self) -> None:
-        broken = deepcopy(self.contract_document)
+        calibrated = source_calibrated_contract(self.contract_document)
+        parsed = parse(ExternalAdministrativeContractSet, calibrated)
+        self.assertEqual(
+            PopulationCalibrationStanding.SOURCE_CALIBRATED,
+            parsed.population_scenarios[0].calibration_standing,
+        )
+
+        unsupported = deepcopy(calibrated)
+        unsupported["source_observations"][0]["supported_claims"] = [
+            "source_field_provenance"
+        ]
+        with self.assertRaisesRegex(
+            ValidationError, "source observation supports the calibration claim"
+        ):
+            parse(ExternalAdministrativeContractSet, unsupported)
+
+        unrelated = deepcopy(calibrated)
+        unrelated["population_scenarios"][0]["calibration_evidence_refs"] = [
+            "PROV-ADAPTER-CONTRACT-001"
+        ]
+        with self.assertRaisesRegex(
+            ValidationError, "evidence names the population scenario"
+        ):
+            parse(ExternalAdministrativeContractSet, unrelated)
+
+        untraced = deepcopy(calibrated)
+        scenario_assertion = next(
+            item
+            for item in untraced["provenance_assertions"]
+            if item["assertion_id"] == "PROV-POPULATION-SCENARIO-001"
+        )
+        scenario_assertion["derived_from_assertion_refs"] = []
+        with self.assertRaisesRegex(
+            ValidationError, "evidence traces exactly to its declared source observations"
+        ):
+            parse(ExternalAdministrativeContractSet, untraced)
+
+    def test_source_exact_provenance_resolves_integrity_observation(self) -> None:
+        contract = deepcopy(self.contract_document)
+        contract["source_observations"] = [
+            {
+                "observation_version": "1.0.0",
+                "observation_id": "OBSERVATION-REPRESENTATIVE-INPUT-V1",
+                "source_id": "SOURCE-REPRESENTATIVE-INPUT-V1",
+                "source_version": "1",
+                "observed_at": "2026-09-30T12:00:00Z",
+                "integrity_standing": "reported_digest",
+                "content_digest": "sha256:" + "1" * 64,
+                "payload_observed": False,
+                "execution_observed": False,
+                "supported_claims": ["source_field_provenance"],
+                "claim_boundary": "The observation establishes only the named source identity, version, and reported digest."
+            }
+        ]
+        assertion = next(
+            item
+            for item in contract["provenance_assertions"]
+            if item["assertion_id"] == "PROV-ADAPTER-CONTRACT-001"
+        )
+        assertion["formation"] = "source_exact"
+        assertion["standing"] = "source_reported"
+        assertion["source_coordinate"] = {
+            "source_observation_ref": "OBSERVATION-REPRESENTATIVE-INPUT-V1",
+            "record": {
+                "namespace_id": "SOURCE-REPRESENTATIVE-INPUT-V1",
+                "release_id": "1",
+                "record_type": {
+                    "term_id": "record-type:adapter-input",
+                    "label": "Adapter input",
+                    "vocabulary_id": "urn:driftframe:record-types",
+                    "vocabulary_version": "1.0.0"
+                },
+                "local_id": "ADAPTER-INPUT-MULTILABEL-001",
+                "source_observation_ref": "OBSERVATION-REPRESENTATIVE-INPUT-V1"
+            },
+            "field_path": "values.raw_insurance_label"
+        }
+        assertion["method"] = None
+        parsed = parse(ExternalAdministrativeContractSet, contract)
+        self.assertEqual(1, len(parsed.source_observations))
+
+        mismatched = deepcopy(contract)
+        mismatched["source_observations"][0]["source_version"] = "2"
+        with self.assertRaisesRegex(ValidationError, "source identity and version"):
+            parse(ExternalAdministrativeContractSet, mismatched)
+
+        overclaimed = deepcopy(contract)
         source_assertion = next(
             item
-            for item in broken["provenance_assertions"]
-            if item["assertion_id"] == "PROV-SOURCE-MANIFEST-001"
+            for item in overclaimed["provenance_assertions"]
+            if item["assertion_id"] == "PROV-ADAPTER-CONTRACT-001"
         )
         source_assertion["standing"] = "artifact_verified"
-        with self.assertRaisesRegex(ValidationError, "locally hashed download"):
-            parse(ExternalAdministrativeContractSet, broken)
+        with self.assertRaisesRegex(ValidationError, "locally computed digest"):
+            parse(ExternalAdministrativeContractSet, overclaimed)
 
-    def test_api_metadata_cannot_support_artifact_verified_context(self) -> None:
-        broken = deepcopy(self.contract_document)
-        for context in broken["administrative_contexts"]:
-            context["source_class"] = "external_synthetic_release"
-            context["evidence_standing"] = "artifact_verified"
+    def test_external_context_uses_one_resolved_source_observation(self) -> None:
+        contract = deepcopy(self.contract_document)
+        contract["source_observations"] = [
+            {
+                "observation_version": "1.0.0",
+                "observation_id": "OBSERVATION-EXTERNAL-CONTEXT-V1",
+                "source_id": "SOURCE-EXTERNAL-CONTEXT-V1",
+                "source_version": "1",
+                "observed_at": "2026-09-30T12:00:00Z",
+                "integrity_standing": "reported_digest",
+                "content_digest": "sha256:" + "2" * 64,
+                "payload_observed": False,
+                "execution_observed": False,
+                "supported_claims": ["administrative_context"],
+                "claim_boundary": "The observation establishes only the named source identity, version, and reported digest."
+            }
+        ]
+        for context in contract["administrative_contexts"]:
+            context["source_class"] = "observed_external_source"
+            context["evidence_standing"] = "source_reported"
             for scoped_name in ("subject", "episode"):
                 scoped = context[scoped_name]
-                scoped["namespace_id"] = "EXTSRC-SYNTHETIC-HOSPITAL-V1-3"
-                scoped["release_id"] = "v1.3"
-                scoped["source_manifest_ref"] = (
-                    "EXTSRC-SYNTHETIC-HOSPITAL-V1-3"
+                scoped["namespace_id"] = "SOURCE-EXTERNAL-CONTEXT-V1"
+                scoped["release_id"] = "1"
+                scoped["source_observation_ref"] = (
+                    "OBSERVATION-EXTERNAL-CONTEXT-V1"
                 )
-        with self.assertRaisesRegex(ValidationError, "locally hashed download"):
-            parse(ExternalAdministrativeContractSet, broken)
+        parsed = parse(ExternalAdministrativeContractSet, contract)
+        self.assertEqual(2, len(parsed.administrative_contexts))
+
+        overclaimed = deepcopy(contract)
+        for context in overclaimed["administrative_contexts"]:
+            context["evidence_standing"] = "artifact_verified"
+        with self.assertRaisesRegex(ValidationError, "locally computed digest"):
+            parse(ExternalAdministrativeContractSet, overclaimed)
 
     def test_authorized_effect_requires_operational_context_evidence(self) -> None:
         broken = deepcopy(self.contract_document)
@@ -1001,7 +1162,7 @@ class GeneratedSchemaTests(unittest.TestCase):
             for artifact in SCHEMA_ARTIFACTS
             if artifact.filename
             in {
-                "external-source-manifest.v1.schema.json",
+                "administrative-adapter-contract.v1.schema.json",
                 "external-administrative-contract-set.v1.schema.json",
             }
         }
@@ -1012,7 +1173,7 @@ class GeneratedSchemaTests(unittest.TestCase):
         schema_paths = (
             ROOT / "schemas" / "program-release-observation.v1.schema.json",
             ROOT / "schemas" / "promotion-receipt.schema.json",
-            SCHEMA_ROOT / "external-source-manifest.v1.schema.json",
+            SCHEMA_ROOT / "administrative-adapter-contract.v1.schema.json",
             SCHEMA_ROOT / "external-administrative-contract-set.v1.schema.json",
         )
         for path in schema_paths:
@@ -1023,7 +1184,7 @@ class GeneratedSchemaTests(unittest.TestCase):
         schemas = external_administrative_schema_documents()
         self.assertEqual(
             {
-                "external-source-manifest.v1.schema.json",
+                "administrative-adapter-contract.v1.schema.json",
                 "external-administrative-contract-set.v1.schema.json",
             },
             set(schemas),

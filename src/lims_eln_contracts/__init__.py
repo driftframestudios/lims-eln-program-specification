@@ -34,12 +34,12 @@ from .evidence import (
     RedactionStatus,
 )
 from .external_administrative import (
+    AdministrativeAdapterContract,
     AdministrativeContext,
     AdministrativeDecision,
     CoverageEnrollment,
     DecisionImpactObservation,
     ExternalAdministrativeContractSet,
-    ExternalSourceManifest,
     InsuranceClassification,
     PolicyInputDigestMaterial,
     PolicyRuleSet,
@@ -67,9 +67,9 @@ from .observation import ObservationEnvelope
 from .resources import (
     SCHEMA_RESOURCE_NAMES,
     generated_schema_bytes,
+    load_administrative_adapter_contract_example,
     load_administrative_counterfactual_example,
     load_external_administrative_contract_set,
-    load_external_source_manifest_example,
     load_generated_schema,
     load_golden_specimen_observation_example,
     load_golden_specimen_scenario,
@@ -84,6 +84,7 @@ __version__ = "0.4.0"
 CONTRACT_VERSION = "1.0.0"
 
 __all__ = [
+    "AdministrativeAdapterContract",
     "AdministrativeContext",
     "AdministrativeDecision",
     "ApprovalDecision",
@@ -105,7 +106,6 @@ __all__ = [
     "EvidenceProvenance",
     "EvidenceSource",
     "ExternalAdministrativeContractSet",
-    "ExternalSourceManifest",
     "GOLDEN_SPECIMEN_RESULT_COMPATIBILITY",
     "GOLDEN_SPECIMEN_RESULT_PROJECTION_ID",
     "GOLDEN_SPECIMEN_RESULT_PROJECTION_VERSION",
@@ -142,9 +142,9 @@ __all__ = [
     "canonical_sha256",
     "build_policy_input_digest_material",
     "generated_schema_bytes",
+    "load_administrative_adapter_contract_example",
     "load_administrative_counterfactual_example",
     "load_external_administrative_contract_set",
-    "load_external_source_manifest_example",
     "load_generated_schema",
     "load_golden_specimen_observation_example",
     "load_golden_specimen_scenario",

@@ -9,12 +9,12 @@ from pydantic import BaseModel
 
 from .bounded_call import BoundedCallReceipt, BoundedCallRequest, OperationCatalog
 from .external_administrative import (
+    ADMINISTRATIVE_ADAPTER_CONTRACT_SCHEMA_ID,
+    ADMINISTRATIVE_ADAPTER_CONTRACT_SEMANTIC_INVARIANTS,
     EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SCHEMA_ID,
     EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SEMANTIC_INVARIANTS,
-    EXTERNAL_SOURCE_MANIFEST_SCHEMA_ID,
-    EXTERNAL_SOURCE_MANIFEST_SEMANTIC_INVARIANTS,
+    AdministrativeAdapterContract,
     ExternalAdministrativeContractSet,
-    ExternalSourceManifest,
 )
 from .golden_specimen import GoldenSpecimenResultProjection
 from .observation import ObservationEnvelope
@@ -70,10 +70,10 @@ SCHEMA_ARTIFACTS = (
         EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SEMANTIC_INVARIANTS,
     ),
     SchemaArtifact(
-        "external-source-manifest.v1.schema.json",
-        EXTERNAL_SOURCE_MANIFEST_SCHEMA_ID,
-        ExternalSourceManifest,
-        EXTERNAL_SOURCE_MANIFEST_SEMANTIC_INVARIANTS,
+        "administrative-adapter-contract.v1.schema.json",
+        ADMINISTRATIVE_ADAPTER_CONTRACT_SCHEMA_ID,
+        AdministrativeAdapterContract,
+        ADMINISTRATIVE_ADAPTER_CONTRACT_SEMANTIC_INVARIANTS,
     ),
     SchemaArtifact(
         "golden-specimen-result-projection.v1.schema.json",

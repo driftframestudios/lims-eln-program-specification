@@ -2,13 +2,13 @@
 
 ## Purpose
 
-This contract family lets the LIMS/ELN constellation receive an external
-synthetic-care benchmark while source formation, local interpretation,
-administrative policy, clinical evidence, and accountable acceptance retain
-separate identities. The first exercised source is Synthetic Hospital v1.3.
-Its generated `insurance` text supplies useful interface input. Enrollment,
-coverage, prevalence, payer behavior, and clinical validity continue to depend
-on evidence and authority that this source does not provide.
+This contract family gives the LIMS/ELN constellation a source-neutral model
+for insurance and administrative adapters while input formation, local
+interpretation, policy, clinical evidence, and accountable acceptance retain
+separate identities. Repository-owned representative records supply useful
+interface input. Enrollment, coverage, prevalence, payer behavior, and
+clinical validity continue to depend on evidence and authority held by their
+named owners.
 
 The family is version `1.0.0`. The Python distribution that carries it is the
 `0.4.0` successor candidate. The Program release remains `spec-v0.3.1`; these
@@ -25,8 +25,9 @@ record graph used by the examples.
 
 Two self-contained Draft 2020-12 projections support non-Python consumers:
 
-- [`external-source-manifest.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/external-source-manifest.v1.schema.json)
-  validates an intake coordinate without requiring the remaining family.
+- [`administrative-adapter-contract.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/administrative-adapter-contract.v1.schema.json)
+  validates representative inputs, modular stages, and the replay contract without
+  requiring the remaining family.
 - [`external-administrative-contract-set.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json)
   exposes the complete family under one dependency-closed root.
 
@@ -36,25 +37,25 @@ relationships that JSON Schema expresses only as declared semantic
 invariants.
 
 The three files below `resources/administrative/` are reader-specific
-projections of that canonical bundle. The source-manifest projection selects
-its first manifest, the independent-policy projection removes the external
-source and its provenance assertion, and the counterfactual projection selects
-its first impact observation. Run
+projections of that canonical bundle. The adapter projection selects its first
+source-neutral design, the independent-policy projection supplies the complete
+conformance set, and the counterfactual projection selects its first impact
+observation. Run
 `python3 scripts/generate_administrative_examples.py --check` to establish
 byte equality; edit the canonical bundle and regenerate projections when a
 fixture changes.
 
 ## Exercised examples
 
-- [`synthetic-hospital-v1.3.v1.json`](../src/lims_eln_contracts/resources/administrative/synthetic-hospital-v1.3.v1.json)
-  binds the public `v1.3` tag to commit
-  `77cc57e9c595ce731bbdde4fabdcbd25a8458ae2` and records the
-  `benchmark_v1.3.db` release asset as 92,430,336 bytes with SHA-256
-  `8fb8eb114508f272588b6121ca78cff53a6fc2e5f47d7aa01bfbb5bcef4e6ddb`.
-  It points to the pinned data card, license, citation file, and upstream FHIR
-  limitation without copying the database. The media type remains the GitHub
-  API-reported `application/octet-stream`; the `.db` name does not substitute
-  for a local download, content inspection, or execution observation.
+- [`insurance-administrative-adapter.v1.json`](../src/lims_eln_contracts/resources/administrative/insurance-administrative-adapter.v1.json)
+  describes local representative inputs through extract, validate, normalize,
+  classify, contract-map, and emit stages. Every stage declares an idempotent
+  implementation pattern, adjacent resource boundaries connect, and
+  `record_id` plus `input_version` provides the replay identity. The contract
+  requires repeated input to converge without an additional effect; a
+  configured receiver supplies execution evidence. Required enrichment names
+  the subject, episode, jurisdiction, vocabulary, provenance, and review
+  material that the small input records cannot supply on their own.
 - [`independent-multilabel-policy.v1.json`](../src/lims_eln_contracts/resources/administrative/independent-multilabel-policy.v1.json)
   is an independently authored synthetic scenario. It preserves one raw label,
   exercises accepted single- and multi-label classifications, represents
@@ -69,18 +70,19 @@ fixture changes.
   canonical digest of that complete decision. Its observation classifies that
   result as an administrative-only divergence.
 
-These examples are fixtures for contract behavior. They are independent of the
-upstream database and avoid patient, customer, payer, or deployment claims.
-The canonical bundle remains their one authored authority. Deterministic,
-byte-checked projections give a receiver either the source manifest, the
-source-independent conformance set, or the small counterfactual root without
-creating parallel record owners.
+These examples are fixtures for contract behavior. Their Program-authored
+synthetic records illustrate adapter mechanics within a claim boundary; live
+patient, customer, payer, and deployment claims follow their named evidence
+routes. The canonical bundle remains their one authored authority. Deterministic,
+byte-checked projections give a receiver either the adapter design, the
+complete conformance set, or the small counterfactual root without creating
+parallel record owners.
 
 ## Object and authority map
 
 | Object | Meaning it owns | Meaning it leaves with another owner |
 | --- | --- | --- |
-| `ExternalSourceManifest` | Immutable upstream and asset coordinate, terms, observations, limitations, and local adapter state | Upstream behavior beyond the named observation; local adoption |
+| `AdministrativeAdapterContract` | Representative input, connected transformation stages, replay identity, output contracts, and claim boundary | External source identity, configured implementation, and operational acceptance |
 | `ProvenanceAssertion` | Formation and resolution of one field or relation | Truth or acceptance beyond the named evidence and review |
 | `InsuranceClassification` | Raw-preserving proposal, open terms, ambiguity or abstention, and reviewer disposition | Enrollment, coverage, authorization, billing, or payer decision |
 | `CoverageEnrollment` | Declared or synthetic enrollment/eligibility context over an effective interval | A coverage interpretation or final payer action |
@@ -89,6 +91,13 @@ creating parallel record owners.
 | `AdministrativeDecision` | One reviewed coverage, authorization, claim, billing, payment, or related transition with recourse | Other administrative state families and clinical truth |
 | `DecisionImpactObservation` | Controlled comparison inputs, outputs, divergence class, and claim ceiling | Causal or population inference beyond the design |
 | `PopulationScenario` | Purpose, construction, dimensions, omissions, review participants, small-cell policy, and explicit calibration standing with supporting references when calibration is claimed | Population representation without supporting calibration evidence |
+
+`SourceObservation` is an embedded support record rather than a tenth public
+root. It carries source identity and version, integrity standing, structured
+supported-claim types, and a human-readable claim boundary when a future
+source-exact, administrative-context, or population-calibration claim needs
+that evidence. A source-calibrated scenario names itself in its evidence and
+traces that evidence exactly to observations that declare calibration support.
 
 ## Deterministic policy and impact digests
 
@@ -155,14 +164,13 @@ The migration from package `0.3.1` is recorded in
 
 ## Invalidation and re-entry
 
-Re-review begins when a source tag, commit, release asset, digest, byte count,
-license, data card, citation, known limitation, adapter, vocabulary, model,
+Re-review begins when an adapter input contract, representative record, stage
+boundary, replay key, output target, required enrichment, vocabulary, model,
 prompt, code artifact, policy, population claim, review disposition, or digest
-profile changes. A changed upstream coordinate forms a new manifest rather
-than silently replacing the observed subject. A changed local meaning forms a
-new contract or term version. An unresolved integrity, provenance, or rights
-question keeps the affected component in `reference_only` or
-`held_for_review` posture.
+profile changes. A changed local meaning forms a new contract or term version.
+When a receiving claim depends on an external identity, the separate benchmark
+intake binds that coordinate, integrity evidence, terms, and claim ceiling
+before the adapter adopts it.
 
 The Program runbooks in [`.agents/runbooks/`](../.agents/runbooks/README.md)
 order intake, contract evolution, and release handoff. The
@@ -171,10 +179,10 @@ skill supplies the reusable reception decision.
 
 ## Constellation skill cultivation
 
-This change exercises `external-benchmark-reception` against one immutable
-release and one bounded receiving decision. That repeated decision is distinct
-from the longer Program intake procedure, so it is carried as a repository
-skill.
+This change keeps `external-benchmark-reception` available for a future
+authorized external-subject intake. The source-neutral adapter does not
+exercise that route, so the intake runbook remains `working` until a receiving
+claim depends on an external identity.
 
 `administrative-authority-contracting` remains a named candidate. It becomes
 eligible for a portable contract after both Simulation and Enterprise use this
@@ -191,14 +199,14 @@ method distinct from their runbooks and source contracts.
 The Program validator, administrative-example projection check,
 generated-schema check, and unit suite establish the declared structure,
 strict parsing, canonical and projected example equality, canonical schema
-bytes, source coordinates, cross-record references, policy-output binding,
+bytes, source-observation resolution, cross-record references, policy-output binding,
 review authority and chronology, provenance acyclicity, and the counterfactual
-digest relation exercised by these fixtures. The read-only source intake
-records the GitHub API-reported asset digest, byte count, and media type; it
-does not claim that this change downloaded, inspected, or executed the
-database. An external context can therefore retain `source_reported` standing;
-`artifact_verified` requires a manifest observation that records a locally
-hashed download.
+digest relation exercised by these fixtures. They also establish that the
+adapter's first and final stage bind its declared input and output boundaries,
+and that any source-exact or externally observed context resolves through a
+separate source observation. `artifact_verified` standing requires that
+observation to carry a locally computed digest. The canonical example carries
+no source observation; its adapter remains `design_only`.
 
 Population calibration, epidemiologic representation, live-payer semantics,
 clinical validity, configured adapter behavior, deployed API behavior,

@@ -221,10 +221,9 @@ will supply any decision-changing revision.
 
 Until then:
 
-- Synthetic Hospital v1.3 remains a pinned external reference and bounded
-  adapter-probe candidate;
-- generated insurance text remains source-exact input with generated
-  provenance;
+- the Program-authored administrative adapter remains a source-neutral design
+  with repository-owned representative records;
+- raw insurance text remains local synthetic input with generated provenance;
 - receiver Issues can refine their local plans against Issue #50 vocabulary;
   and
 - publication, API activation, domain configuration, deployment, and

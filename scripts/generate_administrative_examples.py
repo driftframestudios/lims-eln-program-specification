@@ -26,16 +26,10 @@ def rendered_administrative_examples() -> dict[str, bytes]:
     independent["contract_set_id"] = (
         "EXTERNAL-ADMINISTRATIVE-INDEPENDENT-EXAMPLE-V1"
     )
-    independent["source_manifests"] = []
-    independent["provenance_assertions"] = [
-        assertion
-        for assertion in independent["provenance_assertions"]
-        if assertion["assertion_id"] != "PROV-SOURCE-MANIFEST-001"
-    ]
 
     return {
-        "administrative/synthetic-hospital-v1.3.v1.json": _json_bytes(
-            bundle["source_manifests"][0]
+        "administrative/insurance-administrative-adapter.v1.json": _json_bytes(
+            bundle["adapter_contracts"][0]
         ),
         "administrative/independent-multilabel-policy.v1.json": _json_bytes(
             independent
