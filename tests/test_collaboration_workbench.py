@@ -16,6 +16,10 @@ class CollaborationWorkbenchTests(unittest.TestCase):
     def copy_workbench(self, destination: Path) -> Path:
         for orientation_path in ("AGENTS.md", "README.md"):
             shutil.copy2(ROOT / orientation_path, destination / orientation_path)
+        catalog_path = Path(".agents") / "skills" / "README.md"
+        catalog_target = destination / catalog_path
+        catalog_target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / catalog_path, catalog_target)
         for slug in validate_program.COLLABORATION_SKILL_CONTRACTS:
             relative_path = Path(".agents") / "skills" / slug / "SKILL.md"
             target = destination / relative_path
@@ -88,6 +92,23 @@ class CollaborationWorkbenchTests(unittest.TestCase):
                     )
                     with self.assertRaises(pages_projection.ProjectionError):
                         pages_projection.discover_public_skills(source)
+
+    def test_catalog_requires_every_skill_route(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = self.copy_workbench(Path(temporary))
+            catalog_path = source / ".agents" / "skills" / "README.md"
+            catalog_path.write_text(
+                catalog_path.read_text(encoding="utf-8").replace(
+                    "(repository-reentry/SKILL.md)",
+                    "(missing-reentry-route)",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "catalog omits routes"):
+                validate_program.validate_collaboration_workbench(
+                    source, pages_projection.discover_public_skills(source)
+                )
 
 
 if __name__ == "__main__":

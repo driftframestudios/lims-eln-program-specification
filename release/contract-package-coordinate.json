@@ -14,7 +14,7 @@
     ],
     "algorithm": "path-length-bytes-sha256-v1",
     "canonicalization": {
-      "file_selection": "pyproject.toml and every regular file below src/lims_eln_contracts",
+      "file_selection": "pyproject.toml and every regular distribution source file below src/lims_eln_contracts",
       "path_encoding": "UTF-8 POSIX relative paths",
       "path_order": "ascending UTF-8 byte order",
       "length_encoding": "unsigned 8-byte big-endian",
@@ -26,6 +26,7 @@
       ],
       "exclusions": [
         "directory entries",
+        "src/lims_eln_contracts/README.md source-local adoption guidance",
         "paths below __pycache__",
         "files ending in .pyc or .pyo"
       ],

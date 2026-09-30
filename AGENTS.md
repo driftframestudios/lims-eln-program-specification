@@ -72,6 +72,8 @@ Both source bands are suitable for public collaboration. `public_possible`
 identifies guidance available for use and refinement; `public_ready` identifies
 guidance reviewed for a defined reader and navigation path. A publication
 surface can select the subset that serves its current visitor job.
+Use [`.agents/skills/README.md`](.agents/skills/README.md) as the human-readable
+catalog for fit, standing, practical order, revision, and validation.
 Keep skill-package `name` and `description` at the top level of front matter.
 Place Program publication standing, version, adaptation relation, and upstream
 identities inside the standard `metadata` mapping so standard skill tools
