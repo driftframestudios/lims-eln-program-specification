@@ -49,6 +49,10 @@ chronology and contribution credit.
    [`contextual-jargon-scan`](.agents/skills/contextual-jargon-scan/SKILL.md)
    in stride when changed public or cross-repository prose assumes Program-local
    context.
+10. Use
+    [`external-benchmark-reception`](.agents/skills/external-benchmark-reception/SKILL.md)
+    and the [Program runbooks](.agents/runbooks/README.md) when an external
+    benchmark may become a reference, adapter probe, or derived scenario.
 
 [`coordination-horizon.json`](coordination-horizon.json) records current and
 queued work. [`first-receipt.json`](first-receipt.json) provides a compact
@@ -218,6 +222,88 @@ non-Python consumers. The typed loader enforces that review resolves at or
 before release; another consumer applies the same declared invariant alongside
 JSON Schema validation.
 
+### External benchmark and administrative context
+
+The versioned
+[`external-administrative-contracts.v1.json`](src/lims_eln_contracts/resources/external-administrative-contracts.v1.json)
+canonical conformance bundle leads to the external-source manifest,
+administrative context,
+raw-preserving insurance classification, coverage enrollment, declared policy,
+reviewed decision, impact observation, population scenario, and provenance
+contracts. It also records compatibility, invalidation, ownership, examples,
+and the event that permits receiving repositories to adopt this family. The
+three files under `resources/administrative/` are deterministic, byte-checked
+reader projections of this one authored bundle.
+
+The generated
+[`external-source-manifest.v1.schema.json`](src/lims_eln_contracts/resources/schemas/external-source-manifest.v1.schema.json)
+supports intake as a stand-alone boundary. The generated
+[`external-administrative-contract-set.v1.schema.json`](src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json)
+provides the dependency-closed family. Open domain vocabularies retain system,
+version, code, and display identity; closed workflow states remain explicit.
+The [`schema index`](schemas/README.md) places both roots beside the Program's
+release and promotion schemas and names each behavior authority.
+
+The
+[`Synthetic Hospital v1.3`](src/lims_eln_contracts/resources/administrative/synthetic-hospital-v1.3.v1.json)
+example records its exact public source and asset coordinate without carrying
+the database. The upstream description of a generated `insurance` field
+remains a bounded source fact; no upstream value enters the Program fixture.
+The
+independently authored
+[`multi-label policy example`](src/lims_eln_contracts/resources/administrative/independent-multilabel-policy.v1.json)
+exercises accepted single- and multi-label classifications, unknown and
+abstained states, pending enrollment, missing input, precedence-resolved rule
+conflict, deterministic evaluation, and a reviewed revision. The
+[`administrative counterfactual`](src/lims_eln_contracts/resources/administrative/administrative-counterfactual.v1.json)
+keeps clinical evidence and output unchanged while administrative state and
+output vary.
+
+[`docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md`](docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md)
+explains ownership, compatibility, invalidation, adoption, and evidence
+ceilings. These fixtures establish contract behavior. Population calibration,
+live-payer semantics, clinical validity, configured deployment, and accountable
+operational acceptance continue through their named evidence routes.
+
+#### Artifact classes and dataset metadata
+
+The Program distributes several machine-readable artifact classes rather than
+one undifferentiated dataset. Their current documentation route follows the
+meaning they own:
+
+| Artifact class | Examples | Standing and default documentation |
+| --- | --- | --- |
+| Canonical state | contracts, release coordinates, accepted scenario definitions | Versioned source owns meaning; schema, migration note, and release receipt explain use |
+| Synthetic fixtures | administrative examples and Golden Specimen inputs | Independently authored test or demonstration input with its construction and claim ceiling beside it |
+| Validation corpora | language-policy and migration cases | Named oracle scope, case inventory, generation or review method, and manifest digest |
+| Evidence registries and receipts | open-receipt ledgers, observations, and promotion records | Attributable claims about a named source and environment; they are not training labels or operational ground truth |
+| Generated manifests and projections | schemas, reader projections, Pages and release inventories | Derived bytes with one canonical owner, generator, parity check, and replacement event |
+
+This compact classification is the default across the constellation. A JSON
+collection earns a package-local dataset card when it becomes an independently
+distributed, versioned collection intended for analysis, training,
+benchmarking, or reuse outside its owning check. The card then records
+motivation, composition, generation or collection, preprocessing and review,
+intended and unsuitable uses, population and privacy limits, distribution,
+versioning, and maintenance. The Simulation scenario packs are the strongest
+near-term candidate when
+[Simulation #38](https://github.com/driftframestudios/lims-eln-simulated-final-state/issues/38)
+turns them into a shared collection; a solitary executable fixture remains
+adequately served by its local README and contract.
+
+[MLCommons Croissant 1.1](https://mlcommons.org/croissant/1.1) becomes useful
+only when that collection has stable distributions and record structure worth
+machine discovery or loading. At that point its JSON-LD can identify dataset,
+`FileObject` or `FileSet`, `RecordSet`, fields, checksums, provenance, and use
+conditions. Croissant complements the human-readable dataset card and the
+repository's canonical manifests; it does not replace either. The current
+Program contracts, Enterprise test fixtures, Comparative receipts, Governance
+examples, and Gist Registry teaching fixtures remain below that promotion
+threshold. Comparative can reconsider the same route if a versioned
+multi-observation calibration or benchmark corpus becomes an independently
+published input through
+[Comparative #41](https://github.com/driftframestudios/lims-eln-comparative-evidence/issues/41).
+
 Pydantic strengthens these external boundaries through strict types, declared
 fields, finite numbers, and immutable model instances. The JSON parser also
 rejects duplicate keys and non-finite numeric tokens; callers can proceed by
@@ -226,11 +312,14 @@ supplying one value per key and a finite measurement or explicit textual state.
 ### Install the shared contract package
 
 The Python distribution is `lims-eln-program-specification`; its import package
-is `lims_eln_contracts`, and the current package version is `0.3.1`.
+is `lims_eln_contracts`, and the successor package candidate is `0.4.0`. The
+Program release remains `spec-v0.3.1`; the package and Program release versions
+advance independently.
 [`release/contract-package-coordinate.json`](release/contract-package-coordinate.json)
-records the installation and replacement contract. Program repository owners
-publish the reviewed source coordinate. The final protected `main` commit may
-replace the reviewed integration commit at version `0.3.1` when their scoped
+records the installation and replacement contract. Its `0.4.0` source commit
+stays open until a reviewed merge provides immutable package bytes. Program
+repository owners then publish that full commit and scoped digest. A later
+protected commit may replace it at the same package version when their scoped
 package digests are identical. A package-content change advances both version
 and digest. Each consumer adopts either kind of replacement through review.
 The same record binds `pyproject.toml` and `src/lims_eln_contracts` through a
@@ -242,13 +331,12 @@ length, and content bytes. Runtime cache files are outside the selection, and
 symlinks make the scoped digest invalid. This makes the custom digest
 reproducible without requiring the Program validator as an implementation.
 
-The reviewed `develop` merge for the package contract is the immutable source
-coordinate `4d06eeb7f96910311fbcb7f51547c978b6a07290`. An authenticated PEP 508
-installation uses that full 40-character commit:
+After the reviewed merge settles the coordinate, an authenticated PEP 508
+installation uses its full 40-character commit:
 
 ```sh
 python3 -m pip install \
-  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@4d06eeb7f96910311fbcb7f51547c978b6a07290"
+  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@<reviewed-full-commit>"
 ```
 
 HTTPS is the canonical transport for this private distribution because the
@@ -301,14 +389,20 @@ simulation_example = load_golden_specimen_observation_example("simulation")
 ```
 
 The generated schemas remain a byte-identical projection of the Python models.
-After a deliberate model revision, render them once; routine validation checks
-that the committed projection remains current.
+The administrative examples remain byte-identical reader projections of their
+canonical bundle. After a deliberate source revision, render the affected
+projection once; routine validation checks that committed bytes remain
+current.
 
 ```sh
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_contract_schemas.py
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_contract_schemas.py --check
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_administrative_examples.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_administrative_examples.py --check
 ```
 
 ## Bounded callers
@@ -447,6 +541,8 @@ uv run --isolated --no-project --python 3.12 --managed-python \
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_contract_schemas.py --check
 uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_administrative_examples.py --check
+uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python -m unittest discover -s tests -v
 ```
 
@@ -545,7 +641,7 @@ and byte length plus SHA-256 for every projected file. Unit tests use an explici
 
 Release changes and consumer migration notes are recorded in
 [`CHANGELOG.md`](CHANGELOG.md) and
-[`docs/migrations/0.3.0-to-0.3.1.md`](docs/migrations/0.3.0-to-0.3.1.md).
+[`docs/migrations/0.3.1-to-contract-package-0.4.0.md`](docs/migrations/0.3.1-to-contract-package-0.4.0.md).
 
 ## Runtime configuration and protected values
 

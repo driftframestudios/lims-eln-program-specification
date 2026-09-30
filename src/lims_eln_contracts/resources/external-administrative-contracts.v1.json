@@ -1,0 +1,1726 @@
+{
+  "contract_set_version": "1.0.0",
+  "contract_set_id": "EXTERNAL-ADMINISTRATIVE-CONTRACT-SET-V1",
+  "public_objects": [
+    {
+      "object_name": "ExternalSourceManifest",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Bind an upstream release and metadata-only asset observation."
+    },
+    {
+      "object_name": "AdministrativeContext",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Keep administrative state beside a release-scoped subject and episode."
+    },
+    {
+      "object_name": "InsuranceClassification",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Preserve a raw label beside open multi-label assignments or abstention."
+    },
+    {
+      "object_name": "CoverageEnrollment",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Represent enrollment or synthetic eligibility without payer-decision effect."
+    },
+    {
+      "object_name": "PolicyRuleSet",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Bind explicit policy inputs, precedence, missing-input behavior, conflicts, and digest."
+    },
+    {
+      "object_name": "AdministrativeDecision",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Carry one reviewed administrative result, transition history, and recourse route."
+    },
+    {
+      "object_name": "DecisionImpactObservation",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Compare controlled clinical and administrative outputs at a declared evidence ceiling."
+    },
+    {
+      "object_name": "PopulationScenario",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "State scenario purpose, construction, dimensions, omissions, review, and claim boundary."
+    },
+    {
+      "object_name": "ProvenanceAssertion",
+      "semantic_owner": "driftframestudios/lims-eln-program-specification",
+      "receiving_job": "Record field- or relation-level formation in an acyclic dependency graph."
+    }
+  ],
+  "schema_roots": [
+    {
+      "schema_name": "external-source-manifest.v1.schema.json",
+      "schema_id": "urn:driftframe:lims-eln:external-source-manifest:1.0.0",
+      "root_object": "ExternalSourceManifest",
+      "projection_mode": "validation_input",
+      "dependency_closure": "self_contained"
+    },
+    {
+      "schema_name": "external-administrative-contract-set.v1.schema.json",
+      "schema_id": "urn:driftframe:lims-eln:external-administrative-contract-set:1.0.0",
+      "root_object": "ExternalAdministrativeContractSet",
+      "projection_mode": "validation_input",
+      "dependency_closure": "self_contained"
+    }
+  ],
+  "examples": [
+    {
+      "example_id": "EXAMPLE-SYNTHETIC-HOSPITAL-V1-3",
+      "path": "administrative/synthetic-hospital-v1.3.v1.json",
+      "root_object": "ExternalSourceManifest",
+      "purpose": "Bind the public v1.3 release and API-reported database metadata without carrying database bytes."
+    },
+    {
+      "example_id": "EXAMPLE-INDEPENDENT-MULTILABEL-POLICY",
+      "path": "administrative/independent-multilabel-policy.v1.json",
+      "root_object": "ExternalAdministrativeContractSet",
+      "purpose": "Exercise independent multi-label classification, abstention, deterministic policy evaluation, and reviewed decisions."
+    },
+    {
+      "example_id": "EXAMPLE-ADMINISTRATIVE-COUNTERFACTUAL",
+      "path": "administrative/administrative-counterfactual.v1.json",
+      "root_object": "DecisionImpactObservation",
+      "purpose": "Keep clinical evidence and output digests fixed while administrative digests differ."
+    }
+  ],
+  "compatibility": {
+    "core_object_model": "closed",
+    "open_vocabulary_behavior": "identified_terms_preserved",
+    "additive_rule": "An optional field can remain in v1 only when producers negotiate support or carry it through a governed extension reference.",
+    "changed_meaning_rule": "A changed domain-term meaning receives a new term identity or vocabulary version.",
+    "breaking_change_rule": "A required-field, closed-state, digest-profile, field-meaning, or authority-invariant change advances the contract major version and supplies an adapter."
+  },
+  "invalidation_triggers": [
+    {
+      "trigger_id": "INVALIDATE-SOURCE-COORDINATE",
+      "condition": "A source tag, commit, asset digest, byte count, term carrier, citation carrier, or known limitation changes.",
+      "response": "Form and review a new source manifest; retain the earlier immutable observation."
+    },
+    {
+      "trigger_id": "INVALIDATE-LOCAL-MEANING",
+      "condition": "A vocabulary, prompt, model, code artifact, policy rule, precedence order, or review disposition changes.",
+      "response": "Issue a new independently versioned artifact or contract meaning and re-run affected examples."
+    },
+    {
+      "trigger_id": "INVALIDATE-CLAIM-CEILING",
+      "condition": "A receiver seeks population, live-payer, clinical-validity, configured-deployment, or operational-acceptance claims.",
+      "response": "Route the claim to the named evidence and accountable review owner before adoption."
+    }
+  ],
+  "adoption_event": {
+    "event_id": "EVENT-EXTERNAL-ADMINISTRATIVE-V1-ACCEPTED",
+    "state": "pending_reviewed_merge",
+    "requirement": "A reviewed Program merge accepts package version 0.4.0, these schema bytes, examples, and the resulting immutable package source coordinate.",
+    "receiving_repositories": [
+      "driftframestudios/lims-eln-simulated-final-state",
+      "driftframestudios/lims-eln-enterprise-implementation",
+      "driftframestudios/lims-eln-comparative-evidence",
+      "driftframestudios/site-reading-governance"
+    ]
+  },
+  "source_manifests": [
+    {
+      "manifest_version": "1.0.0",
+      "manifest_id": "EXTSRC-SYNTHETIC-HOSPITAL-V1-3",
+      "repository_id": "github:sparkcpark/synthetic_hospital",
+      "repository_url": "https://github.com/sparkcpark/synthetic_hospital",
+      "release_tag": "v1.3",
+      "release_commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+      "release_url": "https://github.com/sparkcpark/synthetic_hospital/releases/tag/v1.3",
+      "asset": {
+        "asset_name": "benchmark_v1.3.db",
+        "byte_count": 92430336,
+        "digest": "sha256:8fb8eb114508f272588b6121ca78cff53a6fc2e5f47d7aa01bfbb5bcef4e6ddb",
+        "media_type": "application/octet-stream",
+        "download_url": "https://github.com/sparkcpark/synthetic_hospital/releases/download/v1.3/benchmark_v1.3.db",
+        "inclusion_mode": "metadata_only",
+        "payload_included": false
+      },
+      "asset_observation": {
+        "observed_at": "2026-09-30T01:00:00Z",
+        "observation_kind": "api_reported_metadata",
+        "observation_source": "https://api.github.com/repos/sparkcpark/synthetic_hospital/releases/tags/v1.3",
+        "download_performed": false,
+        "execution_performed": false
+      },
+      "pinned_documents": [
+        {
+          "role": "data_card",
+          "path": "DATA_CARD.md",
+          "commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+          "blob_sha": "310457cad3ebd66fe135bb2a45a4332957e2d750",
+          "byte_count": 9639,
+          "url": "https://github.com/sparkcpark/synthetic_hospital/blob/77cc57e9c595ce731bbdde4fabdcbd25a8458ae2/DATA_CARD.md"
+        },
+        {
+          "role": "license",
+          "path": "LICENSE",
+          "commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+          "blob_sha": "5954e9b76b3e647ab0606811efce40407d28ba52",
+          "byte_count": 1067,
+          "url": "https://github.com/sparkcpark/synthetic_hospital/blob/77cc57e9c595ce731bbdde4fabdcbd25a8458ae2/LICENSE"
+        },
+        {
+          "role": "citation",
+          "path": "CITATION.cff",
+          "commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+          "blob_sha": "249b36a010ab5970470ee2a22558e77a78a299e2",
+          "byte_count": 1049,
+          "url": "https://github.com/sparkcpark/synthetic_hospital/blob/77cc57e9c595ce731bbdde4fabdcbd25a8458ae2/CITATION.cff"
+        }
+      ],
+      "upstream_limitations": [
+        {
+          "issue_number": 3,
+          "issue_url": "https://github.com/sparkcpark/synthetic_hospital/issues/3",
+          "state": "open",
+          "limitation": "FHIR Condition and Observation projections omit encounter references and timing even though the underlying data determines them."
+        }
+      ],
+      "retrieved_on": "2026-09-30",
+      "local_adapter_id": "ADAPTER-SYNTHETIC-HOSPITAL-REFERENCE",
+      "local_adapter_version": "1.0.0",
+      "reception_mode": "reference_only",
+      "source_claim_boundary": "The generated insurance text is raw interface-demonstration input. It does not establish enrollment, eligibility, coverage, prevalence, payer behavior, clinical validity, or deployment fitness."
+    }
+  ],
+  "population_scenarios": [
+    {
+      "scenario_version": "1.0.0",
+      "scenario_id": "POP-ADMIN-DUAL-PENDING-001",
+      "title": "Independently authored dual-label and pending-enrollment policy mechanics",
+      "purpose": "policy_mechanics",
+      "construction_method": {
+        "method_id": "METHOD-INDEPENDENT-ADMIN-FIXTURE",
+        "method_version": "1.0.0",
+        "kind": "generated_fixture"
+      },
+      "dimensions": [
+        {
+          "term_id": "scenario-dimension:insurance-arrangement",
+          "label": "Insurance arrangement",
+          "vocabulary_id": "urn:driftframe:population-scenario-dimensions",
+          "vocabulary_version": "1.0.0"
+        },
+        {
+          "term_id": "scenario-dimension:enrollment-timing",
+          "label": "Enrollment timing",
+          "vocabulary_id": "urn:driftframe:population-scenario-dimensions",
+          "vocabulary_version": "1.0.0"
+        }
+      ],
+      "omissions": [
+        "No real payer policy, member record, patient data, or operational decision is represented.",
+        "The fixture is not calibrated to population prevalence, access disparity, or clinical outcomes."
+      ],
+      "review_participants": [
+        {
+          "participant_id": "PARTICIPANT-SCIENTIFIC-REVIEW",
+          "role": {
+            "term_id": "role:scientific_reviewer",
+            "label": "Scientific reviewer",
+            "vocabulary_id": "urn:driftframe:accountable-roles",
+            "vocabulary_version": "1.0.0"
+          },
+          "contribution": "Confirmed that the administrative variation leaves the declared clinical evidence and output unchanged."
+        },
+        {
+          "participant_id": "PARTICIPANT-ADMINISTRATIVE-REVIEW",
+          "role": {
+            "term_id": "role:administrative_reviewer",
+            "label": "Administrative reviewer",
+            "vocabulary_id": "urn:driftframe:accountable-roles",
+            "vocabulary_version": "1.0.0"
+          },
+          "contribution": "Reviewed the synthetic classification, policy, decision, and recourse boundaries."
+        }
+      ],
+      "small_cell_policy": {
+        "handling": "not_applicable",
+        "threshold": null,
+        "rationale": "This two-arm mechanism fixture makes no subgroup or population estimate."
+      },
+      "calibration_standing": "not_calibrated",
+      "calibration_source_refs": [],
+      "calibration_evidence_refs": [],
+      "claim_boundary": "The scenario demonstrates contract mechanics only; it supplies no population, payer, clinical, or deployment inference.",
+      "provenance_refs": [
+        "PROV-POPULATION-SCENARIO-001"
+      ]
+    }
+  ],
+  "administrative_contexts": [
+    {
+      "context_version": "1.0.0",
+      "context_id": "CTX-ADMIN-BASELINE-001",
+      "subject": {
+        "namespace_id": "FIXTURE-ADMINISTRATIVE-V1",
+        "release_id": "1.0.0",
+        "record_type": {
+          "term_id": "record-type:synthetic_subject",
+          "label": "Synthetic subject",
+          "vocabulary_id": "urn:driftframe:record-types",
+          "vocabulary_version": "1.0.0"
+        },
+        "local_id": "SUBJECT-SYN-ADMIN-001"
+      },
+      "episode": {
+        "namespace_id": "FIXTURE-ADMINISTRATIVE-V1",
+        "release_id": "1.0.0",
+        "record_type": {
+          "term_id": "record-type:synthetic_episode",
+          "label": "Synthetic episode",
+          "vocabulary_id": "urn:driftframe:record-types",
+          "vocabulary_version": "1.0.0"
+        },
+        "local_id": "EPISODE-SYN-ADMIN-001"
+      },
+      "source_class": "independently_authored_synthetic",
+      "effective_interval": {
+        "starts_on": "2026-10-01",
+        "ends_on": "2026-12-31"
+      },
+      "jurisdiction": {
+        "term_id": "jurisdiction:us_synthetic",
+        "label": "United States synthetic policy space",
+        "vocabulary_id": "urn:driftframe:jurisdictions",
+        "vocabulary_version": "1.0.0"
+      },
+      "population_scenario_ref": "POP-ADMIN-DUAL-PENDING-001",
+      "disclosure_standing": "public_synthetic",
+      "evidence_standing": "independently_authored",
+      "clinical_evidence_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "provenance_refs": [
+        "PROV-CONTEXT-BASELINE-001"
+      ]
+    },
+    {
+      "context_version": "1.0.0",
+      "context_id": "CTX-ADMIN-COUNTERFACTUAL-001",
+      "subject": {
+        "namespace_id": "FIXTURE-ADMINISTRATIVE-V1",
+        "release_id": "1.0.0",
+        "record_type": {
+          "term_id": "record-type:synthetic_subject",
+          "label": "Synthetic subject",
+          "vocabulary_id": "urn:driftframe:record-types",
+          "vocabulary_version": "1.0.0"
+        },
+        "local_id": "SUBJECT-SYN-ADMIN-001"
+      },
+      "episode": {
+        "namespace_id": "FIXTURE-ADMINISTRATIVE-V1",
+        "release_id": "1.0.0",
+        "record_type": {
+          "term_id": "record-type:synthetic_episode",
+          "label": "Synthetic episode",
+          "vocabulary_id": "urn:driftframe:record-types",
+          "vocabulary_version": "1.0.0"
+        },
+        "local_id": "EPISODE-SYN-ADMIN-001"
+      },
+      "source_class": "independently_authored_synthetic",
+      "effective_interval": {
+        "starts_on": "2026-10-01",
+        "ends_on": "2026-12-31"
+      },
+      "jurisdiction": {
+        "term_id": "jurisdiction:us_synthetic",
+        "label": "United States synthetic policy space",
+        "vocabulary_id": "urn:driftframe:jurisdictions",
+        "vocabulary_version": "1.0.0"
+      },
+      "population_scenario_ref": "POP-ADMIN-DUAL-PENDING-001",
+      "disclosure_standing": "public_synthetic",
+      "evidence_standing": "independently_authored",
+      "clinical_evidence_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "provenance_refs": [
+        "PROV-CONTEXT-COUNTERFACTUAL-001"
+      ]
+    }
+  ],
+  "insurance_classifications": [
+    {
+      "classification_version": "1.0.0",
+      "classification_id": "CLASS-INSURANCE-MULTI-001",
+      "context_ref": "CTX-ADMIN-BASELINE-001",
+      "raw_label": "Commercial + community support bridge",
+      "raw_label_field": "fixture.administrative.insurance_label",
+      "assigned_terms": [
+        {
+          "term_id": "insurance-category:commercial",
+          "label": "Commercial",
+          "vocabulary_id": "urn:driftframe:insurance-categories",
+          "vocabulary_version": "1.0.0"
+        },
+        {
+          "term_id": "insurance-category:supplemental",
+          "label": "Supplemental",
+          "vocabulary_id": "urn:driftframe:insurance-categories",
+          "vocabulary_version": "1.0.0"
+        }
+      ],
+      "candidate_terms": [],
+      "state": "classified",
+      "multiple": true,
+      "method": {
+        "method_id": "METHOD-RAW-PRESERVING-CLASSIFIER",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-RAW-PRESERVING-CLASSIFIER",
+          "version": "1.0.0",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      },
+      "confidence": 0.94,
+      "ambiguity": null,
+      "disposition": "accepted",
+      "review": {
+        "review_id": "REVIEW-CLASSIFICATION-MULTI-001",
+        "reviewer_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001",
+        "reviewer_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "accept",
+        "reviewed_at": "2026-10-01T14:00:00Z",
+        "evidence_refs": [
+          "PROV-CLASSIFICATION-MULTI-001"
+        ],
+        "rationale": "Accepted both open-vocabulary assignments while preserving the raw fixture label."
+      },
+      "provenance_refs": [
+        "PROV-CLASSIFICATION-MULTI-001"
+      ]
+    },
+    {
+      "classification_version": "1.0.0",
+      "classification_id": "CLASS-INSURANCE-SINGLE-001",
+      "context_ref": "CTX-ADMIN-BASELINE-001",
+      "raw_label": "Commercial",
+      "raw_label_field": "fixture.administrative.insurance_label",
+      "assigned_terms": [
+        {
+          "term_id": "insurance-category:commercial",
+          "label": "Commercial",
+          "vocabulary_id": "urn:driftframe:insurance-categories",
+          "vocabulary_version": "1.0.0"
+        }
+      ],
+      "candidate_terms": [],
+      "state": "classified",
+      "multiple": false,
+      "method": {
+        "method_id": "METHOD-RAW-PRESERVING-CLASSIFIER",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-RAW-PRESERVING-CLASSIFIER",
+          "version": "1.0.0",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      },
+      "confidence": 0.99,
+      "ambiguity": null,
+      "disposition": "accepted",
+      "review": {
+        "review_id": "REVIEW-CLASSIFICATION-SINGLE-001",
+        "reviewer_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001",
+        "reviewer_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "accept",
+        "reviewed_at": "2026-10-01T14:02:00Z",
+        "evidence_refs": [
+          "PROV-CLASSIFICATION-SINGLE-001"
+        ],
+        "rationale": "Accepted the single open-vocabulary assignment while preserving the raw fixture label."
+      },
+      "provenance_refs": [
+        "PROV-CLASSIFICATION-SINGLE-001"
+      ]
+    },
+    {
+      "classification_version": "1.0.0",
+      "classification_id": "CLASS-INSURANCE-ABSTAIN-001",
+      "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+      "raw_label": "Community support arrangement",
+      "raw_label_field": "fixture.administrative.insurance_label",
+      "assigned_terms": [],
+      "candidate_terms": [],
+      "state": "abstained",
+      "multiple": false,
+      "method": {
+        "method_id": "METHOD-INSURANCE-ABSTENTION-PROPOSAL",
+        "method_version": "1.0.0",
+        "kind": "llm_proposal",
+        "prompt": {
+          "artifact_id": "PROMPT-INSURANCE-ABSTENTION",
+          "version": "1.0.0",
+          "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+        },
+        "model": {
+          "artifact_id": "MODEL-SYNTHETIC-CLASSIFIER",
+          "version": "2026-09",
+          "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+        }
+      },
+      "confidence": 0.41,
+      "ambiguity": "The raw phrase does not establish a payer, program, plan, enrollment, or controlled classification.",
+      "disposition": "accepted",
+      "review": {
+        "review_id": "REVIEW-CLASSIFICATION-ABSTAIN-001",
+        "reviewer_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001",
+        "reviewer_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "accept",
+        "reviewed_at": "2026-10-01T14:05:00Z",
+        "evidence_refs": [
+          "PROV-CLASSIFICATION-ABSTAIN-001"
+        ],
+        "rationale": "Accepted abstention as the final classification disposition for this synthetic fixture."
+      },
+      "provenance_refs": [
+        "PROV-CLASSIFICATION-ABSTAIN-001"
+      ]
+    },
+    {
+      "classification_version": "1.0.0",
+      "classification_id": "CLASS-INSURANCE-UNKNOWN-001",
+      "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+      "raw_label": null,
+      "raw_label_field": "fixture.administrative.insurance_label",
+      "assigned_terms": [],
+      "candidate_terms": [],
+      "state": "unknown",
+      "multiple": false,
+      "method": {
+        "method_id": "METHOD-RAW-PRESERVING-CLASSIFIER",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-RAW-PRESERVING-CLASSIFIER",
+          "version": "1.0.0",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      },
+      "confidence": null,
+      "ambiguity": "The source fixture provides no raw insurance label or source evidence supporting a classification.",
+      "disposition": "accepted",
+      "review": {
+        "review_id": "REVIEW-CLASSIFICATION-UNKNOWN-001",
+        "reviewer_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001",
+        "reviewer_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "accept",
+        "reviewed_at": "2026-10-01T14:06:00Z",
+        "evidence_refs": [
+          "PROV-CLASSIFICATION-UNKNOWN-001"
+        ],
+        "rationale": "Accepted the explicit unknown state because the synthetic source carries no insurance label evidence."
+      },
+      "provenance_refs": [
+        "PROV-CLASSIFICATION-UNKNOWN-001"
+      ]
+    }
+  ],
+  "coverage_enrollments": [
+    {
+      "enrollment_version": "1.0.0",
+      "enrollment_id": "ENROLLMENT-SYNTHETIC-ACTIVE-001",
+      "context_ref": "CTX-ADMIN-BASELINE-001",
+      "basis": "synthetic_eligibility",
+      "state": "active",
+      "payer": {
+        "term_id": "payer:synthetic-community-plan",
+        "label": "Synthetic Community Plan",
+        "vocabulary_id": "urn:driftframe:synthetic-payers",
+        "vocabulary_version": "1.0.0"
+      },
+      "program": {
+        "term_id": "program:synthetic-bridge",
+        "label": "Synthetic Bridge Program",
+        "vocabulary_id": "urn:driftframe:synthetic-programs",
+        "vocabulary_version": "1.0.0"
+      },
+      "plan": {
+        "term_id": "plan:synthetic-dual-network",
+        "label": "Synthetic Dual Network",
+        "vocabulary_id": "urn:driftframe:synthetic-plans",
+        "vocabulary_version": "1.0.0"
+      },
+      "member_relationship": {
+        "term_id": "member-relationship:self",
+        "label": "Self",
+        "vocabulary_id": "urn:driftframe:member-relationships",
+        "vocabulary_version": "1.0.0"
+      },
+      "effective_interval": {
+        "starts_on": "2026-10-01",
+        "ends_on": "2026-12-31"
+      },
+      "standing": "synthetic_fixture",
+      "payer_decision_effect": "none",
+      "provenance_refs": [
+        "PROV-ENROLLMENT-BASELINE-001"
+      ]
+    },
+    {
+      "enrollment_version": "1.0.0",
+      "enrollment_id": "ENROLLMENT-SYNTHETIC-PENDING-001",
+      "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+      "basis": "synthetic_eligibility",
+      "state": "pending",
+      "payer": {
+        "term_id": "payer:synthetic-community-plan",
+        "label": "Synthetic Community Plan",
+        "vocabulary_id": "urn:driftframe:synthetic-payers",
+        "vocabulary_version": "1.0.0"
+      },
+      "program": {
+        "term_id": "program:synthetic-bridge",
+        "label": "Synthetic Bridge Program",
+        "vocabulary_id": "urn:driftframe:synthetic-programs",
+        "vocabulary_version": "1.0.0"
+      },
+      "plan": null,
+      "member_relationship": {
+        "term_id": "member-relationship:self",
+        "label": "Self",
+        "vocabulary_id": "urn:driftframe:member-relationships",
+        "vocabulary_version": "1.0.0"
+      },
+      "effective_interval": {
+        "starts_on": "2026-10-01",
+        "ends_on": null
+      },
+      "standing": "synthetic_fixture",
+      "payer_decision_effect": "none",
+      "provenance_refs": [
+        "PROV-ENROLLMENT-COUNTERFACTUAL-001"
+      ]
+    }
+  ],
+  "policy_rule_sets": [
+    {
+      "policy_schema_version": "1.0.0",
+      "policy_id": "POLICY-SYNTHETIC-ROUTING-001",
+      "policy_version": "1.0.0",
+      "owner": {
+        "term_id": "policy-owner:program-fixture",
+        "label": "Program fixture owner",
+        "vocabulary_id": "urn:driftframe:policy-owners",
+        "vocabulary_version": "1.0.0"
+      },
+      "jurisdiction": {
+        "term_id": "jurisdiction:us_synthetic",
+        "label": "United States synthetic policy space",
+        "vocabulary_id": "urn:driftframe:jurisdictions",
+        "vocabulary_version": "1.0.0"
+      },
+      "product": {
+        "term_id": "product:synthetic-administrative-routing",
+        "label": "Synthetic administrative routing",
+        "vocabulary_id": "urn:driftframe:policy-products",
+        "vocabulary_version": "1.0.0"
+      },
+      "effective_interval": {
+        "starts_on": "2026-10-01",
+        "ends_on": "2026-12-31"
+      },
+      "input_requirements": [
+        {
+          "input_id": "classification_state",
+          "description": "Final raw-preserving classification state.",
+          "required": true
+        },
+        {
+          "input_id": "classification_term_ids",
+          "description": "Accepted open-vocabulary insurance term identities.",
+          "required": true
+        },
+        {
+          "input_id": "enrollment_state",
+          "description": "Declared or synthetic enrollment state.",
+          "required": true
+        }
+      ],
+      "rules": [
+        {
+          "rule_id": "RULE-ABSTAIN-001",
+          "description": "Route an accepted abstention to an evidence request.",
+          "when_all": [
+            {
+              "input_id": "classification_state",
+              "operator": "equals",
+              "values": [
+                "abstained"
+              ]
+            }
+          ],
+          "outcome": {
+            "term_id": "policy-outcome:evidence_request",
+            "label": "Additional evidence requested",
+            "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+            "vocabulary_version": "1.0.0"
+          }
+        },
+        {
+          "rule_id": "RULE-MULTILABEL-001",
+          "description": "Route the declared multi-label active fixture to manual review.",
+          "when_all": [
+            {
+              "input_id": "classification_term_ids",
+              "operator": "contains_all",
+              "values": [
+                "insurance-category:commercial",
+                "insurance-category:supplemental"
+              ]
+            },
+            {
+              "input_id": "enrollment_state",
+              "operator": "equals",
+              "values": [
+                "active"
+              ]
+            }
+          ],
+          "outcome": {
+            "term_id": "policy-outcome:manual_review",
+            "label": "Manual review required",
+            "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+            "vocabulary_version": "1.0.0"
+          }
+        },
+        {
+          "rule_id": "RULE-COMMERCIAL-ACTIVE-FALLBACK-001",
+          "description": "Route any accepted commercial term with active enrollment to synthetic standard processing when no higher-precedence rule governs.",
+          "when_all": [
+            {
+              "input_id": "classification_term_ids",
+              "operator": "contains_any",
+              "values": [
+                "insurance-category:commercial"
+              ]
+            },
+            {
+              "input_id": "enrollment_state",
+              "operator": "equals",
+              "values": [
+                "active"
+              ]
+            }
+          ],
+          "outcome": {
+            "term_id": "policy-outcome:standard_processing",
+            "label": "Synthetic standard processing",
+            "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+            "vocabulary_version": "1.0.0"
+          }
+        }
+      ],
+      "precedence": [
+        "RULE-ABSTAIN-001",
+        "RULE-MULTILABEL-001",
+        "RULE-COMMERCIAL-ACTIVE-FALLBACK-001"
+      ],
+      "missing_input_behavior": "abstain",
+      "conflict_behavior": "highest_precedence",
+      "policy_digest": "sha256:d0f3e1fdad7a35b357611bcfe6bfcbe6c08a3025f6ae0dd2f82c387b804d8118",
+      "provenance_refs": [
+        "PROV-POLICY-RULESET-001"
+      ]
+    }
+  ],
+  "administrative_decisions": [
+    {
+      "decision_version": "1.0.0",
+      "decision_id": "DECISION-ADMIN-BASELINE-001",
+      "context_ref": "CTX-ADMIN-BASELINE-001",
+      "decision_type": {
+        "term_id": "decision-type:synthetic-coverage-routing",
+        "label": "Synthetic coverage routing",
+        "vocabulary_id": "urn:driftframe:administrative-decision-types",
+        "vocabulary_version": "1.0.0"
+      },
+      "outcome": {
+        "term_id": "policy-outcome:evidence_request",
+        "label": "Additional evidence requested",
+        "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+        "vocabulary_version": "1.0.0"
+      },
+      "reason_terms": [
+        {
+          "term_id": "decision-reason:multiple-classifications",
+          "label": "Multiple accepted classifications",
+          "vocabulary_id": "urn:driftframe:synthetic-decision-reasons",
+          "vocabulary_version": "1.0.0"
+        },
+        {
+          "term_id": "decision-reason:synthetic-active-enrollment",
+          "label": "Synthetic active enrollment",
+          "vocabulary_id": "urn:driftframe:synthetic-decision-reasons",
+          "vocabulary_version": "1.0.0"
+        },
+        {
+          "term_id": "decision-reason:accountable-review-override",
+          "label": "Accountable review revised the engine proposal",
+          "vocabulary_id": "urn:driftframe:synthetic-decision-reasons",
+          "vocabulary_version": "1.0.0"
+        }
+      ],
+      "classification_refs": [
+        "CLASS-INSURANCE-MULTI-001"
+      ],
+      "enrollment_refs": [
+        "ENROLLMENT-SYNTHETIC-ACTIVE-001"
+      ],
+      "policy_evaluation": {
+        "evaluation_id": "EVALUATION-POLICY-BASELINE-001",
+        "policy_rule_set_ref": "POLICY-SYNTHETIC-ROUTING-001",
+        "policy_digest": "sha256:d0f3e1fdad7a35b357611bcfe6bfcbe6c08a3025f6ae0dd2f82c387b804d8118",
+        "input_digest_profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+        "input_material": {
+          "profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+          "context_ref": "CTX-ADMIN-BASELINE-001",
+          "inputs": [
+            {
+              "input_id": "classification_state",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "CLASS-INSURANCE-MULTI-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": [
+                {
+                  "source_ref": "CLASS-INSURANCE-MULTI-001",
+                  "match_value": "classified",
+                  "vocabulary_id": null,
+                  "vocabulary_version": null
+                }
+              ]
+            },
+            {
+              "input_id": "classification_term_ids",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "CLASS-INSURANCE-MULTI-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": [
+                {
+                  "source_ref": "CLASS-INSURANCE-MULTI-001",
+                  "match_value": "insurance-category:commercial",
+                  "vocabulary_id": "urn:driftframe:insurance-categories",
+                  "vocabulary_version": "1.0.0"
+                },
+                {
+                  "source_ref": "CLASS-INSURANCE-MULTI-001",
+                  "match_value": "insurance-category:supplemental",
+                  "vocabulary_id": "urn:driftframe:insurance-categories",
+                  "vocabulary_version": "1.0.0"
+                }
+              ]
+            },
+            {
+              "input_id": "enrollment_state",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "ENROLLMENT-SYNTHETIC-ACTIVE-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": [
+                {
+                  "source_ref": "ENROLLMENT-SYNTHETIC-ACTIVE-001",
+                  "match_value": "active",
+                  "vocabulary_id": null,
+                  "vocabulary_version": null
+                }
+              ]
+            }
+          ]
+        },
+        "input_digest": "sha256:0ebb1a32a6ab91e9e11675d4494f9fd6ca3ae8862c1ca2acf3dbe37d6e785ff7",
+        "matched_rule_refs": [
+          "RULE-MULTILABEL-001",
+          "RULE-COMMERCIAL-ACTIVE-FALLBACK-001"
+        ],
+        "selected_rule_ref": "RULE-MULTILABEL-001",
+        "missing_input_ids": [],
+        "conflicting_rule_refs": [
+          "RULE-MULTILABEL-001",
+          "RULE-COMMERCIAL-ACTIVE-FALLBACK-001"
+        ],
+        "state": "assigned",
+        "outcome": {
+          "term_id": "policy-outcome:manual_review",
+          "label": "Manual review required",
+          "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+          "vocabulary_version": "1.0.0"
+        },
+        "evaluated_at": "2026-10-01T14:10:00Z"
+      },
+      "actor": {
+        "actor_id": "ENGINE-SYNTHETIC-POLICY-001",
+        "actor_class": "deterministic_engine",
+        "authority_scope": {
+          "term_id": "authority:synthetic-fixture-only",
+          "label": "Synthetic fixture only",
+          "vocabulary_id": "urn:driftframe:authority-scopes",
+          "vocabulary_version": "1.0.0"
+        }
+      },
+      "state": "final",
+      "transitions": [
+        {
+          "from_state": "draft",
+          "to_state": "proposed",
+          "transitioned_at": "2026-10-01T14:10:00Z",
+          "actor_id": "ENGINE-SYNTHETIC-POLICY-001"
+        },
+        {
+          "from_state": "proposed",
+          "to_state": "under_review",
+          "transitioned_at": "2026-10-01T14:11:00Z",
+          "actor_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001"
+        },
+        {
+          "from_state": "under_review",
+          "to_state": "final",
+          "transitioned_at": "2026-10-01T14:12:00Z",
+          "actor_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001"
+        }
+      ],
+      "effect": "synthetic_only",
+      "recourse": {
+        "route_id": "RECOURSE-SYNTHETIC-BASELINE-001",
+        "owner_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "instructions": "Revise the synthetic input or rule set and issue a successor evaluation; no operational payer action exists.",
+        "deadline": null
+      },
+      "review": {
+        "review_id": "REVIEW-DECISION-BASELINE-001",
+        "reviewer_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001",
+        "reviewer_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "revise",
+        "reviewed_at": "2026-10-01T14:12:00Z",
+        "evidence_refs": [
+          "PROV-DECISION-BASELINE-001"
+        ],
+        "rationale": "Revised the deterministic manual-review proposal to request additional evidence within the synthetic fixture claim ceiling."
+      },
+      "evidence_refs": [
+        "PROV-DECISION-BASELINE-001"
+      ]
+    },
+    {
+      "decision_version": "1.0.0",
+      "decision_id": "DECISION-ADMIN-COUNTERFACTUAL-001",
+      "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+      "decision_type": {
+        "term_id": "decision-type:synthetic-coverage-routing",
+        "label": "Synthetic coverage routing",
+        "vocabulary_id": "urn:driftframe:administrative-decision-types",
+        "vocabulary_version": "1.0.0"
+      },
+      "outcome": {
+        "term_id": "policy-outcome:evidence_request",
+        "label": "Additional evidence requested",
+        "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+        "vocabulary_version": "1.0.0"
+      },
+      "reason_terms": [
+        {
+          "term_id": "decision-reason:classification-abstained",
+          "label": "Classification abstained",
+          "vocabulary_id": "urn:driftframe:synthetic-decision-reasons",
+          "vocabulary_version": "1.0.0"
+        },
+        {
+          "term_id": "decision-reason:synthetic-enrollment-pending",
+          "label": "Synthetic enrollment pending",
+          "vocabulary_id": "urn:driftframe:synthetic-decision-reasons",
+          "vocabulary_version": "1.0.0"
+        }
+      ],
+      "classification_refs": [
+        "CLASS-INSURANCE-ABSTAIN-001"
+      ],
+      "enrollment_refs": [
+        "ENROLLMENT-SYNTHETIC-PENDING-001"
+      ],
+      "policy_evaluation": {
+        "evaluation_id": "EVALUATION-POLICY-COUNTERFACTUAL-001",
+        "policy_rule_set_ref": "POLICY-SYNTHETIC-ROUTING-001",
+        "policy_digest": "sha256:d0f3e1fdad7a35b357611bcfe6bfcbe6c08a3025f6ae0dd2f82c387b804d8118",
+        "input_digest_profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+        "input_material": {
+          "profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+          "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+          "inputs": [
+            {
+              "input_id": "classification_state",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "CLASS-INSURANCE-ABSTAIN-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": [
+                {
+                  "source_ref": "CLASS-INSURANCE-ABSTAIN-001",
+                  "match_value": "abstained",
+                  "vocabulary_id": null,
+                  "vocabulary_version": null
+                }
+              ]
+            },
+            {
+              "input_id": "classification_term_ids",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "CLASS-INSURANCE-ABSTAIN-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": []
+            },
+            {
+              "input_id": "enrollment_state",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "ENROLLMENT-SYNTHETIC-PENDING-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": [
+                {
+                  "source_ref": "ENROLLMENT-SYNTHETIC-PENDING-001",
+                  "match_value": "pending",
+                  "vocabulary_id": null,
+                  "vocabulary_version": null
+                }
+              ]
+            }
+          ]
+        },
+        "input_digest": "sha256:d73cc938e0836d0365693e4fe4ce5653831112fbdef34d41e10b8e0f1899a25f",
+        "matched_rule_refs": [
+          "RULE-ABSTAIN-001"
+        ],
+        "selected_rule_ref": "RULE-ABSTAIN-001",
+        "missing_input_ids": [],
+        "conflicting_rule_refs": [],
+        "state": "assigned",
+        "outcome": {
+          "term_id": "policy-outcome:evidence_request",
+          "label": "Additional evidence requested",
+          "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+          "vocabulary_version": "1.0.0"
+        },
+        "evaluated_at": "2026-10-01T14:20:00Z"
+      },
+      "actor": {
+        "actor_id": "ENGINE-SYNTHETIC-POLICY-001",
+        "actor_class": "deterministic_engine",
+        "authority_scope": {
+          "term_id": "authority:synthetic-fixture-only",
+          "label": "Synthetic fixture only",
+          "vocabulary_id": "urn:driftframe:authority-scopes",
+          "vocabulary_version": "1.0.0"
+        }
+      },
+      "state": "final",
+      "transitions": [
+        {
+          "from_state": "draft",
+          "to_state": "proposed",
+          "transitioned_at": "2026-10-01T14:20:00Z",
+          "actor_id": "ENGINE-SYNTHETIC-POLICY-001"
+        },
+        {
+          "from_state": "proposed",
+          "to_state": "under_review",
+          "transitioned_at": "2026-10-01T14:21:00Z",
+          "actor_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001"
+        },
+        {
+          "from_state": "under_review",
+          "to_state": "final",
+          "transitioned_at": "2026-10-01T14:22:00Z",
+          "actor_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001"
+        }
+      ],
+      "effect": "synthetic_only",
+      "recourse": {
+        "route_id": "RECOURSE-SYNTHETIC-COUNTERFACTUAL-001",
+        "owner_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "instructions": "Supply a separately evidenced classification or retain abstention; no operational payer action exists.",
+        "deadline": null
+      },
+      "review": {
+        "review_id": "REVIEW-DECISION-COUNTERFACTUAL-001",
+        "reviewer_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001",
+        "reviewer_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "accept",
+        "reviewed_at": "2026-10-01T14:22:00Z",
+        "evidence_refs": [
+          "PROV-DECISION-COUNTERFACTUAL-001"
+        ],
+        "rationale": "Accepted the evidence-request result as synthetic policy behavior, not a payer determination."
+      },
+      "evidence_refs": [
+        "PROV-DECISION-COUNTERFACTUAL-001"
+      ]
+    },
+    {
+      "decision_version": "1.0.0",
+      "decision_id": "DECISION-ADMIN-MISSING-INPUT-001",
+      "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+      "decision_type": {
+        "term_id": "decision-type:synthetic-coverage-routing",
+        "label": "Synthetic coverage routing",
+        "vocabulary_id": "urn:driftframe:administrative-decision-types",
+        "vocabulary_version": "1.0.0"
+      },
+      "outcome": {
+        "term_id": "policy-outcome:evidence_request",
+        "label": "Additional evidence requested",
+        "vocabulary_id": "urn:driftframe:synthetic-policy-outcomes",
+        "vocabulary_version": "1.0.0"
+      },
+      "reason_terms": [
+        {
+          "term_id": "decision-reason:classification-unknown",
+          "label": "Classification evidence unavailable",
+          "vocabulary_id": "urn:driftframe:synthetic-decision-reasons",
+          "vocabulary_version": "1.0.0"
+        },
+        {
+          "term_id": "decision-reason:required-input-missing",
+          "label": "Required enrollment state missing",
+          "vocabulary_id": "urn:driftframe:synthetic-decision-reasons",
+          "vocabulary_version": "1.0.0"
+        }
+      ],
+      "classification_refs": [
+        "CLASS-INSURANCE-UNKNOWN-001"
+      ],
+      "enrollment_refs": [],
+      "policy_evaluation": {
+        "evaluation_id": "EVALUATION-POLICY-MISSING-INPUT-001",
+        "policy_rule_set_ref": "POLICY-SYNTHETIC-ROUTING-001",
+        "policy_digest": "sha256:d0f3e1fdad7a35b357611bcfe6bfcbe6c08a3025f6ae0dd2f82c387b804d8118",
+        "input_digest_profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+        "input_material": {
+          "profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+          "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+          "inputs": [
+            {
+              "input_id": "classification_state",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "CLASS-INSURANCE-UNKNOWN-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": [
+                {
+                  "source_ref": "CLASS-INSURANCE-UNKNOWN-001",
+                  "match_value": "unknown",
+                  "vocabulary_id": null,
+                  "vocabulary_version": null
+                }
+              ]
+            },
+            {
+              "input_id": "classification_term_ids",
+              "availability": "present",
+              "sources": [
+                {
+                  "record_ref": "CLASS-INSURANCE-UNKNOWN-001",
+                  "record_version": "1.0.0"
+                }
+              ],
+              "values": []
+            },
+            {
+              "input_id": "enrollment_state",
+              "availability": "missing",
+              "sources": [],
+              "values": []
+            }
+          ]
+        },
+        "input_digest": "sha256:91dc9a7747703079eae932fc44d548be130ed0644f580ac947ac7ea9415d5d68",
+        "matched_rule_refs": [],
+        "selected_rule_ref": null,
+        "missing_input_ids": [
+          "enrollment_state"
+        ],
+        "conflicting_rule_refs": [],
+        "state": "abstained",
+        "outcome": null,
+        "evaluated_at": "2026-10-01T14:30:00Z"
+      },
+      "actor": {
+        "actor_id": "ENGINE-SYNTHETIC-POLICY-001",
+        "actor_class": "deterministic_engine",
+        "authority_scope": {
+          "term_id": "authority:synthetic-fixture-only",
+          "label": "Synthetic fixture only",
+          "vocabulary_id": "urn:driftframe:authority-scopes",
+          "vocabulary_version": "1.0.0"
+        }
+      },
+      "state": "final",
+      "transitions": [
+        {
+          "from_state": "draft",
+          "to_state": "proposed",
+          "transitioned_at": "2026-10-01T14:30:00Z",
+          "actor_id": "ENGINE-SYNTHETIC-POLICY-001"
+        },
+        {
+          "from_state": "proposed",
+          "to_state": "under_review",
+          "transitioned_at": "2026-10-01T14:31:00Z",
+          "actor_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001"
+        },
+        {
+          "from_state": "under_review",
+          "to_state": "final",
+          "transitioned_at": "2026-10-01T14:32:00Z",
+          "actor_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001"
+        }
+      ],
+      "effect": "synthetic_only",
+      "recourse": {
+        "route_id": "RECOURSE-SYNTHETIC-MISSING-INPUT-001",
+        "owner_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "instructions": "Supply evidence for the required enrollment state and issue a successor evaluation; no operational payer action exists.",
+        "deadline": null
+      },
+      "review": {
+        "review_id": "REVIEW-DECISION-MISSING-INPUT-001",
+        "reviewer_id": "ACTOR-ADMINISTRATIVE-REVIEWER-001",
+        "reviewer_role": {
+          "term_id": "role:administrative_reviewer",
+          "label": "Administrative reviewer",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "accept",
+        "reviewed_at": "2026-10-01T14:32:00Z",
+        "evidence_refs": [
+          "PROV-DECISION-MISSING-INPUT-001"
+        ],
+        "rationale": "Accepted the explicit evidence-request fallback because the required enrollment state is absent."
+      },
+      "evidence_refs": [
+        "PROV-DECISION-MISSING-INPUT-001"
+      ]
+    }
+  ],
+  "impact_observations": [
+    {
+      "observation_version": "1.0.0",
+      "observation_id": "IMPACT-ADMIN-COUNTERFACTUAL-001",
+      "design": "administrative_only_counterfactual",
+      "population_scenario_ref": "POP-ADMIN-DUAL-PENDING-001",
+      "task": {
+        "artifact_id": "TASK-ADMINISTRATIVE-COUNTERFACTUAL",
+        "version": "1.0.0",
+        "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "controlled_inputs": [
+        {
+          "name": "clinical_evidence",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        {
+          "name": "clinical_protocol",
+          "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "changed_variable": {
+        "variable_id": "administrative_state",
+        "baseline_digest": "sha256:0ebb1a32a6ab91e9e11675d4494f9fd6ca3ae8862c1ca2acf3dbe37d6e785ff7",
+        "counterfactual_digest": "sha256:d73cc938e0836d0365693e4fe4ce5653831112fbdef34d41e10b8e0f1899a25f"
+      },
+      "baseline": {
+        "arm_id": "ARM-ADMIN-BASELINE-001",
+        "context_ref": "CTX-ADMIN-BASELINE-001",
+        "decision_ref": "DECISION-ADMIN-BASELINE-001",
+        "clinical_evidence_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "clinical_output_digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "administrative_input_digest_profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+        "administrative_input_digest": "sha256:0ebb1a32a6ab91e9e11675d4494f9fd6ca3ae8862c1ca2acf3dbe37d6e785ff7",
+        "administrative_output_digest_profile": "urn:driftframe:lims-eln:administrative-decision-digest:1.0.0",
+        "administrative_output_digest": "sha256:79946e3d028f666961e7087381f9835267d8cda159a9555b1f76662e4832f5de"
+      },
+      "counterfactual": {
+        "arm_id": "ARM-ADMIN-COUNTERFACTUAL-001",
+        "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+        "decision_ref": "DECISION-ADMIN-COUNTERFACTUAL-001",
+        "clinical_evidence_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "clinical_output_digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "administrative_input_digest_profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+        "administrative_input_digest": "sha256:d73cc938e0836d0365693e4fe4ce5653831112fbdef34d41e10b8e0f1899a25f",
+        "administrative_output_digest_profile": "urn:driftframe:lims-eln:administrative-decision-digest:1.0.0",
+        "administrative_output_digest": "sha256:ba33b9ffeb5222b2fd8e1a2f586e06dd703fc25af30c45c3e9bd1ec4be189e31"
+      },
+      "divergence_class": "administrative_only",
+      "evidence_ceiling": "synthetic_mechanism_only",
+      "interpretation": "The fixture changes administrative classification and enrollment state while the declared clinical evidence and clinical output remain byte-identical; it supports a mechanism observation, not a causal or population claim.",
+      "provenance_refs": [
+        "PROV-IMPACT-COUNTERFACTUAL-001"
+      ]
+    }
+  ],
+  "provenance_assertions": [
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-SOURCE-MANIFEST-001",
+      "subject_refs": [
+        "EXTSRC-SYNTHETIC-HOSPITAL-V1-3"
+      ],
+      "formation": "source_exact",
+      "standing": "source_reported",
+      "resolution_status": "resolved",
+      "claim": "The manifest records the exact release asset metadata and pinned source coordinates observed through public GitHub metadata surfaces.",
+      "source_coordinate": {
+        "source_manifest_ref": "EXTSRC-SYNTHETIC-HOSPITAL-V1-3",
+        "record": {
+          "namespace_id": "EXTSRC-SYNTHETIC-HOSPITAL-V1-3",
+          "release_id": "v1.3",
+          "record_type": {
+            "term_id": "record-type:release-asset",
+            "label": "Release asset",
+            "vocabulary_id": "urn:driftframe:record-types",
+            "vocabulary_version": "1.0.0"
+          },
+          "local_id": "benchmark_v1.3.db",
+          "source_manifest_ref": "EXTSRC-SYNTHETIC-HOSPITAL-V1-3"
+        },
+        "field_path": "release.assets[benchmark_v1.3.db]"
+      },
+      "method": null,
+      "derived_from_assertion_refs": [],
+      "evidence_digest": "sha256:8fb8eb114508f272588b6121ca78cff53a6fc2e5f47d7aa01bfbb5bcef4e6ddb",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-POPULATION-SCENARIO-001",
+      "subject_refs": [
+        "POP-ADMIN-DUAL-PENDING-001"
+      ],
+      "formation": "generated",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The population scenario is an independently authored mechanism fixture.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-INDEPENDENT-ADMIN-FIXTURE",
+        "method_version": "1.0.0",
+        "kind": "generated_fixture"
+      },
+      "derived_from_assertion_refs": [],
+      "evidence_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-CONTEXT-BASELINE-001",
+      "subject_refs": [
+        "CTX-ADMIN-BASELINE-001"
+      ],
+      "formation": "generated",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The baseline administrative context is independently generated for this contract example.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-INDEPENDENT-ADMIN-FIXTURE",
+        "method_version": "1.0.0",
+        "kind": "generated_fixture"
+      },
+      "derived_from_assertion_refs": [],
+      "evidence_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-CONTEXT-COUNTERFACTUAL-001",
+      "subject_refs": [
+        "CTX-ADMIN-COUNTERFACTUAL-001"
+      ],
+      "formation": "generated",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The counterfactual administrative context changes only declared administrative inputs.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-INDEPENDENT-ADMIN-FIXTURE",
+        "method_version": "1.0.0",
+        "kind": "generated_fixture"
+      },
+      "derived_from_assertion_refs": [],
+      "evidence_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-CLASSIFICATION-MULTI-001",
+      "subject_refs": [
+        "CLASS-INSURANCE-MULTI-001"
+      ],
+      "formation": "deterministic_transform",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "A versioned deterministic method preserves the raw label and proposes two open-vocabulary assignments.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-RAW-PRESERVING-CLASSIFIER",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-RAW-PRESERVING-CLASSIFIER",
+          "version": "1.0.0",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-CONTEXT-BASELINE-001"
+      ],
+      "evidence_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-CLASSIFICATION-SINGLE-001",
+      "subject_refs": [
+        "CLASS-INSURANCE-SINGLE-001"
+      ],
+      "formation": "deterministic_transform",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "A versioned deterministic method preserves the raw label and proposes one open-vocabulary assignment.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-RAW-PRESERVING-CLASSIFIER",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-RAW-PRESERVING-CLASSIFIER",
+          "version": "1.0.0",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-CONTEXT-BASELINE-001"
+      ],
+      "evidence_digest": "sha256:1212121212121212121212121212121212121212121212121212121212121212",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-CLASSIFICATION-ABSTAIN-001",
+      "subject_refs": [
+        "CLASS-INSURANCE-ABSTAIN-001"
+      ],
+      "formation": "llm_linked",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "A versioned model and prompt propose abstention without assigning payer or coverage meaning.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-INSURANCE-ABSTENTION-PROPOSAL",
+        "method_version": "1.0.0",
+        "kind": "llm_proposal",
+        "prompt": {
+          "artifact_id": "PROMPT-INSURANCE-ABSTENTION",
+          "version": "1.0.0",
+          "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+        },
+        "model": {
+          "artifact_id": "MODEL-SYNTHETIC-CLASSIFIER",
+          "version": "2026-09",
+          "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-CONTEXT-COUNTERFACTUAL-001"
+      ],
+      "evidence_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-CLASSIFICATION-UNKNOWN-001",
+      "subject_refs": [
+        "CLASS-INSURANCE-UNKNOWN-001"
+      ],
+      "formation": "deterministic_transform",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "A versioned deterministic method records the missing raw label and retains an explicit unknown classification.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-RAW-PRESERVING-CLASSIFIER",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-RAW-PRESERVING-CLASSIFIER",
+          "version": "1.0.0",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-CONTEXT-COUNTERFACTUAL-001"
+      ],
+      "evidence_digest": "sha256:3434343434343434343434343434343434343434343434343434343434343434",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-ENROLLMENT-BASELINE-001",
+      "subject_refs": [
+        "ENROLLMENT-SYNTHETIC-ACTIVE-001"
+      ],
+      "formation": "generated",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The active enrollment is a synthetic eligibility fixture with no payer-decision effect.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-INDEPENDENT-ADMIN-FIXTURE",
+        "method_version": "1.0.0",
+        "kind": "generated_fixture"
+      },
+      "derived_from_assertion_refs": [],
+      "evidence_digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-ENROLLMENT-COUNTERFACTUAL-001",
+      "subject_refs": [
+        "ENROLLMENT-SYNTHETIC-PENDING-001"
+      ],
+      "formation": "generated",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The pending enrollment is a synthetic eligibility fixture with no payer-decision effect.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-INDEPENDENT-ADMIN-FIXTURE",
+        "method_version": "1.0.0",
+        "kind": "generated_fixture"
+      },
+      "derived_from_assertion_refs": [],
+      "evidence_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-POLICY-RULESET-001",
+      "subject_refs": [
+        "POLICY-SYNTHETIC-ROUTING-001"
+      ],
+      "formation": "human_curated",
+      "standing": "accountably_reviewed",
+      "resolution_status": "resolved",
+      "claim": "The declared policy is an independently authored synthetic decision table, not live payer policy.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-HUMAN-CURATED-POLICY",
+        "method_version": "1.0.0",
+        "kind": "human_curated"
+      },
+      "derived_from_assertion_refs": [],
+      "evidence_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "review": {
+        "review_id": "REVIEW-PROVENANCE-POLICY-001",
+        "reviewer_id": "ACTOR-POLICY-STEWARD-001",
+        "reviewer_role": {
+          "term_id": "role:policy_steward",
+          "label": "Policy steward",
+          "vocabulary_id": "urn:driftframe:accountable-roles",
+          "vocabulary_version": "1.0.0"
+        },
+        "disposition": "accept",
+        "reviewed_at": "2026-10-01T13:55:00Z",
+        "evidence_refs": [
+          "PROV-POPULATION-SCENARIO-001"
+        ],
+        "rationale": "Accepted the decision table for synthetic policy-mechanics testing only."
+      }
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-DECISION-BASELINE-001",
+      "subject_refs": [
+        "DECISION-ADMIN-BASELINE-001"
+      ],
+      "formation": "deterministic_transform",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The baseline decision preserves the digest-bound engine proposal and its accountable review revision alongside the reviewed classification and synthetic enrollment.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-SYNTHETIC-POLICY-EVALUATOR",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-SYNTHETIC-POLICY-EVALUATOR",
+          "version": "1.0.0",
+          "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-CLASSIFICATION-MULTI-001",
+        "PROV-ENROLLMENT-BASELINE-001",
+        "PROV-POLICY-RULESET-001"
+      ],
+      "evidence_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-DECISION-COUNTERFACTUAL-001",
+      "subject_refs": [
+        "DECISION-ADMIN-COUNTERFACTUAL-001"
+      ],
+      "formation": "deterministic_transform",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The counterfactual decision derives from reviewed abstention, pending synthetic enrollment, and the same digest-bound policy.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-SYNTHETIC-POLICY-EVALUATOR",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-SYNTHETIC-POLICY-EVALUATOR",
+          "version": "1.0.0",
+          "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-CLASSIFICATION-ABSTAIN-001",
+        "PROV-ENROLLMENT-COUNTERFACTUAL-001",
+        "PROV-POLICY-RULESET-001"
+      ],
+      "evidence_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-DECISION-MISSING-INPUT-001",
+      "subject_refs": [
+        "DECISION-ADMIN-MISSING-INPUT-001"
+      ],
+      "formation": "deterministic_transform",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The missing-input decision preserves engine abstention and the accountable review's bounded evidence request.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-SYNTHETIC-POLICY-EVALUATOR",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-SYNTHETIC-POLICY-EVALUATOR",
+          "version": "1.0.0",
+          "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-CLASSIFICATION-UNKNOWN-001",
+        "PROV-POLICY-RULESET-001"
+      ],
+      "evidence_digest": "sha256:5656565656565656565656565656565656565656565656565656565656565656",
+      "review": null
+    },
+    {
+      "assertion_version": "1.0.0",
+      "assertion_id": "PROV-IMPACT-COUNTERFACTUAL-001",
+      "subject_refs": [
+        "IMPACT-ADMIN-COUNTERFACTUAL-001"
+      ],
+      "formation": "deterministic_transform",
+      "standing": "constellation_derived",
+      "resolution_status": "resolved",
+      "claim": "The impact observation compares canonical arm digests after holding clinical evidence and output fixed.",
+      "source_coordinate": null,
+      "method": {
+        "method_id": "METHOD-SYNTHETIC-POLICY-EVALUATOR",
+        "method_version": "1.0.0",
+        "kind": "deterministic_transform",
+        "code": {
+          "artifact_id": "CODE-SYNTHETIC-POLICY-EVALUATOR",
+          "version": "1.0.0",
+          "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+        }
+      },
+      "derived_from_assertion_refs": [
+        "PROV-DECISION-BASELINE-001",
+        "PROV-DECISION-COUNTERFACTUAL-001"
+      ],
+      "evidence_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "review": null
+    }
+  ]
+}

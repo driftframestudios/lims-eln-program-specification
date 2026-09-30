@@ -8,6 +8,14 @@ import json
 from pydantic import BaseModel
 
 from .bounded_call import BoundedCallReceipt, BoundedCallRequest, OperationCatalog
+from .external_administrative import (
+    EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SCHEMA_ID,
+    EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SEMANTIC_INVARIANTS,
+    EXTERNAL_SOURCE_MANIFEST_SCHEMA_ID,
+    EXTERNAL_SOURCE_MANIFEST_SEMANTIC_INVARIANTS,
+    ExternalAdministrativeContractSet,
+    ExternalSourceManifest,
+)
 from .golden_specimen import GoldenSpecimenResultProjection
 from .observation import ObservationEnvelope
 from .scenario import ScenarioContract
@@ -54,6 +62,18 @@ SCHEMA_ARTIFACTS = (
         "bounded-call-request.v1.schema.json",
         "urn:driftframe:lims-eln:bounded-call-request:1.0.0",
         BoundedCallRequest,
+    ),
+    SchemaArtifact(
+        "external-administrative-contract-set.v1.schema.json",
+        EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SCHEMA_ID,
+        ExternalAdministrativeContractSet,
+        EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_SEMANTIC_INVARIANTS,
+    ),
+    SchemaArtifact(
+        "external-source-manifest.v1.schema.json",
+        EXTERNAL_SOURCE_MANIFEST_SCHEMA_ID,
+        ExternalSourceManifest,
+        EXTERNAL_SOURCE_MANIFEST_SEMANTIC_INVARIANTS,
     ),
     SchemaArtifact(
         "golden-specimen-result-projection.v1.schema.json",

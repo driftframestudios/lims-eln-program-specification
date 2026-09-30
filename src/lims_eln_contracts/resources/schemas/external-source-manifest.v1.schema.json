@@ -1,0 +1,330 @@
+{
+  "$defs": {
+    "AssetObservationKind": {
+      "enum": [
+        "api_reported_metadata",
+        "locally_hashed"
+      ],
+      "title": "AssetObservationKind",
+      "type": "string"
+    },
+    "ExternalAssetDescriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_name": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "title": "Asset Name",
+          "type": "string"
+        },
+        "byte_count": {
+          "exclusiveMinimum": 0,
+          "title": "Byte Count",
+          "type": "integer"
+        },
+        "digest": {
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "title": "Digest",
+          "type": "string"
+        },
+        "download_url": {
+          "maxLength": 2048,
+          "minLength": 9,
+          "pattern": "^https://[^\\s]+$",
+          "title": "Download Url",
+          "type": "string"
+        },
+        "inclusion_mode": {
+          "const": "metadata_only",
+          "default": "metadata_only",
+          "title": "Inclusion Mode",
+          "type": "string"
+        },
+        "media_type": {
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "payload_included": {
+          "const": false,
+          "default": false,
+          "title": "Payload Included",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "asset_name",
+        "byte_count",
+        "digest",
+        "media_type",
+        "download_url"
+      ],
+      "title": "ExternalAssetDescriptor",
+      "type": "object"
+    },
+    "ExternalAssetObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "download_performed": {
+          "title": "Download Performed",
+          "type": "boolean"
+        },
+        "execution_performed": {
+          "title": "Execution Performed",
+          "type": "boolean"
+        },
+        "observation_kind": {
+          "$ref": "#/$defs/AssetObservationKind"
+        },
+        "observation_source": {
+          "maxLength": 2048,
+          "minLength": 9,
+          "pattern": "^https://[^\\s]+$",
+          "title": "Observation Source",
+          "type": "string"
+        },
+        "observed_at": {
+          "maxLength": 27,
+          "minLength": 20,
+          "title": "Observed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "observed_at",
+        "observation_kind",
+        "observation_source",
+        "download_performed",
+        "execution_performed"
+      ],
+      "title": "ExternalAssetObservation",
+      "type": "object"
+    },
+    "PinnedDocumentRole": {
+      "enum": [
+        "data_card",
+        "license",
+        "citation"
+      ],
+      "title": "PinnedDocumentRole",
+      "type": "string"
+    },
+    "PinnedSourceDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "blob_sha": {
+          "pattern": "^[a-f0-9]{40}$",
+          "title": "Blob Sha",
+          "type": "string"
+        },
+        "byte_count": {
+          "exclusiveMinimum": 0,
+          "title": "Byte Count",
+          "type": "integer"
+        },
+        "commit": {
+          "pattern": "^[a-f0-9]{40}$",
+          "title": "Commit",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/PinnedDocumentRole"
+        },
+        "url": {
+          "maxLength": 2048,
+          "minLength": 9,
+          "pattern": "^https://[^\\s]+$",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "path",
+        "commit",
+        "blob_sha",
+        "byte_count",
+        "url"
+      ],
+      "title": "PinnedSourceDocument",
+      "type": "object"
+    },
+    "ReceptionMode": {
+      "enum": [
+        "reference_only",
+        "adapter_probe",
+        "derived_scenario",
+        "held_for_review"
+      ],
+      "title": "ReceptionMode",
+      "type": "string"
+    },
+    "UpstreamIssueState": {
+      "enum": [
+        "open",
+        "closed"
+      ],
+      "title": "UpstreamIssueState",
+      "type": "string"
+    },
+    "UpstreamLimitation": {
+      "additionalProperties": false,
+      "properties": {
+        "issue_number": {
+          "exclusiveMinimum": 0,
+          "title": "Issue Number",
+          "type": "integer"
+        },
+        "issue_url": {
+          "maxLength": 2048,
+          "minLength": 9,
+          "pattern": "^https://[^\\s]+$",
+          "title": "Issue Url",
+          "type": "string"
+        },
+        "limitation": {
+          "minLength": 1,
+          "title": "Limitation",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/UpstreamIssueState"
+        }
+      },
+      "required": [
+        "issue_number",
+        "issue_url",
+        "state",
+        "limitation"
+      ],
+      "title": "UpstreamLimitation",
+      "type": "object"
+    }
+  },
+  "$id": "urn:driftframe:lims-eln:external-source-manifest:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Immutable source coordinates without embedding the source asset bytes.",
+  "properties": {
+    "asset": {
+      "$ref": "#/$defs/ExternalAssetDescriptor"
+    },
+    "asset_observation": {
+      "$ref": "#/$defs/ExternalAssetObservation"
+    },
+    "local_adapter_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Local Adapter Id",
+      "type": "string"
+    },
+    "local_adapter_version": {
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "title": "Local Adapter Version",
+      "type": "string"
+    },
+    "manifest_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Manifest Id",
+      "type": "string"
+    },
+    "manifest_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Manifest Version",
+      "type": "string"
+    },
+    "pinned_documents": {
+      "items": {
+        "$ref": "#/$defs/PinnedSourceDocument"
+      },
+      "minItems": 1,
+      "title": "Pinned Documents",
+      "type": "array"
+    },
+    "reception_mode": {
+      "$ref": "#/$defs/ReceptionMode"
+    },
+    "release_commit": {
+      "pattern": "^[a-f0-9]{40}$",
+      "title": "Release Commit",
+      "type": "string"
+    },
+    "release_tag": {
+      "minLength": 1,
+      "title": "Release Tag",
+      "type": "string"
+    },
+    "release_url": {
+      "maxLength": 2048,
+      "minLength": 9,
+      "pattern": "^https://[^\\s]+$",
+      "title": "Release Url",
+      "type": "string"
+    },
+    "repository_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Repository Id",
+      "type": "string"
+    },
+    "repository_url": {
+      "maxLength": 2048,
+      "minLength": 9,
+      "pattern": "^https://[^\\s]+$",
+      "title": "Repository Url",
+      "type": "string"
+    },
+    "retrieved_on": {
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "title": "Retrieved On",
+      "type": "string"
+    },
+    "source_claim_boundary": {
+      "minLength": 1,
+      "title": "Source Claim Boundary",
+      "type": "string"
+    },
+    "upstream_limitations": {
+      "items": {
+        "$ref": "#/$defs/UpstreamLimitation"
+      },
+      "title": "Upstream Limitations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "manifest_id",
+    "repository_id",
+    "repository_url",
+    "release_tag",
+    "release_commit",
+    "release_url",
+    "asset",
+    "asset_observation",
+    "pinned_documents",
+    "retrieved_on",
+    "local_adapter_id",
+    "local_adapter_version",
+    "reception_mode",
+    "source_claim_boundary"
+  ],
+  "title": "ExternalSourceManifest",
+  "type": "object",
+  "x-semantic-invariants": [
+    "data-card, license, and citation documents are pinned exactly once and retain release_commit",
+    "API-reported asset metadata remains distinct from download or execution evidence"
+  ]
+}

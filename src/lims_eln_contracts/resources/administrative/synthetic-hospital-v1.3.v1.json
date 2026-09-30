@@ -1,0 +1,64 @@
+{
+  "manifest_version": "1.0.0",
+  "manifest_id": "EXTSRC-SYNTHETIC-HOSPITAL-V1-3",
+  "repository_id": "github:sparkcpark/synthetic_hospital",
+  "repository_url": "https://github.com/sparkcpark/synthetic_hospital",
+  "release_tag": "v1.3",
+  "release_commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+  "release_url": "https://github.com/sparkcpark/synthetic_hospital/releases/tag/v1.3",
+  "asset": {
+    "asset_name": "benchmark_v1.3.db",
+    "byte_count": 92430336,
+    "digest": "sha256:8fb8eb114508f272588b6121ca78cff53a6fc2e5f47d7aa01bfbb5bcef4e6ddb",
+    "media_type": "application/octet-stream",
+    "download_url": "https://github.com/sparkcpark/synthetic_hospital/releases/download/v1.3/benchmark_v1.3.db",
+    "inclusion_mode": "metadata_only",
+    "payload_included": false
+  },
+  "asset_observation": {
+    "observed_at": "2026-09-30T01:00:00Z",
+    "observation_kind": "api_reported_metadata",
+    "observation_source": "https://api.github.com/repos/sparkcpark/synthetic_hospital/releases/tags/v1.3",
+    "download_performed": false,
+    "execution_performed": false
+  },
+  "pinned_documents": [
+    {
+      "role": "data_card",
+      "path": "DATA_CARD.md",
+      "commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+      "blob_sha": "310457cad3ebd66fe135bb2a45a4332957e2d750",
+      "byte_count": 9639,
+      "url": "https://github.com/sparkcpark/synthetic_hospital/blob/77cc57e9c595ce731bbdde4fabdcbd25a8458ae2/DATA_CARD.md"
+    },
+    {
+      "role": "license",
+      "path": "LICENSE",
+      "commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+      "blob_sha": "5954e9b76b3e647ab0606811efce40407d28ba52",
+      "byte_count": 1067,
+      "url": "https://github.com/sparkcpark/synthetic_hospital/blob/77cc57e9c595ce731bbdde4fabdcbd25a8458ae2/LICENSE"
+    },
+    {
+      "role": "citation",
+      "path": "CITATION.cff",
+      "commit": "77cc57e9c595ce731bbdde4fabdcbd25a8458ae2",
+      "blob_sha": "249b36a010ab5970470ee2a22558e77a78a299e2",
+      "byte_count": 1049,
+      "url": "https://github.com/sparkcpark/synthetic_hospital/blob/77cc57e9c595ce731bbdde4fabdcbd25a8458ae2/CITATION.cff"
+    }
+  ],
+  "upstream_limitations": [
+    {
+      "issue_number": 3,
+      "issue_url": "https://github.com/sparkcpark/synthetic_hospital/issues/3",
+      "state": "open",
+      "limitation": "FHIR Condition and Observation projections omit encounter references and timing even though the underlying data determines them."
+    }
+  ],
+  "retrieved_on": "2026-09-30",
+  "local_adapter_id": "ADAPTER-SYNTHETIC-HOSPITAL-REFERENCE",
+  "local_adapter_version": "1.0.0",
+  "reception_mode": "reference_only",
+  "source_claim_boundary": "The generated insurance text is raw interface-demonstration input. It does not establish enrollment, eligibility, coverage, prevalence, payer behavior, clinical validity, or deployment fitness."
+}

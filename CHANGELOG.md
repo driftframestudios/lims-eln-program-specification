@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+- Prepared the independently versioned `lims_eln_contracts` 0.4.0 successor
+  with strict external-source, administrative-context, raw-preserving
+  classification, coverage-enrollment, declared-policy, reviewed-decision,
+  impact-observation, population-scenario, and provenance boundaries. Two
+  dependency-closed generated schemas and three byte-checked example
+  projections exercise the metadata-only Synthetic Hospital v1.3 intake,
+  single-label, multi-label, unknown, abstention, missing-input,
+  precedence-conflict, pending-enrollment, reviewed-revision, and
+  administrative-only counterfactual behavior while the Program release
+  remains `spec-v0.3.1`.
+- Made policy evaluation reproducible across receivers by carrying its named,
+  schema-visible input material and deriving missing inputs, matches, conflicts,
+  precedence, and digest from cited records. Counterfactual arms now bind named
+  input and complete-decision digest profiles, while external artifact-verified
+  evidence requires an observed locally hashed download.
+- Added a proportional artifact-class route for canonical state, synthetic
+  fixtures, validation corpora, evidence receipts, and generated manifests.
+  Package-local dataset cards and Croissant 1.1 metadata begin only when a
+  stable collection is distributed for reuse and machine loading.
+- Added working, public-possible runbooks for external benchmark intake,
+  administrative-context evolution, and constellation contract handoff. The
+  repository-local `external-benchmark-reception` skill now selects a bounded
+  reference, adapter-probe, derived-scenario, or held-review route with source,
+  provenance, terms, and claim ceilings visible.
 - Moved every Program skill's publication standing, version, adaptation, and
   upstream identities into the standard front-matter `metadata` mapping.
   Standard skill tooling and the Program validator now read one portable
