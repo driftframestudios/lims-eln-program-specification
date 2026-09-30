@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+- Layered the root orientation around current state, reader routes, a
+  ten-minute proof, evidence boundaries, and a repository map; moved package
+  adoption into its source directory; added schema and skill catalogs; and
+  clarified that the signed 0.3.1 tag and the open post-tag observation are
+  distinct facts.
+- Promoted the exercised six-skill Program collaboration workbench, including
+  portable metadata and uv-backed execution, from the integration line without
+  advancing the separate 0.4.0 external-administrative contract candidate.
+- Moved every Program skill's publication standing, version, adaptation, and
+  upstream identities into the standard front-matter `metadata` mapping.
+  Standard skill tooling and the Program validator now read one portable
+  package shape while Pages retains the same public-ready selection.
+- Added the public-ready `uv-backed-python-execution` skill and aligned local
+  validation guidance with an isolated uv-managed Python 3.12 environment. The
+  route keeps the operating system's base Python and global packages in their
+  current state, makes lockless dependency evidence explicit, and distinguishes
+  tracked source cleanliness from ignored build-backend material.
+- Added repository-local re-entry and contextual jargon scan skills so an
+  isolated Program checkout can recover current source and suite state and
+  revise shorthand into wording the repository itself explains.
+- Clarified that public-possible and public-ready skills both support open
+  collaboration while the current Pages catalog retains its reviewed
+  public-ready selection.
+- Added the public-possible `proportionate-recovery-routing` skill. It turns a
+  consequential failed check, repeated retry, source loss, authority mismatch,
+  stale handoff, or coordination drift into one smallest adequate move, an
+  owning surface, a decision-bearing receipt, and an exact re-entry event while
+  preserving accepted source, identity, permission, and publication boundaries.
 - Refined the deliberate private-sibling proof to establish authentication,
   repository metadata access, and exact Contents access as separate
   dimensions. A failed request now yields only normalized status, rate,

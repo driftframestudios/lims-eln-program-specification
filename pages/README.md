@@ -5,11 +5,36 @@ projection. `program-content.json` supplies the visitor copy; the current
 constellation, release-role record, status surface, and exact Git revision
 supply the authority coordinates used by the builder.
 
+Use this route when the reader needs to understand or reproduce the public
+projection. Use the root [`README`](../README.md) for Program intent and the
+[`schema index`](../schemas/README.md) for contract retrieval. Generated Pages
+remain a delivery view of those sources.
+
+## Source and state
+
+| Input | Contribution to the projection |
+| --- | --- |
+| [`program-content.json`](program-content.json) | Visitor-facing route names, explanations, public links, and verification copy |
+| [`release/repository-role.json`](../release/repository-role.json) | Repository role, living release state, contract bindings, and promotion controls |
+| [`STATUS.yaml`](../STATUS.yaml) | Compact release and evidence status |
+| [`constellation.json`](../constellation.json) | Five repository roles and source locations |
+| [`.agents/skills/`](../.agents/skills/) | Source for the selected public-ready skill catalog |
+| Exact clean Git `HEAD` | Source revision recorded in the projection manifest |
+
+The signed `spec-v0.3.1` tag exists. The current source projection continues to
+describe the living `candidate_pending_promotion` carriers until the hosted
+sibling proof and post-tag observation settle. This keeps the tag observation,
+living release state, and published source revision legible as distinct facts.
+
+## Build and verify
+
 The standard-library builder creates a local candidate outside the worktree:
 
 ```sh
-python3 scripts/build_pages.py --output ../program-pages-build
-python3 scripts/validate_projection.py ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/build_pages.py --output ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/validate_projection.py ../program-pages-build
 ```
 
 The aggregate creates two isolated builds, compares their complete byte
@@ -17,7 +42,8 @@ inventories, validates each projection, and applies the repository secret-shape
 scanner to the generated text:
 
 ```sh
-python3 scripts/verify_pages.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/verify_pages.py
 ```
 
 Each ordinary build requires a clean Git worktree and records the verified
@@ -36,8 +62,29 @@ local candidate evidence. A separately authorized publication action can place
 reviewed bytes on the builder-owned `pages` branch and attach Pages settings or
 a custom domain.
 
-Repository skills enter the projection only when their `SKILL.md` front matter
-declares `source_band: public_ready`. A present public-ready set receives a
-catalog and one source-faithful page per skill. An empty set produces no skill
-catalog, while internal and public-possible sources retain their existing
-collaboration boundaries.
+The current custom-domain visitor surface is `https://cometspectrum.org/`.
+Publication compares the reviewed source revision and generated manifest before
+replacing the builder-owned branch. The source commit, projection commit, Pages
+configuration, DNS, HTTPS response, and later release observation remain
+separate coordinates with their own recovery paths.
+
+## Skill projection
+
+The generated catalog currently selects repository skills whose `SKILL.md`
+front matter declares `metadata.source_band: public_ready`. Publication,
+version, adaptation, and upstream identities share that standard `metadata`
+mapping. Public-possible guidance is also suitable for public use and
+refinement; a later catalog can include it when that serves the visitor route.
+A present selected set receives a catalog and one source-faithful page per
+skill. An empty set produces no skill catalog. A skill with no band remains
+outside the projection; a present band uses the exact `public_ready` or
+`public_possible` value.
+
+## Evidence boundary
+
+`scripts/verify_pages.py` establishes deterministic local bytes, manifest and
+link validity, and an in-scope credential-shape scan. It does not establish a
+hosted response, custom-domain configuration, browser presentation, Program
+release settlement, a configured implementation result, or accountable
+acceptance. Add the smallest fitting hosted or browser observation when one of
+those claims is material.

@@ -1,14 +1,15 @@
 ---
 name: source-authority-mapping
 description: Traces a LIMS/ELN program claim, contract, artifact, or release coordinate through the five-repository suite. Applies when specification meaning, governance schema, runtime evidence, simulated behavior, comparison output, public projection, or promotion ownership requires clear sources and receivers.
-source_band: public_ready
-skill_version: 0.1.0
-upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
-upstream_path: .agents/skills/source-authority-mapping/SKILL.md
-upstream_revision: a9ba528946fead335b49da3ae6dfb91c65588046
-upstream_blob_sha1: 112830e9b70540b0bc9a8535ab77c7a04c1a5926
-upstream_sha256: 1420eaee7f6d58805c29eaff23644d4982fdf1f12d2f6ce3cc39c65791939aff
-adaptation_relation: repository_local_derivative
+metadata:
+  source_band: public_ready
+  skill_version: 0.1.0
+  upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
+  upstream_path: .agents/skills/source-authority-mapping/SKILL.md
+  upstream_revision: a9ba528946fead335b49da3ae6dfb91c65588046
+  upstream_blob_sha1: 112830e9b70540b0bc9a8535ab77c7a04c1a5926
+  upstream_sha256: 1420eaee7f6d58805c29eaff23644d4982fdf1f12d2f6ce3cc39c65791939aff
+  adaptation_relation: repository_local_derivative
 ---
 
 # Source authority mapping

@@ -9,64 +9,71 @@ Repository authorship and maintenance provenance is recorded in
 [`AUTHORS`](AUTHORS). Git history and reviewed pull requests preserve change
 chronology and contribution credit.
 
-## Start here
+## Current state
 
-1. Read [`release/repository-role.json`](release/repository-role.json) for this
-   repository's role and current release state, then use
-   [`STATUS.yaml`](STATUS.yaml) for the compact status.
-2. Use [`constellation.json`](constellation.json) and the table below to find
-   the repository that can establish the behavior you need. Use
-   [`constellation.lock.json`](constellation.lock.json) when an exact release
-   tag, commit, or digest affects the decision.
-3. Use Python 3.12, run `python3 -m pip install -e .`, and begin with
-   `python3 scripts/validate_program.py`. The complete candidate proof is in
-   [Validation](#validation).
-4. Start changes from `develop` using the branch forms in
-   [`BRANCHING.md`](BRANCHING.md), follow the contribution contract in
-   [`CONTRIBUTING.md`](CONTRIBUTING.md), and keep tests beside the behavior they
-   establish.
-5. Use the repository-local
-   [`source-authority-mapping`](.agents/skills/source-authority-mapping/SKILL.md)
-   skill when a requirement, schema, implementation result, simulated result,
-   comparison report, release coordinate, or public page crosses repository
-   roles.
-6. Use
-   [`constellation-coherence-reconciliation`](.agents/skills/constellation-coherence-reconciliation/SKILL.md)
-   before pinning a coordinated release whose exact source coordinates and
-   copied semantic artifacts must settle together.
+The signed annotated tag `spec-v0.3.1` exists and resolves to the reviewed
+release subject. Current `main` also carries later release-line diagnostics and
+Pages repairs. The living release carriers intentionally remain in
+`candidate_pending_promotion`: the four-sibling hosted proof and the post-tag
+release observation have not yet settled. In this repository, a present tag and
+a completed release observation are distinct facts.
 
-[`coordination-horizon.json`](coordination-horizon.json) records current and
-queued work. [`first-receipt.json`](first-receipt.json) provides a compact
-re-entry record with the current evidence status and next verified move.
+[`release/repository-role.json`](release/repository-role.json) and
+[`STATUS.yaml`](STATUS.yaml) provide the compact living state.
+[`receipts/promotion-observation-spec-v0.3.1.json`](receipts/promotion-observation-spec-v0.3.1.json)
+names the open post-tag observation. [`coordination-horizon.json`](coordination-horizon.json)
+records current work, and [`first-receipt.json`](first-receipt.json) supplies the
+smallest machine-readable re-entry route.
 
-The current planned program release is `spec-v0.3.1`. It consumes the accepted
-Governance 2.1.0, Implementation 0.3.2, Simulation 2028 selected-future, and
-Comparison 0.3.1 release subjects. Their coordinates in
-[`constellation.lock.json`](constellation.lock.json) bind signed tag objects,
-accepted commits, Git trees, and reproducible Git archives as distinct
-identities. The lock also preserves the Implementation semantic release name
-beside its actual Git tag. Its repository release, contract bindings,
-selected-future closure, and material release artifacts are checked directly
-against the tagged source. The Comparison release's compatibility binding
-points to the exact untagged Governance
-2.0.1 commit, tree, and Git archive from which the signed Comparison Machine
-Node and first receipt were validated. Governance 2.1.0 remains the Program's
-current schema authority. The Program release coordinate remains open until its
-authorized merge route and signed tag supply the corresponding commit and tree. A deliberate
-proof dispatched from that release tag also matches the selected tag name to
-the lock, confirms that the tag peels to the dispatched commit, and verifies
-its signature against the repository-trusted signer. The candidate includes a
-version-specific release-observation record. After the tag exists, a later
-commit can record the immutable release subject, hosted proof, and factual
-merge-admission and review observation while the tagged source remains unchanged. The observation
-verifier derives that later carrier's Git commit during validation, which keeps
-the record free of a self-referential commit field.
+The 0.3.1 constellation consumes accepted Governance 2.1.0, Implementation
+0.3.2, Simulation 2028 selected-future, and Comparison 0.3.1 release subjects.
+[`constellation.lock.json`](constellation.lock.json) binds their tag objects,
+commits, Git trees, reproducible archives, and decision-changing semantic
+relations. Governance 2.1.0 remains the current schema authority.
 
-The repository describes what collaborators can verify. The simulation supplies
-an executable future reality whose assumptions, synthetic decisions, and
-evidence mode remain visible and revisable. A complete simulated closure can
-therefore stand as a first-class result while a separately represented observed
-closure remains available for future running-system evidence.
+## Choose your route
+
+| Reader job | Begin here | Continue with |
+| --- | --- | --- |
+| Understand what this repository owns | [`release/repository-role.json`](release/repository-role.json) | [Constellation](#constellation) and [`constellation.json`](constellation.json) |
+| Resume current work | [`first-receipt.json`](first-receipt.json) | [`coordination-horizon.json`](coordination-horizon.json), live Issues, and the [skill catalog](.agents/skills/README.md) |
+| Adopt the shared Python/JSON contract | [`src/lims_eln_contracts/README.md`](src/lims_eln_contracts/README.md) | [`release/contract-package-coordinate.json`](release/contract-package-coordinate.json) and the [schema index](schemas/README.md) |
+| Inspect Program requirements or decision probes | [`specifications/`](specifications/) | [`probes/catalog.json`](probes/catalog.json), [`acceptance/`](acceptance/), and [`decisions/`](decisions/) |
+| Compare active and selected-future behavior | [`constellation.json`](constellation.json) | the [accepted public comparison](https://cometspectrum.io/reports/golden-specimen/comparison.html) |
+| Build or inspect Program Pages | [`pages/README.md`](pages/README.md) | [`pages/program-content.json`](pages/program-content.json) and [Program Pages](#program-pages-candidate) |
+| Contribute a reviewed change | [`AGENTS.md`](AGENTS.md) | [`CONTRIBUTING.md`](CONTRIBUTING.md), [`BRANCHING.md`](BRANCHING.md), and [Validation](#validation) |
+
+## Ten-minute proof
+
+With `uv` available, run the repository-owned aggregate in an isolated Python
+3.12 environment:
+
+```sh
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/validate_program.py
+```
+
+The result establishes internal contract coherence, release-carrier lifecycle,
+skill inventory and lineage, schema and receipt bindings, Program database
+contracts, and collaboration surfaces for this checkout. It does not establish
+the four-sibling hosted proof, a configured implementation environment, public
+delivery, or accountable acceptance. The complete local suite and detached
+sibling route are in [Validation](#validation).
+
+## Evidence and authority boundary
+
+This repository owns Program intent, shared contract meaning, examples,
+forecasts, and acceptance boundaries. It describes what a collaborator can
+verify; it does not turn planned or simulated evidence into an observation of a
+running system. The simulation can establish behavior inside its declared
+selected future. The enterprise implementation establishes configured runtime
+behavior. Comparative evidence establishes the relation between accepted
+inputs. Accountable Scientific, Quality, Regulatory, Security, Operations, and
+business roles retain their decisions.
+
+Program Pages is a deterministic delivery projection of reviewed source. Its
+manifest can establish which bytes were built from which commit. Publication
+does not settle a Program release coordinate or a receiving system's behavior.
 
 ## Constellation
 
@@ -210,89 +217,12 @@ supplying one value per key and a finite measurement or explicit textual state.
 
 ### Install the shared contract package
 
-The Python distribution is `lims-eln-program-specification`; its import package
-is `lims_eln_contracts`, and the current package version is `0.3.1`.
+The package-level [`README`](src/lims_eln_contracts/README.md) owns installation,
+reviewed source coordinates, PEP 610 conformance, editable development,
+resource-loading examples, replacement rules, and generated-schema checks.
 [`release/contract-package-coordinate.json`](release/contract-package-coordinate.json)
-records the installation and replacement contract. Program repository owners
-publish the reviewed source coordinate. The final protected `main` commit may
-replace the reviewed integration commit at version `0.3.1` when their scoped
-package digests are identical. A package-content change advances both version
-and digest. Each consumer adopts either kind of replacement through review.
-The same record binds `pyproject.toml` and `src/lims_eln_contracts` through a
-path-delimited SHA-256 digest, so consumers can verify package content
-independently of the repository coordinate. The coordinate defines the framing:
-each regular file is ordered by the UTF-8 bytes of its POSIX relative path, then
-contributes its unsigned eight-byte big-endian path length, path bytes, content
-length, and content bytes. Runtime cache files are outside the selection, and
-symlinks make the scoped digest invalid. This makes the custom digest
-reproducible without requiring the Program validator as an implementation.
-
-The reviewed `develop` merge for the package contract is the immutable source
-coordinate `4d06eeb7f96910311fbcb7f51547c978b6a07290`. An authenticated PEP 508
-installation uses that full 40-character commit:
-
-```sh
-python3 -m pip install \
-  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@4d06eeb7f96910311fbcb7f51547c978b6a07290"
-```
-
-HTTPS is the canonical transport for this private distribution because the
-same requirement works for developer machines, CI, and service accounts. Git
-receives authentication from a configured credential helper or a short-lived
-GitHub App token, while the committed requirement remains free of credentials.
-SSH remains a receiving-environment option for teams that already manage deploy
-keys and host verification; both routes resolve the same full commit.
-
-Inside this repository, install the active source directly:
-
-```sh
-python3 -m pip install -e .
-```
-
-A receiving repository can use an adjacent editable checkout during local
-development:
-
-```sh
-python3 -m pip install -e ../lims-eln-program-specification
-```
-
-A receiving repository's release-conformance check later reads the installed
-distribution's PEP 610 `direct_url.json`, confirms that `vcs_info.commit_id`
-matches its reviewed binding, and verifies the scoped package-source digest,
-distribution and import versions, contract version `1.0.0`, operation catalog,
-Golden Specimen scenario, implementation- and simulation-shaped observations,
-and every schema named by `SCHEMA_RESOURCE_NAMES`. The editable route remains
-the direct path for active local development. The first recorded receiving
-repository is `lims-eln-enterprise-implementation`, using a clean Python 3.12
-environment for the release-conformance observation.
-
-```python
-from lims_eln_contracts import (
-    load_golden_specimen_scenario,
-    load_operation_catalog,
-)
-
-catalog = load_operation_catalog()
-scenario = load_golden_specimen_scenario()
-```
-
-Load either shaped observation through the same typed boundary:
-
-```python
-from lims_eln_contracts import load_golden_specimen_observation_example
-
-implementation_example = load_golden_specimen_observation_example("implementation")
-simulation_example = load_golden_specimen_observation_example("simulation")
-```
-
-The generated schemas remain a byte-identical projection of the Python models.
-After a deliberate model revision, render them once; routine validation checks
-that the committed projection remains current.
-
-```sh
-PYTHONPATH=src python3 scripts/generate_contract_schemas.py
-PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
-```
+remains the machine-readable authority for the reviewed package source and its
+scoped digest.
 
 ## Bounded callers
 
@@ -415,14 +345,22 @@ the `closed_in_future_reality` → `closed_in_simulation` and observed
 ## Validation
 
 ```sh
-python3 scripts/validate_program.py
-python3 scripts/verify_program_release_observation.py
-python3 scripts/validate_pinned_sources.py --preflight-external
-python3 scripts/check_language.py
-python3 scripts/check_language.py --format sarif
-python3 scripts/scan_secret_shapes.py
-PYTHONPATH=src python3 scripts/generate_contract_schemas.py --check
-python3 -m unittest discover -s tests -v
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/validate_program.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/verify_program_release_observation.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/validate_pinned_sources.py --preflight-external
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/check_language.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/check_language.py --format sarif
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/scan_secret_shapes.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_contract_schemas.py --check
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python -m unittest discover -s tests -v
 ```
 
 The external preflight confirms that every sibling release coordinate is ready
@@ -430,7 +368,8 @@ before checkout. Exact cross-repository settlement checks out each sibling at
 the commit in `constellation.lock.json`, then runs:
 
 ```sh
-python3 scripts/validate_pinned_sources.py --allow-pending \
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/validate_pinned_sources.py --allow-pending \
   --source simulation=../lims-eln-simulated-final-state \
   --source implementation=../lims-eln-enterprise-implementation \
   --source comparison=../lims-eln-comparative-evidence \
@@ -470,8 +409,10 @@ A clean checkout can create and validate one local projection outside the
 worktree:
 
 ```sh
-python3 scripts/build_pages.py --output ../program-pages-build
-python3 scripts/validate_projection.py ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/build_pages.py --output ../program-pages-build
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/validate_projection.py ../program-pages-build
 ```
 
 The aggregate creates two isolated builds, compares every projected byte,
@@ -479,7 +420,8 @@ validates their manifests and relative links, and scans generated text for
 credential-shaped values:
 
 ```sh
-python3 scripts/verify_pages.py
+uv run --isolated --no-project --python 3.12 --managed-python \
+  -- python scripts/verify_pages.py
 ```
 
 The default build remains portable and carries no domain claim. A publication
@@ -488,13 +430,25 @@ receiver can provide both `--canonical-origin https://docs.example.org` and
 Branch creation, Pages activation, and domain configuration remain separate
 publication actions.
 
-Repository skills join the generated catalog when their `SKILL.md` front matter
-declares `source_band: public_ready`. The current public-ready set contains the
-repository-local source-authority map and constellation-coherence reconciliation
-used to trace one material object and settle a coordinated release without
-separating its coordinates from its copied meaning. Internal and public-possible
-sources retain their collaboration boundaries, and an empty public-ready set
-produces no catalog.
+The generated catalog currently selects repository skills whose `SKILL.md`
+front matter declares `metadata.source_band: public_ready`. Publication,
+version, adaptation, and upstream identities share that standard
+`metadata` mapping so standard skill tools and the Program projection read the
+same source. Public-possible guidance is also suitable for public use and
+refinement; it can join a later catalog when that serves the visitor route. The
+current selection keeps the repository-local source-authority map,
+constellation-coherence reconciliation, and uv-backed Python execution guide in
+the catalog.
+The declared band domain is `public_ready` and `public_possible`. A skill with
+no band remains outside the projection; a present band uses one of those exact
+values so a spelling variation cannot silently change publication standing. An
+empty selected set produces no catalog.
+
+The [Agent Skills specification](https://agentskills.io/specification) also
+defines optional top-level fields. This repository currently uses the smaller
+`name`, `description`, and `metadata` profile. A new optional field joins that
+profile when a repository contract defines how Program collaborators and the
+public projection should interpret it.
 
 The released projection manifest contract is `1.0.0`. It records the projection
 owner, complete file scope, verified source revision and standing, optional
@@ -505,6 +459,21 @@ and byte length plus SHA-256 for every projected file. Unit tests use an explici
 Release changes and consumer migration notes are recorded in
 [`CHANGELOG.md`](CHANGELOG.md) and
 [`docs/migrations/0.3.0-to-0.3.1.md`](docs/migrations/0.3.0-to-0.3.1.md).
+
+## Repository map
+
+| Surface | What it owns | Reader route |
+| --- | --- | --- |
+| [`specifications/`](specifications/) | Program capabilities, invariants, bounded callers, data primitives, migration contracts, and shared vocabulary | Begin with the contract named by the current Issue |
+| [`src/lims_eln_contracts/`](src/lims_eln_contracts/) | Typed shared package, released resources, and generated schema source | Use the [package guide](src/lims_eln_contracts/README.md) |
+| [`schemas/`](schemas/) | Program release and promotion schemas plus the index for package projections | Use the [schema index](schemas/README.md) |
+| [`acceptance/`](acceptance/) and [`probes/`](probes/) | Acceptance roles, proof classes, and question-led evaluation routes | Match the claim to its proof class and accountable role |
+| [`simulations/`](simulations/) and [`forecasts/`](forecasts/) | Program-held selected-future and forecast inputs | Retain their declared simulated or planned evidence mode |
+| [`database/`](database/) and [`plans/`](plans/) | Cross-repository database findings and modernization plan synthesis | Follow stable record identities into their source contracts |
+| [`receipts/`](receipts/) and [`release/`](release/) | Promotion, release, database, package, and repository-role carriers | Read them together before making a release-state claim |
+| [`pages/`](pages/) | Source content for the deterministic public orientation projection | Use the [Pages guide](pages/README.md) before building |
+| [`.agents/skills/`](.agents/skills/) | Repository-local reusable collaboration methods | Choose from the [skill catalog](.agents/skills/README.md) after current truth is known |
+| [`scripts/`](scripts/) and [`tests/`](tests/) | Executable validation, projection, diagnostics, and regression behavior | Prefer the smallest check that answers the active question |
 
 ## Runtime configuration and protected values
 

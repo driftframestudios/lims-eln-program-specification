@@ -20,7 +20,11 @@ from automation_contract import (
     MISSING_AUTOMATION_CONTROLS,
     validate_repository_automation,
 )
-from pages_projection import validate_source_contract
+from pages_projection import (
+    parse_skill_front_matter,
+    skill_package_metadata,
+    validate_source_contract,
+)
 from verify_program_release_observation import (
     OBSERVATION_SCHEMA_PATH,
     candidate_receipt_digest,
@@ -29,12 +33,94 @@ from verify_program_release_observation import (
 )
 
 
+COLLABORATION_SKILL_CONTRACTS = {
+    "constellation-coherence-reconciliation": {
+        "source_band": "public_ready",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_original",
+    },
+    "contextual-jargon-scan": {
+        "source_band": "public_possible",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_derivative",
+        "upstream_repository": (
+            "https://github.com/driftframestudios/"
+            "human-ai-systems-exemplars.git"
+        ),
+        "upstream_path": ".agents/skills/contextual-jargon-scan/SKILL.md",
+        "upstream_revision": "0c023343e46cd9b1333a63c2d509787352fbad14",
+        "upstream_blob_sha1": "3c3a94db99152385253e0281c8afa8fea8208ac5",
+        "upstream_sha256": (
+            "da383f99eaff364d7e17c3bff93d8da618ec95894a45ff78a9620d8d7fc81523"
+        ),
+    },
+    "proportionate-recovery-routing": {
+        "source_band": "public_possible",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_original",
+    },
+    "repository-reentry": {
+        "source_band": "public_possible",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_derivative",
+        "upstream_repository": (
+            "https://github.com/driftframestudios/"
+            "human-ai-systems-exemplars.git"
+        ),
+        "upstream_path": ".agents/skills/repository-reentry/SKILL.md",
+        "upstream_revision": "0c023343e46cd9b1333a63c2d509787352fbad14",
+        "upstream_blob_sha1": "ac2c3732826c515b236598af10e0a204dbe14ace",
+        "upstream_sha256": (
+            "c60bb1bac3a993c78d94b1d05aaa7a97761b99275fc9acdc8285acba6f688f02"
+        ),
+    },
+    "source-authority-mapping": {
+        "source_band": "public_ready",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_derivative",
+        "upstream_repository": (
+            "https://github.com/driftframestudios/"
+            "human-ai-systems-exemplars.git"
+        ),
+        "upstream_path": ".agents/skills/source-authority-mapping/SKILL.md",
+        "upstream_revision": "a9ba528946fead335b49da3ae6dfb91c65588046",
+        "upstream_blob_sha1": "112830e9b70540b0bc9a8535ab77c7a04c1a5926",
+        "upstream_sha256": (
+            "1420eaee7f6d58805c29eaff23644d4982fdf1f12d2f6ce3cc39c65791939aff"
+        ),
+    },
+    "uv-backed-python-execution": {
+        "source_band": "public_ready",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_derivative",
+        "upstream_repository": (
+            "https://github.com/driftframestudios/"
+            "human-ai-systems-exemplars.git"
+        ),
+        "upstream_path": ".agents/skills/uv-backed-python-execution/SKILL.md",
+        "upstream_revision": "0ed54696e01babe3020cd7b0e38bc06eeab64e67",
+        "upstream_blob_sha1": "b8fb9d34ed16146f22cfbbccad954ae4419a1692",
+        "upstream_sha256": (
+            "e9d788cae6d2ceb1ed328f8c5ce70c0c34c18d1e0849b4804d89ade6ed42f414"
+        ),
+    },
+}
+SKILL_REQUIRED_SECTIONS = (
+    "## Contract",
+    "## Rules",
+    "## Operating sequence",
+    "## Completion",
+)
+PRIVATE_SKILL_LOCATORS = ("::", "~loamthreads", "notion.site/", "notion.so/")
+
+
 PROGRAM_RELEASE = "0.3.1"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
 PACKAGE_SOURCE_DIGEST_ALGORITHM = "path-length-bytes-sha256-v1"
 PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     "file_selection": (
-        "pyproject.toml and every regular file below src/lims_eln_contracts"
+        "pyproject.toml and every regular distribution source file below "
+        "src/lims_eln_contracts"
     ),
     "path_encoding": "UTF-8 POSIX relative paths",
     "path_order": "ascending UTF-8 byte order",
@@ -47,6 +133,7 @@ PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     ],
     "exclusions": [
         "directory entries",
+        "src/lims_eln_contracts/README.md source-local adoption guidance",
         "paths below __pycache__",
         "files ending in .pyc or .pyo",
     ],
@@ -553,7 +640,8 @@ def package_source_digest(root: Path = ROOT) -> str:
     for path in source_root.rglob("*"):
         relative_source_path = path.relative_to(source_root)
         if (
-            "__pycache__" in relative_source_path.parts
+            relative_source_path == Path("README.md")
+            or "__pycache__" in relative_source_path.parts
             or path.suffix in {".pyc", ".pyo"}
         ):
             continue
@@ -630,7 +718,8 @@ def package_source_digest_from_git(commit: str, root: Path = ROOT) -> str:
             )
             package_parts = package_relative.split("/")
             if (
-                "__pycache__" in package_parts
+                package_relative == "README.md"
+                or "__pycache__" in package_parts
                 or relative_path.endswith((".pyc", ".pyo"))
             ):
                 continue
@@ -1496,6 +1585,105 @@ def validate_release_lifecycle(
 
 def sha256_digest(relative_path: str) -> str:
     return "sha256:" + hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest()
+
+
+def validate_collaboration_workbench(
+    root: Path,
+    public_skills: tuple[Any, ...],
+) -> dict[str, int]:
+    """Validate the complete repository-local skill workbench and its lineage."""
+
+    skills_root = root / ".agents" / "skills"
+    actual_paths = {
+        path.relative_to(root).as_posix()
+        for path in skills_root.glob("*/SKILL.md")
+        if path.is_file()
+    }
+    expected_paths = {
+        f".agents/skills/{slug}/SKILL.md"
+        for slug in COLLABORATION_SKILL_CONTRACTS
+    }
+    if actual_paths != expected_paths:
+        raise ValueError(
+            "collaboration skill inventory differs: "
+            f"missing={sorted(expected_paths - actual_paths)}, "
+            f"undeclared={sorted(actual_paths - expected_paths)}"
+        )
+
+    by_slug = {skill.slug: skill for skill in public_skills}
+    expected_published_slugs = {
+        slug
+        for slug, metadata in COLLABORATION_SKILL_CONTRACTS.items()
+        if metadata["source_band"] == "public_ready"
+    }
+    if set(by_slug) != expected_published_slugs:
+        raise ValueError("published skill inventory differs from its current selection")
+
+    observed_bands: list[str] = []
+    for slug, expected_metadata in COLLABORATION_SKILL_CONTRACTS.items():
+        relative_path = f".agents/skills/{slug}/SKILL.md"
+        source = (root / relative_path).read_text(encoding="utf-8")
+        front_matter = parse_skill_front_matter(source, relative_path)
+        if front_matter is None:
+            raise ValueError(f"skill metadata is absent: {slug}")
+        if front_matter.get("name") != slug:
+            raise ValueError(f"skill name differs from its route: {slug}")
+        description = front_matter.get("description")
+        if not isinstance(description, str) or len(description.split()) < 8:
+            raise ValueError(f"skill description requires a substantive reader job: {slug}")
+        observed_metadata = skill_package_metadata(front_matter, relative_path)
+        if observed_metadata != expected_metadata:
+            raise ValueError(f"skill metadata or lineage differs: {slug}")
+        observed_bands.append(expected_metadata["source_band"])
+        missing_sections = [
+            section for section in SKILL_REQUIRED_SECTIONS if section not in source
+        ]
+        if missing_sections:
+            raise ValueError(
+                f"skill contract sections are absent for {slug}: {missing_sections}"
+            )
+        if any(locator in source.lower() for locator in PRIVATE_SKILL_LOCATORS):
+            raise ValueError(f"skill source carries a private workspace locator: {slug}")
+
+    agents_orientation = (root / "AGENTS.md").read_text(encoding="utf-8")
+    missing_agent_links = [
+        path for path in sorted(expected_paths) if path not in agents_orientation
+    ]
+    if missing_agent_links:
+        raise ValueError(
+            "AGENTS.md omits collaboration skill routes: "
+            f"{missing_agent_links}"
+        )
+
+    root_orientation = (root / "README.md").read_text(encoding="utf-8")
+    if ".agents/skills/README.md" not in root_orientation:
+        raise ValueError("README.md omits the collaboration skill catalog")
+
+    catalog_path = root / ".agents" / "skills" / "README.md"
+    if not catalog_path.is_file():
+        raise ValueError("collaboration skill catalog is absent")
+    catalog = catalog_path.read_text(encoding="utf-8")
+    missing_catalog_routes = [
+        f"{slug}/SKILL.md"
+        for slug in sorted(COLLABORATION_SKILL_CONTRACTS)
+        if f"({slug}/SKILL.md)" not in catalog
+    ]
+    if missing_catalog_routes:
+        raise ValueError(
+            "collaboration skill catalog omits routes: "
+            f"{missing_catalog_routes}"
+        )
+    for standing in ("public_possible", "public_ready"):
+        if standing not in catalog:
+            raise ValueError(
+                f"collaboration skill catalog omits standing: {standing}"
+            )
+
+    return {
+        "published_skills": len(public_skills),
+        "public_possible_skills": observed_bands.count("public_possible"),
+        "public_ready_skills": observed_bands.count("public_ready"),
+    }
 
 
 def canonical_json_digest(document: dict) -> str:
@@ -2696,6 +2884,9 @@ def validate() -> dict[str, int]:
     release_observation_schema = load_json(OBSERVATION_SCHEMA_PATH.as_posix())
     status_document = load_status()
     pages_context = validate_source_contract(ROOT)
+    workbench_summary = validate_collaboration_workbench(
+        ROOT, pages_context.public_skills
+    )
 
     validate_core_shapes(
         constellation=constellation,
@@ -3549,8 +3740,13 @@ def validate() -> dict[str, int]:
         raise ValueError("release, promotion, or status version binding differs")
 
     required_paths = [
+        ".agents/skills/README.md",
         ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
+        ".agents/skills/contextual-jargon-scan/SKILL.md",
+        ".agents/skills/proportionate-recovery-routing/SKILL.md",
+        ".agents/skills/repository-reentry/SKILL.md",
         ".agents/skills/source-authority-mapping/SKILL.md",
+        ".agents/skills/uv-backed-python-execution/SKILL.md",
         "AGENTS.md",
         "CHANGELOG.md",
         "README.md",
@@ -3567,6 +3763,8 @@ def validate() -> dict[str, int]:
         "receipts/promotion-observation-spec-v0.3.1.json",
         "schemas/promotion-receipt.schema.json",
         "schemas/program-release-observation.v1.schema.json",
+        "schemas/README.md",
+        "src/lims_eln_contracts/README.md",
         "specifications/bounded-caller.json",
         "specifications/receipt-vocabulary-map.v1.json",
         "probes/catalog.json",
@@ -3605,6 +3803,7 @@ def validate() -> dict[str, int]:
         "tests/test_branch_flow.py",
         "tests/test_github_api_diagnostics.py",
         "tests/test_language_policy.py",
+        "tests/test_collaboration_workbench.py",
         "tests/test_pages_projection.py",
         "scripts/build_pages.py",
         "scripts/pages_projection.py",
@@ -3835,12 +4034,15 @@ def validate() -> dict[str, int]:
     ):
         raise ValueError("CODEOWNERS requires the release observation verifier owner")
     pages_owner_paths = (
+        "/AGENTS.md @driftframestudios",
+        "/.agents/ @driftframestudios",
         "/pages/ @driftframestudios",
         "/scripts/build_pages.py @driftframestudios",
         "/scripts/pages_projection.py @driftframestudios",
         "/scripts/validate_projection.py @driftframestudios",
         "/scripts/verify_pages.py @driftframestudios",
         "/tests/test_pages_projection.py @driftframestudios",
+        "/tests/test_collaboration_workbench.py @driftframestudios",
     )
     missing_pages_owners = [
         path for path in pages_owner_paths if path not in codeowners
@@ -3897,8 +4099,8 @@ def validate() -> dict[str, int]:
         ),
         "repositories": len(repository_roles),
         "pages_sources": 1,
-        "public_ready_skills": len(pages_context.public_skills),
         "contract_package_coordinates": 1,
+        **workbench_summary,
         **database_summary,
     }
 

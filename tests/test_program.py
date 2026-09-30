@@ -130,7 +130,9 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["database_release_gates"], 7)
         self.assertEqual(summary["database_open_receipts"], 8)
         self.assertEqual(summary["pages_sources"], 1)
-        self.assertEqual(summary["public_ready_skills"], 2)
+        self.assertEqual(summary["published_skills"], 3)
+        self.assertEqual(summary["public_possible_skills"], 3)
+        self.assertEqual(summary["public_ready_skills"], 3)
         self.assertEqual(summary["contract_package_coordinates"], 1)
 
     def test_database_finding_ledger_is_complete_and_contract_bound(self) -> None:
@@ -1887,7 +1889,7 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
         with self.assertRaisesRegex(ValueError, "commit is unavailable"):
             MODULE.validate_contract_package_coordinate(unavailable)
 
-    def test_contract_package_source_digest_ignores_python_runtime_caches(
+    def test_contract_package_source_digest_ignores_local_guide_and_runtime_caches(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -1897,6 +1899,12 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             (root / "pyproject.toml").write_text("[project]\nname = 'example'\n")
             (package / "__init__.py").write_text("VALUE = 1\n")
             expected = MODULE.package_source_digest(root)
+
+            (package / "README.md").write_text(
+                "# Source-local adoption guide\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(expected, MODULE.package_source_digest(root))
 
             cache = package / "__pycache__"
             cache.mkdir()
