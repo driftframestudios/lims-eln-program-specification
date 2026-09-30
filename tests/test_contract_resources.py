@@ -16,9 +16,13 @@ from lims_eln_contracts import (  # noqa: E402
     ScenarioContract,
     canonical_sha256,
     generated_schema_bytes,
+    load_administrative_adapter_contract_example,
+    load_administrative_counterfactual_example,
+    load_external_administrative_contract_set,
     load_generated_schema,
     load_golden_specimen_observation_example,
     load_golden_specimen_scenario,
+    load_independent_multilabel_policy_example,
     load_operation_catalog,
     model_from_strict_json,
     strict_json_loads,
@@ -27,6 +31,19 @@ from lims_eln_contracts.schema_artifacts import rendered_schema_artifacts  # noq
 
 
 class ReleasedResourceTests(unittest.TestCase):
+    def test_external_administrative_resources_load_through_public_boundary(
+        self,
+    ) -> None:
+        contract_set = load_external_administrative_contract_set()
+        adapter = load_administrative_adapter_contract_example()
+        independent = load_independent_multilabel_policy_example()
+        counterfactual = load_administrative_counterfactual_example()
+
+        self.assertEqual("1.0.0", contract_set.contract_set_version)
+        self.assertEqual(adapter, contract_set.adapter_contracts[0])
+        self.assertEqual(adapter, independent.adapter_contracts[0])
+        self.assertEqual(counterfactual, contract_set.impact_observations[0])
+
     def test_operation_catalog_preserves_program_operation_semantics(self) -> None:
         catalog = load_operation_catalog()
         program = strict_json_loads(

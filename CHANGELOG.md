@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+- Prepared the independently versioned `lims_eln_contracts` 0.4.0 successor
+  with strict source-neutral-adapter, administrative-context, raw-preserving
+  classification, coverage-enrollment, declared-policy, reviewed-decision,
+  impact-observation, population-scenario, and provenance boundaries. Two
+  dependency-closed generated schemas and three byte-checked example
+  projections describe a Program-authored modular administrative adapter and
+  exercise single-label, multi-label, unknown, abstention, missing-input,
+  precedence-conflict, pending-enrollment, reviewed-revision, and
+  administrative-only counterfactual behavior while the Program release
+  remains `spec-v0.3.1`.
+- Made policy evaluation reproducible across receivers by carrying its named,
+  schema-visible input material and deriving missing inputs, matches, conflicts,
+  precedence, and digest from cited records. Counterfactual arms now bind named
+  input and complete-decision digest profiles. The adapter contract now carries
+  representative records, connected ETL stages, required enrichment, and a
+  convergent replay requirement whose execution remains receiver-owned.
+- Added a proportional artifact-class route for canonical state, synthetic
+  fixtures, validation corpora, evidence receipts, and generated manifests.
+  Package-local dataset cards and Croissant 1.1 metadata begin only when a
+  stable collection is distributed for reuse and machine loading.
+- Added public-possible runbooks: external benchmark intake and constellation
+  contract handoff remain `working`, while administrative-context evolution is
+  `exercised` against the Program-owned fixture. The
+  repository-local `external-benchmark-reception` skill now selects a bounded
+  reference, adapter-probe, derived-scenario, or held-review route with source,
+  provenance, terms, and claim ceilings visible.
 - Moved every Program skill's publication standing, version, adaptation, and
   upstream identities into the standard front-matter `metadata` mapping.
   Standard skill tooling and the Program validator now read one portable

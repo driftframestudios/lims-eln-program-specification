@@ -1,0 +1,54 @@
+{
+  "observation_version": "1.0.0",
+  "observation_id": "IMPACT-ADMIN-COUNTERFACTUAL-001",
+  "design": "administrative_only_counterfactual",
+  "population_scenario_ref": "POP-ADMIN-DUAL-PENDING-001",
+  "task": {
+    "artifact_id": "TASK-ADMINISTRATIVE-COUNTERFACTUAL",
+    "version": "1.0.0",
+    "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "controlled_inputs": [
+    {
+      "name": "clinical_evidence",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "name": "clinical_protocol",
+      "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ],
+  "changed_variable": {
+    "variable_id": "administrative_state",
+    "baseline_digest": "sha256:0ebb1a32a6ab91e9e11675d4494f9fd6ca3ae8862c1ca2acf3dbe37d6e785ff7",
+    "counterfactual_digest": "sha256:d73cc938e0836d0365693e4fe4ce5653831112fbdef34d41e10b8e0f1899a25f"
+  },
+  "baseline": {
+    "arm_id": "ARM-ADMIN-BASELINE-001",
+    "context_ref": "CTX-ADMIN-BASELINE-001",
+    "decision_ref": "DECISION-ADMIN-BASELINE-001",
+    "clinical_evidence_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "clinical_output_digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "administrative_input_digest_profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+    "administrative_input_digest": "sha256:0ebb1a32a6ab91e9e11675d4494f9fd6ca3ae8862c1ca2acf3dbe37d6e785ff7",
+    "administrative_output_digest_profile": "urn:driftframe:lims-eln:administrative-decision-digest:1.0.0",
+    "administrative_output_digest": "sha256:79946e3d028f666961e7087381f9835267d8cda159a9555b1f76662e4832f5de"
+  },
+  "counterfactual": {
+    "arm_id": "ARM-ADMIN-COUNTERFACTUAL-001",
+    "context_ref": "CTX-ADMIN-COUNTERFACTUAL-001",
+    "decision_ref": "DECISION-ADMIN-COUNTERFACTUAL-001",
+    "clinical_evidence_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "clinical_output_digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "administrative_input_digest_profile": "urn:driftframe:lims-eln:policy-input-digest:1.0.0",
+    "administrative_input_digest": "sha256:d73cc938e0836d0365693e4fe4ce5653831112fbdef34d41e10b8e0f1899a25f",
+    "administrative_output_digest_profile": "urn:driftframe:lims-eln:administrative-decision-digest:1.0.0",
+    "administrative_output_digest": "sha256:ba33b9ffeb5222b2fd8e1a2f586e06dd703fc25af30c45c3e9bd1ec4be189e31"
+  },
+  "divergence_class": "administrative_only",
+  "evidence_ceiling": "synthetic_mechanism_only",
+  "interpretation": "The fixture changes administrative classification and enrollment state while the declared clinical evidence and clinical output remain byte-identical; it supports a mechanism observation, not a causal or population claim.",
+  "provenance_refs": [
+    "PROV-IMPACT-COUNTERFACTUAL-001"
+  ]
+}
