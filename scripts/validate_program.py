@@ -141,7 +141,7 @@ def validate_administrative_example_projections() -> int:
 
 PROGRAM_RELEASE = "0.3.1"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
-PACKAGE_RELEASE = "0.4.1"
+PACKAGE_RELEASE = "0.4.2"
 PACKAGE_SOURCE_DIGEST_ALGORITHM = "path-length-bytes-sha256-v1"
 PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     "file_selection": (
@@ -3837,6 +3837,7 @@ def validate() -> dict[str, int]:
         "docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md",
         "docs/ADMINISTRATIVE_ADMISSION.md",
         "docs/migrations/0.4.0-to-contract-package-0.4.1.md",
+        "docs/migrations/0.4.1-to-contract-package-0.4.2.md",
         "docs/DATABASE_MODERNIZATION.md",
         "docs/DATABASE_CONSTELLATION_LEDGER.md",
         "pages/README.md",
