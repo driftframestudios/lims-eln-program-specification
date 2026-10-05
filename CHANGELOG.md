@@ -28,6 +28,14 @@
   repository-local `external-benchmark-reception` skill now selects a bounded
   reference, adapter-probe, derived-scenario, or held-review route with source,
   provenance, terms, and claim ceilings visible.
+- Layered the root orientation around current state, reader routes, a
+  ten-minute proof, evidence boundaries, and a repository map; moved package
+  adoption into its source directory; added schema and skill catalogs; and
+  clarified that the signed 0.3.1 tag and the open post-tag observation are
+  distinct facts.
+- Promoted the exercised six-skill Program collaboration workbench, including
+  portable metadata and uv-backed execution, from the integration line without
+  advancing the separate 0.4.0 external-administrative contract candidate.
 - Moved every Program skill's publication standing, version, adaptation, and
   upstream identities into the standard front-matter `metadata` mapping.
   Standard skill tooling and the Program validator now read one portable

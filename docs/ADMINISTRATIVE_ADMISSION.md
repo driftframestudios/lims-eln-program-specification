@@ -77,7 +77,7 @@ count. Source sets are collected once per scenario; their size is bounded by
 the admitted source records.
 
 `AdministrativeAdmissionError` carries a fixed `code`, plus numeric
-`limit` and `observed` values for a exceeded budget. Codes identify
+`limit` and `observed` values for an exceeded budget. Codes identify
 `input_bytes`, `json_depth`, `decoded_values`, `records`,
 `provenance_edges`, `graph_steps`, or `output_bytes`. Fixed JSON,
 UTF-8, decoder-capacity, contract, and canonical-output codes route other
@@ -136,4 +136,3 @@ the implementation successor from v1 schemas, accepted consumer pins, Program
 release, and hosted publication. [The family reference](EXTERNAL_ADMINISTRATIVE_CONTRACTS.md)
 owns domain meaning. [Program #55](https://github.com/driftframestudios/lims-eln-program-specification/issues/55)
 owns admission acceptance and the next receiving decision.
-

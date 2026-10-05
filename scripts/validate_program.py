@@ -145,7 +145,8 @@ PACKAGE_RELEASE = "0.4.1"
 PACKAGE_SOURCE_DIGEST_ALGORITHM = "path-length-bytes-sha256-v1"
 PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     "file_selection": (
-        "pyproject.toml and every regular file below src/lims_eln_contracts"
+        "pyproject.toml and every regular distribution source file below "
+        "src/lims_eln_contracts"
     ),
     "path_encoding": "UTF-8 POSIX relative paths",
     "path_order": "ascending UTF-8 byte order",
@@ -158,6 +159,7 @@ PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     ],
     "exclusions": [
         "directory entries",
+        "src/lims_eln_contracts/README.md source-local adoption guidance",
         "paths below __pycache__",
         "files ending in .pyc or .pyo",
     ],
@@ -664,7 +666,8 @@ def package_source_digest(root: Path = ROOT) -> str:
     for path in source_root.rglob("*"):
         relative_source_path = path.relative_to(source_root)
         if (
-            "__pycache__" in relative_source_path.parts
+            relative_source_path == Path("README.md")
+            or "__pycache__" in relative_source_path.parts
             or path.suffix in {".pyc", ".pyo"}
         ):
             continue
@@ -741,7 +744,8 @@ def package_source_digest_from_git(commit: str, root: Path = ROOT) -> str:
             )
             package_parts = package_relative.split("/")
             if (
-                "__pycache__" in package_parts
+                package_relative == "README.md"
+                or "__pycache__" in package_parts
                 or relative_path.endswith((".pyc", ".pyo"))
             ):
                 continue
@@ -1668,14 +1672,38 @@ def validate_collaboration_workbench(
         if any(locator in source.lower() for locator in PRIVATE_SKILL_LOCATORS):
             raise ValueError(f"skill source carries a private workspace locator: {slug}")
 
-    for orientation_path in ("AGENTS.md", "README.md"):
-        orientation = (root / orientation_path).read_text(encoding="utf-8")
-        missing_links = [
-            path for path in sorted(expected_paths) if path not in orientation
-        ]
-        if missing_links:
+    agents_orientation = (root / "AGENTS.md").read_text(encoding="utf-8")
+    missing_agent_links = [
+        path for path in sorted(expected_paths) if path not in agents_orientation
+    ]
+    if missing_agent_links:
+        raise ValueError(
+            "AGENTS.md omits collaboration skill routes: "
+            f"{missing_agent_links}"
+        )
+
+    root_orientation = (root / "README.md").read_text(encoding="utf-8")
+    if ".agents/skills/README.md" not in root_orientation:
+        raise ValueError("README.md omits the collaboration skill catalog")
+
+    catalog_path = root / ".agents" / "skills" / "README.md"
+    if not catalog_path.is_file():
+        raise ValueError("collaboration skill catalog is absent")
+    catalog = catalog_path.read_text(encoding="utf-8")
+    missing_catalog_routes = [
+        f"{slug}/SKILL.md"
+        for slug in sorted(COLLABORATION_SKILL_CONTRACTS)
+        if f"({slug}/SKILL.md)" not in catalog
+    ]
+    if missing_catalog_routes:
+        raise ValueError(
+            "collaboration skill catalog omits routes: "
+            f"{missing_catalog_routes}"
+        )
+    for standing in ("public_possible", "public_ready"):
+        if standing not in catalog:
             raise ValueError(
-                f"{orientation_path} omits collaboration skill routes: {missing_links}"
+                f"collaboration skill catalog omits standing: {standing}"
             )
 
     return {
@@ -3742,6 +3770,7 @@ def validate() -> dict[str, int]:
         raise ValueError("release, promotion, or status version binding differs")
 
     required_paths = [
+        ".agents/skills/README.md",
         ".agents/runbooks/README.md",
         ".agents/runbooks/administrative-context-contract-evolution.v0.1.md",
         ".agents/runbooks/constellation-contract-release-handoff.v0.1.md",
@@ -3777,6 +3806,8 @@ def validate() -> dict[str, int]:
         "src/lims_eln_contracts/resources/administrative/insurance-administrative-adapter.v1.json",
         "src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json",
         "src/lims_eln_contracts/resources/schemas/administrative-adapter-contract.v1.schema.json",
+        "schemas/README.md",
+        "src/lims_eln_contracts/README.md",
         "specifications/bounded-caller.json",
         "specifications/receipt-vocabulary-map.v1.json",
         "probes/catalog.json",

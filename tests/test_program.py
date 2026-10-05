@@ -1918,7 +1918,7 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
         with self.assertRaisesRegex(ValueError, "commit is unavailable"):
             MODULE.validate_contract_package_coordinate(unavailable)
 
-    def test_contract_package_source_digest_ignores_python_runtime_caches(
+    def test_contract_package_source_digest_ignores_local_guide_and_runtime_caches(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -1928,6 +1928,12 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             (root / "pyproject.toml").write_text("[project]\nname = 'example'\n")
             (package / "__init__.py").write_text("VALUE = 1\n")
             expected = MODULE.package_source_digest(root)
+
+            (package / "README.md").write_text(
+                "# Source-local adoption guide\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(expected, MODULE.package_source_digest(root))
 
             cache = package / "__pycache__"
             cache.mkdir()

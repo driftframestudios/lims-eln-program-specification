@@ -177,11 +177,11 @@ class PagesProjectionTests(unittest.TestCase):
             )
             self.assertIn("Implementation 0.3.2", index)
             self.assertIn(
-                "Only the Program coordinate remains a placeholder",
+                "Program placeholder remains until the post-tag observation",
                 contracts,
             )
             self.assertIn(
-                "Only the Program release coordinate awaits promotion",
+                "pending Program coordinate represents the open post-tag observation",
                 contracts,
             )
             self.assertIn("Program release observation", contracts)

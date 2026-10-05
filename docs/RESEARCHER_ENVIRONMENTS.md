@@ -42,7 +42,9 @@ profiles so a previously installed optional package cannot silently broaden a
 core-only result.
 
 Enterprise consumes Program package `0.4.0` at the full commit in
-[the package coordinate](../release/contract-package-coordinate.json).
+[the accepted `0.4.0` binding](https://github.com/driftframestudios/lims-eln-program-specification/blob/a307f422596e5098ac5efca29968212b5e24da0b/release/contract-package-coordinate.json).
+[The current package coordinate](../release/contract-package-coordinate.json)
+tracks the successor's separate review and adoption standing.
 Simulation and Comparative's present conformance extras retain
 `4d06eeb7f96910311fbcb7f51547c978b6a07290`. Their receivers adopt a successor
 through their own contract and scenario checks. Shared contract version
