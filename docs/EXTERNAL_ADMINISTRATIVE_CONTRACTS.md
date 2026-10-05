@@ -16,8 +16,8 @@ resource admission. The Program release remains `spec-v0.3.1`; these version
 lines advance independently. Package `0.4.2` restores exact source-label
 preservation through validation and serialization.
 [The current package coordinate](../release/contract-package-coordinate.json)
-records the successor's review standing and scoped digest; its reviewed source
-binding follows acceptance. Each receiving repository adopts a reviewed
+records the successor's reviewed source and scoped digest.
+Each receiving repository adopts that reviewed
 coordinate through its own conformance checks. Existing consumer pins retain
 their accepted versions. [The raw-label migration](migrations/0.4.1-to-contract-package-0.4.2.md)
 describes exact string preservation, derived digests, and recovery.
