@@ -1853,21 +1853,18 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
                 ),
             )
 
-    def test_contract_package_coordinate_binds_reviewed_source(self) -> None:
+    def test_contract_package_coordinate_binds_candidate_and_reviewed_source(self) -> None:
         coordinate = json.loads(
             (ROOT / "release" / "contract-package-coordinate.json").read_text()
         )
         MODULE.validate_contract_package_coordinate(coordinate)
         self.assertEqual(
-            "reviewed_source_available",
+            "pending_reviewed_merge_commit",
             coordinate["publication_state"],
         )
+        self.assertIsNone(coordinate["source_commit"])
         self.assertEqual(
-            "d8f41d0ce98a75120c99f0a23d00796ae8a8b913",
-            coordinate["source_commit"],
-        )
-        self.assertEqual(
-            "required",
+            "planned_after_source_commit",
             coordinate["consumer_conformance"]["state"],
         )
 
