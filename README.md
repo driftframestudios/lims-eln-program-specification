@@ -312,13 +312,15 @@ supplying one value per key and a finite measurement or explicit textual state.
 ### Install the shared contract package
 
 The Python distribution is `lims-eln-program-specification`; its import package
-is `lims_eln_contracts`, and the successor package candidate is `0.4.0`. The
+is `lims_eln_contracts`, and the reviewed package source is `0.4.0`. The
 Program release remains `spec-v0.3.1`; the package and Program release versions
 advance independently.
 [`release/contract-package-coordinate.json`](release/contract-package-coordinate.json)
 records the installation and replacement contract. Its `0.4.0` source commit
-stays open until a reviewed merge provides immutable package bytes. Program
-repository owners then publish that full commit and scoped digest. A later
+is `d8f41d0ce98a75120c99f0a23d00796ae8a8b913`, the reviewed integration
+merge for [PR #52](https://github.com/driftframestudios/lims-eln-program-specification/pull/52).
+The source binding makes candidate consumption reproducible; protected
+Program release promotion retains its separate acceptance route. A later
 protected commit may replace it at the same package version when their scoped
 package digests are identical. A package-content change advances both version
 and digest. Each consumer adopts either kind of replacement through review.
@@ -331,12 +333,12 @@ length, and content bytes. Runtime cache files are outside the selection, and
 symlinks make the scoped digest invalid. This makes the custom digest
 reproducible without requiring the Program validator as an implementation.
 
-After the reviewed merge settles the coordinate, an authenticated PEP 508
-installation uses its full 40-character commit:
+An authenticated PEP 508 installation uses that full 40-character commit in
+a receiver-owned isolated environment:
 
 ```sh
 python3 -m pip install \
-  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@<reviewed-full-commit>"
+  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@d8f41d0ce98a75120c99f0a23d00796ae8a8b913"
 ```
 
 HTTPS is the canonical transport for this private distribution because the
@@ -364,10 +366,15 @@ distribution's PEP 610 `direct_url.json`, confirms that `vcs_info.commit_id`
 matches its reviewed binding, and verifies the scoped package-source digest,
 distribution and import versions, contract version `1.0.0`, operation catalog,
 Golden Specimen scenario, implementation- and simulation-shaped observations,
-and every schema named by `SCHEMA_RESOURCE_NAMES`. The editable route remains
+the canonical administrative bundle and its three examples, and every schema
+named by `SCHEMA_RESOURCE_NAMES`. The editable route remains
 the direct path for active local development. The first recorded receiving
 repository is `lims-eln-enterprise-implementation`, using a clean Python 3.12
 environment for the release-conformance observation.
+
+The [release-handoff runbook](.agents/runbooks/constellation-contract-release-handoff.v0.1.md)
+routes each consumer's result back to its own Issue. [Issue #54](https://github.com/driftframestudios/lims-eln-program-specification/issues/54)
+owns the broader reproducible-environment and released-constellation journey.
 
 ```python
 from lims_eln_contracts import (

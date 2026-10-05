@@ -1853,22 +1853,31 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
                 ),
             )
 
-    def test_contract_package_coordinate_binds_successor_candidate(self) -> None:
+    def test_contract_package_coordinate_binds_reviewed_source(self) -> None:
         coordinate = json.loads(
             (ROOT / "release" / "contract-package-coordinate.json").read_text()
         )
         MODULE.validate_contract_package_coordinate(coordinate)
         self.assertEqual(
-            "pending_reviewed_merge_commit",
+            "reviewed_source_available",
             coordinate["publication_state"],
         )
-        self.assertIsNone(coordinate["source_commit"])
         self.assertEqual(
-            "planned_after_source_commit",
+            "d8f41d0ce98a75120c99f0a23d00796ae8a8b913",
+            coordinate["source_commit"],
+        )
+        self.assertEqual(
+            "required",
             coordinate["consumer_conformance"]["state"],
         )
 
-        premature = deepcopy(coordinate)
+        pending = deepcopy(coordinate)
+        pending["publication_state"] = "pending_reviewed_merge_commit"
+        pending["source_commit"] = None
+        pending["consumer_conformance"]["state"] = "planned_after_source_commit"
+        MODULE.validate_contract_package_coordinate(pending)
+
+        premature = deepcopy(pending)
         premature["source_commit"] = "a" * 40
         with self.assertRaisesRegex(ValueError, "keeps its source commit open"):
             MODULE.validate_contract_package_coordinate(premature)
@@ -1881,6 +1890,16 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             MODULE,
             "package_source_digest_from_git",
             return_value=coordinate["source_identity"]["digest"],
+        ):
+            MODULE.validate_contract_package_coordinate(reviewed)
+
+        with (
+            mock.patch.object(
+                MODULE,
+                "package_source_digest_from_git",
+                return_value="sha256:" + ("0" * 64),
+            ),
+            self.assertRaisesRegex(ValueError, "commit differs from its scoped digest"),
         ):
             MODULE.validate_contract_package_coordinate(reviewed)
 
