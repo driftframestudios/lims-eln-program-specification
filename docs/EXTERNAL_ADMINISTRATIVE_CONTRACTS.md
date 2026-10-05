@@ -13,8 +13,10 @@ named owners.
 The family is version `1.0.0`. Package `0.4.0` has an accepted source binding;
 `0.4.1` is the implementation successor for iterative traversal and explicit
 resource admission. The Program release remains `spec-v0.3.1`; these version
-lines advance independently. The successor receives its reviewed source
-binding after its package bytes are accepted.
+lines advance independently. [The current package coordinate](../release/contract-package-coordinate.json)
+binds `0.4.1` to its reviewed source and scoped digest. Each receiving
+repository adopts that coordinate through its own conformance checks;
+existing consumer pins retain their accepted versions.
 
 [Bounded administrative admission](ADMINISTRATIVE_ADMISSION.md) defines the
 opt-in UTF-8 entry point, caller-selected budgets, safe recovery, cost map, and
