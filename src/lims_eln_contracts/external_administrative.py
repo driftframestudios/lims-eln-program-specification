@@ -38,6 +38,20 @@ def _utc_instant(value: str) -> datetime:
     return datetime.fromisoformat(value.removesuffix("Z") + "+00:00")
 
 
+def _raw_label_has_content(value: str) -> str:
+    """Inspect content in O(n) time/O(1) space and retain the source string."""
+    if value.isspace():
+        raise ValueError("raw_label contains at least one non-whitespace character")
+    return value
+
+
+_RawLabel = Annotated[
+    str,
+    StringConstraints(strip_whitespace=False, min_length=1),
+    AfterValidator(_raw_label_has_content),
+]
+
+
 CalendarDate = Annotated[
     str,
     StringConstraints(pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"),
@@ -524,7 +538,7 @@ class InsuranceClassification(ContractModel):
     classification_version: Literal["1.0.0"] = "1.0.0"
     classification_id: Identifier
     context_ref: Identifier
-    raw_label: NonEmptyText | None
+    raw_label: _RawLabel | None
     raw_label_field: NonEmptyText
     assigned_terms: tuple[IdentifiedTerm, ...] = Field(default_factory=tuple)
     candidate_terms: tuple[IdentifiedTerm, ...] = Field(default_factory=tuple)
