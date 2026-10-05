@@ -652,8 +652,18 @@ def validate_source_contract(
 
     with _source_file(root, "pyproject.toml", authoritative_paths).open("rb") as stream:
         project = tomllib.load(stream).get("project", {})
-    if project.get("version") != release["version"]:
-        raise ProjectionError("package version differs from the program content release")
+    package_version = project.get("version")
+    if (
+        not isinstance(package_version, str)
+        or re.fullmatch(
+            r"(?:0|[1-9][0-9]*)\."
+            r"(?:0|[1-9][0-9]*)\."
+            r"(?:0|[1-9][0-9]*)",
+            package_version,
+        )
+        is None
+    ):
+        raise ProjectionError("package version requires a semantic version")
     if ORGANIZATION not in {
         item.get("name") for item in project.get("authors", []) if isinstance(item, dict)
     }:

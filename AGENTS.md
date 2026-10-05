@@ -48,6 +48,13 @@ subjects, copied semantic artifacts, schema-era bindings, and hub summaries as
 one receiving state.
 
 Use
+[`external-benchmark-reception`](.agents/skills/external-benchmark-reception/SKILL.md)
+when a synthetic system, dataset, paper, interface, or evaluation method may
+enter the constellation. It binds the external subject and its claim ceiling,
+then selects a reference, adapter-probe, derived-scenario, or held-review route
+before a receiving repository adopts it.
+
+Use
 [`proportionate-recovery-routing`](.agents/skills/proportionate-recovery-routing/SKILL.md)
 when a failed check, repeated retry, source loss, authority mismatch, stale
 handoff, or coordination drift prevents reliable continuation. It preserves
@@ -67,6 +74,11 @@ to run a named Program check with a repository-compatible Python environment
 while the operating system's base Python installation and global packages keep
 their current state. The skill distinguishes the current lockless local route
 from hosted Python 3.12 and 3.13 observations.
+
+Versioned Program procedures live in
+[`.agents/runbooks/`](.agents/runbooks/README.md). They order a known route
+across current source owners while GitHub Issues retain scope and acceptance
+and each receiving repository retains its behavior authority.
 
 Both source bands are suitable for public collaboration. `public_possible`
 identifies guidance available for use and refinement; `public_ready` identifies
@@ -124,6 +136,8 @@ uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/scan_secret_shapes.py
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_contract_schemas.py --check
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_administrative_examples.py --check
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python -m unittest discover -s tests -v
 ```

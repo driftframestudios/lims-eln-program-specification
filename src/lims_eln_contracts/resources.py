@@ -7,6 +7,11 @@ from typing import Final, Literal
 
 from .bounded_call import OperationCatalog
 from .canonical import model_from_strict_json, strict_json_loads
+from .external_administrative import (
+    AdministrativeAdapterContract,
+    DecisionImpactObservation,
+    ExternalAdministrativeContractSet,
+)
 from .golden_specimen import GoldenSpecimenObservation
 from .scenario import ScenarioContract
 
@@ -17,9 +22,23 @@ GOLDEN_OBSERVATION_EXAMPLE_RESOURCES: Final = {
     "implementation": "observations/golden-specimen.implementation.v1.json",
     "simulation": "observations/golden-specimen.simulation.v1.json",
 }
+EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_RESOURCE: Final = (
+    "external-administrative-contracts.v1.json"
+)
+ADMINISTRATIVE_ADAPTER_CONTRACT_EXAMPLE_RESOURCE: Final = (
+    "administrative/insurance-administrative-adapter.v1.json"
+)
+INDEPENDENT_MULTILABEL_POLICY_EXAMPLE_RESOURCE: Final = (
+    "administrative/independent-multilabel-policy.v1.json"
+)
+ADMINISTRATIVE_COUNTERFACTUAL_EXAMPLE_RESOURCE: Final = (
+    "administrative/administrative-counterfactual.v1.json"
+)
 SCHEMA_RESOURCE_NAMES: Final = (
     "bounded-call-receipt.v1.schema.json",
     "bounded-call-request.v1.schema.json",
+    "external-administrative-contract-set.v1.schema.json",
+    "administrative-adapter-contract.v1.schema.json",
     "golden-specimen-result-projection.v1.schema.json",
     "observation-envelope.v1.schema.json",
     "operation-catalog.v1.schema.json",
@@ -61,6 +80,37 @@ def load_golden_specimen_observation_example(
     return model_from_strict_json(
         GoldenSpecimenObservation,
         _resource_bytes(resource_name),
+    )
+
+
+def load_external_administrative_contract_set(
+) -> ExternalAdministrativeContractSet:
+    return model_from_strict_json(
+        ExternalAdministrativeContractSet,
+        _resource_bytes(EXTERNAL_ADMINISTRATIVE_CONTRACT_SET_RESOURCE),
+    )
+
+
+def load_administrative_adapter_contract_example() -> AdministrativeAdapterContract:
+    return model_from_strict_json(
+        AdministrativeAdapterContract,
+        _resource_bytes(ADMINISTRATIVE_ADAPTER_CONTRACT_EXAMPLE_RESOURCE),
+    )
+
+
+def load_independent_multilabel_policy_example(
+) -> ExternalAdministrativeContractSet:
+    return model_from_strict_json(
+        ExternalAdministrativeContractSet,
+        _resource_bytes(INDEPENDENT_MULTILABEL_POLICY_EXAMPLE_RESOURCE),
+    )
+
+
+def load_administrative_counterfactual_example(
+) -> DecisionImpactObservation:
+    return model_from_strict_json(
+        DecisionImpactObservation,
+        _resource_bytes(ADMINISTRATIVE_COUNTERFACTUAL_EXAMPLE_RESOURCE),
     )
 
 

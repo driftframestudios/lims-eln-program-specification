@@ -49,3 +49,25 @@ The command establishes that every committed package schema matches the current
 typed source. It does not establish a receiving service's runtime behavior.
 Use the [`package adoption guide`](../src/lims_eln_contracts/README.md) for
 installation and consumer-conformance checks.
+
+## Administrative family
+
+The external benchmark and administrative-context family begins with:
+
+| Schema | Canonical identity | Use |
+| --- | --- | --- |
+| [`administrative-adapter-contract.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/administrative-adapter-contract.v1.schema.json) | `urn:driftframe:lims-eln:administrative-adapter-contract:1.0.0` | Validate a source-neutral administrative adapter and its replay-safe stage design independently. |
+| [`external-administrative-contract-set.v1.schema.json`](../src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json) | `urn:driftframe:lims-eln:external-administrative-contract-set:1.0.0` | Validate the dependency-closed family; Python enforces declared referential and temporal invariants. |
+
+The
+[`external-administrative-contracts.v1.json`](../src/lims_eln_contracts/resources/external-administrative-contracts.v1.json)
+canonical bundle names every object, example, compatibility rule, invalidation
+event, owner, and adoption condition and carries the dependency-closed fixture
+graph. `scripts/generate_administrative_examples.py --check` verifies its
+reader-specific projections. The design and evidence boundary are in
+[`docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md`](../docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md).
+
+The remaining generated package schemas continue to be discoverable through
+`lims_eln_contracts.SCHEMA_RESOURCE_NAMES`. A package consumer should use that
+inventory so a successor schema cannot disappear silently from its conformance
+check.

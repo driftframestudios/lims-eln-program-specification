@@ -131,7 +131,7 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(summary["database_open_receipts"], 8)
         self.assertEqual(summary["pages_sources"], 1)
         self.assertEqual(summary["published_skills"], 3)
-        self.assertEqual(summary["public_possible_skills"], 3)
+        self.assertEqual(summary["public_possible_skills"], 4)
         self.assertEqual(summary["public_ready_skills"], 3)
         self.assertEqual(summary["contract_package_coordinates"], 1)
 
@@ -667,7 +667,10 @@ class ProgramValidationTests(unittest.TestCase):
         self.assertEqual(MODULE.GOVERNANCE_TAG, status["governance_contract"])
         self.assertEqual(MODULE.GOVERNANCE_RELEASE, status["governance_schema"])
         self.assertEqual(MODULE.GOVERNANCE_RELEASE, status["receipt_schema"])
-        self.assertIn('version = "0.3.1"', (ROOT / "pyproject.toml").read_text())
+        self.assertIn(
+            f'version = "{MODULE.PACKAGE_RELEASE}"',
+            (ROOT / "pyproject.toml").read_text(),
+        )
 
     def test_every_open_receipt_has_accountable_roles(self) -> None:
         data = json.loads((ROOT / "receipts" / "open-receipts.json").read_text())
@@ -1850,26 +1853,55 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
                 ),
             )
 
-    def test_contract_package_coordinate_binds_reviewed_merge(self) -> None:
+    def test_contract_package_coordinate_binds_candidate_and_reviewed_source(self) -> None:
         coordinate = json.loads(
             (ROOT / "release" / "contract-package-coordinate.json").read_text()
         )
         MODULE.validate_contract_package_coordinate(coordinate)
-        self.assertEqual("reviewed_source_available", coordinate["publication_state"])
-        self.assertRegex(coordinate["source_commit"], r"^[a-f0-9]{40}$")
-
-        candidate = deepcopy(coordinate)
-        candidate["publication_state"] = "pending_reviewed_merge_commit"
-        candidate["source_commit"] = None
-        candidate["consumer_conformance"]["state"] = (
-            "planned_after_source_commit"
+        self.assertEqual(
+            "reviewed_source_available",
+            coordinate["publication_state"],
         )
-        MODULE.validate_contract_package_coordinate(candidate)
+        self.assertEqual(
+            "5661611322e61108664363a4389768babec75b42",
+            coordinate["source_commit"],
+        )
+        self.assertEqual(
+            "required",
+            coordinate["consumer_conformance"]["state"],
+        )
 
-        premature = deepcopy(candidate)
+        pending = deepcopy(coordinate)
+        pending["publication_state"] = "pending_reviewed_merge_commit"
+        pending["source_commit"] = None
+        pending["consumer_conformance"]["state"] = "planned_after_source_commit"
+        MODULE.validate_contract_package_coordinate(pending)
+
+        premature = deepcopy(pending)
         premature["source_commit"] = "a" * 40
         with self.assertRaisesRegex(ValueError, "keeps its source commit open"):
             MODULE.validate_contract_package_coordinate(premature)
+
+        reviewed = deepcopy(coordinate)
+        reviewed["publication_state"] = "reviewed_source_available"
+        reviewed["source_commit"] = "a" * 40
+        reviewed["consumer_conformance"]["state"] = "required"
+        with mock.patch.object(
+            MODULE,
+            "package_source_digest_from_git",
+            return_value=coordinate["source_identity"]["digest"],
+        ):
+            MODULE.validate_contract_package_coordinate(reviewed)
+
+        with (
+            mock.patch.object(
+                MODULE,
+                "package_source_digest_from_git",
+                return_value="sha256:" + ("0" * 64),
+            ),
+            self.assertRaisesRegex(ValueError, "commit differs from its scoped digest"),
+        ):
+            MODULE.validate_contract_package_coordinate(reviewed)
 
         changed_source = deepcopy(coordinate)
         changed_source["source_identity"]["digest"] = "sha256:" + ("0" * 64)
@@ -1880,11 +1912,11 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
         incomplete["consumer_conformance"]["required_observations"].pop()
         with self.assertRaisesRegex(
             ValueError,
-            "at least 9 non-empty strings",
+            "consumer observations differ",
         ):
             MODULE.validate_contract_package_coordinate(incomplete)
 
-        unavailable = deepcopy(coordinate)
+        unavailable = deepcopy(reviewed)
         unavailable["source_commit"] = "a" * 40
         with self.assertRaisesRegex(ValueError, "commit is unavailable"):
             MODULE.validate_contract_package_coordinate(unavailable)

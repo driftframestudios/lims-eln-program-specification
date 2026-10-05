@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lims-eln-program-specification"
-version = "0.3.1"
+version = "0.4.1"
 description = "Executable specification and forecast control plane for comparative LIMS/ELN delivery"
 authors = [{ name = "Driftframe Studios, Limited Liability Company" }]
 requires-python = ">=3.12"
@@ -21,6 +21,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 lims_eln_contracts = [
   "resources/*.json",
+  "resources/administrative/*.json",
   "resources/observations/*.json",
   "resources/scenarios/*.json",
   "resources/schemas/*.json",

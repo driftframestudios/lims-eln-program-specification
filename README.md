@@ -41,6 +41,8 @@ relations. Governance 2.1.0 remains the current schema authority.
 | Inspect Program requirements or decision probes | [`specifications/`](specifications/) | [`probes/catalog.json`](probes/catalog.json), [`acceptance/`](acceptance/), and [`decisions/`](decisions/) |
 | Compare active and selected-future behavior | [`constellation.json`](constellation.json) | the [accepted public comparison](https://cometspectrum.io/reports/golden-specimen/comparison.html) |
 | Build or inspect Program Pages | [`pages/README.md`](pages/README.md) | [`pages/program-content.json`](pages/program-content.json) and [Program Pages](#program-pages-candidate) |
+| Select a reproducible researcher environment | [Researcher environments](docs/RESEARCHER_ENVIRONMENTS.md) | Installed/editable profiles, exact receiver pins, native/container entry, and recovery |
+| Receive an external benchmark or evolve an administrative contract | [Program runbooks](.agents/runbooks/README.md) | [External benchmark reception](.agents/skills/external-benchmark-reception/SKILL.md) and the named receiving Issue |
 | Contribute a reviewed change | [`AGENTS.md`](AGENTS.md) | [`CONTRIBUTING.md`](CONTRIBUTING.md), [`BRANCHING.md`](BRANCHING.md), and [Validation](#validation) |
 
 ## Ten-minute proof
@@ -210,6 +212,88 @@ non-Python consumers. The typed loader enforces that review resolves at or
 before release; another consumer applies the same declared invariant alongside
 JSON Schema validation.
 
+### External benchmark and administrative context
+
+The versioned
+[`external-administrative-contracts.v1.json`](src/lims_eln_contracts/resources/external-administrative-contracts.v1.json)
+canonical conformance bundle leads to the source-neutral administrative
+adapter, administrative context,
+raw-preserving insurance classification, coverage enrollment, declared policy,
+reviewed decision, impact observation, population scenario, and provenance
+contracts. It also records compatibility, invalidation, ownership, examples,
+and the event that permits receiving repositories to adopt this family. The
+three files under `resources/administrative/` are deterministic, byte-checked
+reader projections of this one authored bundle.
+
+The generated
+[`administrative-adapter-contract.v1.schema.json`](src/lims_eln_contracts/resources/schemas/administrative-adapter-contract.v1.schema.json)
+supports adapter design and replay behavior as a stand-alone boundary. The generated
+[`external-administrative-contract-set.v1.schema.json`](src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json)
+provides the dependency-closed family. Open domain vocabularies retain system,
+version, code, and display identity; closed workflow states remain explicit.
+The [`schema index`](schemas/README.md) places both roots beside the Program's
+release and promotion schemas and names each behavior authority.
+
+The repository-owned
+[`insurance and administrative adapter`](src/lims_eln_contracts/resources/administrative/insurance-administrative-adapter.v1.json)
+example describes representative raw records, six connected ETL stages, and a
+convergent replay requirement. It is a design contract rather than an executed
+adapter; its local synthetic inputs illustrate mechanics without binding this
+family to a particular repository, release, dataset, or runtime. The
+independently authored
+[`multi-label policy example`](src/lims_eln_contracts/resources/administrative/independent-multilabel-policy.v1.json)
+exercises accepted single- and multi-label classifications, unknown and
+abstained states, pending enrollment, missing input, precedence-resolved rule
+conflict, deterministic evaluation, and a reviewed revision. The
+[`administrative counterfactual`](src/lims_eln_contracts/resources/administrative/administrative-counterfactual.v1.json)
+keeps clinical evidence and output unchanged while administrative state and
+output vary.
+
+[`docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md`](docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md)
+explains ownership, compatibility, invalidation, adoption, and evidence
+ceilings. These fixtures establish contract behavior. Population calibration,
+live-payer semantics, clinical validity, configured deployment, and accountable
+operational acceptance continue through their named evidence routes.
+
+#### Artifact classes and dataset metadata
+
+The Program distributes several machine-readable artifact classes rather than
+one undifferentiated dataset. Their current documentation route follows the
+meaning they own:
+
+| Artifact class | Examples | Standing and default documentation |
+| --- | --- | --- |
+| Canonical state | contracts, release coordinates, accepted scenario definitions | Versioned source owns meaning; schema, migration note, and release receipt explain use |
+| Synthetic fixtures | administrative examples and Golden Specimen inputs | Independently authored test or demonstration input with its construction and claim ceiling beside it |
+| Validation corpora | language-policy and migration cases | Named oracle scope, case inventory, generation or review method, and manifest digest |
+| Evidence registries and receipts | open-receipt ledgers, observations, and promotion records | Attributable claims about a named source and environment; they are not training labels or operational ground truth |
+| Generated manifests and projections | schemas, reader projections, Pages and release inventories | Derived bytes with one canonical owner, generator, parity check, and replacement event |
+
+This compact classification is the default across the constellation. A JSON
+collection earns a package-local dataset card when it becomes an independently
+distributed, versioned collection intended for analysis, training,
+benchmarking, or reuse outside its owning check. The card then records
+motivation, composition, generation or collection, preprocessing and review,
+intended and unsuitable uses, population and privacy limits, distribution,
+versioning, and maintenance. The Simulation scenario packs are the strongest
+near-term candidate when
+[Simulation #38](https://github.com/driftframestudios/lims-eln-simulated-final-state/issues/38)
+turns them into a shared collection; a solitary executable fixture remains
+adequately served by its local README and contract.
+
+[MLCommons Croissant 1.1](https://mlcommons.org/croissant/1.1) becomes useful
+only when that collection has stable distributions and record structure worth
+machine discovery or loading. At that point its JSON-LD can identify dataset,
+`FileObject` or `FileSet`, `RecordSet`, fields, checksums, provenance, and use
+conditions. Croissant complements the human-readable dataset card and the
+repository's canonical manifests; it does not replace either. The current
+Program contracts, Enterprise test fixtures, Comparative receipts, Governance
+examples, and Gist Registry teaching fixtures remain below that promotion
+threshold. Comparative can reconsider the same route if a versioned
+multi-observation calibration or benchmark corpus becomes an independently
+published input through
+[Comparative #41](https://github.com/driftframestudios/lims-eln-comparative-evidence/issues/41).
+
 Pydantic strengthens these external boundaries through strict types, declared
 fields, finite numbers, and immutable model instances. The JSON parser also
 rejects duplicate keys and non-finite numeric tokens; callers can proceed by
@@ -360,6 +444,8 @@ uv run --isolated --no-project --python 3.12 --managed-python \
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_contract_schemas.py --check
 uv run --isolated --no-project --python 3.12 --managed-python \
+  --with-editable . -- python scripts/generate_administrative_examples.py --check
+uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python -m unittest discover -s tests -v
 ```
 
@@ -458,7 +544,7 @@ and byte length plus SHA-256 for every projected file. Unit tests use an explici
 
 Release changes and consumer migration notes are recorded in
 [`CHANGELOG.md`](CHANGELOG.md) and
-[`docs/migrations/0.3.0-to-0.3.1.md`](docs/migrations/0.3.0-to-0.3.1.md).
+[`docs/migrations/0.3.1-to-contract-package-0.4.0.md`](docs/migrations/0.3.1-to-contract-package-0.4.0.md).
 
 ## Repository map
 

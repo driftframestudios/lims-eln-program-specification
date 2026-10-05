@@ -1,0 +1,359 @@
+{
+  "$defs": {
+    "AdapterEnrichmentRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "field_name": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Field Name",
+          "type": "string"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/AdapterEnrichmentSource"
+        }
+      },
+      "required": [
+        "field_name",
+        "source",
+        "purpose"
+      ],
+      "title": "AdapterEnrichmentRequirement",
+      "type": "object"
+    },
+    "AdapterEnrichmentSource": {
+      "enum": [
+        "receiver_configuration",
+        "authorized_runtime_input",
+        "governed_vocabulary",
+        "accountable_review"
+      ],
+      "title": "AdapterEnrichmentSource",
+      "type": "string"
+    },
+    "AdapterFieldValue": {
+      "additionalProperties": false,
+      "properties": {
+        "field_name": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Field Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "field_name",
+        "value"
+      ],
+      "title": "AdapterFieldValue",
+      "type": "object"
+    },
+    "AdapterIdempotencyContract": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint_strategy": {
+          "minLength": 1,
+          "title": "Checkpoint Strategy",
+          "type": "string"
+        },
+        "duplicate_input_effect": {
+          "const": "same_output_no_additional_effect",
+          "default": "same_output_no_additional_effect",
+          "title": "Duplicate Input Effect",
+          "type": "string"
+        },
+        "key_fields": {
+          "items": {
+            "maxLength": 96,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Key Fields",
+          "type": "array"
+        },
+        "replay_scope": {
+          "minLength": 1,
+          "title": "Replay Scope",
+          "type": "string"
+        },
+        "retry_behavior": {
+          "minLength": 1,
+          "title": "Retry Behavior",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key_fields",
+        "replay_scope",
+        "checkpoint_strategy",
+        "retry_behavior"
+      ],
+      "title": "AdapterIdempotencyContract",
+      "type": "object"
+    },
+    "AdapterInputRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "input_version": {
+          "minLength": 1,
+          "title": "Input Version",
+          "type": "string"
+        },
+        "record_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Record Id",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "$ref": "#/$defs/AdapterFieldValue"
+          },
+          "minItems": 1,
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "record_id",
+        "input_version",
+        "values"
+      ],
+      "title": "AdapterInputRecord",
+      "type": "object"
+    },
+    "AdapterStage": {
+      "additionalProperties": false,
+      "properties": {
+        "idempotent": {
+          "const": true,
+          "default": true,
+          "title": "Idempotent",
+          "type": "boolean"
+        },
+        "implementation_pattern": {
+          "enum": [
+            "declarative_contract",
+            "idempotent_script"
+          ],
+          "title": "Implementation Pattern",
+          "type": "string"
+        },
+        "input_resource": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Input Resource",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/AdapterStageKind"
+        },
+        "operation": {
+          "minLength": 1,
+          "title": "Operation",
+          "type": "string"
+        },
+        "output_resource": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Output Resource",
+          "type": "string"
+        },
+        "sequence": {
+          "exclusiveMinimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "stage_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Stage Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage_id",
+        "sequence",
+        "kind",
+        "input_resource",
+        "output_resource",
+        "operation",
+        "implementation_pattern"
+      ],
+      "title": "AdapterStage",
+      "type": "object"
+    },
+    "AdapterStageKind": {
+      "enum": [
+        "extract",
+        "validate",
+        "normalize",
+        "classify",
+        "map_contract",
+        "emit"
+      ],
+      "title": "AdapterStageKind",
+      "type": "string"
+    }
+  },
+  "$id": "urn:driftframe:lims-eln:administrative-adapter-contract:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Source-neutral, replay-safe design for an administrative data adapter.",
+  "properties": {
+    "adapter_contract_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Adapter Contract Version",
+      "type": "string"
+    },
+    "adapter_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Adapter Id",
+      "type": "string"
+    },
+    "claim_boundary": {
+      "minLength": 1,
+      "title": "Claim Boundary",
+      "type": "string"
+    },
+    "data_standing": {
+      "const": "program_authored_synthetic",
+      "title": "Data Standing",
+      "type": "string"
+    },
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "execution_standing": {
+      "const": "design_only",
+      "default": "design_only",
+      "title": "Execution Standing",
+      "type": "string"
+    },
+    "idempotency": {
+      "$ref": "#/$defs/AdapterIdempotencyContract"
+    },
+    "input_contract_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Input Contract Id",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "output_bundle_id": {
+      "maxLength": 128,
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+      "title": "Output Bundle Id",
+      "type": "string"
+    },
+    "output_object_names": {
+      "items": {
+        "enum": [
+          "AdministrativeContext",
+          "InsuranceClassification",
+          "CoverageEnrollment"
+        ],
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Output Object Names",
+      "type": "array"
+    },
+    "provenance_refs": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 3,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Provenance Refs",
+      "type": "array"
+    },
+    "representative_records": {
+      "items": {
+        "$ref": "#/$defs/AdapterInputRecord"
+      },
+      "minItems": 1,
+      "title": "Representative Records",
+      "type": "array"
+    },
+    "required_enrichments": {
+      "items": {
+        "$ref": "#/$defs/AdapterEnrichmentRequirement"
+      },
+      "minItems": 1,
+      "title": "Required Enrichments",
+      "type": "array"
+    },
+    "stages": {
+      "items": {
+        "$ref": "#/$defs/AdapterStage"
+      },
+      "minItems": 1,
+      "title": "Stages",
+      "type": "array"
+    }
+  },
+  "required": [
+    "adapter_id",
+    "name",
+    "description",
+    "data_standing",
+    "input_contract_id",
+    "representative_records",
+    "stages",
+    "idempotency",
+    "output_bundle_id",
+    "output_object_names",
+    "required_enrichments",
+    "provenance_refs",
+    "claim_boundary"
+  ],
+  "title": "AdministrativeAdapterContract",
+  "type": "object",
+  "x-semantic-invariants": [
+    "representative records retain unique local identities and unique field names",
+    "adapter stages form one contiguous extract, validate, normalize, classify, contract-map, and emit chain",
+    "replay identity uses record_id and input_version; duplicate input converges without an additional effect"
+  ]
+}

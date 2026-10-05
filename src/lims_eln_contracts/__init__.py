@@ -33,6 +33,20 @@ from .evidence import (
     ObservationDataClass,
     RedactionStatus,
 )
+from .external_administrative import (
+    AdministrativeAdapterContract,
+    AdministrativeContext,
+    AdministrativeDecision,
+    CoverageEnrollment,
+    DecisionImpactObservation,
+    ExternalAdministrativeContractSet,
+    InsuranceClassification,
+    PolicyInputDigestMaterial,
+    PolicyRuleSet,
+    PopulationScenario,
+    ProvenanceAssertion,
+    build_policy_input_digest_material,
+)
 from .golden_specimen import (
     GOLDEN_SPECIMEN_RESULT_COMPATIBILITY,
     GOLDEN_SPECIMEN_RESULT_PROJECTION_ID,
@@ -53,19 +67,26 @@ from .observation import ObservationEnvelope
 from .resources import (
     SCHEMA_RESOURCE_NAMES,
     generated_schema_bytes,
+    load_administrative_adapter_contract_example,
+    load_administrative_counterfactual_example,
+    load_external_administrative_contract_set,
     load_generated_schema,
     load_golden_specimen_observation_example,
     load_golden_specimen_scenario,
+    load_independent_multilabel_policy_example,
     load_operation_catalog,
 )
 from .scenario import ScenarioContract
 from .specimen import SpecimenCommand, SpecimenCommandAction
 
 
-__version__ = "0.3.1"
+__version__ = "0.4.1"
 CONTRACT_VERSION = "1.0.0"
 
 __all__ = [
+    "AdministrativeAdapterContract",
+    "AdministrativeContext",
+    "AdministrativeDecision",
     "ApprovalDecision",
     "ApprovalDomain",
     "AssuranceStage",
@@ -75,6 +96,8 @@ __all__ = [
     "CallerClass",
     "CONTRACT_VERSION",
     "ContractJsonError",
+    "CoverageEnrollment",
+    "DecisionImpactObservation",
     "DuplicateObjectKeyError",
     "EffectClass",
     "EffectState",
@@ -82,6 +105,7 @@ __all__ = [
     "EvidenceMode",
     "EvidenceProvenance",
     "EvidenceSource",
+    "ExternalAdministrativeContractSet",
     "GOLDEN_SPECIMEN_RESULT_COMPATIBILITY",
     "GOLDEN_SPECIMEN_RESULT_PROJECTION_ID",
     "GOLDEN_SPECIMEN_RESULT_PROJECTION_VERSION",
@@ -96,6 +120,7 @@ __all__ = [
     "GoldenSpecimenReleaseResult",
     "GoldenSpecimenResultProjection",
     "GoldenSpecimenReviewResolution",
+    "InsuranceClassification",
     "NonFiniteNumberError",
     "ObservationApproval",
     "ObservationClassification",
@@ -104,6 +129,10 @@ __all__ = [
     "OperationCatalog",
     "OperationContract",
     "OperationSemanticError",
+    "PolicyRuleSet",
+    "PolicyInputDigestMaterial",
+    "PopulationScenario",
+    "ProvenanceAssertion",
     "RedactionStatus",
     "SCHEMA_RESOURCE_NAMES",
     "ScenarioContract",
@@ -111,10 +140,15 @@ __all__ = [
     "SpecimenCommandAction",
     "canonical_json_bytes",
     "canonical_sha256",
+    "build_policy_input_digest_material",
     "generated_schema_bytes",
+    "load_administrative_adapter_contract_example",
+    "load_administrative_counterfactual_example",
+    "load_external_administrative_contract_set",
     "load_generated_schema",
     "load_golden_specimen_observation_example",
     "load_golden_specimen_scenario",
+    "load_independent_multilabel_policy_example",
     "load_operation_catalog",
     "model_from_strict_json",
     "strict_json_loads",
