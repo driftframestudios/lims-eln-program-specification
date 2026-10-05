@@ -16,6 +16,7 @@ named source cannot establish.
 | [`uv-backed-python-execution`](uv-backed-python-execution/SKILL.md) | A Program check needs Python 3.12 or 3.13 without changing the host Python installation | Public-ready; selected for Program Pages |
 | [`proportionate-recovery-routing`](proportionate-recovery-routing/SKILL.md) | A failed check, source gap, permission boundary, or stale handoff needs the smallest reliable recovery route | Public-possible; exercised against the Program hosted-proof handoff |
 | [`contextual-jargon-scan`](contextual-jargon-scan/SKILL.md) | Changed public or cross-repository prose may assume context its reader does not share | Public-possible; exercised in the Program collaboration workbench |
+| [`external-benchmark-reception`](external-benchmark-reception/SKILL.md) | An authorized external subject may become a reference, adapter probe, or derived scenario | Public-possible; external-source exercise remains separately authorized |
 
 `public_possible` and `public_ready` describe observed maturity and navigation
 standing. Both bands are available for public collaboration. The Pages builder
@@ -40,7 +41,7 @@ without a reusable workflow.
 Each `SKILL.md` uses the portable Agent Skills envelope: `name` and
 `description` remain at the top level, while Program maturity, version, and
 lineage fields live in `metadata`. Repository validation checks the complete
-six-skill inventory, required sections, declared standing, and exact upstream
+seven-skill inventory, required sections, declared standing, and exact upstream
 lineage for derivative skills.
 
 The public catalog is a generated projection of selected source files. The

@@ -17,8 +17,10 @@ domain behavior, persistence, observed evidence, and accountable decisions.
 - generated JSON Schema projections for non-Python consumers.
 
 The package distribution is `lims-eln-program-specification`; its import name is
-`lims_eln_contracts`. The current package version is `0.3.1`, and the shared
-contract version exposed by the package is `1.0.0`.
+`lims_eln_contracts`. The machine coordinate declares the current package version;
+the shared contract version exposed by the package is `1.0.0`.
+The reviewed `0.4.0` installed source below remains available during successor
+preparation. Each receiver selects and verifies its own accepted coordinate.
 This source-local adoption guide is outside the built distribution and the
 package source digest; the machine coordinate names that narrow exclusion so
 documentation can improve without changing accepted runtime bytes.
@@ -41,20 +43,23 @@ consumer's configured runtime behavior or production acceptance.
 
 ## Adopt the reviewed package source
 
-[`release/contract-package-coordinate.json`](../../release/contract-package-coordinate.json)
-is the machine-readable source for package version, reviewed commit, scoped
-digest, transport, authentication posture, and consumer-conformance checks.
-The reviewed `0.3.1` source coordinate is currently:
+[The accepted `0.4.0` binding](https://github.com/driftframestudios/lims-eln-program-specification/blob/a307f422596e5098ac5efca29968212b5e24da0b/release/contract-package-coordinate.json)
+owns the reviewed commit, scoped digest, transport, authentication posture,
+and consumer-conformance checks for the installation below.
+[The current package coordinate](../../release/contract-package-coordinate.json)
+tracks the successor's own version and review standing. Adopt that successor
+through its exact reviewed source and the receiving repository's checks.
+The retained reviewed `0.4.0` source coordinate is:
 
 ```text
-4d06eeb7f96910311fbcb7f51547c978b6a07290
+d8f41d0ce98a75120c99f0a23d00796ae8a8b913
 ```
 
 An authenticated PEP 508 installation uses that full commit:
 
 ```sh
 python3 -m pip install \
-  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@4d06eeb7f96910311fbcb7f51547c978b6a07290"
+  "lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@d8f41d0ce98a75120c99f0a23d00796ae8a8b913"
 ```
 
 HTTPS is the canonical private-distribution transport. Git obtains credentials
@@ -83,11 +88,12 @@ A receiving repository checks the installed distribution's PEP 610
 `direct_url.json` and confirms:
 
 - `vcs_info.commit_id` equals the reviewed full commit;
-- distribution and import versions are `0.3.1`;
+- distribution and import versions are `0.4.0` for that reviewed source;
 - the package reports contract version `1.0.0`;
 - the scoped package-source digest matches the reviewed binding;
 - the operation catalog and Golden Specimen scenario load;
-- both shaped example observations load; and
+- both shaped example observations load;
+- the canonical administrative bundle and its three examples load; and
 - every schema named by `SCHEMA_RESOURCE_NAMES` loads as a JSON object.
 
 The reviewed coordinate may move to a later commit at the same package version
@@ -148,3 +154,16 @@ same semantic invariants alongside schema validation.
 
 See the repository [`schema index`](../../schemas/README.md) for the root
 release schemas and the complete generated package inventory.
+
+## Administrative family and receiving environments
+
+[The family reference](../../docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md) owns
+source-neutral adapter, classification, policy, population, review, and
+provenance meaning. Its canonical bundle produces three byte-checked examples.
+Run `python scripts/generate_administrative_examples.py --check` in the prepared
+environment after a related source change.
+
+[Researcher environments](../../docs/RESEARCHER_ENVIRONMENTS.md) distinguishes
+installed and editable use, complete-profile interpreter requirements, and
+configured native/container evidence. [The handoff runbook](../../.agents/runbooks/constellation-contract-release-handoff.v0.1.md)
+keeps each consumer's acknowledgement and recovery with its receiving Issue.

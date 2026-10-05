@@ -20,6 +20,10 @@ from automation_contract import (
     MISSING_AUTOMATION_CONTROLS,
     validate_repository_automation,
 )
+from generate_administrative_examples import (
+    RESOURCE_ROOT as ADMINISTRATIVE_RESOURCE_ROOT,
+    rendered_administrative_examples,
+)
 from pages_projection import (
     parse_skill_front_matter,
     skill_package_metadata,
@@ -36,6 +40,11 @@ from verify_program_release_observation import (
 COLLABORATION_SKILL_CONTRACTS = {
     "constellation-coherence-reconciliation": {
         "source_band": "public_ready",
+        "skill_version": "0.1.0",
+        "adaptation_relation": "repository_local_original",
+    },
+    "external-benchmark-reception": {
+        "source_band": "public_possible",
         "skill_version": "0.1.0",
         "adaptation_relation": "repository_local_original",
     },
@@ -114,8 +123,25 @@ SKILL_REQUIRED_SECTIONS = (
 PRIVATE_SKILL_LOCATORS = ("::", "~loamthreads", "notion.site/", "notion.so/")
 
 
+def validate_administrative_example_projections() -> int:
+    artifacts = rendered_administrative_examples()
+    divergent = [
+        relative_path
+        for relative_path, expected in artifacts.items()
+        if not (ADMINISTRATIVE_RESOURCE_ROOT / relative_path).exists()
+        or (ADMINISTRATIVE_RESOURCE_ROOT / relative_path).read_bytes() != expected
+    ]
+    if divergent:
+        raise ValueError(
+            "administrative examples remain exact canonical-bundle projections; "
+            f"refresh these artifacts: {divergent}"
+        )
+    return len(artifacts)
+
+
 PROGRAM_RELEASE = "0.3.1"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
+PACKAGE_RELEASE = "0.4.2"
 PACKAGE_SOURCE_DIGEST_ALGORITHM = "path-length-bytes-sha256-v1"
 PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     "file_selection": (
@@ -780,7 +806,7 @@ def validate_contract_package_coordinate(coordinate: dict) -> None:
         "coordinate_version": "1.0.0",
         "distribution_name": "lims-eln-program-specification",
         "import_name": "lims_eln_contracts",
-        "package_version": PROGRAM_RELEASE,
+        "package_version": PACKAGE_RELEASE,
         "repository": "driftframestudios/lims-eln-program-specification",
         "publication_owner": "Program repository owners",
         "transport": "git+https",
@@ -878,14 +904,15 @@ def validate_contract_package_coordinate(coordinate: dict) -> None:
         minimum=9,
     )
     if set(observations) != {
-        f"installed distribution version is {PROGRAM_RELEASE}",
-        f"lims_eln_contracts.__version__ is {PROGRAM_RELEASE}",
+        f"installed distribution version is {PACKAGE_RELEASE}",
+        f"lims_eln_contracts.__version__ is {PACKAGE_RELEASE}",
         "lims_eln_contracts.CONTRACT_VERSION is 1.0.0",
         "vcs_info.commit_id equals the reviewed full commit",
         "the scoped package source digest matches the reviewed binding",
         "the released operation catalog loads",
         "the Golden Specimen scenario loads",
         "the implementation and simulation shaped observations load",
+        "the canonical external administrative contract bundle and three examples load",
         "every released schema in SCHEMA_RESOURCE_NAMES loads as a JSON object",
     }:
         raise ValueError("contract package consumer observations differ")
@@ -2887,6 +2914,9 @@ def validate() -> dict[str, int]:
     workbench_summary = validate_collaboration_workbench(
         ROOT, pages_context.public_skills
     )
+    administrative_example_projections = (
+        validate_administrative_example_projections()
+    )
 
     validate_core_shapes(
         constellation=constellation,
@@ -3741,8 +3771,14 @@ def validate() -> dict[str, int]:
 
     required_paths = [
         ".agents/skills/README.md",
+        ".agents/runbooks/README.md",
+        ".agents/runbooks/administrative-context-contract-evolution.v0.1.md",
+        ".agents/runbooks/constellation-contract-release-handoff.v0.1.md",
+        ".agents/runbooks/external-benchmark-intake.v0.1.md",
+        "docs/RESEARCHER_ENVIRONMENTS.md",
         ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
         ".agents/skills/contextual-jargon-scan/SKILL.md",
+        ".agents/skills/external-benchmark-reception/SKILL.md",
         ".agents/skills/proportionate-recovery-routing/SKILL.md",
         ".agents/skills/repository-reentry/SKILL.md",
         ".agents/skills/source-authority-mapping/SKILL.md",
@@ -3763,6 +3799,13 @@ def validate() -> dict[str, int]:
         "receipts/promotion-observation-spec-v0.3.1.json",
         "schemas/promotion-receipt.schema.json",
         "schemas/program-release-observation.v1.schema.json",
+        "src/lims_eln_contracts/external_administrative.py",
+        "src/lims_eln_contracts/resources/external-administrative-contracts.v1.json",
+        "src/lims_eln_contracts/resources/administrative/administrative-counterfactual.v1.json",
+        "src/lims_eln_contracts/resources/administrative/independent-multilabel-policy.v1.json",
+        "src/lims_eln_contracts/resources/administrative/insurance-administrative-adapter.v1.json",
+        "src/lims_eln_contracts/resources/schemas/external-administrative-contract-set.v1.schema.json",
+        "src/lims_eln_contracts/resources/schemas/administrative-adapter-contract.v1.schema.json",
         "schemas/README.md",
         "src/lims_eln_contracts/README.md",
         "specifications/bounded-caller.json",
@@ -3780,6 +3823,7 @@ def validate() -> dict[str, int]:
         "scripts/automation_contract.py",
         "scripts/check_branch_flow.py",
         "scripts/check_language.py",
+        "scripts/generate_administrative_examples.py",
         "scripts/language_policy_core.py",
         "docs/LANGUAGE_POLICY.md",
         "language-policy/corpus-v1.json",
@@ -3789,6 +3833,11 @@ def validate() -> dict[str, int]:
         "scripts/summarize_github_api_response.py",
         "scripts/verify_program_release_observation.py",
         "docs/migrations/0.3.0-to-0.3.1.md",
+        "docs/migrations/0.3.1-to-contract-package-0.4.0.md",
+        "docs/EXTERNAL_ADMINISTRATIVE_CONTRACTS.md",
+        "docs/ADMINISTRATIVE_ADMISSION.md",
+        "docs/migrations/0.4.0-to-contract-package-0.4.1.md",
+        "docs/migrations/0.4.1-to-contract-package-0.4.2.md",
         "docs/DATABASE_MODERNIZATION.md",
         "docs/DATABASE_CONSTELLATION_LEDGER.md",
         "pages/README.md",
@@ -3800,10 +3849,14 @@ def validate() -> dict[str, int]:
         "specifications/database-migration.json",
         "receipts/database-open-receipts.json",
         "release/database-release-manifest.json",
+        "schemas/README.md",
         "tests/test_branch_flow.py",
         "tests/test_github_api_diagnostics.py",
         "tests/test_language_policy.py",
         "tests/test_collaboration_workbench.py",
+        "tests/test_administrative_example_projection.py",
+        "tests/test_external_administrative_contracts.py",
+        "tests/test_external_benchmark_collaboration_surfaces.py",
         "tests/test_pages_projection.py",
         "scripts/build_pages.py",
         "scripts/pages_projection.py",
@@ -4100,6 +4153,7 @@ def validate() -> dict[str, int]:
         "repositories": len(repository_roles),
         "pages_sources": 1,
         "contract_package_coordinates": 1,
+        "administrative_example_projections": administrative_example_projections,
         **workbench_summary,
         **database_summary,
     }

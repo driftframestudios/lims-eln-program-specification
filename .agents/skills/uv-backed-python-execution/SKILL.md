@@ -69,7 +69,20 @@ available interpreter is useful when it satisfies those sources. A future
 disagreement returns to the Program source that owns the changed runtime
 contract.
 
-### Rule: uv prepares the environment
+### Rule: The selected dependency profile determines its interpreter floor
+
+Choose Python against the intersection of the project and every selected
+dependency's requirements. A receiver can retain a Python 3.11 standard-library
+core while its optional Program conformance profile requires Python 3.12.
+Keep those profiles in separate isolated environments and name the selected
+extras with the result. A declared version range describes admission; an
+observed check describes the particular interpreter and platform used.
+
+The [researcher environment route](../../../docs/RESEARCHER_ENVIRONMENTS.md)
+maps the current receivers and their dependency owners. Exact package source,
+resolved dependencies, and a tested environment are separate identities.
+
+### Rule: uv prepares the selected environment
 
 Run Program checks through `uv run`. Let uv prepare dependencies and the
 execution environment while the host operating-system Python installation and

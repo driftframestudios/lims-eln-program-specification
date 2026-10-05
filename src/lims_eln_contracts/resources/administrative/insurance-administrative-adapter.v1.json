@@ -1,0 +1,157 @@
+{
+  "adapter_contract_version": "1.0.0",
+  "adapter_id": "ADAPTER-INSURANCE-ADMINISTRATIVE-V1",
+  "name": "Insurance and administrative fixture adapter",
+  "description": "A source-neutral design for carrying raw insurance and enrollment inputs through explicit administrative transformation stages.",
+  "data_standing": "program_authored_synthetic",
+  "execution_standing": "design_only",
+  "input_contract_id": "ADMINISTRATIVE-ADAPTER-INPUT-V1",
+  "representative_records": [
+    {
+      "record_id": "ADAPTER-INPUT-MULTILABEL-001",
+      "input_version": "1",
+      "values": [
+        {
+          "field_name": "raw_insurance_label",
+          "value": "Commercial + community support bridge"
+        },
+        {
+          "field_name": "enrollment_state",
+          "value": "active"
+        }
+      ]
+    },
+    {
+      "record_id": "ADAPTER-INPUT-ABSTAIN-001",
+      "input_version": "1",
+      "values": [
+        {
+          "field_name": "raw_insurance_label",
+          "value": "Community support arrangement"
+        },
+        {
+          "field_name": "enrollment_state",
+          "value": "pending"
+        }
+      ]
+    },
+    {
+      "record_id": "ADAPTER-INPUT-UNKNOWN-001",
+      "input_version": "1",
+      "values": [
+        {
+          "field_name": "raw_insurance_label",
+          "value": null
+        },
+        {
+          "field_name": "enrollment_state",
+          "value": "unknown"
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "stage_id": "ADAPTER-STAGE-EXTRACT",
+      "sequence": 1,
+      "kind": "extract",
+      "input_resource": "ADMINISTRATIVE-ADAPTER-INPUT-V1",
+      "output_resource": "ADMINISTRATIVE-RAW-ENVELOPE-V1",
+      "operation": "Read repository-owned representative records without changing their raw values.",
+      "implementation_pattern": "declarative_contract",
+      "idempotent": true
+    },
+    {
+      "stage_id": "ADAPTER-STAGE-VALIDATE",
+      "sequence": 2,
+      "kind": "validate",
+      "input_resource": "ADMINISTRATIVE-RAW-ENVELOPE-V1",
+      "output_resource": "ADMINISTRATIVE-VALIDATED-ENVELOPE-V1",
+      "operation": "Validate required record identity, version, raw label, and enrollment-state shapes.",
+      "implementation_pattern": "declarative_contract",
+      "idempotent": true
+    },
+    {
+      "stage_id": "ADAPTER-STAGE-NORMALIZE",
+      "sequence": 3,
+      "kind": "normalize",
+      "input_resource": "ADMINISTRATIVE-VALIDATED-ENVELOPE-V1",
+      "output_resource": "ADMINISTRATIVE-NORMALIZED-ENVELOPE-V1",
+      "operation": "Preserve raw labels beside normalized values and explicit missingness.",
+      "implementation_pattern": "idempotent_script",
+      "idempotent": true
+    },
+    {
+      "stage_id": "ADAPTER-STAGE-CLASSIFY",
+      "sequence": 4,
+      "kind": "classify",
+      "input_resource": "ADMINISTRATIVE-NORMALIZED-ENVELOPE-V1",
+      "output_resource": "ADMINISTRATIVE-CLASSIFICATION-V1",
+      "operation": "Produce multi-label, abstained, or unknown classifications with provenance.",
+      "implementation_pattern": "idempotent_script",
+      "idempotent": true
+    },
+    {
+      "stage_id": "ADAPTER-STAGE-CONTRACT-MAP",
+      "sequence": 5,
+      "kind": "map_contract",
+      "input_resource": "ADMINISTRATIVE-CLASSIFICATION-V1",
+      "output_resource": "ADMINISTRATIVE-CONTRACT-MAP-V1",
+      "operation": "Map raw-preserving classification and enrollment state into Program contract identities without producing a policy or accountable decision.",
+      "implementation_pattern": "idempotent_script",
+      "idempotent": true
+    },
+    {
+      "stage_id": "ADAPTER-STAGE-EMIT",
+      "sequence": 6,
+      "kind": "emit",
+      "input_resource": "ADMINISTRATIVE-CONTRACT-MAP-V1",
+      "output_resource": "ADMINISTRATIVE-CONTRACT-PROJECTION-V1",
+      "operation": "Emit canonical contract projections keyed by record identity and input version.",
+      "implementation_pattern": "idempotent_script",
+      "idempotent": true
+    }
+  ],
+  "idempotency": {
+    "key_fields": [
+      "record_id",
+      "input_version"
+    ],
+    "duplicate_input_effect": "same_output_no_additional_effect",
+    "replay_scope": "One adapter version and one canonical representative-record payload.",
+    "checkpoint_strategy": "Commit a complete canonical projection only after every stage succeeds.",
+    "retry_behavior": "Retry the same replay key from the first stage and replace only with byte-identical canonical output."
+  },
+  "output_bundle_id": "ADMINISTRATIVE-CONTRACT-PROJECTION-V1",
+  "output_object_names": [
+    "AdministrativeContext",
+    "InsuranceClassification",
+    "CoverageEnrollment"
+  ],
+  "required_enrichments": [
+    {
+      "field_name": "subject_and_episode_identity",
+      "source": "authorized_runtime_input",
+      "purpose": "Bind each representative administrative value to a release-scoped subject and episode."
+    },
+    {
+      "field_name": "jurisdiction_and_effectivity",
+      "source": "receiver_configuration",
+      "purpose": "Supply the jurisdiction and effective interval used by the receiving context."
+    },
+    {
+      "field_name": "classification_vocabulary",
+      "source": "governed_vocabulary",
+      "purpose": "Resolve normalized labels into identified terms while preserving the raw input."
+    },
+    {
+      "field_name": "provenance_and_review",
+      "source": "accountable_review",
+      "purpose": "Attach formation evidence and any disposition required before a final classification or downstream decision."
+    }
+  ],
+  "provenance_refs": [
+    "PROV-ADAPTER-CONTRACT-001"
+  ],
+  "claim_boundary": "The representative records illustrate adapter contract mechanics. Configured execution and enrollment, eligibility, coverage, prevalence, payer behavior, clinical validity, deployment, and regulated-use claims follow their named evidence routes."
+}
