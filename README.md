@@ -23,6 +23,9 @@ chronology and contribution credit.
    to select Python 3.12, prepare an isolated dependency environment, and begin
    with `scripts/validate_program.py`. The complete candidate proof is in
    [Validation](#validation).
+   [Researcher environments](docs/RESEARCHER_ENVIRONMENTS.md) distinguishes
+   installed and editable use, exact receiver dependencies, native/container
+   entry, evidence lanes, and recovery.
 4. Start changes from `develop` using the branch forms in
    [`BRANCHING.md`](BRANCHING.md), follow the contribution contract in
    [`CONTRIBUTING.md`](CONTRIBUTING.md), and keep tests beside the behavior they

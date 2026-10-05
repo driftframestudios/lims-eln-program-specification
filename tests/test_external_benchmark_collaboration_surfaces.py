@@ -89,7 +89,7 @@ class ExternalBenchmarkCollaborationSurfaceTests(unittest.TestCase):
         expected_status = {
             "external-benchmark-intake.v0.1.md": "working",
             "administrative-context-contract-evolution.v0.1.md": "exercised",
-            "constellation-contract-release-handoff.v0.1.md": "working",
+            "constellation-contract-release-handoff.v0.1.md": "exercised",
         }
         required_phase_markers = (
             "**Owner:**",
@@ -138,6 +138,31 @@ class ExternalBenchmarkCollaborationSurfaceTests(unittest.TestCase):
         self.assertIn("A paper has no Git release", skill)
         self.assertIn("not applicable rather than unresolved", skill)
         self.assertIn("standard/vocabulary, or API/interface", intake)
+
+    def test_environment_route_has_owned_entry_and_return_paths(self) -> None:
+        guide = ROOT / "docs" / "RESEARCHER_ENVIRONMENTS.md"
+        source = guide.read_text(encoding="utf-8")
+        for relative in (
+            "../constellation.lock.json",
+            "../release/repository-role.json",
+            "../release/contract-package-coordinate.json",
+            "../.agents/runbooks/README.md",
+            "../.agents/runbooks/constellation-contract-release-handoff.v0.1.md",
+            "../.agents/skills/uv-backed-python-execution/SKILL.md",
+            "../README.md",
+        ):
+            with self.subTest(relative=relative):
+                self.assertIn(f"]({relative})", source)
+                self.assertTrue((guide.parent / relative).is_file())
+        for path, target in (
+            (ROOT / "README.md", "docs/RESEARCHER_ENVIRONMENTS.md"),
+            (RUNBOOK_DIRECTORY / "README.md", "../../docs/RESEARCHER_ENVIRONMENTS.md"),
+            (RUNBOOK_DIRECTORY / "constellation-contract-release-handoff.v0.1.md", "../../docs/RESEARCHER_ENVIRONMENTS.md"),
+        ):
+            with self.subTest(path=path.name):
+                self.assertIn(f"]({target})", path.read_text(encoding="utf-8"))
+        for pattern in PRIVATE_LOCATOR_PATTERNS:
+            self.assertNotIn(pattern, source.lower())
 
     def test_dataset_metadata_route_is_artifact_class_aware(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")

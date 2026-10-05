@@ -40,7 +40,11 @@ They neither grant authority nor replace current Issue and pull-request state.
 | --- | --- | --- |
 | [External benchmark intake](external-benchmark-intake.v0.1.md) | A public or authorized synthetic benchmark may become a coordinate-bound reference, adapter probe, or scenario input | [Issue #51](https://github.com/driftframestudios/lims-eln-program-specification/issues/51); working until a receiving claim requires an authorized external-subject intake |
 | [Administrative-context contract evolution](administrative-context-contract-evolution.v0.1.md) | An insurance, coverage, authorization, claim, billing, or related distinction needs a shared versioned contract | [Issue #51](https://github.com/driftframestudios/lims-eln-program-specification/issues/51), with the contract family owned by [Issue #50](https://github.com/driftframestudios/lims-eln-program-specification/issues/50); exercised against a Program-owned source-neutral adapter and candidate fixture |
-| [Constellation contract release handoff](constellation-contract-release-handoff.v0.1.md) | An accepted Program contract and its generated carriers are ready for exact receiving-repository handoff | [Issue #51](https://github.com/driftframestudios/lims-eln-program-specification/issues/51); working until an accepted contract completes the route |
+| [Constellation contract release handoff](constellation-contract-release-handoff.v0.1.md) | An accepted Program contract and its generated carriers are ready for exact receiving-repository handoff | [Issue #51](https://github.com/driftframestudios/lims-eln-program-specification/issues/51); exercised through Program PR #56 and Enterprise PR #44's installed-resource handoff |
+
+The [researcher environment route](../../docs/RESEARCHER_ENVIRONMENTS.md)
+receives that exact handoff through Issue #54. It identifies each runtime
+profile, its dependency owner, first result, fitting checks, and recovery.
 
 The
 [`external-benchmark-reception`](../skills/external-benchmark-reception/SKILL.md)

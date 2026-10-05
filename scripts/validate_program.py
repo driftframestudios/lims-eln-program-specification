@@ -3746,6 +3746,7 @@ def validate() -> dict[str, int]:
         ".agents/runbooks/administrative-context-contract-evolution.v0.1.md",
         ".agents/runbooks/constellation-contract-release-handoff.v0.1.md",
         ".agents/runbooks/external-benchmark-intake.v0.1.md",
+        "docs/RESEARCHER_ENVIRONMENTS.md",
         ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
         ".agents/skills/contextual-jargon-scan/SKILL.md",
         ".agents/skills/external-benchmark-reception/SKILL.md",

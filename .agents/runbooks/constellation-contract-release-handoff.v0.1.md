@@ -1,7 +1,7 @@
 ---
 title: Constellation contract release handoff
 version: 0.1.0
-status: working
+status: exercised
 audience: human_and_ai_collaborators
 source_band: public_possible
 task_type: operational_collaboration
@@ -212,13 +212,16 @@ when one named owner holds a remaining gate with an observable release event.
 
 ## First-use posture for the Issue #50 family
 
-Merged PR #52 supplies the accepted integration subject. The package coordinate
-binds `0.4.0` to its reviewed commit and scoped content digest. The first
-receiving exercise now uses Enterprise's installed-package conformance route;
-its Issue and pull request hold the result. The runbook remains `working` until
-the receiving handoff completes and its remaining gates have named owners.
+Merged [Program PR #56](https://github.com/driftframestudios/lims-eln-program-specification/pull/56)
+binds package `0.4.0` to reviewed commit
+`d8f41d0ce98a75120c99f0a23d00796ae8a8b913` and its scoped package digest.
+[Enterprise PR #44](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/44)
+completes the first installed-resource receiving acknowledgement. The package
+coordinate owns exact identity; those PRs own the source and consumption checks.
+The runbook is `exercised` for that integration-source handoff. Each later
+receiver and protected release retains its own admission.
 
-During that exercise:
+The exercise preserves these distinctions:
 
 - the Program-authored administrative adapter remains a source-neutral design
   with repository-owned representative records;
@@ -241,7 +244,8 @@ During that exercise:
 
 An integration-source handoff advances independently of protected release
 promotion. [Issue #54](https://github.com/driftframestudios/lims-eln-program-specification/issues/54)
-owns environment and compatibility coordination. Before a new public site
+owns environment and compatibility coordination through the
+[researcher environment route](../../docs/RESEARCHER_ENVIRONMENTS.md). Before a new public site
 projection, bind an immutable site-release tag, inspect the complete carrier,
 and obtain the publication decision. The corresponding portable receiving
 pattern is tracked in [Gist Registry #49](https://github.com/driftframestudios/gist-registry/issues/49).
