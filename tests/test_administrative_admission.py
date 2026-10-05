@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import FrozenInstanceError, replace
+from enum import IntEnum
 import json
 import unittest
 from unittest import mock
@@ -201,6 +202,45 @@ class AdministrativeAdmissionTests(unittest.TestCase):
         replace(REVIEW_LIMITS, max_provenance_edges=0, max_graph_steps=0)
         with self.assertRaises(FrozenInstanceError):
             REVIEW_LIMITS.max_records = 3
+
+    def test_profile_type_gate_precedes_comparison_and_coercion(self) -> None:
+        class FrameworkInteger(int):
+            pass
+
+        class FrameworkLimit(IntEnum):
+            FOUR = 4
+
+        class GuardedInteger(int):
+            def __ge__(self, other):
+                raise AssertionError("profile type admission precedes comparison")
+
+            def __le__(self, other):
+                raise AssertionError("profile type admission precedes comparison")
+
+            def __int__(self):
+                raise AssertionError("profile conversion belongs to the caller")
+
+        class IndexableValue:
+            def __index__(self):
+                raise AssertionError("profile conversion belongs to the caller")
+
+        cases = (
+            ("true", True),
+            ("false", False),
+            ("integer subclass", FrameworkInteger(4)),
+            ("integer enum", FrameworkLimit.FOUR),
+            ("guarded integer subclass", GuardedInteger(4)),
+            ("index protocol", IndexableValue()),
+        )
+        for name in REVIEW_LIMITS.__dataclass_fields__:
+            with self.subTest(field=name, case="built-in integer"):
+                accepted = replace(REVIEW_LIMITS, **{name: 4})
+                self.assertIs(type(getattr(accepted, name)), int)
+                self.assertEqual(4, getattr(accepted, name))
+            for label, value in cases:
+                with self.subTest(field=name, case=label):
+                    with self.assertRaisesRegex(ValueError, name):
+                        replace(REVIEW_LIMITS, **{name: value})
 
     def test_payload_and_profile_boundaries_are_explicit(self) -> None:
         for invalid in ("{}", bytearray(b"{}"), memoryview(b"{}"), None, True):

@@ -47,12 +47,31 @@ admitted = admit_administrative_contract(payload, limits=limits)
 
 A receiving study selects its own profile using observed payload sizes, record
 counts, graph shape, scenario count, output needs, and available resources.
-Each setting uses an explicitly supplied integer; booleans and coercible text
-remain distinct types. Edge and graph-step budgets can be zero to hold that
-work. Other maxima are positive. All profile integers fit a signed 64-bit
-range, and JSON nesting selects at most 128 containers, the supported decoder
-envelope for this API. Profile changes receive review beside the input and
-receiving use they admit.
+Each setting uses an explicitly supplied built-in `int`. The exact-type
+boundary establishes built-in comparison and arithmetic behavior before range
+checks. Booleans, integer subclasses, enumerations, and scientific scalar
+types retain their own caller-side conversion decision. Edge and graph-step
+budgets can be zero to hold that work. Other maxima are positive. All profile
+integers fit a signed 64-bit range, and JSON nesting selects at most 128
+containers, the supported decoder envelope for this API. Profile changes
+receive review beside the input and receiving use they admit.
+
+A receiving framework can supply a reviewed adapter that establishes the
+allowed source type, integrality, boolean exclusion, and lossless conversion,
+then hands a built-in integer to this initializer for range admission.
+Blanket `int(value)` coercion can truncate fractional values or change their
+meaning. The package keeps this conversion decision with the caller, where
+the scalar's source semantics are available.
+
+This is also a behavior boundary: Python gives subclass
+[reflected comparisons](https://docs.python.org/3/reference/datamodel.html#object.__lt__)
+priority in the relevant mixed-type operations. Accepting an integer subclass
+as-is would admit those overridden methods. NumPy's
+[integer scalars](https://numpy.org/doc/stable/reference/arrays.scalars.html)
+use a separate type hierarchy, so `isinstance(value, int)` alone also leaves
+that interoperability question open. The standard-library regression fixtures
+exercise all seven profile fields and establish type rejection before
+comparison or coercion; NumPy integration remains a receiving-adapter concern.
 
 ## Stage and unit map
 
