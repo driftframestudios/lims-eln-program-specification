@@ -212,14 +212,13 @@ when one named owner holds a remaining gate with an observable release event.
 
 ## First-use posture for the Issue #50 family
 
-The Issue #50 contract-evolution exercise establishes the handoff's candidate
-shape but does not satisfy this runbook's entry condition yet. The first live
-handoff begins after canonical identities, schemas, examples, dependency
-closure, compatibility rules, and migration notes are accepted. That event
-will determine whether this runbook advances from `working` to `exercised` and
-will supply any decision-changing revision.
+Merged PR #52 supplies the accepted integration subject. The package coordinate
+binds `0.4.0` to its reviewed commit and scoped content digest. The first
+receiving exercise now uses Enterprise's installed-package conformance route;
+its Issue and pull request hold the result. The runbook remains `working` until
+the receiving handoff completes and its remaining gates have named owners.
 
-Until then:
+During that exercise:
 
 - the Program-authored administrative adapter remains a source-neutral design
   with repository-owned representative records;
@@ -228,6 +227,25 @@ Until then:
   and
 - publication, API activation, domain configuration, deployment, and
   accountable acceptance remain with their named decision owners.
+
+## Version and delivery boundaries
+
+| Coordinate | Meaning and owner |
+| --- | --- |
+| Contract identity and version | Program's shared wire meaning and compatibility rule |
+| Package version, full commit, scoped digest | Exact installable source; `release/contract-package-coordinate.json` owns the binding |
+| Repository release and signed tag | Protected promotion of the repository's accepted release subject |
+| Site-release tag | Human-approved immutable source selection for a new public projection |
+| Projection manifest | Generated file inventory and byte digests bound to that selected source |
+| Delivery observation | The named hosted routes and returned artifacts observed after authorized publication |
+
+An integration-source handoff advances independently of protected release
+promotion. [Issue #54](https://github.com/driftframestudios/lims-eln-program-specification/issues/54)
+owns environment and compatibility coordination. Before a new public site
+projection, bind an immutable site-release tag, inspect the complete carrier,
+and obtain the publication decision. The corresponding portable receiving
+pattern is tracked in [Gist Registry #49](https://github.com/driftframestudios/gist-registry/issues/49).
+Human-held `main` merges remain with the authorized human reviewer.
 
 ## Handback
 
