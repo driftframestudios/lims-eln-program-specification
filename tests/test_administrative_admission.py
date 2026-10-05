@@ -18,7 +18,11 @@ from lims_eln_contracts.administrative_admission import (
     _json_depth,
     admit_administrative_contract,
 )
-from lims_eln_contracts.canonical import canonical_json_bytes, model_from_strict_json
+from lims_eln_contracts.canonical import (
+    canonical_json_bytes,
+    model_from_strict_json,
+    strict_json_loads,
+)
 from lims_eln_contracts.external_administrative import ExternalAdministrativeContractSet
 from test_external_administrative_contracts import (
     CONTRACT_SET_PATH,
@@ -363,6 +367,70 @@ class AdministrativeAdmissionTests(unittest.TestCase):
                         )
                     parser.assert_not_called()
                 self.assertEqual("json_depth", captured.exception.code)
+
+    def test_transaction_envelope_requires_administrative_contract_shape(self) -> None:
+        text = json.dumps({
+            "transaction_id": "tx_8830da82c08a",
+            "meta": {"version": "1.0.0", "environment": "production"},
+            "records": [{"id": "rec_01", "status": "admitted"}],
+        })
+        with (
+            mock.patch(
+                "lims_eln_contracts.administrative_admission.strict_json_loads",
+                wraps=strict_json_loads,
+            ) as parser,
+            mock.patch.object(
+                ExternalAdministrativeContractSet,
+                "model_validate_json",
+                wraps=ExternalAdministrativeContractSet.model_validate_json,
+            ) as model,
+        ):
+            with self.assertRaises(AdministrativeAdmissionError) as captured:
+                admit_administrative_contract(text.encode("utf-8"), limits=REVIEW_LIMITS)
+            parser.assert_called_once_with(text)
+            model.assert_called_once_with(text, strict=True)
+        self.assertEqual("contract_validation", captured.exception.code)
+
+    def test_terminal_backslash_preserves_following_container_depth(self) -> None:
+        profile = replace(REVIEW_LIMITS, max_input_bytes=8192, max_json_depth=128)
+        prefix = br'{"mean_key": "masking_value\\", "payload_injector": '
+        # The root object contributes one level beside the array containers.
+        cases = (
+            (127, "contract_validation"),
+            (128, "json_depth"),
+            (130, "json_depth"),
+        )
+        for arrays, expected_code in cases:
+            payload = prefix + b"[" * arrays + b"]" * arrays + b"}"
+            text = payload.decode("utf-8")
+            with self.subTest(array_containers=arrays):
+                with (
+                    mock.patch(
+                        "lims_eln_contracts.administrative_admission.strict_json_loads",
+                        wraps=strict_json_loads,
+                    ) as parser,
+                    mock.patch.object(
+                        ExternalAdministrativeContractSet,
+                        "model_validate_json",
+                        wraps=ExternalAdministrativeContractSet.model_validate_json,
+                    ) as model,
+                ):
+                    with self.assertRaises(AdministrativeAdmissionError) as captured:
+                        admit_administrative_contract(payload, limits=profile)
+                    if expected_code == "json_depth":
+                        parser.assert_not_called()
+                        model.assert_not_called()
+                        self.assertEqual(
+                            (129, 128),
+                            (captured.exception.observed, captured.exception.limit),
+                        )
+                    else:
+                        parser.assert_called_once_with(text)
+                        model.assert_called_once_with(text, strict=True)
+                self.assertEqual(expected_code, captured.exception.code)
+        self.assertEqual(
+            canonical_json_bytes(self.accepted.contract), self.accepted.canonical_bytes
+        )
 
     def test_json_syntax_boundary_precedes_model_construction(self) -> None:
         cases = (
