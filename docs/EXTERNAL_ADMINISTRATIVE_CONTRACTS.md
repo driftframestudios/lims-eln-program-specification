@@ -13,10 +13,14 @@ named owners.
 The family is version `1.0.0`. Package `0.4.0` has an accepted source binding;
 `0.4.1` is the implementation successor for iterative traversal and explicit
 resource admission. The Program release remains `spec-v0.3.1`; these version
-lines advance independently. [The current package coordinate](../release/contract-package-coordinate.json)
-binds `0.4.1` to its reviewed source and scoped digest. Each receiving
-repository adopts that coordinate through its own conformance checks;
-existing consumer pins retain their accepted versions.
+lines advance independently. Package `0.4.2` restores exact source-label
+preservation through validation and serialization.
+[The current package coordinate](../release/contract-package-coordinate.json)
+records the successor's reviewed source and scoped digest.
+Each receiving repository adopts that reviewed
+coordinate through its own conformance checks. Existing consumer pins retain
+their accepted versions. [The raw-label migration](migrations/0.4.1-to-contract-package-0.4.2.md)
+describes exact string preservation, derived digests, and recovery.
 
 [Bounded administrative admission](ADMINISTRATIVE_ADMISSION.md) defines the
 opt-in UTF-8 entry point, caller-selected budgets, safe recovery, cost map, and
