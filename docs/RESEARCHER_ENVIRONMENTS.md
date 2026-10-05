@@ -58,8 +58,12 @@ requirement:
 ~~~sh
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with 'lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@d8f41d0ce98a75120c99f0a23d00796ae8a8b913' \
-  -- python -c 'from importlib.metadata import version; import lims_eln_contracts as c; assert version("lims-eln-program-specification") == "0.4.0"; assert c.__version__ == "0.4.0"; assert c.CONTRACT_VERSION == "1.0.0"; assert c.SCHEMA_RESOURCE_NAMES; assert all(isinstance(c.load_generated_schema(name), dict) for name in c.SCHEMA_RESOURCE_NAMES); print("Installed package and schema resources: passed")'
+  -- python -I -c 'from importlib.metadata import version; import lims_eln_contracts as c; assert version("lims-eln-program-specification") == "0.4.0"; assert c.__version__ == "0.4.0"; assert c.CONTRACT_VERSION == "1.0.0"; assert c.SCHEMA_RESOURCE_NAMES; assert all(isinstance(c.load_generated_schema(name), dict) for name in c.SCHEMA_RESOURCE_NAMES); print("Installed package and schema resources: passed")'
 ~~~
+
+Python's `-I` mode resolves imports through the selected installed environment
+and keeps assertions active independently of the caller's working directory,
+`PYTHONPATH`, and `PYTHONOPTIMIZE` settings.
 
 Git credentials stay with the receiving operator's configured credential
 helper. Initial interpreter and package acquisition needs authorized network
@@ -167,4 +171,3 @@ the correct profile, reach its first result, and identify the owner of any
 remaining evidence. New runtime adoption or a named receiving platform reopens
 the relevant matrix row. Program #55 receives bounded graph/lineage work;
 administrative receiver Issues retain their own implementation and acceptance.
-

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import re
+import shlex
+import subprocess
+import sys
+import tempfile
 import unittest
 
 from scripts import pages_projection
@@ -197,6 +202,48 @@ class ExternalBenchmarkCollaborationSurfaceTests(unittest.TestCase):
         ):
             with self.subTest(statement=statement):
                 self.assertIn(statement, source)
+
+
+    def test_installed_smoke_isolates_imports_and_assertions(self) -> None:
+        source = (ROOT / "docs" / "RESEARCHER_ENVIRONMENTS.md").read_text(
+            encoding="utf-8"
+        )
+        command = shlex.split(source.split("~~~sh\n", 1)[1].split("~~~", 1)[0])
+        python_arguments = command[command.index("--") + 2 :]
+        self.assertEqual(["-I", "-c"], python_arguments[:2])
+        self.assertEqual(3, len(python_arguments))
+        payload = python_arguments[2] + (
+            "; import sys; print(f'python flags: {sys.flags.isolated}:{sys.flags.optimize}')"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / "lims_eln_contracts.py").write_text(
+                "raise RuntimeError('shadowed package sentinel')\n", encoding="utf-8"
+            )
+            environment = dict(os.environ, PYTHONPATH=directory, PYTHONOPTIMIZE="1")
+            for isolated in (False, True):
+                with self.subTest(isolated=isolated):
+                    arguments = [sys.executable]
+                    if isolated:
+                        arguments.append(python_arguments[0])
+                    observed = subprocess.run(
+                        [*arguments, "-c", payload],
+                        cwd=directory,
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        timeout=20,
+                        check=False,
+                    )
+                    if isolated:
+                        self.assertEqual(0, observed.returncode, observed.stderr)
+                        self.assertIn(
+                            "Installed package and schema resources: passed",
+                            observed.stdout,
+                        )
+                        self.assertIn("python flags: 1:0", observed.stdout)
+                    else:
+                        self.assertNotEqual(0, observed.returncode)
+                        self.assertIn("shadowed package sentinel", observed.stderr)
 
 
 if __name__ == "__main__":

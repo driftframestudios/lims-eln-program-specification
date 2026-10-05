@@ -69,8 +69,6 @@ available interpreter is useful when it satisfies those sources. A future
 disagreement returns to the Program source that owns the changed runtime
 contract.
 
-### Rule: uv prepares the environment
-
 ### Rule: The selected dependency profile determines its interpreter floor
 
 Choose Python against the intersection of the project and every selected
