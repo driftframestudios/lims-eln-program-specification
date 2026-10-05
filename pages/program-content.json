@@ -11,8 +11,8 @@
     "label": "0.3.1 candidate",
     "releasedBaseline": "spec-v0.3.0",
     "coordinateStatus": "pending_release_commit",
-    "summary": "Version 0.3.1 is the current Program candidate. It binds accepted Governance 2.1.0, Implementation 0.3.2, Simulation, and Comparison release subjects with their selected-future semantics; the authorized Program promotion route supplies the remaining Program coordinate.",
-    "evidenceBoundary": "The pages describe the candidate at the Git commit recorded in the projection manifest. Release promotion, hosted publication, configured environments, and accountable acceptance retain their own evidence and decision paths."
+    "summary": "The signed spec-v0.3.1 tag exists, and accepted Governance 2.1.0, Implementation 0.3.2, Simulation, and Comparison release subjects are bound with their selected-future semantics. The living Program carriers remain candidate_pending_promotion until the hosted sibling proof and post-tag release observation settle.",
+    "evidenceBoundary": "The pages describe the living source state at the Git commit recorded in the projection manifest. A signed tag and a completed post-tag release observation are distinct facts. Hosted proof, configured environments, publication approval, and accountable acceptance retain their own evidence and decision paths."
   },
   "roleCopy": {
     "program": {
@@ -58,7 +58,7 @@
   "contracts": [
     {
       "name": "Repository role and release status",
-      "summary": "The release-role record states what this repository owns, the candidate status, its contract links, the standing branch controls, and the release-specific review route. Only the Program release coordinate awaits promotion.",
+      "summary": "The release-role record states what this repository owns, the living candidate status, its contract links, the standing branch controls, and the release-specific review route. Its pending Program coordinate represents the open post-tag observation.",
       "sourcePath": "release/repository-role.json"
     },
     {
@@ -68,7 +68,7 @@
     },
     {
       "name": "Constellation lock",
-      "summary": "The lock records each accepted sibling release subject and its decision-changing semantic bindings. Only the Program coordinate remains a placeholder until the authorized promotion route supplies its permanent commit and tree.",
+      "summary": "The lock records each accepted sibling release subject and its decision-changing semantic bindings. The Program placeholder remains until the post-tag observation records the permanent commit and tree in the living carriers.",
       "sourcePath": "constellation.lock.json"
     },
     {
