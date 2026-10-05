@@ -43,10 +43,13 @@ consumer's configured runtime behavior or production acceptance.
 
 ## Adopt the reviewed package source
 
-[`release/contract-package-coordinate.json`](../../release/contract-package-coordinate.json)
-is the machine-readable source for package version, reviewed commit, scoped
-digest, transport, authentication posture, and consumer-conformance checks.
-The reviewed `0.4.0` source coordinate is currently:
+[The accepted `0.4.0` binding](https://github.com/driftframestudios/lims-eln-program-specification/blob/a307f422596e5098ac5efca29968212b5e24da0b/release/contract-package-coordinate.json)
+owns the reviewed commit, scoped digest, transport, authentication posture,
+and consumer-conformance checks for the installation below.
+[The current package coordinate](../../release/contract-package-coordinate.json)
+tracks the successor's own version and review standing. Adopt that successor
+through its exact reviewed source and the receiving repository's checks.
+The retained reviewed `0.4.0` source coordinate is:
 
 ```text
 d8f41d0ce98a75120c99f0a23d00796ae8a8b913

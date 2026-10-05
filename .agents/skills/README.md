@@ -16,7 +16,6 @@ named source cannot establish.
 | [`uv-backed-python-execution`](uv-backed-python-execution/SKILL.md) | A Program check needs Python 3.12 or 3.13 without changing the host Python installation | Public-ready; selected for Program Pages |
 | [`proportionate-recovery-routing`](proportionate-recovery-routing/SKILL.md) | A failed check, source gap, permission boundary, or stale handoff needs the smallest reliable recovery route | Public-possible; exercised against the Program hosted-proof handoff |
 | [`contextual-jargon-scan`](contextual-jargon-scan/SKILL.md) | Changed public or cross-repository prose may assume context its reader does not share | Public-possible; exercised in the Program collaboration workbench |
-
 | [`external-benchmark-reception`](external-benchmark-reception/SKILL.md) | An authorized external subject may become a reference, adapter probe, or derived scenario | Public-possible; external-source exercise remains separately authorized |
 
 `public_possible` and `public_ready` describe observed maturity and navigation
