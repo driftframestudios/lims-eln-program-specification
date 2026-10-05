@@ -90,23 +90,51 @@ class ProvenanceTraversalTests(unittest.TestCase):
                 self.visits[key] = self.visits.get(key, 0) + 1
                 return super().__getitem__(key)
 
-        parents = CountedParents({
+        shared = {
             "root": ("left", "right"),
             "left": ("source-a", "source-b"),
             "right": ("source-a", "source-b"),
             "source-a": (),
             "source-b": (),
             "unrelated": (),
-        })
-        sources = {"source-a": "OBS-A", "source-b": "OBS-B", "unrelated": "OBS-X"}
-        self.assertEqual(
-            frozenset({"OBS-A", "OBS-B"}),
-            reachable_sources(parents, sources, ("root", "left", "root")),
+        }
+        queued = {
+            "root": ("left", "right"),
+            "left": ("middle",),
+            "right": ("left", "source-b"),
+            "middle": ("source-a",),
+            "source-a": (),
+            "source-b": (),
+            "unrelated": (),
+        }
+        sources = {
+            "source-a": "OBS-A",
+            "source-b": "OBS-B",
+            "unrelated": "OBS-X",
+        }
+        cases = (
+            ("shared ancestors", shared),
+            ("ancestor remains queued", queued),
+            ("reversed sibling order", {**queued, "root": ("right", "left")}),
         )
-        self.assertEqual(
-            {"root": 1, "left": 1, "right": 1, "source-a": 1, "source-b": 1},
-            parents.visits,
-        )
+        for name, graph in cases:
+            for roots in (("root",), ("root", "left", "root"), ("left", "root"), ()):
+                with self.subTest(shape=name, roots=roots):
+                    parents = CountedParents(graph)
+                    original_sources = dict(sources)
+                    expected = frozenset({"OBS-A", "OBS-B"}) if roots else frozenset()
+                    expected_visits = (
+                        {key: 1 for key in graph if key != "unrelated"} if roots else {}
+                    )
+                    self.assertEqual(expected, reachable_sources(parents, sources, roots))
+                    self.assertEqual(expected_visits, parents.visits)
+                    self.assertEqual(graph, parents)
+                    self.assertEqual(original_sources, sources)
+                    # A second invocation owns a fresh scheduling set.
+                    self.assertEqual(expected, reachable_sources(parents, sources, roots))
+                    self.assertEqual(
+                        {key: 2 for key in expected_visits}, parents.visits
+                    )
 
     def test_deep_calibrated_chain_has_an_explicit_result(self) -> None:
         for depth in (2, 1_200):
@@ -241,6 +269,96 @@ class AdministrativeAdmissionTests(unittest.TestCase):
                     self.assertEqual("json_depth", captured.exception.code)
                     parser.assert_not_called()
 
+    def test_reference_resolution_precedes_graph_traversal(self) -> None:
+        for boundary in ("parent", "calibration root"):
+            with self.subTest(boundary=boundary):
+                value = source_calibrated_contract(document(CONTRACT_SET_PATH))
+                scenario = value["population_scenarios"][0]
+                if boundary == "parent":
+                    root = next(
+                        item for item in value["provenance_assertions"]
+                        if item["assertion_id"] == scenario["provenance_refs"][0]
+                    )
+                    root["derived_from_assertion_refs"] = ["PROV-MISSING-PARENT"]
+                else:
+                    scenario["calibration_evidence_refs"] = ["PROV-MISSING-ROOT"]
+                payload = json.dumps(value).encode("utf-8")
+                with (
+                    mock.patch(
+                        "lims_eln_contracts.external_administrative.require_acyclic"
+                    ) as cycle_check,
+                    mock.patch(
+                        "lims_eln_contracts.external_administrative.reachable_sources"
+                    ) as traversal,
+                ):
+                    with self.assertRaises(AdministrativeAdmissionError) as captured:
+                        admit_administrative_contract(payload, limits=REVIEW_LIMITS)
+                    cycle_check.assert_not_called()
+                    traversal.assert_not_called()
+                self.assertEqual("contract_validation", captured.exception.code)
+                self.assertNotIn("PROV-MISSING", str(captured.exception))
+                self.assertEqual(value, json.loads(payload))
+
+    def test_escape_spelling_retains_depth_and_literal_values(self) -> None:
+        cases = [
+            (r'{"text":"\u005c","nested":[0]}', "\\", 2),
+            (r'{"text":"\u0022\u005b\u007b","nested":[0]}', '"[{', 2),
+            (r'{"text":"\/\b\f\n\r\t","nested":[0]}', "/\b\f\n\r\t", 2),
+        ]
+        for count in range(7):
+            for suffix in ("", '"[literal]'):
+                value = "\\" * count + suffix
+                cases.append((json.dumps({"text": value, "nested": [[0]]}), value, 3))
+        for text, expected_text, depth in cases:
+            with self.subTest(text=text):
+                self.assertEqual(expected_text, json.loads(text)["text"])
+                self.assertEqual(depth, _json_depth(text, depth))
+                with mock.patch(
+                    "lims_eln_contracts.administrative_admission.strict_json_loads"
+                ) as parser:
+                    with self.assertRaises(AdministrativeAdmissionError) as captured:
+                        admit_administrative_contract(
+                            text.encode("utf-8"),
+                            limits=replace(REVIEW_LIMITS, max_json_depth=depth - 1),
+                        )
+                    parser.assert_not_called()
+                self.assertEqual("json_depth", captured.exception.code)
+
+    def test_json_syntax_boundary_precedes_model_construction(self) -> None:
+        cases = (
+            ("open container", b'{"private-marker": [1, 2', "json_syntax"),
+            ("open string", b'{"private-marker": "unfinished', "json_syntax"),
+            ("trailing escape", b'{"private-marker": "tail' + b"\\", "json_syntax"),
+            ("unknown escape", br'{"private-marker": "\q"}', "json_syntax"),
+            ("short unicode escape", br'{"private-marker": "\u12"}', "json_syntax"),
+            ("invalid unicode escape", br'{"private-marker": "\u12xz"}', "json_syntax"),
+            ("literal newline", b'{"private-marker": "line\nbreak"}', "json_syntax"),
+            ("literal tab", b'{"private-marker": "tab\tbreak"}', "json_syntax"),
+            ("mismatched containers", b'{"private-marker": [1, 2}}', "json_syntax"),
+            ("trailing document", b'{"private-marker": 1} {}', "json_syntax"),
+            (
+                "escaped duplicate key",
+                br'{"private-marker": 0, "\u0070rivate-marker": 1}',
+                "json_duplicate_key",
+            ),
+        )
+        accepted_bytes = self.accepted.canonical_bytes
+        for name, payload, code in cases:
+            with self.subTest(case=name):
+                with mock.patch.object(
+                    ExternalAdministrativeContractSet, "model_validate_json"
+                ) as model:
+                    with self.assertRaises(AdministrativeAdmissionError) as captured:
+                        admit_administrative_contract(payload, limits=REVIEW_LIMITS)
+                    model.assert_not_called()
+                self.assertEqual(code, captured.exception.code)
+                self.assertNotIn("private-marker", str(captured.exception))
+                self.assertLess(len(str(captured.exception)), 240)
+                self.assertEqual(accepted_bytes, self.accepted.canonical_bytes)
+        self.assertEqual(
+            accepted_bytes, canonical_json_bytes(self.accepted.contract)
+        )
+
     def test_decoded_counter_includes_member_names(self) -> None:
         value = {"a": [1, {"b": None}]}
         self.assertEqual(7, _decoded_values(value, 7))
@@ -308,4 +426,3 @@ class AdministrativeAdmissionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

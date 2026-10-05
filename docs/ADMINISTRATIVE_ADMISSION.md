@@ -121,6 +121,41 @@ undeclared predecessors as graph nodes. The aggregate preserves its own
 missing-parent and acyclic-domain errors, then collects each scenario's
 reachable sources without mutating input records.
 
+## Traversal and parser boundaries
+
+The source collector uses a last-in, first-out stack. Its scheduling set records
+every assertion already queued or processed. Each assertion enters the stack
+once and leaves it once; finding an already-queued parent through another branch
+preserves that parent's pending work. Reachability depends on the complete
+reachable set, so sibling and root order retain the same result. A separate
+processed set would duplicate state for this operation. A future shortest-path
+or breadth-layer operation would have its own ordering contract and could use
+a deque; list front removal would add shifting work.
+
+The aggregate resolves every parent and calibration-evidence root before
+calling either graph helper. Direct parent lookup carries that established
+invariant. A missing entry therefore calls for reference repair at admission;
+an empty tuple belongs to a declared leaf. Substituting an empty tuple for a
+missing key would conflate those two states.
+
+The lexical preflight owns the nesting ceiling before parsing. The shared
+strict decoder owns complete-document syntax, including balanced and correctly
+paired containers, completed strings, valid escapes, and trailing content.
+It also checks decoded key uniqueness and finite numeric values. An end-depth
+check alone would cover only part of that grammar. Python's
+[JSON decoder](https://docs.python.org/3.12/library/json.html#json.loads)
+supplies syntax validation within this existing shared boundary.
+
+For valid JSON, an escaped character remains string content. Consecutive
+backslashes are handled one character at a time; Unicode escape text is decoded
+by the parser, where a resulting quote or bracket remains a string value.
+Malformed escape sequences reach the syntax boundary before model construction.
+The focused tests cover queued shared ancestors, alternate ordering, missing
+references, truncated documents, escape parity, Unicode escapes, and escaped
+duplicate keys. These examples establish the named boundaries rather than an
+exhaustive claim about arbitrary inputs.
+
+
 ## Evidence and compatibility
 
 The focused suite preserves exact schema and canonical-output equality,
