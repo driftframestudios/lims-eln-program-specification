@@ -10,10 +10,17 @@ interface input. Enrollment, coverage, prevalence, payer behavior, and
 clinical validity continue to depend on evidence and authority held by their
 named owners.
 
-The family is version `1.0.0`. The Python distribution that carries it is the
-`0.4.0` successor candidate. The Program release remains `spec-v0.3.1`; these
-version lines advance independently. A reviewed merge commit will replace the
-pending package source coordinate after the package bytes are accepted.
+The family is version `1.0.0`. Package `0.4.0` has an accepted source binding;
+`0.4.1` is the implementation successor for iterative traversal and explicit
+resource admission. The Program release remains `spec-v0.3.1`; these version
+lines advance independently. The successor receives its reviewed source
+binding after its package bytes are accepted.
+
+[Bounded administrative admission](ADMINISTRATIVE_ADMISSION.md) defines the
+opt-in UTF-8 entry point, caller-selected budgets, safe recovery, cost map, and
+complete-output contract. Existing v1 model and loader defaults remain stable.
+[The 0.4.1 migration](migrations/0.4.0-to-contract-package-0.4.1.md) names the
+implementation and receiving sequence.
 
 ## Source and generated carriers
 

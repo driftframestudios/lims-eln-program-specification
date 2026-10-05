@@ -14,6 +14,7 @@ from typing import Annotated, Literal
 from pydantic import AfterValidator, Field, PositiveInt, StringConstraints, model_validator
 
 from .canonical import canonical_sha256
+from ._administrative_graph import reachable_sources, require_acyclic
 from .primitives import (
     ContractModel,
     FieldName,
@@ -695,6 +696,7 @@ class NamedPolicyInput(ContractModel):
     @model_validator(mode="after")
     def availability_matches_sources(self) -> "NamedPolicyInput":
         source_ids = [source.record_ref for source in self.sources]
+        source_id_set = set(source_ids)
         value_keys = [
             (
                 value.source_ref,
@@ -705,12 +707,12 @@ class NamedPolicyInput(ContractModel):
             for value in self.values
         ]
         if source_ids != sorted(source_ids) or len(source_ids) != len(
-            set(source_ids)
+            source_id_set
         ):
             raise ValueError("policy input sources remain unique and ordered")
         if value_keys != sorted(value_keys) or len(value_keys) != len(set(value_keys)):
             raise ValueError("policy input values remain unique and ordered")
-        if any(value.source_ref not in set(source_ids) for value in self.values):
+        if any(value.source_ref not in source_id_set for value in self.values):
             raise ValueError("policy input values retain a named source record")
         if self.availability is PolicyInputAvailability.MISSING:
             if self.sources or self.values:
@@ -1817,9 +1819,10 @@ class ExternalAdministrativeContractSet(ContractModel):
                         "policy evaluation applies the declared conflict behavior"
                     )
                 if policy.conflict_behavior is ConflictBehavior.HIGHEST_PRECEDENCE:
-                    highest = min(
-                        evaluation.conflicting_rule_refs,
-                        key=policy.precedence.index,
+                    conflicts = set(evaluation.conflicting_rule_refs)
+                    highest = next(
+                        reference for reference in policy.precedence
+                        if reference in conflicts
                     )
                     if evaluation.selected_rule_ref != highest:
                         raise ValueError(
@@ -1941,50 +1944,25 @@ class ExternalAdministrativeContractSet(ContractModel):
                     f"{assertion.assertion_id} review",
                 )
 
-        visiting: set[str] = set()
-        visited: set[str] = set()
-
-        def visit(assertion_id: str) -> None:
-            if assertion_id in visiting:
-                raise ValueError("provenance assertion graph remains acyclic")
-            if assertion_id in visited:
-                return
-            visiting.add(assertion_id)
-            assertion = provenance[assertion_id]
-            for parent in assertion.derived_from_assertion_refs:
-                visit(parent)
-            visiting.remove(assertion_id)
-            visited.add(assertion_id)
-
-        for assertion_id in provenance:
-            visit(assertion_id)
-
-        source_lineage_cache: dict[str, frozenset[str]] = {}
-
-        def source_lineage(assertion_id: str) -> frozenset[str]:
-            if assertion_id in source_lineage_cache:
-                return source_lineage_cache[assertion_id]
-            assertion = provenance[assertion_id]
-            observed_sources: set[str] = set()
-            if assertion.source_coordinate is not None:
-                observed_sources.add(
-                    assertion.source_coordinate.source_observation_ref
-                )
-            for parent in assertion.derived_from_assertion_refs:
-                observed_sources.update(source_lineage(parent))
-            result = frozenset(observed_sources)
-            source_lineage_cache[assertion_id] = result
-            return result
-
+        parents = {
+            assertion.assertion_id: assertion.derived_from_assertion_refs
+            for assertion in self.provenance_assertions
+        }
+        require_acyclic(parents)
+        sources = {
+            assertion.assertion_id: assertion.source_coordinate.source_observation_ref
+            for assertion in self.provenance_assertions
+            if assertion.source_coordinate is not None
+        }
         for scenario in self.population_scenarios:
             if (
                 scenario.calibration_standing
                 is PopulationCalibrationStanding.NOT_CALIBRATED
             ):
                 continue
-            evidence_sources: set[str] = set()
-            for reference in scenario.calibration_evidence_refs:
-                evidence_sources.update(source_lineage(reference))
+            evidence_sources = reachable_sources(
+                parents, sources, scenario.calibration_evidence_refs
+            )
             if evidence_sources != set(scenario.calibration_source_refs):
                 raise ValueError(
                     "population calibration evidence traces exactly to its declared source observations"
