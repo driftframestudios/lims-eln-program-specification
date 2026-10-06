@@ -15,6 +15,7 @@ entry = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(entry)
 from lims_eln_contracts import resources
 from container_runtime import publish
+from container_wheel_provenance import require_wheel_provenance
 
 REQUIRED_FAMILIES = (
     "operations.v1.json",
@@ -30,8 +31,11 @@ REQUIRED_FAMILIES = (
 
 class ProgramEntryTests(unittest.TestCase):
     def test_installed_wheel_runs_outside_the_source_import_path(self):
-        code = '''import json, pathlib, sys
-from importlib.metadata import version
+        code = '''import json, pathlib, runpy, sys
+from importlib.metadata import distribution, version
+import lims_eln_contracts
+verify = runpy.run_path(sys.argv[3])["require_wheel_provenance"]
+verify(distribution("lims-eln-program-specification"), pathlib.Path(lims_eln_contracts.__file__), pathlib.Path(sys.argv[1]).parent)
 sys.path.insert(0, sys.argv[1])
 import container_entry as entry
 from container_runtime import publish
@@ -44,12 +48,39 @@ print(json.dumps({"installed": version("lims-eln-program-specification"),
 '''
         with tempfile.TemporaryDirectory() as temporary:
             observed = subprocess.run(
-                [sys.executable, "-I", "-B", "-c", code, str(ROOT / "infra"), temporary],
+                [sys.executable, "-I", "-B", "-c", code, str(ROOT / "infra"), temporary, str(ROOT / "tests/container_wheel_provenance.py")],
                 cwd=temporary, capture_output=True, text=True, timeout=15, check=True,
             )
             self.assertEqual(json.loads(observed.stdout), {
                 "installed": "0.4.2", "reported": "0.4.2", "schemas": 9, "families": 8,
             })
+
+    def test_provenance_distinguishes_editable_and_source_ownership(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            checkout = root / "checkout"
+            installed = root / "installed"
+            checkout.mkdir()
+            installed.mkdir()
+            package = installed / "__init__.py"
+            package.write_text("fixture", encoding="utf-8")
+            source = checkout / "__init__.py"
+            source.write_text("fixture", encoding="utf-8")
+            for case in ("wheel", "editable", "source", "mismatched-owner", "missing-wheel"):
+                with self.subTest(case=case):
+                    class Distribution:
+                        def read_text(self, name):
+                            if name == "WHEEL":
+                                return None if case == "missing-wheel" else "Wheel-Version: 1.0\n"
+                            return json.dumps({"dir_info": {"editable": True}}) if case == "editable" else "{}"
+                        def locate_file(self, _name):
+                            return source if case == "source" else package
+                    actual = source if case in ("source", "mismatched-owner") else package
+                    if case == "wheel":
+                        require_wheel_provenance(Distribution(), actual, checkout)
+                    else:
+                        with self.assertRaises(ValueError):
+                            require_wheel_provenance(Distribution(), actual, checkout)
 
     def test_all_public_families_reach_the_output(self):
         with tempfile.TemporaryDirectory() as temporary, patch.object(entry, "version", return_value="fixture-version"):
