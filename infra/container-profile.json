@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "name": "lims-eln-program-specification",
+  "files": [
+    "AUTHORS",
+    "LICENSE",
+    "infra/container_entry.py",
+    "infra/container_runtime.py"
+  ],
+  "dependencies": "wheels"
+}
