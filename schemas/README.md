@@ -5,6 +5,12 @@ source that owns its meaning. A schema establishes a machine-readable
 structural boundary. Repository validators and typed models continue to own
 cross-record and semantic invariants.
 
+## Begin with an example
+
+The [administrative contract example](../docs/README.md#try-the-administrative-contract-kit)
+shows how records and schema-backed meanings fit together. Use the catalog
+below when choosing the exact contract for a receiving artifact.
+
 ## Release and promotion records
 
 | Schema | Stable identity | Behavior authority |
