@@ -1,5 +1,13 @@
 # External benchmark and administrative-context contracts
 
+## Begin with the usable kit
+
+[Run the administrative example](README.md#try-the-administrative-contract-kit)
+to inspect the packaged records and their evidence standing. The
+[starting guide](README.md#build-an-insurance-question-in-layers) separates
+usable contract behavior from the connected services and scenario work. This
+reference owns the family meanings and compatibility boundaries.
+
 ## Purpose
 
 This contract family gives the LIMS/ELN constellation a source-neutral model

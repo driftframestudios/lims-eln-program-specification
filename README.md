@@ -9,6 +9,24 @@ Repository authorship and maintenance provenance is recorded in
 [`AUTHORS`](AUTHORS). Git history and reviewed pull requests preserve change
 chronology and contribution credit.
 
+## Start with a useful result
+
+Use the constellation to explore a laboratory workflow, compare two models, or
+carry an evidence-backed result into review. Begin with the part that answers
+the current question:
+
+- **See an existing result:** read the [Golden Specimen comparison](https://cometspectrum.io/reports/golden-specimen/comparison.html), then follow a difference to its source.
+- **Try a small example:** load the [administrative contract kit](docs/README.md#try-the-administrative-contract-kit) in an isolated Python environment.
+- **Use the application:** follow the [constellation starting guide](docs/README.md) to Enterprise's workbench, Simulation, and the evidence routes.
+
+Program supplies the shared meanings, schemas, and acceptance criteria. Its
+insurance and administrative layer is usable today as typed records, validation,
+and authored examples. Runtime classification and connected scenario execution
+have their own [implementation owners](docs/README.md#build-an-insurance-question-in-layers).
+
+Choose a result first; the release coordinates and detailed proof routes below
+support the next level of inspection.
+
 ## Current state
 
 The signed annotated tag `spec-v0.3.1` exists and resolves to the reviewed
