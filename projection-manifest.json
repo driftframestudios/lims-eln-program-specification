@@ -18,45 +18,50 @@
       "sha256": "dbc2709d225756acffa77bc133784a2d5d6d2d05d51828a9c68308835fbdbb1d"
     },
     {
-      "bytes": 9315,
+      "bytes": 9384,
       "path": "contracts/index.html",
-      "sha256": "c90f15ac9d3b03330217cb9599395ebc580beb0a0761a44bddd27abf743f5cd2"
+      "sha256": "fbeebab37ff1cd7fa16e93c20f0893e2db62090bc90e92940992ae2a9d522fc6"
     },
     {
-      "bytes": 8782,
+      "bytes": 8912,
       "path": "index.html",
-      "sha256": "d9be44e6f3301c60685910f9bef907f83fe8fb8a75fd5ec461dab3ee80935fbb"
+      "sha256": "f6c3733421345c136f071d2deebd23205e844446a53d79ae3c4d7bfbaa0ebcd8"
     },
     {
-      "bytes": 6522,
+      "bytes": 7491,
       "path": "program-content.json",
-      "sha256": "b4e039d4ca623cf7a1d991f1b9401d60823ddc77d7bc1dbe9503f3927df91fb9"
+      "sha256": "4d1db77234b9feaa11b61eafa234bd1983501768dfa61be25ded88a907dec018"
     },
     {
-      "bytes": 10911,
+      "bytes": 10927,
       "path": "skills/constellation-coherence-reconciliation/index.html",
-      "sha256": "03fa3098d7739a9238d2966e360066818077fe940fa1b080bce15dc1802d7f66"
+      "sha256": "2fea9b9d79bb8991598c5e5f419e7984c141a6c4531b547c4e5a78ed559f10c3"
     },
     {
-      "bytes": 4777,
+      "bytes": 5433,
       "path": "skills/index.html",
-      "sha256": "25588dfd43bdc2fad126a8d87e286abacbd4e709cf33617e4084d721e108d46e"
+      "sha256": "56aff95233b5f6e4fbec20b500508cf68a9524080103b7185c95eb875e66039c"
     },
     {
-      "bytes": 13029,
+      "bytes": 13055,
       "path": "skills/source-authority-mapping/index.html",
-      "sha256": "86fc1ea7a8bd3bc5193c6c72bcb89cbfe591a13a8764761aa2d0ebc06d26ae3c"
+      "sha256": "7cc927f69d76331d7768986a576d04ba60bf74bf53f1f85dd8c82f2a86a21530"
     },
     {
-      "bytes": 6157,
+      "bytes": 14194,
+      "path": "skills/uv-backed-python-execution/index.html",
+      "sha256": "ecc11bd538748e5bb4ee03f2fa932f221fc4ab2bdc152dc61a09fecfca5cb5c7"
+    },
+    {
+      "bytes": 6972,
       "path": "verification/index.html",
-      "sha256": "9d71d554771cc5811639adc299211a29a88ef57f7cb8ee35dc99b60a44435bf1"
+      "sha256": "0f18e6e5c294c33a372ceb8c49bf18349ef1c2ff9d78eee57d15f62405d9d8fb"
     }
   ],
   "manifestVersion": "1.0.0",
   "programContent": {
     "projectedPath": "program-content.json",
-    "sha256": "sha256:b4e039d4ca623cf7a1d991f1b9401d60823ddc77d7bc1dbe9503f3927df91fb9",
+    "sha256": "sha256:4d1db77234b9feaa11b61eafa234bd1983501768dfa61be25ded88a907dec018",
     "sourcePath": "pages/program-content.json"
   },
   "projectionOwner": "driftframestudios/lims-eln-program-specification",
@@ -66,21 +71,28 @@
       "pagePath": "skills/constellation-coherence-reconciliation/index.html",
       "slug": "constellation-coherence-reconciliation",
       "sourcePath": ".agents/skills/constellation-coherence-reconciliation/SKILL.md",
-      "sourceSha256": "sha256:829a7a164827255b1977ee6e5b9c76753cedd8d63b270b611dc019c3e9d257ce"
+      "sourceSha256": "sha256:5931cb75a0f162c25f98b2d88e1550176d722376f6b3c213c4c30edc142162cf"
     },
     {
       "name": "source-authority-mapping",
       "pagePath": "skills/source-authority-mapping/index.html",
       "slug": "source-authority-mapping",
       "sourcePath": ".agents/skills/source-authority-mapping/SKILL.md",
-      "sourceSha256": "sha256:0f19810c46a4cbafdffa103565464ad0d954ee735fde960b464b1d61ed43dbf7"
+      "sourceSha256": "sha256:73d67cd16a3f4ccbf706596c02138c34251b4bf3f3198fcacb9d0aa8b652ced3"
+    },
+    {
+      "name": "uv-backed-python-execution",
+      "pagePath": "skills/uv-backed-python-execution/index.html",
+      "slug": "uv-backed-python-execution",
+      "sourcePath": ".agents/skills/uv-backed-python-execution/SKILL.md",
+      "sourceSha256": "sha256:83b991e0b23199d035f04829c00085505a63813c4d39e654dee4e7e43ea9b56e"
     }
   ],
   "sourceProof": {
     "method": "git-exact-head-v1",
-    "revision": "c9216ad1f602f2399424a0bbeaea42a4f4dbce70",
+    "revision": "4e0e48f52a4ce0de1963d1c6bfe404b76a75879a",
     "standing": "clean"
   },
-  "sourceRevision": "c9216ad1f602f2399424a0bbeaea42a4f4dbce70",
+  "sourceRevision": "4e0e48f52a4ce0de1963d1c6bfe404b76a75879a",
   "sourceStanding": "clean"
 }
