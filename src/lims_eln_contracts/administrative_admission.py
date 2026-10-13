@@ -20,6 +20,7 @@ from .canonical import (
     strict_json_loads,
 )
 from .external_administrative import ExternalAdministrativeContractSet
+from .primitives import ContractModel
 
 
 _RECORD_FAMILIES = (
@@ -210,7 +211,7 @@ def _graph_envelope(document: Any, limits: AdministrativeAdmissionLimits) -> tup
     return records, len(provenance), edges, calibrated, steps
 
 
-def _canonical_output(contract: ExternalAdministrativeContractSet, limit: int) -> bytes:
+def _canonical_output(contract: ContractModel, limit: int) -> bytes:
     """O(output) encoding; accumulated bytes are bounded before each append.
 
     The model's JSON projection and a single encoder chunk have their own

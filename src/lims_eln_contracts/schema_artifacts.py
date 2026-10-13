@@ -20,6 +20,12 @@ from .golden_specimen import GoldenSpecimenResultProjection
 from .observation import ObservationEnvelope
 from .scenario import ScenarioContract
 from .specimen import SpecimenCommand
+from .administrative_study import (
+    AdministrativeStudy,
+    StudyComparisonReport,
+    STUDY_SCHEMA_ID,
+    STUDY_SEMANTIC_INVARIANTS,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +59,18 @@ class SchemaArtifact:
 
 
 SCHEMA_ARTIFACTS = (
+    SchemaArtifact(
+        "administrative-study.v1.schema.json",
+        STUDY_SCHEMA_ID,
+        AdministrativeStudy,
+        STUDY_SEMANTIC_INVARIANTS,
+    ),
+    SchemaArtifact(
+        "administrative-study-comparison.v1.schema.json",
+        "urn:driftframe:lims-eln:administrative-study-comparison:1.0.0",
+        StudyComparisonReport,
+        ("counts and findings are derived from the digest-bound study",),
+    ),
     SchemaArtifact(
         "bounded-call-receipt.v1.schema.json",
         "urn:driftframe:lims-eln:bounded-call-receipt:1.0.0",

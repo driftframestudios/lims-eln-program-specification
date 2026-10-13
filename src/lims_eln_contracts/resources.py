@@ -14,6 +14,7 @@ from .external_administrative import (
 )
 from .golden_specimen import GoldenSpecimenObservation
 from .scenario import ScenarioContract
+from .administrative_study import AdministrativeStudy, admit_administrative_study
 
 
 OPERATION_CATALOG_RESOURCE: Final = "operations.v1.json"
@@ -35,6 +36,8 @@ ADMINISTRATIVE_COUNTERFACTUAL_EXAMPLE_RESOURCE: Final = (
     "administrative/administrative-counterfactual.v1.json"
 )
 SCHEMA_RESOURCE_NAMES: Final = (
+    "administrative-study.v1.schema.json",
+    "administrative-study-comparison.v1.schema.json",
     "bounded-call-receipt.v1.schema.json",
     "bounded-call-request.v1.schema.json",
     "external-administrative-contract-set.v1.schema.json",
@@ -52,6 +55,12 @@ def _resource_bytes(relative_path: str) -> bytes:
     for part in relative_path.split("/"):
         target = target.joinpath(part)
     return target.read_bytes()
+
+
+def load_administrative_study_example() -> AdministrativeStudy:
+    return admit_administrative_study(
+        _resource_bytes("administrative/synthetic-study.v1.json")
+    )
 
 
 def load_operation_catalog() -> OperationCatalog:
