@@ -52,7 +52,7 @@ print(json.dumps({"installed": version("lims-eln-program-specification"),
                 cwd=temporary, capture_output=True, text=True, timeout=15, check=True,
             )
             self.assertEqual(json.loads(observed.stdout), {
-                "installed": "0.4.2", "reported": "0.4.2", "schemas": 9, "families": 8,
+                "installed": "0.5.0", "reported": "0.5.0", "schemas": 11, "families": 8,
             })
 
     def test_provenance_distinguishes_editable_and_source_ownership(self):
@@ -87,7 +87,7 @@ print(json.dumps({"installed": version("lims-eln-program-specification"),
             output = Path(temporary)
             entry.produce(output)
             result = json.loads((output / "resources.json").read_bytes())
-            self.assertEqual(len(result["schemas"]), 9)
+            self.assertEqual(len(result["schemas"]), 11)
             self.assertEqual(set(result["resources"]), {
                 "operationCatalog", "goldenScenario", "implementationObservation", "simulationObservation",
                 "externalAdministrativeContractSet", "administrativeAdapter", "independentMultilabelPolicy",
