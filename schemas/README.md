@@ -58,6 +58,12 @@ installation and consumer-conformance checks.
 
 ## Administrative family
 
+The [synthetic study guide](../docs/ADMINISTRATIVE_STUDIES.md) introduces the
+additive `administrative-study.v1.schema.json` and
+`administrative-study-comparison.v1.schema.json` package projections. The
+former preserves plans and observations; the latter carries derived counts and
+output-identity findings. Both remain discoverable through the package inventory.
+
 The external benchmark and administrative-context family begins with:
 
 | Schema | Canonical identity | Use |

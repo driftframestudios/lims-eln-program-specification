@@ -8,6 +8,10 @@ domain behavior, persistence, observed evidence, and accountable decisions.
 
 ## Try the package first
 
+The [synthetic study example](../../docs/ADMINISTRATIVE_STUDIES.md) preserves
+paired plans, actual outputs, incomplete runs and expected outcomes separately.
+It is the package 0.5.0 entry for administrative-context experiments.
+
 The [administrative example](../../docs/README.md#try-the-administrative-contract-kit)
 loads typed resources from the current checkout in an isolated Python
 environment. The [current package coordinate](../../release/contract-package-coordinate.json)

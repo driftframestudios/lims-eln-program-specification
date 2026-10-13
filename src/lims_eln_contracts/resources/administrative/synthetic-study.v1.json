@@ -1,0 +1,286 @@
+{
+  "$schema": "urn:driftframe:lims-eln:administrative-study:1.0.0",
+  "specification": {
+    "study_id": "synthetic-insurance-study",
+    "version": "1.0.0",
+    "question": "Does administrative context change the returned source-evidence summary?",
+    "requested_return": "Separate output identity findings, complete denominators and expected behavior.",
+    "primary_endpoint": "Paired output text identity",
+    "scoring": {
+      "artifact_id": "identity-comparison",
+      "version": "1.0.0",
+      "digest": "sha256:1e0753176dc6163f09c2289748e7e332175b678abbed93b5062b43da2b039b07"
+    },
+    "source": {
+      "data_class": "synthetic",
+      "construction": "authored_fixture",
+      "artifact": {
+        "artifact_id": "program-authored-study",
+        "version": "1.0.0",
+        "digest": "sha256:3037234cbacb1f05aca411d84e7ef2bddfabfc57c7920ad2d841962204e027e0"
+      },
+      "review_ref": "program-issue-71",
+      "purpose": "Exercise changed outputs and legitimate zero effects."
+    },
+    "catalog": {
+      "artifact_id": "authored-insurance-catalog",
+      "version": "1.0.0",
+      "digest": "sha256:cc27e8c3f2e8efd0033435aa9f79e7dffb43431623020300c2a9c1862a85dfff"
+    },
+    "policy": {
+      "artifact_id": "authored-administrative-policy",
+      "version": "1.0.0",
+      "digest": "sha256:da82c6278faa03e39f593f37ffef173a5c3386274037764d8bbdc3b2b4bbed61"
+    },
+    "expected_execution": {
+      "provider_id": "offline_fixture",
+      "model_id": "authored-output-fixture",
+      "adapter_version": "1.0.0",
+      "prompt_digest": "sha256:0ce26786db0cda64b4fd4da287cd049feb753565883399475f927ad2d0f43386",
+      "configuration_digest": "sha256:6e04489c2b5d28e4204e8eddc3c4dc55a962ae1046ce54f957a67068bd1afc22"
+    },
+    "factor_names": [
+      "reportability",
+      "age_band"
+    ],
+    "controlled_factors": [
+      "age_band"
+    ],
+    "controlled_fields": [
+      "scientific_evidence",
+      "subject_id",
+      "episode_id"
+    ],
+    "expected_invariant_outputs": [
+      "scientific"
+    ],
+    "stopping_rule": "Complete four authored runs once.",
+    "max_attempts_per_run": 1
+  },
+  "runs": [
+    {
+      "run_id": "run-0-a",
+      "pair_id": "pair-0",
+      "arm": "a",
+      "scenario_id": "scenario-0",
+      "subject_id": "synthetic-subject-0",
+      "episode_id": "synthetic-episode-0",
+      "repeat_index": 0,
+      "factors": [
+        {
+          "name": "reportability",
+          "standing": "specified",
+          "value": "category"
+        },
+        {
+          "name": "age_band",
+          "standing": "specified",
+          "value": "adult"
+        }
+      ],
+      "scientific_evidence": "Authored assay record: marker present; measured value 4 units.",
+      "administrative_input": "  Authored category  "
+    },
+    {
+      "run_id": "run-0-b",
+      "pair_id": "pair-0",
+      "arm": "b",
+      "scenario_id": "scenario-0",
+      "subject_id": "synthetic-subject-0",
+      "episode_id": "synthetic-episode-0",
+      "repeat_index": 0,
+      "factors": [
+        {
+          "name": "reportability",
+          "standing": "specified",
+          "value": "reportable"
+        },
+        {
+          "name": "age_band",
+          "standing": "specified",
+          "value": "adult"
+        }
+      ],
+      "scientific_evidence": "Authored assay record: marker present; measured value 4 units.",
+      "administrative_input": "Authored reportable code"
+    },
+    {
+      "run_id": "run-1-a",
+      "pair_id": "pair-1",
+      "arm": "a",
+      "scenario_id": "scenario-1",
+      "subject_id": "synthetic-subject-1",
+      "episode_id": "synthetic-episode-1",
+      "repeat_index": 0,
+      "factors": [
+        {
+          "name": "reportability",
+          "standing": "specified",
+          "value": "category"
+        },
+        {
+          "name": "age_band",
+          "standing": "specified",
+          "value": "adult"
+        }
+      ],
+      "scientific_evidence": "Authored assay record: marker present; measured value 4 units.",
+      "administrative_input": "  Authored category  "
+    },
+    {
+      "run_id": "run-1-b",
+      "pair_id": "pair-1",
+      "arm": "b",
+      "scenario_id": "scenario-1",
+      "subject_id": "synthetic-subject-1",
+      "episode_id": "synthetic-episode-1",
+      "repeat_index": 0,
+      "factors": [
+        {
+          "name": "reportability",
+          "standing": "specified",
+          "value": "reportable"
+        },
+        {
+          "name": "age_band",
+          "standing": "specified",
+          "value": "adult"
+        }
+      ],
+      "scientific_evidence": "Authored assay record: marker present; measured value 4 units.",
+      "administrative_input": "Authored reportable code"
+    }
+  ],
+  "observations": [
+    {
+      "observation_id": "observation-0-a",
+      "run_id": "run-0-a",
+      "attempt": 1,
+      "specification_digest": "sha256:668093f1ca22200c79aff987764d04cdf617ca2609fe7d310950f43e479ab09f",
+      "input_digest": "sha256:fbc67b8841641fa7621062007267f208944b7977222c28e53eeb62adb4caa221",
+      "status": "completed",
+      "execution": {
+        "provider_id": "offline_fixture",
+        "model_id": "authored-output-fixture",
+        "adapter_version": "1.0.0",
+        "prompt_digest": "sha256:0ce26786db0cda64b4fd4da287cd049feb753565883399475f927ad2d0f43386",
+        "configuration_digest": "sha256:6e04489c2b5d28e4204e8eddc3c4dc55a962ae1046ce54f957a67068bd1afc22"
+      },
+      "execution_order": 0,
+      "started_at": "2026-10-13T00:00:00Z",
+      "finished_at": "2026-10-13T00:00:01Z",
+      "reason_code": null,
+      "scientific_output": {
+        "text": "Authored evidence summary.",
+        "digest": "sha256:e25efed7281cacd5a1eddc656121685cbd09f6b481f57db09abf7be17ed2bf73",
+        "completeness": "complete"
+      },
+      "administrative_output": {
+        "text": "Review the authored administrative record.",
+        "digest": "sha256:1a26707ea1530e13dba54ee007301391548d49a379e0e24386138ef650ebab5d",
+        "completeness": "complete"
+      }
+    },
+    {
+      "observation_id": "observation-0-b",
+      "run_id": "run-0-b",
+      "attempt": 1,
+      "specification_digest": "sha256:668093f1ca22200c79aff987764d04cdf617ca2609fe7d310950f43e479ab09f",
+      "input_digest": "sha256:1957c19b4977a3706c0b94b92c369d710a938fb1b578cc2bfc7868b1f3dbfbe4",
+      "status": "completed",
+      "execution": {
+        "provider_id": "offline_fixture",
+        "model_id": "authored-output-fixture",
+        "adapter_version": "1.0.0",
+        "prompt_digest": "sha256:0ce26786db0cda64b4fd4da287cd049feb753565883399475f927ad2d0f43386",
+        "configuration_digest": "sha256:6e04489c2b5d28e4204e8eddc3c4dc55a962ae1046ce54f957a67068bd1afc22"
+      },
+      "execution_order": 1,
+      "started_at": "2026-10-13T00:00:00Z",
+      "finished_at": "2026-10-13T00:00:01Z",
+      "reason_code": null,
+      "scientific_output": {
+        "text": "Deliberately changed evidence summary.",
+        "digest": "sha256:eec77b696da5704455637306d1bd3a208ba04409a1b771331e45ea70535d8fbd",
+        "completeness": "complete"
+      },
+      "administrative_output": {
+        "text": "Review the authored administrative record.",
+        "digest": "sha256:1a26707ea1530e13dba54ee007301391548d49a379e0e24386138ef650ebab5d",
+        "completeness": "complete"
+      }
+    },
+    {
+      "observation_id": "observation-1-a",
+      "run_id": "run-1-a",
+      "attempt": 1,
+      "specification_digest": "sha256:668093f1ca22200c79aff987764d04cdf617ca2609fe7d310950f43e479ab09f",
+      "input_digest": "sha256:07cd4236a079c33c591c256516390520c40e46c6e095ca449e5067a0b711d45c",
+      "status": "completed",
+      "execution": {
+        "provider_id": "offline_fixture",
+        "model_id": "authored-output-fixture",
+        "adapter_version": "1.0.0",
+        "prompt_digest": "sha256:0ce26786db0cda64b4fd4da287cd049feb753565883399475f927ad2d0f43386",
+        "configuration_digest": "sha256:6e04489c2b5d28e4204e8eddc3c4dc55a962ae1046ce54f957a67068bd1afc22"
+      },
+      "execution_order": 2,
+      "started_at": "2026-10-13T00:00:00Z",
+      "finished_at": "2026-10-13T00:00:01Z",
+      "reason_code": null,
+      "scientific_output": {
+        "text": "Authored evidence summary.",
+        "digest": "sha256:e25efed7281cacd5a1eddc656121685cbd09f6b481f57db09abf7be17ed2bf73",
+        "completeness": "complete"
+      },
+      "administrative_output": {
+        "text": "Review the authored administrative record.",
+        "digest": "sha256:1a26707ea1530e13dba54ee007301391548d49a379e0e24386138ef650ebab5d",
+        "completeness": "complete"
+      }
+    },
+    {
+      "observation_id": "observation-1-b",
+      "run_id": "run-1-b",
+      "attempt": 1,
+      "specification_digest": "sha256:668093f1ca22200c79aff987764d04cdf617ca2609fe7d310950f43e479ab09f",
+      "input_digest": "sha256:02cc6b3faea7ff7699a578e3eef7fc1af67554958e16e47bf0d9a9429a58cf08",
+      "status": "completed",
+      "execution": {
+        "provider_id": "offline_fixture",
+        "model_id": "authored-output-fixture",
+        "adapter_version": "1.0.0",
+        "prompt_digest": "sha256:0ce26786db0cda64b4fd4da287cd049feb753565883399475f927ad2d0f43386",
+        "configuration_digest": "sha256:6e04489c2b5d28e4204e8eddc3c4dc55a962ae1046ce54f957a67068bd1afc22"
+      },
+      "execution_order": 3,
+      "started_at": "2026-10-13T00:00:00Z",
+      "finished_at": "2026-10-13T00:00:01Z",
+      "reason_code": null,
+      "scientific_output": {
+        "text": "Authored evidence summary.",
+        "digest": "sha256:e25efed7281cacd5a1eddc656121685cbd09f6b481f57db09abf7be17ed2bf73",
+        "completeness": "complete"
+      },
+      "administrative_output": {
+        "text": "Review the authored administrative record.",
+        "digest": "sha256:1a26707ea1530e13dba54ee007301391548d49a379e0e24386138ef650ebab5d",
+        "completeness": "complete"
+      }
+    }
+  ],
+  "expected_pairs": [
+    {
+      "pair_id": "pair-0",
+      "scientific_changed": true,
+      "administrative_changed": false,
+      "rationale": "An injected difference exercises observation admission."
+    },
+    {
+      "pair_id": "pair-1",
+      "scientific_changed": false,
+      "administrative_changed": false,
+      "rationale": "Changed administrative input may produce an unchanged output."
+    }
+  ]
+}
