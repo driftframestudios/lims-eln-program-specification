@@ -186,7 +186,7 @@ def _operations(document: dict) -> tuple[int, int]:
     seen: set[str] = set()
     executed = requested = 0
     starts = {
-        "create": {"absent"}, "migrate": {"present"}, "restore": {"present", "retained", "unresolved"},
+        "create": {"absent", "removed"}, "migrate": {"present"}, "restore": {"present", "retained", "unresolved"},
         "retain": {"present"}, "cleanup": {"present", "retained", "unresolved"},
         "inspect": {"absent", "present", "retained", "removed", "unresolved"},
         "stop": {"absent", "present", "retained", "removed", "unresolved"},

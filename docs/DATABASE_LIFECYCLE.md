@@ -80,7 +80,7 @@ operation; a capability response says nothing about retention or restore.
 
 | Action | Admitted starting state | Successful result |
 | --- | --- | --- |
-| `create` | `absent` | `present`, with this invocation as creator |
+| `create` | `absent`, `removed` | `present`, with this invocation as creator |
 | `migrate` | `present` | `present`, with matching compatibility evidence |
 | `restore` | `present`, `retained`, `unresolved` | `present`, with explicit destructive authority and matching compatibility evidence |
 | `retain` | `present` | `retained`; available to retained/external owners |
