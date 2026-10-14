@@ -2596,7 +2596,7 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
         )
         self.assertIn("Install the contract model boundary", program_job)
         self.assertIn(
-            "python -m pip install --disable-pip-version-check .",
+            "python -m pip install --disable-pip-version-check . -r requirements-test.txt",
             program_job,
         )
         self.assertLess(

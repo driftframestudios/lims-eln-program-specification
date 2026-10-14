@@ -88,6 +88,27 @@ class AutomationContractTests(unittest.TestCase):
             codeowners,
         )
 
+    def test_ci_install_requires_the_separate_test_profile(self) -> None:
+        install_command = (
+            "python -m pip install --disable-pip-version-check . "
+            "-r requirements-test.txt"
+        )
+        self.assertEqual(
+            install_command,
+            automation_contract.PULL_REQUEST_CONTRACT.install_command,
+        )
+        requirements = (ROOT / "requirements-test.txt").read_text(encoding="utf-8")
+        self.assertIn("jsonschema>=4.23,<5", requirements.splitlines())
+        workflow = self.changed(
+            self.workflow,
+            install_command,
+            "python -m pip install --disable-pip-version-check .",
+        )
+        self.assert_rejected(
+            self.findings(workflow=workflow),
+            "package installation command differs",
+        )
+
     def test_required_commands_cannot_survive_only_as_comments_or_variants(self) -> None:
         aggregate = "          python scripts/validate_program.py"
         mutations = (
