@@ -11,8 +11,8 @@ import unittest
 
 from jsonschema import Draft202012Validator
 
-from lims_eln_contracts import SCHEMA_RESOURCE_NAMES, __version__
-from scripts.database_lifecycle import (
+from lims_eln_contracts import AUTHORED_SCHEMA_RESOURCE_NAMES, SCHEMA_RESOURCE_NAMES, authored_schema_bytes, __version__
+from lims_eln_contracts.database_lifecycle import (
     CAPABILITY_SCHEMA_BYTES,
     MAX_INPUT_BYTES,
     SCHEMA_BYTES,
@@ -65,12 +65,15 @@ class DatabaseLifecycleTests(unittest.TestCase):
         }
         return candidate
 
-    def test_schema_and_frozen_package_boundaries(self):
+    def test_schema_and_separate_package_inventories(self):
         schema = json.loads(SCHEMA_BYTES)
         Draft202012Validator.check_schema(schema)
         self.assertEqual("urn:driftframe:lims-eln:database-lifecycle-profile:1.0.0", schema["$id"])
         self.assertEqual("c4b5859d2b543b26970fb3b5b577b11e5f50415be7484c891257f4d2d0d83808", hashlib.sha256(CAPABILITY_SCHEMA_BYTES).hexdigest())
-        self.assertEqual("0.6.1", __version__)
+        self.assertEqual("0.7.0", __version__)
+        self.assertEqual(("database-lifecycle-profile.v1.schema.json", "workbench-capabilities.v1.schema.json"), AUTHORED_SCHEMA_RESOURCE_NAMES)
+        for name in AUTHORED_SCHEMA_RESOURCE_NAMES:
+            self.assertEqual((ROOT / "schemas" / name).read_bytes(), authored_schema_bytes(name))
         self.assertEqual(12, len(SCHEMA_RESOURCE_NAMES))
         self.assertFalse(any("lifecycle" in name for name in SCHEMA_RESOURCE_NAMES))
 

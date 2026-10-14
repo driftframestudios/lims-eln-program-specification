@@ -26,10 +26,10 @@ the packaged administrative resource inventory unchanged.
 has identity `urn:driftframe:lims-eln:database-lifecycle-profile:1.0.0`.
 Its [choose/launch/inspect/recover/stop guide](../docs/DATABASE_LIFECYCLE.md)
 routes to three database profiles, failure/unresolved examples, and the field
-owner map. [`scripts/database_lifecycle.py`](../scripts/database_lifecycle.py)
-owns source/schema/version and semantic transition admission beside the closed
-structural schema. The companion is source-only: package `0.6.1`, its twelve
-schema resources, and capability v1 retain their accepted boundaries.
+owner map. The [packaged admission API](../src/lims_eln_contracts/database_lifecycle.py)
+owns source/schema/version and semantic transitions beside the closed structural
+schema. Package `0.7.0` carries two exact authored schema mirrors separately
+from its twelve generated schemas; capability v1 retains its reviewed bytes.
 
 ## Release and promotion records
 
@@ -71,8 +71,8 @@ uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_contract_schemas.py --check
 ```
 
-The command establishes that every committed package schema matches the current
-typed source. It does not establish a receiving service's runtime behavior.
+The command establishes that every generated package schema matches its typed
+source and both authored companions match their root schema bytes. It does not establish a receiving service's runtime behavior.
 Use the [`package adoption guide`](../src/lims_eln_contracts/README.md) for
 installation and consumer-conformance checks.
 
@@ -103,3 +103,12 @@ The remaining generated package schemas continue to be discoverable through
 `lims_eln_contracts.SCHEMA_RESOURCE_NAMES`. A package consumer should use that
 inventory so a successor schema cannot disappear silently from its conformance
 check.
+
+## Installed lifecycle companions
+
+The [lifecycle guide](../docs/DATABASE_LIFECYCLE.md) names the source-owned
+lifecycle 1.0.0 and capability v1 schemas. Package 0.7.0 carries byte-identical
+copies under `resources/authored-schemas/`; `AUTHORED_SCHEMA_RESOURCE_NAMES`
+keeps this authored inventory distinct from generated model schemas. The
+`lifecycle` extra supplies the semantic admission API used by independently
+authored Enterprise and Governance receiving tests.

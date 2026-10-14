@@ -27,7 +27,8 @@ consumer's review route.
 - comparative observation envelopes;
 - the executable Golden Specimen scenario;
 - implementation- and simulation-shaped example observations; and
-- generated JSON Schema projections for non-Python consumers.
+- generated JSON Schema projections for non-Python consumers; and
+- the optional database lifecycle admission API with two exact authored schemas.
 
 The package distribution is `lims-eln-program-specification`; its import name is
 `lims_eln_contracts`. The machine coordinate declares the current package version;
@@ -190,3 +191,13 @@ shows declared control coverage and explicit eligibility profiles; the
 [migration route](../../docs/migrations/0.5.0-to-contract-package-0.6.0.md)
 describes the exact-source receiving handoff. Package preparation remains
 separate from tagged publication.
+
+## Receive the database lifecycle companion
+
+Package 0.7.0 adds `lims_eln_contracts.database_lifecycle`. Install the `lifecycle`
+extra in the receiver's dedicated proof environment and select the exact commit
+from the [package coordinate](../../release/contract-package-coordinate.json).
+The [migration guide](../../docs/migrations/0.6.1-to-contract-package-0.7.0.md)
+explains schema identity, provenance, independent expectations and recovery.
+`AUTHORED_SCHEMA_RESOURCE_NAMES` and `authored_schema_bytes(name)` expose the
+source-authored companions separately from generated model projections.

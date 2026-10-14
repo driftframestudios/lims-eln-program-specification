@@ -2,7 +2,7 @@
 
 Choose who owns one database and what should happen to it when a journey ends.
 The [standalone lifecycle schema](../schemas/database-lifecycle-profile.v1.schema.json)
-and [source admission](../scripts/database_lifecycle.py) carry that choice,
+and [installed admission API](../src/lims_eln_contracts/database_lifecycle.py) carry that choice,
 declared authority, and an ordered operation record. Enterprise owns launch and
 execution; Governance owns claim review and accountable acceptance.
 
@@ -146,20 +146,33 @@ successor and receiving update. The byte boundary is 128 KiB per input and the
 record carries at most 64 events; its semantic pass is linear in those events.
 Parsing, schema validation, and canonical encoding remain their existing owners.
 
-Capability v1 stays byte-identical. Package `0.6.1` and its twelve packaged
-schemas retain their existing inventory; no installed consumer needs this
-companion yet. The root schema and source script are source-only artifacts.
+Package `0.7.0` supplies `lims_eln_contracts.database_lifecycle` through the
+optional `lifecycle` extra. Capability v1 and lifecycle 1.0.0 schema bytes retain
+their reviewed meaning. The twelve generated schemas keep their existing
+inventory; `AUTHORED_SCHEMA_RESOURCE_NAMES` identifies these two exact authored
+companions. `scripts/generate_contract_schemas.py --check` checks both families
+against their source owners. The repository CLI delegates to the installed API.
+
+Use the [migration and receiving guide](migrations/0.6.1-to-contract-package-0.7.0.md)
+and [package coordinate](../release/contract-package-coordinate.json) to select
+an exact reviewed commit and scoped package digest. The lifecycle schema digest
+is `sha256:baf035a23aee30c09f410ec157268a42559a4dde824772ead080ece0f56478ca`;
+capability v1 is
+`sha256:c4b5859d2b543b26970fb3b5b577b11e5f50415be7484c891257f4d2d0d83808`.
+The receiver selects its source reference and commit independently of incoming
+records, verifies installed provenance and schema bytes, then supplies
+`LifecycleSource` to `admit_lifecycle_profile`. Accepted results own immutable
+canonical bytes, state, operation counts and unresolved references.
 
 [Program #79](https://github.com/driftframestudios/lims-eln-program-specification/issues/79)
-is prepared as a stack on [PR #78](https://github.com/driftframestudios/lims-eln-program-specification/pull/78).
-After the earlier handoffs and parent-arranged independent review, Enterprise
-#68/#60 and [Governance #49](https://github.com/driftframestudios/site-reading-governance/issues/49)
-receive the reviewed full commit, exact schema bytes/SHA-256, admission source,
-examples, and focused evidence. Each receiver authors its own counterexamples
-and confirms semantic agreement beside byte equality. The earlier Governance
-assurance map retains its separate composition/claim boundaries. This preparation
-leaves receiver acceptance, all merges, tags, publication, infrastructure, and
-external-model execution with their current authorization owners.
+receives independently authored Enterprise #68/#60 and
+[Governance #49](https://github.com/driftframestudios/site-reading-governance/issues/49)
+expectations against that exact installed owner. Each receiver keeps its own
+fixtures, literal expected findings, and source-bound return. Sharing the
+semantic implementation keeps Program authoritative; independently authored
+expectations test that authority. Program source proof establishes documentary
+consistency. The Enterprise launcher and Governance acceptance workflow supply
+their distinct configured observations and accountable decisions.
 
 Return to the [capability guide](WORKBENCH_CAPABILITIES.md),
 [schema index](../schemas/README.md), or [getting started](README.md).
