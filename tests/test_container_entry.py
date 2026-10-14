@@ -52,7 +52,7 @@ print(json.dumps({"installed": version("lims-eln-program-specification"),
                 cwd=temporary, capture_output=True, text=True, timeout=15, check=True,
             )
             self.assertEqual(json.loads(observed.stdout), {
-                "installed": "0.6.1", "reported": "0.6.1", "schemas": 12, "families": 8,
+                "installed": "0.7.0", "reported": "0.7.0", "schemas": 12, "families": 8,
             })
 
     def test_provenance_distinguishes_editable_and_source_ownership(self):

@@ -35,6 +35,11 @@ INDEPENDENT_MULTILABEL_POLICY_EXAMPLE_RESOURCE: Final = (
 ADMINISTRATIVE_COUNTERFACTUAL_EXAMPLE_RESOURCE: Final = (
     "administrative/administrative-counterfactual.v1.json"
 )
+# Source-authored companions retain their own inventory and exact bytes.
+AUTHORED_SCHEMA_RESOURCE_NAMES: Final = (
+    "database-lifecycle-profile.v1.schema.json",
+    "workbench-capabilities.v1.schema.json",
+)
 SCHEMA_RESOURCE_NAMES: Final = (
     "study-interpretation.v1.schema.json",
     "administrative-study.v1.schema.json",
@@ -143,3 +148,10 @@ def generated_schema_bytes(schema_name: str) -> bytes:
             + ", ".join(SCHEMA_RESOURCE_NAMES)
         )
     return _resource_bytes(f"schemas/{schema_name}")
+
+
+def authored_schema_bytes(schema_name: str) -> bytes:
+    """Load one exact source-authored companion from the installed package."""
+    if schema_name not in AUTHORED_SCHEMA_RESOURCE_NAMES:
+        raise ValueError("schema_name uses the authored companion inventory")
+    return _resource_bytes(f"authored-schemas/{schema_name}")
