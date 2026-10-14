@@ -1863,7 +1863,7 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             coordinate["publication_state"],
         )
         self.assertEqual(
-            "43a687464b3803a7bcb88d1dcdc4ea39009904de",
+            "b3e63ff9126a28ff959761d4d959426c00d39192",
             coordinate["source_commit"],
         )
         self.assertEqual(
