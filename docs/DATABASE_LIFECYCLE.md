@@ -26,6 +26,11 @@ through its own individually owned registry. Disposable records retain their
 whole invocation history starting at `absent`; resuming cleanup carries that
 history and the original invocation identity forward.
 
+Creation and cleanup evidence belongs to the current database instance.
+Confirmed absence or removal resets that evidence while preserving the full
+operation history. A later instance earns disposable cleanup authority through
+its own successful creation in the same invocation.
+
 ## Launch through the owning runtime
 
 Select the profile, engine requirement, migration-set reference, credential

@@ -205,6 +205,80 @@ class DatabaseLifecycleTests(unittest.TestCase):
         candidate["unresolved_resource_refs"] = []
         self.assertEqual("removed", self.admit(candidate).resource_state)
 
+    def resolved_cleanup(self, state):
+        candidate = deepcopy(self.examples["cleanup-failed"])
+        inspect = deepcopy(candidate["operations"][-1])
+        inspect.update(
+            operation_ref="ref:confirmed-cleanup-result", action="inspect",
+            from_state="unresolved", to_state=state, outcome="succeeded",
+            failure_code=None, evidence_ref="ref:confirmed-cleanup-evidence",
+        )
+        inspect["authority"]["destructive_authorized"] = False
+        candidate["operations"].append(inspect)
+        candidate["resource"]["state"] = state
+        candidate["unresolved_resource_refs"] = []
+        return candidate
+
+    def test_uncertain_recreation_cannot_reuse_prior_creation(self):
+        for outcome, failure in (("failed", "create_failed"), ("unresolved", "resource_unresolved")):
+            with self.subTest(outcome=outcome):
+                candidate = self.resolved_cleanup("absent")
+                self.assertEqual("absent", self.admit(candidate).resource_state)
+                create = deepcopy(candidate["operations"][0])
+                create.update(
+                    operation_ref="ref:second-create", outcome=outcome,
+                    to_state="unresolved", failure_code=failure,
+                    evidence_ref="ref:second-create-evidence",
+                )
+                cleanup = deepcopy(candidate["operations"][1])
+                cleanup.update(
+                    operation_ref="ref:second-cleanup", from_state="unresolved",
+                    to_state="removed", outcome="succeeded", failure_code=None,
+                    evidence_ref="ref:second-cleanup-evidence",
+                )
+                candidate["operations"].extend((create, cleanup))
+                candidate["resource"]["state"] = "removed"
+                self.reject(candidate, "unowned_cleanup")
+
+    def test_successful_recreation_owns_its_cleanup(self):
+        candidate = self.resolved_cleanup("absent")
+        create = deepcopy(candidate["operations"][0])
+        create.update(operation_ref="ref:second-create", evidence_ref="ref:second-create-evidence")
+        cleanup = deepcopy(candidate["operations"][1])
+        cleanup.update(
+            operation_ref="ref:second-cleanup", outcome="succeeded",
+            to_state="removed", failure_code=None, evidence_ref="ref:second-cleanup-evidence",
+        )
+        candidate["operations"].extend((create, cleanup))
+        candidate["resource"]["state"] = "removed"
+        accepted = self.admit(candidate)
+        self.assertEqual(("removed", 5, ()), (
+            accepted.resource_state, accepted.executed_operations,
+            accepted.unresolved_resource_refs,
+        ))
+        self.assertEqual(candidate, json.loads(accepted.canonical_bytes))
+        self.assertEqual("cleanup_failed", json.loads(accepted.canonical_bytes)["operations"][1]["failure_code"])
+
+    def test_resolved_cleanup_cannot_supply_a_later_removed_observation(self):
+        for state in ("absent", "removed"):
+            with self.subTest(state=state):
+                candidate = self.resolved_cleanup(state)
+                self.assertEqual(state, self.admit(candidate).resource_state)
+                failed = deepcopy(candidate["operations"][-1])
+                failed.update(
+                    operation_ref="ref:later-inspection-failed", from_state=state,
+                    to_state="unresolved", outcome="failed", failure_code="inspect_failed",
+                    evidence_ref="ref:later-inspection-failure",
+                )
+                removed = deepcopy(candidate["operations"][-1])
+                removed.update(
+                    operation_ref="ref:later-removed-observation", to_state="removed",
+                    evidence_ref="ref:later-removed-evidence",
+                )
+                candidate["operations"].extend((failed, removed))
+                candidate["resource"]["state"] = "removed"
+                self.reject(candidate, "invalid_transition")
+
     def test_transition_permission_identity_and_operation_evidence(self):
         cases = (
             (("operations", 1, "from_state"), "absent", "invalid_transition"),

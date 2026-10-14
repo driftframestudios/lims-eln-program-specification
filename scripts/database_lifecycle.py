@@ -230,6 +230,9 @@ def _operations(document: dict) -> tuple[int, int]:
         created_here = created_here or (action == "create" and outcome == "succeeded")
         cleanup_attempted = cleanup_attempted or (action == "cleanup" and outcome != "requested")
         state = operation["to_state"]
+        if state in {"absent", "removed"}:
+            # Evidence belongs to the current resource instance, not its history.
+            created_here = cleanup_attempted = False
         requested += outcome == "requested"
         executed += outcome != "requested"
     if resource["state"] != state:
