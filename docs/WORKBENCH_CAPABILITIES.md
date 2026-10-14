@@ -43,7 +43,13 @@ version update can remain compatible with this shape when its version strings
 retain the declared release form. Capability discovery supports navigation;
 operation authorization remains server-owned for every request.
 
-## Three database profiles to implement next
+## Choose database lifecycle separately
+
+The [database lifecycle companion](DATABASE_LIFECYCLE.md) supplies the separate
+versioned source contract, disposable/retained/external examples, explicit owner
+decisions, and failure-preserving transition admission. Begin there to choose a
+profile, launch through its runtime owner, inspect evidence, recover, and stop.
+Capability v1 and its exact schema bytes retain their current meaning.
 
 | Profile | Useful result | Ownership that must be explicit |
 | --- | --- | --- |
@@ -51,8 +57,9 @@ operation authorization remains server-owned for every request.
 | Retained PostgreSQL | Resume and recovery across application restarts. | An operator selects the retained project, migrations, backup, and recovery point. |
 | External PostgreSQL | A receiving team supplies its database and infrastructure. | The team owns credentials, TLS, least-privilege roles, availability, and recovery. |
 
-`postgresql` alone identifies none of these retention choices. The next launcher
-and database-profile contracts will carry the corresponding ownership evidence.
+`postgresql` identifies the adapter. The lifecycle companion carries the chosen
+retention and declared ownership; the receiving launcher establishes their
+configured execution and authenticates every destructive owner decision.
 [Program #76](https://github.com/driftframestudios/lims-eln-program-specification/issues/76)
 and [Enterprise #60](https://github.com/driftframestudios/lims-eln-enterprise-implementation/issues/60)
 retain the remaining migration, persistence, recovery, and configured-execution
