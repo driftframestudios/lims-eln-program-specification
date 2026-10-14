@@ -121,9 +121,9 @@ simulation, or a configured execution. A digest establishes content identity;
 the receiving repository's checks establish the behavior relevant to its task.
 
 Program's [current package coordinate](../release/contract-package-coordinate.json)
-and each consumer's dependency declaration have separate roles. Enterprise
-retains its accepted Program 0.4.0 handoff; this example uses the package in the
-current Program checkout. Coordinate updates travel through the consumer's
+and each consumer's dependency declaration have separate roles. Enterprise's
+reviewed `contracts` profile consumes Program `0.6.1`; this example uses the
+package in the current Program checkout. Coordinate updates travel through the consumer's
 reviewed adoption route.
 
 Continue with the [environment guide](RESEARCHER_ENVIRONMENTS.md),
