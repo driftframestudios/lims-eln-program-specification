@@ -47,12 +47,31 @@ admitted = admit_administrative_contract(payload, limits=limits)
 
 A receiving study selects its own profile using observed payload sizes, record
 counts, graph shape, scenario count, output needs, and available resources.
-Each setting uses an explicitly supplied integer; booleans and coercible text
-remain distinct types. Edge and graph-step budgets can be zero to hold that
-work. Other maxima are positive. All profile integers fit a signed 64-bit
-range, and JSON nesting selects at most 128 containers, the supported decoder
-envelope for this API. Profile changes receive review beside the input and
-receiving use they admit.
+Each setting uses an explicitly supplied built-in `int`. The exact-type
+boundary establishes built-in comparison and arithmetic behavior before range
+checks. Booleans, integer subclasses, enumerations, and scientific scalar
+types retain their own caller-side conversion decision. Edge and graph-step
+budgets can be zero to hold that work. Other maxima are positive. All profile
+integers fit a signed 64-bit range, and JSON nesting selects at most 128
+containers, the supported decoder envelope for this API. Profile changes
+receive review beside the input and receiving use they admit.
+
+A receiving framework can supply a reviewed adapter that establishes the
+allowed source type, integrality, boolean exclusion, and lossless conversion,
+then hands a built-in integer to this initializer for range admission.
+Blanket `int(value)` coercion can truncate fractional values or change their
+meaning. The package keeps this conversion decision with the caller, where
+the scalar's source semantics are available.
+
+This is also a behavior boundary: Python gives subclass
+[reflected comparisons](https://docs.python.org/3/reference/datamodel.html#object.__lt__)
+priority in the relevant mixed-type operations. Accepting an integer subclass
+as-is would admit those overridden methods. NumPy's
+[integer scalars](https://numpy.org/doc/stable/reference/arrays.scalars.html)
+use a separate type hierarchy, so `isinstance(value, int)` alone also leaves
+that interoperability question open. The standard-library regression fixtures
+exercise all seven profile fields and establish type rejection before
+comparison or coercion; NumPy integration remains a receiving-adapter concern.
 
 ## Stage and unit map
 
@@ -120,6 +139,41 @@ Reference resolution occurs first because the standard-library sorter admits
 undeclared predecessors as graph nodes. The aggregate preserves its own
 missing-parent and acyclic-domain errors, then collects each scenario's
 reachable sources without mutating input records.
+
+## Traversal and parser boundaries
+
+The source collector uses a last-in, first-out stack. Its scheduling set records
+every assertion already queued or processed. Each assertion enters the stack
+once and leaves it once; finding an already-queued parent through another branch
+preserves that parent's pending work. Reachability depends on the complete
+reachable set, so sibling and root order retain the same result. A separate
+processed set would duplicate state for this operation. A future shortest-path
+or breadth-layer operation would have its own ordering contract and could use
+a deque; list front removal would add shifting work.
+
+The aggregate resolves every parent and calibration-evidence root before
+calling either graph helper. Direct parent lookup carries that established
+invariant. A missing entry therefore calls for reference repair at admission;
+an empty tuple belongs to a declared leaf. Substituting an empty tuple for a
+missing key would conflate those two states.
+
+The lexical preflight owns the nesting ceiling before parsing. The shared
+strict decoder owns complete-document syntax, including balanced and correctly
+paired containers, completed strings, valid escapes, and trailing content.
+It also checks decoded key uniqueness and finite numeric values. An end-depth
+check alone would cover only part of that grammar. Python's
+[JSON decoder](https://docs.python.org/3.12/library/json.html#json.loads)
+supplies syntax validation within this existing shared boundary.
+
+For valid JSON, an escaped character remains string content. Consecutive
+backslashes are handled one character at a time; Unicode escape text is decoded
+by the parser, where a resulting quote or bracket remains a string value.
+Malformed escape sequences reach the syntax boundary before model construction.
+The focused tests cover queued shared ancestors, alternate ordering, missing
+references, truncated documents, escape parity, Unicode escapes, and escaped
+duplicate keys. These examples establish the named boundaries rather than an
+exhaustive claim about arbitrary inputs.
+
 
 ## Evidence and compatibility
 

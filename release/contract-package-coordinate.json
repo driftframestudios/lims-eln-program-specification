@@ -2,11 +2,11 @@
   "coordinate_version": "1.0.0",
   "distribution_name": "lims-eln-program-specification",
   "import_name": "lims_eln_contracts",
-  "package_version": "0.4.2",
+  "package_version": "0.5.0",
   "repository": "driftframestudios/lims-eln-program-specification",
   "publication_owner": "Program repository owners",
   "publication_state": "reviewed_source_available",
-  "source_commit": "631b5908d8c4b95413578ebd5a82abd95050b341",
+  "source_commit": "43a687464b3803a7bcb88d1dcdc4ea39009904de",
   "source_identity": {
     "scope": [
       "pyproject.toml",
@@ -32,7 +32,7 @@
       ],
       "symlink_behavior": "reject the scope root or any selected entry"
     },
-    "digest": "sha256:bb271296fc0b247933c9f6219d339d4b1d6038257718f4cfcf39328eae0cf74b"
+    "digest": "sha256:d0c407564024f68dd24ca3f6ddb8bea1d04283b06edb5eedbc146a525df51bf7"
   },
   "transport": "git+https",
   "authentication_posture": "Git supplies credentials through a configured credential helper or short-lived GitHub App token; the requirement text carries no credential.",
@@ -44,8 +44,8 @@
     "environment": "clean Python 3.12 environment",
     "direct_url_record": "PEP 610 direct_url.json",
     "required_observations": [
-      "installed distribution version is 0.4.2",
-      "lims_eln_contracts.__version__ is 0.4.2",
+      "installed distribution version is 0.5.0",
+      "lims_eln_contracts.__version__ is 0.5.0",
       "lims_eln_contracts.CONTRACT_VERSION is 1.0.0",
       "vcs_info.commit_id equals the reviewed full commit",
       "the scoped package source digest matches the reviewed binding",

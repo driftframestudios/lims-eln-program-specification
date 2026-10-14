@@ -1,0 +1,186 @@
+{
+  "$defs": {
+    "StudyPairComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "administrative_changed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Administrative Changed"
+        },
+        "expected_invariant_violations": {
+          "items": {
+            "enum": [
+              "scientific",
+              "administrative"
+            ],
+            "type": "string"
+          },
+          "title": "Expected Invariant Violations",
+          "type": "array"
+        },
+        "oracle_agrees": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Oracle Agrees"
+        },
+        "pair_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Pair Id",
+          "type": "string"
+        },
+        "reason_fields": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Reason Fields",
+          "type": "array"
+        },
+        "scientific_changed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Scientific Changed"
+        },
+        "standing": {
+          "enum": [
+            "comparable",
+            "controlled_input_mismatch",
+            "execution_mismatch",
+            "incomplete"
+          ],
+          "title": "Standing",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pair_id",
+        "standing",
+        "reason_fields",
+        "scientific_changed",
+        "administrative_changed",
+        "expected_invariant_violations",
+        "oracle_agrees"
+      ],
+      "title": "StudyPairComparison",
+      "type": "object"
+    }
+  },
+  "$id": "urn:driftframe:lims-eln:administrative-study-comparison:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "urn:driftframe:lims-eln:administrative-study-comparison:1.0.0",
+      "title": "$Schema",
+      "type": "string"
+    },
+    "abstained": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Abstained",
+      "type": "integer"
+    },
+    "attempted": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Attempted",
+      "type": "integer"
+    },
+    "cancelled": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Cancelled",
+      "type": "integer"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/StudyPairComparison"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "completed": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Completed",
+      "type": "integer"
+    },
+    "evidence_scope": {
+      "const": "synthetic_output_identity_comparison",
+      "default": "synthetic_output_identity_comparison",
+      "title": "Evidence Scope",
+      "type": "string"
+    },
+    "excluded": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Excluded",
+      "type": "integer"
+    },
+    "failed": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Failed",
+      "type": "integer"
+    },
+    "pending": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Pending",
+      "type": "integer"
+    },
+    "planned": {
+      "maximum": 512,
+      "minimum": 2,
+      "title": "Planned",
+      "type": "integer"
+    },
+    "study_digest": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "title": "Study Digest",
+      "type": "string"
+    }
+  },
+  "required": [
+    "$schema",
+    "study_digest",
+    "planned",
+    "attempted",
+    "completed",
+    "pending",
+    "abstained",
+    "failed",
+    "cancelled",
+    "excluded",
+    "comparisons"
+  ],
+  "title": "StudyComparisonReport",
+  "type": "object",
+  "x-semantic-invariants": [
+    "counts and findings are derived from the digest-bound study"
+  ]
+}

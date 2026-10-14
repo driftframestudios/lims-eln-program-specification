@@ -80,10 +80,21 @@ from .scenario import ScenarioContract
 from .specimen import SpecimenCommand, SpecimenCommandAction
 
 
-__version__ = "0.4.2"
+from .administrative_study import (
+    AdministrativeStudy,
+    StudyComparisonReport,
+    admit_administrative_study,
+    compare_administrative_study,
+)
+
+__version__ = "0.5.0"
 CONTRACT_VERSION = "1.0.0"
 
 __all__ = [
+    "AdministrativeStudy",
+    "StudyComparisonReport",
+    "admit_administrative_study",
+    "compare_administrative_study",
     "AdministrativeAdapterContract",
     "AdministrativeContext",
     "AdministrativeDecision",

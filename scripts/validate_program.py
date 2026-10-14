@@ -141,7 +141,7 @@ def validate_administrative_example_projections() -> int:
 
 PROGRAM_RELEASE = "0.3.1"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
-PACKAGE_RELEASE = "0.4.2"
+PACKAGE_RELEASE = "0.5.0"
 PACKAGE_SOURCE_DIGEST_ALGORITHM = "path-length-bytes-sha256-v1"
 PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     "file_selection": (

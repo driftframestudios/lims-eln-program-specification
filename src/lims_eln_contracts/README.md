@@ -6,6 +6,19 @@ directory when adopting or revising wire meaning. The Program repository owns
 the contract; each consumer continues to own authentication, authorization,
 domain behavior, persistence, observed evidence, and accountable decisions.
 
+## Try the package first
+
+The [synthetic study example](../../docs/ADMINISTRATIVE_STUDIES.md) preserves
+paired plans, actual outputs, incomplete runs and expected outcomes separately.
+It is the package 0.5.0 entry for administrative-context experiments.
+
+The [administrative example](../../docs/README.md#try-the-administrative-contract-kit)
+loads typed resources from the current checkout in an isolated Python
+environment. The [current package coordinate](../../release/contract-package-coordinate.json)
+identifies the reviewed source. The 0.4.0 installation below preserves
+Enterprise's accepted consumer handoff; later package adoption belongs to that
+consumer's review route.
+
 ## What the package carries
 
 - strict specimen commands;
@@ -19,8 +32,8 @@ domain behavior, persistence, observed evidence, and accountable decisions.
 The package distribution is `lims-eln-program-specification`; its import name is
 `lims_eln_contracts`. The machine coordinate declares the current package version;
 the shared contract version exposed by the package is `1.0.0`.
-The reviewed `0.4.0` installed source below remains available during successor
-preparation. Each receiver selects and verifies its own accepted coordinate.
+The reviewed `0.4.0` installed source below preserves Enterprise's accepted
+consumer handoff. Each receiver selects and verifies its own accepted coordinate.
 This source-local adoption guide is outside the built distribution and the
 package source digest; the machine coordinate names that narrow exclusion so
 documentation can improve without changing accepted runtime bytes.

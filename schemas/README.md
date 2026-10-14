@@ -5,6 +5,12 @@ source that owns its meaning. A schema establishes a machine-readable
 structural boundary. Repository validators and typed models continue to own
 cross-record and semantic invariants.
 
+## Begin with an example
+
+The [administrative contract example](../docs/README.md#try-the-administrative-contract-kit)
+shows how records and schema-backed meanings fit together. Use the catalog
+below when choosing the exact contract for a receiving artifact.
+
 ## Release and promotion records
 
 | Schema | Stable identity | Behavior authority |
@@ -51,6 +57,12 @@ Use the [`package adoption guide`](../src/lims_eln_contracts/README.md) for
 installation and consumer-conformance checks.
 
 ## Administrative family
+
+The [synthetic study guide](../docs/ADMINISTRATIVE_STUDIES.md) introduces the
+additive `administrative-study.v1.schema.json` and
+`administrative-study-comparison.v1.schema.json` package projections. The
+former preserves plans and observations; the latter carries derived counts and
+output-identity findings. Both remain discoverable through the package inventory.
 
 The external benchmark and administrative-context family begins with:
 
