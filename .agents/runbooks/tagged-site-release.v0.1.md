@@ -53,10 +53,10 @@ tranche; a site release neither publishes that carrier nor closes its gates.
 | Governance: https://fieldformlab.org/ | `docs` | [Governance Pages guide](https://github.com/driftframestudios/site-reading-governance/blob/main/docs/GOVERNANCE_PAGES.md) and `tools/build_governance_pages.py` |
 
 These source-guide links are collaborator routes into private repositories.
-Review public visitor links separately; publication must not imply that gated
-source is publicly retrievable. Enterprise and Simulation can supply reviewed,
-allowlisted examples through an existing site. A new site or domain requires
-its own ownership and authorization decision.
+Use public visitor links for openly retrievable content, and identify gated
+source links as collaborator-only routes. Enterprise and Simulation can supply
+reviewed, allowlisted examples through an existing site. A new site or domain
+requires its own ownership and authorization decision.
 
 The existing sites publish from their configured branches. Updating those
 branches is publication, not a staging step.
