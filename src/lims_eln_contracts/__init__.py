@@ -87,10 +87,16 @@ from .administrative_study import (
     compare_administrative_study,
 )
 
-__version__ = "0.5.0"
+from .study_interpretation import StudyAnalysisProfile, StudyInterpretation, StudyProfileError, interpret_administrative_study
+
+__version__ = "0.6.1"
 CONTRACT_VERSION = "1.0.0"
 
 __all__ = [
+    "StudyAnalysisProfile",
+    "StudyInterpretation",
+    "StudyProfileError",
+    "interpret_administrative_study",
     "AdministrativeStudy",
     "StudyComparisonReport",
     "admit_administrative_study",
