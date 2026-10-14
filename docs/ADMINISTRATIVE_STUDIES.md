@@ -53,6 +53,15 @@ hint. Real-person records remain outside this repository's intake.
 
 ## Interpret declared controls
 
+Package 0.6.1 preserves the interpretation schema and tightens imported execution
+counts. A recorded mismatch stays visible while a companion arm is unavailable.
+Imported interpretations establish internal consistency; source verification
+uses the admitted study and its digest. Pydantic validation retains
+`ValidationError` with specific error codes. A profile requesting undeclared
+controls raises `StudyProfileError`, a `ValueError` subtype with a fixed code and
+recovery guidance. Public feedback can select codes and authored messages;
+complete validation objects remain with their authorized diagnostic receiver.
+
 Package 0.6.0 adds a separate interpretation companion. The original study and
 comparison schemas retain their 1.0.0 meanings. Use the companion to distinguish
 declared equality, specified-control coverage, recorded execution agreement,

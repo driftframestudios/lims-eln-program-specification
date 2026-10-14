@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Annotated, Literal, Self
 
 from pydantic import Field, model_validator
+from pydantic_core import PydanticCustomError
 
 from .administrative_study import (
     AdministrativeStudy, ShortText, StudyComparisonReport, StudyFactor,
@@ -24,6 +25,16 @@ INTERPRETATION_SCHEMA_ID = "urn:driftframe:lims-eln:study-interpretation:1.0.0"
 Count = Annotated[int, Field(ge=0, le=512)]
 
 
+class StudyProfileError(ValueError):
+    """A profile needs alignment with the separately admitted study."""
+
+    code = "profile_control_undeclared"
+    recovery = "Select required controls from the study's declared controlled factors."
+
+    def __init__(self) -> None:
+        super().__init__("profile requirements resolve to declared controlled factors")
+
+
 class StudyAnalysisProfile(ContractModel):
     profile_id: Identifier = "declared-input-comparison"
     version: SemanticVersion = "1.0.0"
@@ -33,7 +44,7 @@ class StudyAnalysisProfile(ContractModel):
     @model_validator(mode="after")
     def unique_controls(self) -> Self:
         if len(set(self.required_specified_controls)) != len(self.required_specified_controls):
-            raise ValueError("profile control identities are unique")
+            raise PydanticCustomError("profile_control_duplicate", "profile control identities are unique")
         return self
 
 
@@ -44,7 +55,7 @@ class ControlCoverage(ContractModel):
     @model_validator(mode="after")
     def same_dimension(self) -> Self:
         if self.a.name != self.b.name:
-            raise ValueError("control arms name the same declared factor")
+            raise PydanticCustomError("control_dimension_mismatch", "control arms name the same declared factor")
         return self
 
 
@@ -93,34 +104,42 @@ class StudyInterpretation(ContractModel):
     def reconcile(self) -> Self:
         originals = {item.pair_id: item for item in self.comparison.comparisons}
         if self.study_digest != self.comparison.study_digest:
-            raise ValueError("interpretation and comparison bind the same study")
+            raise PydanticCustomError("interpretation_study_mismatch", "interpretation and comparison bind the same study")
         ids = tuple(pair.pair_id for pair in self.pairs)
         if len(set(ids)) != len(ids) or set(ids) != set(originals):
-            raise ValueError("interpretation covers every compared pair exactly once")
+            raise PydanticCustomError("interpretation_pair_coverage", "interpretation covers every compared pair exactly once")
+        minimum_attempted = 0
         for pair in self.pairs:
             names = tuple(control.a.name for control in pair.controls)
             if len(set(names)) != len(names) or not set(self.profile.required_specified_controls) <= set(names):
-                raise ValueError("required controls resolve uniquely within each pair")
+                raise PydanticCustomError("interpretation_control_coverage", "required controls resolve uniquely within each pair")
             if pair.declared_input_equal and any(control.a != control.b for control in pair.controls):
-                raise ValueError("declared equality preserves control differences")
+                raise PydanticCustomError("interpretation_control_equality", "declared equality preserves control differences")
             original = originals[pair.pair_id]
             if pair.usable_arms == 2 and pair.execution == "unavailable":
-                raise ValueError("completed arms carry execution identities")
+                raise PydanticCustomError("interpretation_execution_required", "completed arms carry execution identities")
+            # Attempted counts distinct run identities, including earlier retries.
+            # The companion establishes a lower bound from each latest pair;
+            # exact source reconciliation remains with the admitted study.
+            required_attempts = 2 if pair.execution == "matched" else int(pair.execution == "mismatched")
+            minimum_attempted += max(pair.usable_arms, required_attempts)
             if original.standing == "comparable" and pair.expected_pair_available != (original.oracle_agrees is not None):
-                raise ValueError("comparable oracle availability agrees with the comparison")
+                raise PydanticCustomError("interpretation_oracle_mismatch", "comparable oracle availability agrees with the comparison")
             expected_standing = (
                 "controlled_input_mismatch" if not pair.declared_input_equal else
                 "incomplete" if pair.usable_arms != 2 else
                 "execution_mismatch" if pair.execution != "matched" else "comparable"
             )
             if original.standing != expected_standing:
-                raise ValueError("eligibility preserves the accepted comparison standing")
+                raise PydanticCustomError("interpretation_standing_mismatch", "eligibility preserves the accepted comparison standing")
             reasons = _reasons(pair, self.profile)
             if pair.reasons != reasons or pair.eligible != (not reasons):
-                raise ValueError("eligibility and reasons follow the named profile")
+                raise PydanticCustomError("interpretation_eligibility_mismatch", "eligibility and reasons follow the named profile")
+        if self.comparison.attempted < minimum_attempted:
+            raise PydanticCustomError("interpretation_attempted_count", "attempted runs cover the recorded execution and usable arms")
         expected = (len(self.pairs), sum(p.eligible for p in self.pairs), sum(not p.eligible for p in self.pairs), sum(p.expected_pair_available for p in self.pairs), sum(p.usable_arms for p in self.pairs))
         if (self.planned_pairs, self.eligible_pairs, self.excluded_pairs, self.expected_pairs_available, self.usable_runs) != expected or self.usable_runs != self.comparison.completed:
-            raise ValueError("interpretation counts reconcile to their pair and run denominators")
+            raise PydanticCustomError("interpretation_count_mismatch", "interpretation counts reconcile to their pair and run denominators")
         return self
 
 
@@ -128,7 +147,7 @@ def interpret_administrative_study(study: AdministrativeStudy, profile: StudyAna
     """Project declared coverage; specified text itself supplies no measurement proof."""
     profile = profile if profile is not None else StudyAnalysisProfile()
     if not set(profile.required_specified_controls) <= set(study.specification.controlled_factors):
-        raise ValueError("profile requirements resolve to declared controlled factors")
+        raise StudyProfileError()
     latest = {}
     for observation in study.observations:
         previous = latest.get(observation.run_id)
@@ -145,10 +164,10 @@ def interpret_administrative_study(study: AdministrativeStudy, profile: StudyAna
         controls = tuple(ControlCoverage(a=af[name], b=bf[name]) for name in sorted(study.specification.controlled_factors))
         observations = (latest.get(a.run_id), latest.get(b.run_id))
         execution = "matched"
-        if any(o is None or o.execution is None for o in observations):
-            execution = "unavailable"
-        elif any(o.execution != study.specification.expected_execution for o in observations):
+        if any(o is not None and o.execution is not None and o.execution != study.specification.expected_execution for o in observations):
             execution = "mismatched"
+        elif any(o is None or o.execution is None for o in observations):
+            execution = "unavailable"
         pair = PairEligibility(
             pair_id=pair_id, controls=controls,
             declared_input_equal=all(getattr(a, field) == getattr(b, field) for field in study.specification.controlled_fields) and all(c.a == c.b for c in controls),

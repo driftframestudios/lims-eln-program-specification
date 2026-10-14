@@ -6,7 +6,7 @@ import unittest
 from pydantic import ValidationError
 from lims_eln_contracts import admit_administrative_study, canonical_sha256
 from lims_eln_contracts.resources import load_administrative_study_example
-from lims_eln_contracts.study_interpretation import StudyAnalysisProfile, StudyInterpretation, interpret_administrative_study
+from lims_eln_contracts.study_interpretation import StudyAnalysisProfile, StudyInterpretation, StudyProfileError, interpret_administrative_study
 
 
 def admit(document):
@@ -18,6 +18,67 @@ def admit(document):
 
 
 class InterpretationTests(unittest.TestCase):
+    def test_import_execution_claims_require_attempted_runs(self):
+        document = deepcopy(self.document)
+        document["observations"] = []
+        original = interpret_administrative_study(admit(document))
+        self.assertEqual(original.comparison.attempted, 0)
+        for execution, reasons in (
+            ("matched", ["output_unavailable"]),
+            ("mismatched", ["execution_mismatched", "output_unavailable"]),
+        ):
+            with self.subTest(execution=execution):
+                forged = original.model_dump(mode="json")
+                forged["pairs"][0].update(execution=execution, reasons=reasons)
+                with self.assertRaises(ValidationError) as caught:
+                    StudyInterpretation.model_validate_json(json.dumps(forged))
+                self.assertEqual(caught.exception.errors(include_input=False)[0]["type"], "interpretation_attempted_count")
+
+    def test_known_mismatch_survives_missing_companion(self):
+        for observed_arm in (0, 1):
+            for mismatch in (False, True):
+                with self.subTest(observed_arm=observed_arm, mismatch=mismatch):
+                    document = deepcopy(self.document)
+                    if mismatch:
+                        document["observations"][observed_arm]["execution"]["model_id"] = "alternate-model"
+                    document["observations"].pop(1 - observed_arm)
+                    observed = interpret_administrative_study(admit(document))
+                    pair = observed.pairs[0]
+                    self.assertEqual(pair.execution, "mismatched" if mismatch else "unavailable")
+                    self.assertEqual(pair.reasons, ("execution_mismatched" if mismatch else "execution_unavailable", "output_unavailable"))
+                    self.assertEqual(observed.comparison.comparisons[0].standing, "incomplete")
+                    self.assertEqual(observed.comparison.attempted, 3)
+
+    def test_pending_failure_retry_and_cancellation_roundtrip(self):
+        for case in ("pending", "failed", "retry_completed", "retry_cancelled"):
+            with self.subTest(case=case):
+                document = deepcopy(self.document)
+                if case == "pending":
+                    document["observations"] = []
+                else:
+                    prior = document["observations"][0]
+                    if case.startswith("retry"):
+                        retry = deepcopy(prior)
+                        retry["observation_id"] = prior["observation_id"] + "-retry"
+                        retry.update(attempt=2, execution_order=max(o["execution_order"] for o in document["observations"]) + 1, started_at=prior["finished_at"])
+                        document["specification"]["max_attempts_per_run"] = 2
+                        if case == "retry_cancelled":
+                            retry.update(status="cancelled", reason_code="fixture_cancelled", execution=None, execution_order=None, started_at=None, finished_at=None, scientific_output=None, administrative_output=None)
+                        document["observations"].append(retry)
+                    prior.update(status="failed", reason_code="fixture_failure", scientific_output=None, administrative_output=None)
+                observed = interpret_administrative_study(admit(document))
+                self.assertEqual(observed.comparison.attempted, 0 if case == "pending" else 4)
+                self.assertEqual(observed, StudyInterpretation.model_validate_json(observed.model_dump_json()))
+
+    def test_profile_errors_have_stable_codes_and_recovery(self):
+        with self.assertRaises(ValidationError) as caught:
+            StudyAnalysisProfile(required_specified_controls=("age_band", "age_band"))
+        self.assertEqual(caught.exception.errors(include_input=False)[0]["type"], "profile_control_duplicate")
+        with self.assertRaises(StudyProfileError) as caught:
+            interpret_administrative_study(admit(self.document), StudyAnalysisProfile(required_specified_controls=("missing_factor",)))
+        self.assertEqual(caught.exception.code, "profile_control_undeclared")
+        self.assertIn("declared controlled factors", caught.exception.recovery)
+
     def test_import_binds_comparable_oracle_availability(self):
         source = load_administrative_study_example().model_dump(mode="json")
         for present in (True, False):
