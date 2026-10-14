@@ -97,7 +97,7 @@ Python semantic acceptance retain their distinct checks.
 owns this addition. Enterprise #37/#36 receive the offline execution path;
 Simulation owns independent scenario truth, Comparative owns measurement, and
 Governance owns claim and correction mapping. The
-[migration guide](migrations/0.4.2-to-contract-package-0.5.0.md) describes adoption.
+[migration guide](migrations/0.5.0-to-contract-package-0.6.0.md) describes adoption.
 
 Publication, release tags and external model execution retain their held state.
 
