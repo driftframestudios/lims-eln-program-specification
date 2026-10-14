@@ -1,0 +1,96 @@
+{
+  "schema_ref": "urn:driftframe:lims-eln:database-lifecycle-profile:1.0.0",
+  "schema_version": "1.0.0",
+  "source": {
+    "source_ref": "ref:synthetic-program-source",
+    "revision": "1111111111111111111111111111111111111111"
+  },
+  "profile_ref": "ref:synthetic-external",
+  "evidence_class": "authored_example",
+  "invocation": {
+    "invocation_ref": "ref:synthetic-invocation",
+    "owner_ref": "ref:launcher"
+  },
+  "requested_profile": {
+    "disposition": "external",
+    "engine": "postgresql",
+    "engine_major": 16,
+    "migration_ref": "ref:synthetic-migrations-v-one",
+    "credential_receiver_class": "external_owner_runtime",
+    "permitted_actions": [
+      "create",
+      "migrate",
+      "restore",
+      "retain",
+      "cleanup",
+      "inspect",
+      "stop"
+    ],
+    "cleanup_policy": "external_owner_only",
+    "recovery_ref": "ref:synthetic-external-recovery"
+  },
+  "resource": {
+    "resource_ref": "ref:synthetic-external-database",
+    "owner_ref": "ref:external-owner",
+    "creation_owner_ref": "ref:external-owner",
+    "created_by_invocation_ref": null,
+    "initial_state": "present",
+    "state": "present"
+  },
+  "composition": {
+    "state": "not_observed",
+    "capability_ref": null,
+    "capability_digest": null
+  },
+  "readiness": {
+    "state": "ready",
+    "observation_ref": "ref:synthetic-external-readiness"
+  },
+  "operations": [
+    {
+      "operation_ref": "ref:external-inspect",
+      "action": "inspect",
+      "from_state": "present",
+      "to_state": "present",
+      "outcome": "succeeded",
+      "authority": {
+        "owner_ref": "ref:external-owner",
+        "actor_ref": "ref:launcher",
+        "decision_ref": "ref:decision-external-inspect",
+        "basis": "explicit_owner_decision",
+        "destructive_authorized": false
+      },
+      "compatibility": {
+        "state": "not_observed",
+        "engine_major": null,
+        "migration_ref": null,
+        "observation_ref": null
+      },
+      "evidence_ref": "ref:evidence-external-inspect",
+      "failure_code": null
+    },
+    {
+      "operation_ref": "ref:external-stop",
+      "action": "stop",
+      "from_state": "present",
+      "to_state": "present",
+      "outcome": "succeeded",
+      "authority": {
+        "owner_ref": "ref:external-owner",
+        "actor_ref": "ref:launcher",
+        "decision_ref": "ref:decision-external-stop",
+        "basis": "explicit_owner_decision",
+        "destructive_authorized": false
+      },
+      "compatibility": {
+        "state": "not_observed",
+        "engine_major": null,
+        "migration_ref": null,
+        "observation_ref": null
+      },
+      "evidence_ref": "ref:evidence-external-stop",
+      "failure_code": null
+    }
+  ],
+  "unresolved_resource_refs": []
+}

@@ -20,6 +20,17 @@ adapter, state lifetime, package-version compatibility, HTTP operations, and
 the separate dependency-readiness observation. This standalone schema keeps
 the packaged administrative resource inventory unchanged.
 
+## Database lifecycle companion
+
+[`database-lifecycle-profile.v1.schema.json`](database-lifecycle-profile.v1.schema.json)
+has identity `urn:driftframe:lims-eln:database-lifecycle-profile:1.0.0`.
+Its [choose/launch/inspect/recover/stop guide](../docs/DATABASE_LIFECYCLE.md)
+routes to three database profiles, failure/unresolved examples, and the field
+owner map. [`scripts/database_lifecycle.py`](../scripts/database_lifecycle.py)
+owns source/schema/version and semantic transition admission beside the closed
+structural schema. The companion is source-only: package `0.6.1`, its twelve
+schema resources, and capability v1 retain their accepted boundaries.
+
 ## Release and promotion records
 
 | Schema | Stable identity | Behavior authority |

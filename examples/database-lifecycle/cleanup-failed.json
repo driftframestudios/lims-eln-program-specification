@@ -1,0 +1,97 @@
+{
+  "schema_ref": "urn:driftframe:lims-eln:database-lifecycle-profile:1.0.0",
+  "schema_version": "1.0.0",
+  "source": {
+    "source_ref": "ref:synthetic-program-source",
+    "revision": "1111111111111111111111111111111111111111"
+  },
+  "profile_ref": "ref:synthetic-disposable",
+  "evidence_class": "authored_example",
+  "invocation": {
+    "invocation_ref": "ref:synthetic-invocation",
+    "owner_ref": "ref:launcher"
+  },
+  "requested_profile": {
+    "disposition": "disposable",
+    "engine": "postgresql",
+    "engine_major": 16,
+    "migration_ref": "ref:synthetic-migrations-v-one",
+    "credential_receiver_class": "invocation_runtime",
+    "permitted_actions": [
+      "create",
+      "migrate",
+      "restore",
+      "cleanup",
+      "inspect",
+      "stop"
+    ],
+    "cleanup_policy": "current_invocation_owned",
+    "recovery_ref": "ref:synthetic-disposable-recovery"
+  },
+  "resource": {
+    "resource_ref": "ref:synthetic-disposable-database",
+    "owner_ref": "ref:launcher",
+    "creation_owner_ref": "ref:launcher",
+    "created_by_invocation_ref": "ref:synthetic-invocation",
+    "initial_state": "absent",
+    "state": "unresolved"
+  },
+  "composition": {
+    "state": "not_observed",
+    "capability_ref": null,
+    "capability_digest": null
+  },
+  "readiness": {
+    "state": "not_observed",
+    "observation_ref": null
+  },
+  "operations": [
+    {
+      "operation_ref": "ref:failed-cleanup-create",
+      "action": "create",
+      "from_state": "absent",
+      "to_state": "present",
+      "outcome": "succeeded",
+      "authority": {
+        "owner_ref": "ref:launcher",
+        "actor_ref": "ref:launcher",
+        "decision_ref": "ref:decision-failed-cleanup-create",
+        "basis": "invocation_owned",
+        "destructive_authorized": false
+      },
+      "compatibility": {
+        "state": "not_observed",
+        "engine_major": null,
+        "migration_ref": null,
+        "observation_ref": null
+      },
+      "evidence_ref": "ref:evidence-failed-cleanup-create",
+      "failure_code": null
+    },
+    {
+      "operation_ref": "ref:failed-cleanup-attempt",
+      "action": "cleanup",
+      "from_state": "present",
+      "to_state": "unresolved",
+      "outcome": "failed",
+      "authority": {
+        "owner_ref": "ref:launcher",
+        "actor_ref": "ref:launcher",
+        "decision_ref": "ref:decision-failed-cleanup-attempt",
+        "basis": "invocation_owned",
+        "destructive_authorized": true
+      },
+      "compatibility": {
+        "state": "not_observed",
+        "engine_major": null,
+        "migration_ref": null,
+        "observation_ref": null
+      },
+      "evidence_ref": "ref:evidence-failed-cleanup-attempt",
+      "failure_code": "cleanup_failed"
+    }
+  ],
+  "unresolved_resource_refs": [
+    "ref:synthetic-disposable-database"
+  ]
+}
