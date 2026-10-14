@@ -1,0 +1,140 @@
+{
+  "schema_ref": "urn:driftframe:lims-eln:database-lifecycle-profile:1.0.0",
+  "schema_version": "1.0.0",
+  "source": {
+    "source_ref": "ref:synthetic-program-source",
+    "revision": "1111111111111111111111111111111111111111"
+  },
+  "profile_ref": "ref:synthetic-retained",
+  "evidence_class": "authored_example",
+  "invocation": {
+    "invocation_ref": "ref:synthetic-invocation",
+    "owner_ref": "ref:launcher"
+  },
+  "requested_profile": {
+    "disposition": "retained",
+    "engine": "postgresql",
+    "engine_major": 16,
+    "migration_ref": "ref:synthetic-migrations-v-one",
+    "credential_receiver_class": "operator_runtime",
+    "permitted_actions": [
+      "create",
+      "migrate",
+      "restore",
+      "retain",
+      "cleanup",
+      "inspect",
+      "stop"
+    ],
+    "cleanup_policy": "explicit_owner_decision",
+    "recovery_ref": "ref:synthetic-retained-recovery"
+  },
+  "resource": {
+    "resource_ref": "ref:synthetic-retained-database",
+    "owner_ref": "ref:operator",
+    "creation_owner_ref": "ref:operator",
+    "created_by_invocation_ref": null,
+    "initial_state": "present",
+    "state": "retained"
+  },
+  "composition": {
+    "state": "not_observed",
+    "capability_ref": null,
+    "capability_digest": null
+  },
+  "readiness": {
+    "state": "ready",
+    "observation_ref": "ref:synthetic-retained-readiness"
+  },
+  "operations": [
+    {
+      "operation_ref": "ref:retained-inspect",
+      "action": "inspect",
+      "from_state": "present",
+      "to_state": "present",
+      "outcome": "succeeded",
+      "authority": {
+        "owner_ref": "ref:operator",
+        "actor_ref": "ref:operator",
+        "decision_ref": "ref:decision-retained-inspect",
+        "basis": "explicit_owner_decision",
+        "destructive_authorized": false
+      },
+      "compatibility": {
+        "state": "not_observed",
+        "engine_major": null,
+        "migration_ref": null,
+        "observation_ref": null
+      },
+      "evidence_ref": "ref:evidence-retained-inspect",
+      "failure_code": null
+    },
+    {
+      "operation_ref": "ref:retained-restore",
+      "action": "restore",
+      "from_state": "present",
+      "to_state": "present",
+      "outcome": "succeeded",
+      "authority": {
+        "owner_ref": "ref:operator",
+        "actor_ref": "ref:operator",
+        "decision_ref": "ref:decision-retained-restore",
+        "basis": "explicit_owner_decision",
+        "destructive_authorized": true
+      },
+      "compatibility": {
+        "state": "compatible",
+        "engine_major": 16,
+        "migration_ref": "ref:synthetic-migrations-v-one",
+        "observation_ref": "ref:synthetic-compatibility"
+      },
+      "evidence_ref": "ref:evidence-retained-restore",
+      "failure_code": null
+    },
+    {
+      "operation_ref": "ref:retained-retain",
+      "action": "retain",
+      "from_state": "present",
+      "to_state": "retained",
+      "outcome": "succeeded",
+      "authority": {
+        "owner_ref": "ref:operator",
+        "actor_ref": "ref:operator",
+        "decision_ref": "ref:decision-retained-retain",
+        "basis": "explicit_owner_decision",
+        "destructive_authorized": false
+      },
+      "compatibility": {
+        "state": "not_observed",
+        "engine_major": null,
+        "migration_ref": null,
+        "observation_ref": null
+      },
+      "evidence_ref": "ref:evidence-retained-retain",
+      "failure_code": null
+    },
+    {
+      "operation_ref": "ref:retained-stop",
+      "action": "stop",
+      "from_state": "retained",
+      "to_state": "retained",
+      "outcome": "succeeded",
+      "authority": {
+        "owner_ref": "ref:operator",
+        "actor_ref": "ref:operator",
+        "decision_ref": "ref:decision-retained-stop",
+        "basis": "explicit_owner_decision",
+        "destructive_authorized": false
+      },
+      "compatibility": {
+        "state": "not_observed",
+        "engine_major": null,
+        "migration_ref": null,
+        "observation_ref": null
+      },
+      "evidence_ref": "ref:evidence-retained-stop",
+      "failure_code": null
+    }
+  ],
+  "unresolved_resource_refs": []
+}

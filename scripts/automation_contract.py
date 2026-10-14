@@ -303,7 +303,7 @@ PULL_REQUEST_CONTRACT = PullRequestContract(
         "Install the contract model boundary",
         "Validate repository-owned contracts",
     ),
-    install_command="python -m pip install --disable-pip-version-check .",
+    install_command="python -m pip install --disable-pip-version-check . -r requirements-test.txt",
     validation_commands=(
         "python scripts/validate_program.py",
         "python scripts/check_language.py",
