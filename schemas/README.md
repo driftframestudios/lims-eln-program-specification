@@ -11,6 +11,15 @@ The [administrative contract example](../docs/README.md#try-the-administrative-c
 shows how records and schema-backed meanings fit together. Use the catalog
 below when choosing the exact contract for a receiving artifact.
 
+## Workbench composition
+
+[`workbench-capabilities.v1.schema.json`](workbench-capabilities.v1.schema.json)
+defines a bounded local-reference capability response. Its
+[guide and examples](../docs/WORKBENCH_CAPABILITIES.md) distinguish composed
+adapter, state lifetime, package-version compatibility, HTTP operations, and
+the separate dependency-readiness observation. This standalone schema keeps
+the packaged administrative resource inventory unchanged.
+
 ## Release and promotion records
 
 | Schema | Stable identity | Behavior authority |

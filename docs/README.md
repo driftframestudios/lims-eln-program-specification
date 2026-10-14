@@ -19,6 +19,11 @@ its source into Simulation to understand the selected future behavior, or into
 Enterprise to examine the application mechanism. Program defines the shared
 meanings; Governance makes the evidence and decision authority inspectable.
 
+The [workbench capability guide](WORKBENCH_CAPABILITIES.md) explains how to
+identify the active adapter, package compatibility, and current HTTP operations.
+The [execution and skill map](WORKBENCH_EXECUTION_MAP.md) connects the database,
+interface, study, comparison, and public-carrier work to their owning Issues.
+
 ## Prepare only the environment the task needs
 
 Reading the report, schemas, and examples works directly in the browser. To run
