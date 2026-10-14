@@ -180,3 +180,13 @@ environment after a related source change.
 installed and editable use, complete-profile interpreter requirements, and
 configured native/container evidence. [The handoff runbook](../../.agents/runbooks/constellation-contract-release-handoff.v0.1.md)
 keeps each consumer's acknowledgement and recovery with its receiving Issue.
+
+## Comparison interpretation companion
+
+The 0.6.0 package adds `StudyAnalysisProfile`, `StudyInterpretation`, and the
+pure `interpret_administrative_study` projection. Existing study and comparison
+contracts keep their meanings. The [study guide](../../docs/ADMINISTRATIVE_STUDIES.md)
+shows declared control coverage and explicit eligibility profiles; the
+[migration route](../../docs/migrations/0.5.0-to-contract-package-0.6.0.md)
+describes the exact-source receiving handoff. Package preparation remains
+separate from tagged publication.

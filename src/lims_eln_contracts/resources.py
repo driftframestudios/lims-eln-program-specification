@@ -36,6 +36,7 @@ ADMINISTRATIVE_COUNTERFACTUAL_EXAMPLE_RESOURCE: Final = (
     "administrative/administrative-counterfactual.v1.json"
 )
 SCHEMA_RESOURCE_NAMES: Final = (
+    "study-interpretation.v1.schema.json",
     "administrative-study.v1.schema.json",
     "administrative-study-comparison.v1.schema.json",
     "bounded-call-receipt.v1.schema.json",
