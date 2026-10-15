@@ -1878,6 +1878,7 @@ class ExternalAdministrativeContractSet(ContractModel):
                     decision.review.evidence_refs, f"{decision.decision_id} review"
                 )
 
+        decision_digests: dict[str, str] = {}
         for observation in self.impact_observations:
             require(
                 observation.population_scenario_ref,
@@ -1909,7 +1910,10 @@ class ExternalAdministrativeContractSet(ContractModel):
                     raise ValueError(
                         "impact arm administrative input equals its policy input digest"
                     )
-                if arm.administrative_output_digest != canonical_sha256(decision):
+                # Resolve and validate the arm before preparing its immutable decision.
+                if arm.decision_ref not in decision_digests:
+                    decision_digests[arm.decision_ref] = canonical_sha256(decision)
+                if arm.administrative_output_digest != decision_digests[arm.decision_ref]:
                     raise ValueError(
                         "impact arm administrative output equals its canonical decision digest"
                     )

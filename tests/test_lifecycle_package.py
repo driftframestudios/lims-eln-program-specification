@@ -18,7 +18,7 @@ root = pathlib.Path(sys.argv[1])
 verify = runpy.run_path(str(root / "tests/container_wheel_provenance.py"))["require_wheel_provenance"]
 verify(distribution("lims-eln-program-specification"), pathlib.Path(package.__file__), root)
 assert not pathlib.Path(owner.__file__).resolve().is_relative_to(root)
-assert package.__version__ == "0.7.0"
+assert package.__version__ == "0.7.1"
 assert len(package.SCHEMA_RESOURCE_NAMES) == 12
 for name in package.AUTHORED_SCHEMA_RESOURCE_NAMES:
     assert package.authored_schema_bytes(name) == (root / "schemas" / name).read_bytes()
@@ -45,7 +45,7 @@ package.load_operation_catalog()
 print(package.__version__)
 '''
         result = subprocess.run([sys.executable, "-I", "-B", "-c", code], capture_output=True, text=True, check=True, timeout=20)
-        self.assertEqual("0.7.0", result.stdout.strip())
+        self.assertEqual("0.7.1", result.stdout.strip())
 
     def test_cli_delegates_to_the_installed_owner(self):
         from scripts import database_lifecycle as entry

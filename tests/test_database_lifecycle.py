@@ -70,7 +70,7 @@ class DatabaseLifecycleTests(unittest.TestCase):
         Draft202012Validator.check_schema(schema)
         self.assertEqual("urn:driftframe:lims-eln:database-lifecycle-profile:1.0.0", schema["$id"])
         self.assertEqual("c4b5859d2b543b26970fb3b5b577b11e5f50415be7484c891257f4d2d0d83808", hashlib.sha256(CAPABILITY_SCHEMA_BYTES).hexdigest())
-        self.assertEqual("0.7.0", __version__)
+        self.assertEqual("0.7.1", __version__)
         self.assertEqual(("database-lifecycle-profile.v1.schema.json", "workbench-capabilities.v1.schema.json"), AUTHORED_SCHEMA_RESOURCE_NAMES)
         for name in AUTHORED_SCHEMA_RESOURCE_NAMES:
             self.assertEqual((ROOT / "schemas" / name).read_bytes(), authored_schema_bytes(name))

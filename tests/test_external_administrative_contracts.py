@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from collections import Counter
 import json
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 from pydantic import ValidationError
 
@@ -13,9 +15,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from lims_eln_contracts.canonical import (  # noqa: E402
+    canonical_json_bytes,
     canonical_sha256,
     model_from_strict_json,
     strict_json_loads,
+)
+from lims_eln_contracts.administrative_admission import (  # noqa: E402
+    AdministrativeAdmissionLimits,
+    admit_administrative_contract,
 )
 from lims_eln_contracts.external_administrative import (  # noqa: E402
     AdministrativeAdapterContract,
@@ -982,6 +989,65 @@ class RelationshipTests(unittest.TestCase):
         ] = "urn:example:undefined-profile:1"
         with self.assertRaises(ValidationError):
             parse(ExternalAdministrativeContractSet, wrong_profile)
+
+    def _repeated_impacts(self, count: int) -> dict:
+        value = deepcopy(self.contract_document)
+        impact = value["impact_observations"][0]
+        provenance = next(
+            row for row in value["provenance_assertions"]
+            if row["assertion_id"] == impact["provenance_refs"][0]
+        )
+        for index in range(1, count):
+            repeated = deepcopy(impact)
+            repeated["observation_id"] = f"IMPACT-REUSED-{index}"
+            proof = deepcopy(provenance)
+            proof["assertion_id"] = f"PROV-IMPACT-REUSED-{index}"
+            proof["subject_refs"] = [repeated["observation_id"]]
+            repeated["provenance_refs"] = [proof["assertion_id"]]
+            value["impact_observations"].append(repeated)
+            value["provenance_assertions"].append(proof)
+        return value
+
+    def test_impact_digest_preparation_is_owned_by_each_admission(self) -> None:
+        value = self._repeated_impacts(32)
+        payload = canonical_json_bytes(value)
+        expected_output = canonical_json_bytes(parse(ExternalAdministrativeContractSet, value))
+        expected_ids = {
+            value["impact_observations"][0][arm]["decision_ref"]
+            for arm in ("baseline", "counterfactual")
+        }
+        calls = Counter()
+        limits = AdministrativeAdmissionLimits(
+            max_input_bytes=2 * 1024 * 1024, max_json_depth=32,
+            max_decoded_values=200_000, max_records=2_000,
+            max_provenance_edges=8_000, max_graph_steps=100_000,
+            max_output_bytes=2 * 1024 * 1024,
+        )
+
+        def observe(item):
+            if isinstance(item, AdministrativeDecision):
+                calls[item.decision_id] += 1
+            return canonical_sha256(item)
+
+        with patch("lims_eln_contracts.external_administrative.canonical_sha256", side_effect=observe):
+            for invocation in (1, 2):
+                admitted = admit_administrative_contract(payload, limits=limits)
+                self.assertEqual(expected_output, admitted.canonical_bytes)
+                self.assertEqual({key: invocation for key in expected_ids}, calls)
+        self.assertEqual(payload, canonical_json_bytes(value))
+
+    def test_later_impact_arm_still_checks_its_own_output_digest(self) -> None:
+        value = self._repeated_impacts(3)
+        value["impact_observations"][-1]["baseline"]["administrative_output_digest"] = "sha256:" + "9" * 64
+        with self.assertRaisesRegex(ValidationError, "canonical decision digest"):
+            parse(ExternalAdministrativeContractSet, value)
+
+    def test_changed_decision_content_is_rechecked_in_a_later_invocation(self) -> None:
+        value = self._repeated_impacts(3)
+        parse(ExternalAdministrativeContractSet, value)
+        value["administrative_decisions"][0]["reason_terms"][0]["label"] = "A revised decision explanation"
+        with self.assertRaisesRegex(ValidationError, "canonical decision digest"):
+            parse(ExternalAdministrativeContractSet, value)
 
     def test_policy_input_profile_derives_missing_and_order_stably(self) -> None:
         classifications = {
