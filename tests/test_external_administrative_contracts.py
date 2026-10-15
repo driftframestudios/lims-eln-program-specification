@@ -21,6 +21,7 @@ from lims_eln_contracts.canonical import (  # noqa: E402
     strict_json_loads,
 )
 from lims_eln_contracts.administrative_admission import (  # noqa: E402
+    AdministrativeAdmissionError,
     AdministrativeAdmissionLimits,
     admit_administrative_contract,
 )
@@ -1041,6 +1042,62 @@ class RelationshipTests(unittest.TestCase):
         value["impact_observations"][-1]["baseline"]["administrative_output_digest"] = "sha256:" + "9" * 64
         with self.assertRaisesRegex(ValidationError, "canonical decision digest"):
             parse(ExternalAdministrativeContractSet, value)
+
+    def test_reused_decisions_retain_each_later_arms_relationship_checks(self) -> None:
+        value = self._repeated_impacts(3)
+        first = value["impact_observations"][0]
+        changed_digest = "sha256:" + "9" * 64
+        cases = (
+            (
+                "unresolved context",
+                {"baseline": {"context_ref": "CONTEXT-UNRESOLVED"}},
+                "impact context reference",
+            ),
+            (
+                "exchanged contexts",
+                {
+                    "baseline": {"context_ref": first["counterfactual"]["context_ref"]},
+                    "counterfactual": {"context_ref": first["baseline"]["context_ref"]},
+                },
+                "decision retains the arm context",
+            ),
+            (
+                "paired clinical evidence",
+                {
+                    "baseline": {"clinical_evidence_digest": changed_digest},
+                    "counterfactual": {"clinical_evidence_digest": changed_digest},
+                },
+                "clinical evidence equals its context evidence",
+            ),
+            (
+                "administrative input",
+                {
+                    "baseline": {"administrative_input_digest": changed_digest},
+                    "changed_variable": {"baseline_digest": changed_digest},
+                },
+                "administrative input equals its policy input digest",
+            ),
+        )
+        limits = AdministrativeAdmissionLimits(
+            max_input_bytes=2 * 1024 * 1024, max_json_depth=32,
+            max_decoded_values=200_000, max_records=2_000,
+            max_provenance_edges=8_000, max_graph_steps=100_000,
+            max_output_bytes=2 * 1024 * 1024,
+        )
+        for label, changes, expected_error in cases:
+            with self.subTest(relationship=label):
+                changed = deepcopy(value)
+                later = changed["impact_observations"][-1]
+                for owner, fields in changes.items():
+                    later[owner].update(fields)
+                # The arm pair is locally valid; its links into the admitted graph differ.
+                parse(DecisionImpactObservation, later)
+                with self.assertRaisesRegex(ValidationError, expected_error):
+                    parse(ExternalAdministrativeContractSet, changed)
+                payload = canonical_json_bytes(changed)
+                with self.assertRaises(AdministrativeAdmissionError) as caught:
+                    admit_administrative_contract(payload, limits=limits)
+                self.assertEqual("contract_validation", caught.exception.code)
 
     def test_changed_decision_content_is_rechecked_in_a_later_invocation(self) -> None:
         value = self._repeated_impacts(3)
