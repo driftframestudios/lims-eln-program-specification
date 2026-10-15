@@ -1858,9 +1858,11 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             (ROOT / "release" / "contract-package-coordinate.json").read_text()
         )
         MODULE.validate_contract_package_coordinate(coordinate)
-        self.assertEqual("pending_reviewed_merge_commit", coordinate["publication_state"])
-        self.assertIsNone(coordinate["source_commit"])
-        self.assertEqual("planned_after_source_commit", coordinate["consumer_conformance"]["state"])
+        self.assertEqual("reviewed_source_available", coordinate["publication_state"])
+        self.assertEqual(
+            "12f38f2b9bd027010c15261b1bd809388b511d1e", coordinate["source_commit"]
+        )
+        self.assertEqual("required", coordinate["consumer_conformance"]["state"])
 
         pending = deepcopy(coordinate)
         pending["publication_state"] = "pending_reviewed_merge_commit"

@@ -1,10 +1,13 @@
 # Shared LIMS/ELN contract package
 
-The 0.7.1 candidate reuses each referenced decision's canonical digest within
+Package 0.7.1 reuses each referenced decision's canonical digest within
 one administrative graph admission. Its wire schemas and canonical examples
-retain their bytes. The package coordinate remains pending review; consumers
-retain their accepted 0.7.0 source until a focused adoption review selects the
-successor. Each admission prepares fresh digests for its own immutable values.
+retain their bytes. The package coordinate binds reviewed integration source
+`12f38f2b9bd027010c15261b1bd809388b511d1e` and its scoped digest. Consumers
+retain their accepted source until a focused adoption review selects this
+successor and completes its receiving checks. Each admission prepares fresh
+digests for its own immutable values. Source availability and consumer adoption
+remain distinct from repository release, tags, and publication.
 
 `lims_eln_contracts` is the small Python and JSON contract nucleus shared by the
 Program's implementation, simulation, and comparison repositories. Use this
