@@ -1112,12 +1112,12 @@ def _page_shell(
       <p class="eyebrow">{html.escape(eyebrow)}</p>
       <h1 id="page-title">{html.escape(title)}</h1>
       <p class="lede">{html.escape(lede)}</p>
-      <p class="source-coordinate">Source revision <code>{proof.revision}</code> · standing <code>{proof.standing}</code></p>
     </section>
     {body}
     <section class="shell source-panel" aria-labelledby="source-heading">
       <h2 id="source-heading">Exact source</h2>
-      <p>These links open the full Git revision that produced this page.</p>
+      <p class="source-coordinate">Build source <code>{proof.revision}</code> · standing <code>{proof.standing}</code></p>
+      <p>Follow these exact-source links to inspect the actual records. Repository access is currently required; public examples and contract summaries remain available through the visitor routes above.</p>
       <ul>{_source_links(proof.revision, source_links)}</ul>
       <p><a href="{html.escape(manifest_href, quote=True)}">Projection manifest</a> · <a href="{html.escape(content_href, quote=True)}">Program content</a></p>
     </section>
@@ -1146,7 +1146,6 @@ def _index_page(
     release = context.content["release"]
     role_copy = context.content["roleCopy"]
     repositories = {item["role"]: item for item in context.constellation["repositories"]}
-    public_routes = context.content["publicRoutes"]
     cards = []
     for role in ROLE_ORDER:
         copy = role_copy[role]
@@ -1157,7 +1156,7 @@ def _index_page(
   <h3>{html.escape(copy['name'])}</h3>
   <p>{html.escape(copy['summary'])}</p>
   <p>{html.escape(copy['next'])}</p>
-  <a href="https://github.com/{html.escape(repository, quote=True)}">Repository home</a>
+  <a href="https://github.com/{html.escape(repository, quote=True)}">Repository home (collaborator access)</a>
 </article>"""
         )
     route_cards = "".join(
@@ -1165,13 +1164,65 @@ def _index_page(
   <p class="role-label">{html.escape(item['owner'])}</p>
   <h3>{html.escape(item['name'])}</h3>
   <p>{html.escape(item['summary'])}</p>
-  <a href="{html.escape(item['url'], quote=True)}">Open public surface</a>
+  <a href="{html.escape(item['url'], quote=True)}">View public example</a>
 </article>"""
-        for item in public_routes
+        for item in context.content["publicRoutes"]
     )
-    body = f"""<section class="shell status-panel" aria-labelledby="release-heading">
+    body = f"""<section class="shell section" aria-labelledby="public-routes-heading">
+  <p class="eyebrow">Start with an example</p>
+  <h2 id="public-routes-heading">Follow one specimen through the evidence</h2>
+  <p>The Golden Specimen report compares two simulated producers through a shared contract. Choose one field, inspect the two values, then follow the classification and its source. The public report and JSON support this first inspection directly in a browser.</p>
+  <div class="card-grid">{route_cards}</div>
+  <p>For record validation and review boundaries, continue to the <a href="https://fieldformlab.org/">public governance guide and schema catalog</a>.</p>
+</section>
+<section class="shell section" aria-labelledby="roles-heading">
+  <p class="eyebrow">Where each question belongs</p>
+  <h2 id="roles-heading">Five owners, one inspectable workflow</h2>
+  <p>Program defines shared contracts. Enterprise owns execution and persistence; Simulation authors a selected scenario. Comparison interprets their admitted observations. Governance supplies evidence records and accountable review boundaries.</p>
+  <figure class="evidence-figure">
+    <div class="figure-scroll" role="region" tabindex="0" aria-label="Repository responsibility diagram">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" role="img" aria-labelledby="owners-title owners-desc">
+        <title id="owners-title">Contracts, two producers, comparison and governance</title>
+        <desc id="owners-desc">Program supplies shared contracts to Enterprise and Simulation. Their observations can enter Comparison. Governance supplies the records and boundaries for review. Lines show conceptual handoffs; they do not report live service connections.</desc>
+        <g fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M200 90V130 M600 90V130 M200 210V250 M600 210V230H200 M380 300H420"/>
+        </g>
+        <g fill="#e7efff" stroke="currentColor" stroke-width="2">
+          <rect x="20" y="20" width="760" height="70"/>
+          <rect x="20" y="130" width="360" height="80"/>
+          <rect x="420" y="130" width="360" height="80"/>
+          <rect x="20" y="250" width="360" height="100"/>
+          <rect x="420" y="250" width="360" height="100"/>
+        </g>
+        <g fill="currentColor" font-family="sans-serif" font-size="22">
+          <text x="40" y="49" font-weight="700">Program: shared contracts</text>
+          <text x="40" y="76" font-size="18">Record meanings, exchange shapes and source identities</text>
+          <text x="40" y="160" font-weight="700">Enterprise</text>
+          <text x="40" y="190" font-size="18">Workflow execution and persistence</text>
+          <text x="440" y="160" font-weight="700">Simulation</text>
+          <text x="440" y="190" font-size="18">Authored scenarios and observations</text>
+          <text x="40" y="283" font-weight="700">Comparison</text>
+          <text x="40" y="315" font-size="18">Agreement, variation and divergence</text>
+          <text x="440" y="283" font-weight="700">Governance</text>
+          <text x="440" y="315" font-size="18">Evidence records and review scope</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>Responsibility map. Lines identify conceptual handoffs; execution evidence names the services actually observed. The role descriptions below provide the same ownership map as ordinary text.</figcaption>
+  </figure>
+  <div class="card-grid">{''.join(cards)}</div>
+</section>
+<section class="shell section" aria-labelledby="choose-route-heading">
+  <h2 id="choose-route-heading">Choose the next useful depth</h2>
+  <div class="route-grid">
+    <article><h3>Inspect an actual record</h3><p>Choose a contract summary, then follow its exact-source link. Repository access is currently required for the complete record.</p><a class="button" href="contracts/index.html">Find a contract record</a></article>
+    <article><h3>Reproduce with source access</h3><p>Authorized collaborators can build this static site locally and inspect its complete file and digest inventory.</p><a class="button" href="verification/index.html">View local verification</a></article>
+  </div>
+  <p>The static examples explain a bounded workflow. A configured database, administrative study or service deployment has its own source, prerequisites and execution evidence. Repository guides describe those journeys at their selected versions.</p>
+</section>
+<section class="shell status-panel" aria-labelledby="release-heading">
   <div>
-    <p class="eyebrow">Release status</p>
+    <p class="eyebrow">Release and evidence standing</p>
     <h2 id="release-heading">{html.escape(release['label'])}</h2>
     <p>{html.escape(release['summary'])}</p>
     <p>{html.escape(release['evidenceBoundary'])}</p>
@@ -1181,30 +1232,14 @@ def _index_page(
     <div><dt>Released baseline</dt><dd>{html.escape(release['releasedBaseline'])}</dd></div>
     <div><dt>Release commit</dt><dd>{html.escape(release['coordinateStatus'])}</dd></div>
   </dl>
-</section>
-<section class="shell section" aria-labelledby="roles-heading">
-  <p class="eyebrow">Authority map</p>
-  <h2 id="roles-heading">Five repositories, five clear jobs</h2>
-  <p>Each repository owns a distinct part of the program. Follow the role that can establish the behavior you need.</p>
-  <div class="card-grid">{''.join(cards)}</div>
-</section>
-<section class="shell section" aria-labelledby="public-routes-heading">
-  <p class="eyebrow">Public inspection</p>
-  <h2 id="public-routes-heading">Follow an accepted visitor surface</h2>
-  <p>These routes publish a bounded view while the repository that owns each result retains its source and evidence authority.</p>
-  <div class="card-grid">{route_cards}</div>
-</section>
-<section class="shell route-grid" aria-label="Continue through the program">
-  <article><h2>Read the contracts</h2><p>See the released identities, shared exchange shapes, and evidence boundaries.</p><a class="button" href="contracts/index.html">Open contracts</a></article>
-  <article><h2>Verify the candidate</h2><p>Build the same relative-link site locally and inspect its complete list of files and byte digests.</p><a class="button" href="verification/index.html">Open local verification</a></article>
 </section>"""
     return _page_shell(
         context=context,
         proof=proof,
         page_path="index.html",
-        title="One route into the five-repository LIMS/ELN suite",
-        eyebrow="Program-owned orientation",
-        lede="Find the contract, runtime, selected future, comparison, or governance source that owns the question in front of you.",
+        title="Trace a laboratory workflow from contract to evidence",
+        eyebrow="LIMS/ELN Program Specification",
+        lede="Plan and inspect a synthetic laboratory information management system (LIMS) and electronic laboratory notebook (ELN) workflow. Shared contracts connect implementation, scenarios, comparison and review so a team can see what each result establishes.",
         body=body,
         source_links=(
             ("Program Pages content", PROGRAM_CONTENT_SOURCE),
@@ -1228,7 +1263,7 @@ def _contracts_page(
             f"""<article class="record">
   <h3>{html.escape(item['name'])}</h3>
   <p>{html.escape(item['summary'])}</p>
-  <a data-source-link="true" href="{html.escape(_source_url(proof.revision, item['sourcePath']), quote=True)}">Open exact source</a>
+  <a data-source-link="true" href="{html.escape(_source_url(proof.revision, item['sourcePath']), quote=True)}">Inspect the actual record</a>
 </article>"""
         )
         links.append((item["name"], item["sourcePath"]))
@@ -1239,6 +1274,7 @@ def _contracts_page(
 <section class="shell section" aria-labelledby="records-heading">
   <p class="eyebrow">Records maintained here</p>
   <h2 id="records-heading">Contracts that carry the shared meaning</h2>
+  <p>Read a summary here, then inspect the actual record at its exact source revision. Complete-record links currently require repository access.</p>
   <div class="record-list">{''.join(records)}</div>
 </section>
 <section class="shell note" aria-labelledby="evidence-heading">
@@ -1251,7 +1287,7 @@ def _contracts_page(
         page_path="contracts/index.html",
         title="Shared contracts and release identities",
         eyebrow="Program contract route",
-        lede="Inspect the records that give all five repositories the same exchange vocabulary while preserving each repository's authority.",
+        lede="Choose and inspect the records that give all five repositories the same exchange vocabulary while preserving each repository's authority. Public summaries orient the choice; exact-source links lead to each complete record.",
         body=body,
         source_links=links,
         canonical_origin=canonical_origin,
@@ -1422,6 +1458,17 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 @media (min-width: 70rem) {
   .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+.evidence-figure { margin: 1.5rem 0; }
+.figure-scroll { overflow-x: auto; border: 1px solid var(--line); padding: .5rem; }
+.figure-scroll:focus-visible { outline: .2rem solid var(--focus); outline-offset: .2rem; }
+.evidence-figure svg { display: block; width: 100%; min-width: 40rem; height: auto; color: #17345f; }
+.evidence-figure figcaption { max-width: 66ch; margin-top: .75rem; color: var(--muted); }
+@media print {
+  .skip-link { display: none; }
+  .figure-scroll { overflow: visible; border: 0; padding: 0; }
+  .evidence-figure svg { min-width: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
