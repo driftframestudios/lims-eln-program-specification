@@ -44,7 +44,7 @@ core-only result.
 Enterprise's `contracts` profile and Simulation and Comparative's
 `administrative-study` profiles select Program package `0.6.1` at
 `83a97deb76b9a5636cc7da484d350d5556c51661`.
-[The current package coordinate](../release/contract-package-coordinate.json)
+[The immutable `0.6.1` coordinate](https://github.com/driftframestudios/lims-eln-program-specification/blob/d4f0d40faa14a2ed2accb30a54fa652e4d359a50/release/contract-package-coordinate.json)
 owns that reviewed source, scoped digest and receiving conformance requirements.
 These integration-source handoffs leave historical repository releases and
 site identities intact. The earlier
@@ -62,15 +62,19 @@ inputs. Preserve that reviewed pair rather than substituting a latest branch.
 
 Each receiver adopts a successor through its own contract and scenario checks.
 Shared contract version `1.0.0` alone establishes neither identical package
-content nor an accepted receiver upgrade. The standalone workbench capability
-and database lifecycle schemas remain source-only handoffs outside the twelve
-packaged schemas; their integration alone requires no installed-package repin.
+content nor an accepted receiver upgrade. Program `0.7.0` adds the installed
+database lifecycle admission API through its `lifecycle` extra. It carries two
+exact authored schemas alongside the twelve generated schemas. Enterprise and
+Governance receive this API in separate proof environments while the application
+and administrative-study profiles retain their accepted `0.6.1` pins.
 
 ## Installed consumption and editable development
 
+### Retained administrative profile
+
 The first Program resource check can run independently of a sibling checkout.
-From any authorized working directory, use the current reviewed source
-requirement:
+From any authorized working directory, select the reviewed `0.6.1` source used
+by the application and administrative-study profiles:
 
 ~~~sh
 uv run --isolated --no-project --python 3.12 --managed-python \
@@ -92,6 +96,40 @@ adds PEP 610 commit identity, scoped source digest, and the complete required
 resource observations. Its explicit `--program-source` argument supplies a
 verification source; ordinary installed application execution resolves its
 resources from the installed package.
+
+### Lifecycle receiving profile
+
+Use a separate environment for the Program `0.7.0` lifecycle receiver. The
+[current package coordinate](../release/contract-package-coordinate.json)
+binds its exact source and scoped digest. The accepted
+[Enterprise profile](https://github.com/driftframestudios/lims-eln-enterprise-implementation/blob/bd217270425d80705a602ac7985db6c7d338d6eb/requirements-lifecycle.txt)
+and [Governance profile](https://github.com/driftframestudios/site-reading-governance/blob/23fd0db0374e15660931142a094370a72680625d/requirements-lifecycle.txt)
+select that same source with the `lifecycle` extra. From an authorized working
+directory, check installed API and authored-resource availability:
+
+~~~sh
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with 'lims-eln-program-specification[lifecycle] @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@ea0140036a3392557eed78124cdf9e3831bff999' \
+  -- python -I - <<'PY'
+from importlib.metadata import version
+import lims_eln_contracts as contracts
+from lims_eln_contracts import database_lifecycle
+
+assert version("lims-eln-program-specification") == contracts.__version__ == "0.7.0"
+assert len(contracts.SCHEMA_RESOURCE_NAMES) == 12
+assert contracts.authored_schema_bytes("database-lifecycle-profile.v1.schema.json") == database_lifecycle.SCHEMA_BYTES
+assert contracts.authored_schema_bytes("workbench-capabilities.v1.schema.json") == database_lifecycle.CAPABILITY_SCHEMA_BYTES
+print("Installed lifecycle API and authored schema resources: passed")
+PY
+~~~
+
+This check establishes installed API and resource availability. The
+[lifecycle receiving guide](migrations/0.6.1-to-contract-package-0.7.0.md) supplies
+the provenance, exact schema/source, independent-record and recovery checks for
+the handoff. The [lifecycle guide](DATABASE_LIFECYCLE.md) separates documentary
+admission from configured database actions and accountable acceptance.
+
+### Program source development
 
 For Program source work, use the
 [uv execution skill](../.agents/skills/uv-backed-python-execution/SKILL.md) and
@@ -131,6 +169,7 @@ Use the existing Enterprise owners in sequence:
 | --- | --- | --- |
 | Historical `0.4.0` package handoff | [Program PR #56](https://github.com/driftframestudios/lims-eln-program-specification/pull/56) and [Enterprise PR #44](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/44) | Reviewed full commit/scoped digest and first installed-resource consumption |
 | Reviewed `0.6.1` package handoff | [Program PR #75](https://github.com/driftframestudios/lims-eln-program-specification/pull/75) and [Enterprise PR #59](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/59) | Successor source binding and receiving adoption; configured behavior retains its separate observation |
+| Installed `0.7.0` lifecycle handoff | [Program PR #83](https://github.com/driftframestudios/lims-eln-program-specification/pull/83), [Enterprise PR #80](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/80), and [Governance PR #58](https://github.com/driftframestudios/site-reading-governance/pull/58) | Exact installed source and schema bindings with independently authored lifecycle expectations; runtime effects retain their own owners |
 | Native durable workbench | [Enterprise PR #46](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/46), local macOS with Python 3.12 and configured PostgreSQL | Declared Golden Specimen result, explicit adapter/readiness, retained replay and conflict behavior |
 | Confined container workbench | [Enterprise PR #47](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/47), Linux arm64 under a local macOS/Colima receiver | Same declared journey contract through pinned application/migration images, retained state and credential recovery |
 | Typed export and contention | [Enterprise PR #48](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/48) and [PR #49](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/49) | Exact-byte export, bounded recovery, deterministic serialization-conflict observation, and unchanged accepted replay |

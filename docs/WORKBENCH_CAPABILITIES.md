@@ -32,10 +32,17 @@ configuration and authority owners. Both capability and readiness responses use
 
 ## Ownership and versioning
 
-The schema is a standalone Program contract, separate from the packaged
-administrative schema inventory. The Python package keeps its existing version
-and resource list. A receiver vendors the schema with its Program source commit
-and file digest, then checks actual responses against that exact contract.
+The root schema owns this standalone Program contract. Package `0.7.0` carries
+its exact bytes with the lifecycle schema in `AUTHORED_SCHEMA_RESOURCE_NAMES`,
+separate from the twelve generated administrative and runtime schemas. A
+receiver can vendor the root schema with its Program source commit and file
+digest or load the identical authored resource from the reviewed package.
+Actual responses are checked against that selected contract.
+
+Use the [environment guide's lifecycle profile](RESEARCHER_ENVIRONMENTS.md#lifecycle-receiving-profile)
+for the installed admission API and its `lifecycle` extra. The existing
+application and administrative-study profiles retain their accepted `0.6.1`
+pins; each receiving owner selects its separate proof profile.
 
 The operation map is closed in version 1.0.0. A new operation, deployment scope,
 or field receives an explicit successor contract and receiver update. A package
