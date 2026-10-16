@@ -2,11 +2,11 @@
   "coordinate_version": "1.0.0",
   "distribution_name": "lims-eln-program-specification",
   "import_name": "lims_eln_contracts",
-  "package_version": "0.5.0",
+  "package_version": "0.7.1",
   "repository": "driftframestudios/lims-eln-program-specification",
   "publication_owner": "Program repository owners",
   "publication_state": "reviewed_source_available",
-  "source_commit": "43a687464b3803a7bcb88d1dcdc4ea39009904de",
+  "source_commit": "12f38f2b9bd027010c15261b1bd809388b511d1e",
   "source_identity": {
     "scope": [
       "pyproject.toml",
@@ -32,7 +32,7 @@
       ],
       "symlink_behavior": "reject the scope root or any selected entry"
     },
-    "digest": "sha256:d0c407564024f68dd24ca3f6ddb8bea1d04283b06edb5eedbc146a525df51bf7"
+    "digest": "sha256:f1d3f3ec8011bda19ba4b3211a00b5be071c453d67e21ed8112e7b9808eac973"
   },
   "transport": "git+https",
   "authentication_posture": "Git supplies credentials through a configured credential helper or short-lived GitHub App token; the requirement text carries no credential.",
@@ -44,8 +44,8 @@
     "environment": "clean Python 3.12 environment",
     "direct_url_record": "PEP 610 direct_url.json",
     "required_observations": [
-      "installed distribution version is 0.5.0",
-      "lims_eln_contracts.__version__ is 0.5.0",
+      "installed distribution version is 0.7.1",
+      "lims_eln_contracts.__version__ is 0.7.1",
       "lims_eln_contracts.CONTRACT_VERSION is 1.0.0",
       "vcs_info.commit_id equals the reviewed full commit",
       "the scoped package source digest matches the reviewed binding",
@@ -53,7 +53,9 @@
       "the Golden Specimen scenario loads",
       "the implementation and simulation shaped observations load",
       "the canonical external administrative contract bundle and three examples load",
-      "every released schema in SCHEMA_RESOURCE_NAMES loads as a JSON object"
+      "every released schema in SCHEMA_RESOURCE_NAMES loads as a JSON object",
+      "authored lifecycle and capability schemas match their reviewed bytes",
+      "the lifecycle extra admits independently authored receiver expectations"
     ]
   },
   "replacement_rule": "A later full commit may replace this coordinate at the same package version when its scoped package digest is identical; a package-content change advances the version and digest, and consumers adopt either replacement through review."

@@ -20,6 +20,7 @@ from .golden_specimen import GoldenSpecimenResultProjection
 from .observation import ObservationEnvelope
 from .scenario import ScenarioContract
 from .specimen import SpecimenCommand
+from .study_interpretation import INTERPRETATION_SCHEMA_ID, StudyInterpretation
 from .administrative_study import (
     AdministrativeStudy,
     StudyComparisonReport,
@@ -59,6 +60,8 @@ class SchemaArtifact:
 
 
 SCHEMA_ARTIFACTS = (
+    SchemaArtifact("study-interpretation.v1.schema.json", INTERPRETATION_SCHEMA_ID, StudyInterpretation,
+                   ("pair eligibility and aggregate denominators agree with the profile and digest-bound study",)),
     SchemaArtifact(
         "administrative-study.v1.schema.json",
         STUDY_SCHEMA_ID,

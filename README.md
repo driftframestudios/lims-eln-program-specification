@@ -446,6 +446,9 @@ the `closed_in_future_reality` → `closed_in_simulation` and observed
 
 ## Validation
 
+Focused source checks use an editable package. The complete suite installs the
+local package and test profile to exercise installed-wheel provenance as well.
+
 ```sh
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/validate_program.py
@@ -464,7 +467,8 @@ uv run --isolated --no-project --python 3.12 --managed-python \
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_administrative_examples.py --check
 uv run --isolated --no-project --python 3.12 --managed-python \
-  --with-editable . -- python -m unittest discover -s tests -v
+  --with . --with-requirements requirements-test.txt \
+  -- python -m unittest discover -s tests -v
 ```
 
 The external preflight confirms that every sibling release coordinate is ready

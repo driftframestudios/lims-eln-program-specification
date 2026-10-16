@@ -52,9 +52,19 @@ uv run --isolated --no-project \
 ```
 
 Add `--cache-dir <authorized-cache>` when the default uv cache is outside the
-current write boundary. Use the same uv prefix for the complete test suite,
-language check, secret-shape scan, schema check, release-observation verifier,
-Pages verifier, or external sibling preflight named by the current task.
+current write boundary. The complete test suite uses an installed local package
+to exercise wheel provenance and selects the repository's separate test profile:
+
+```sh
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with . --with-requirements requirements-test.txt \
+  -- python -m unittest discover -s tests -v
+```
+
+`requirements-test.txt` supplies JSON Schema validation for repository checks;
+`pyproject.toml` retains the runtime dependency boundary. Use the first command's
+prefix for the language check, secret-shape scan, schema check,
+release-observation verifier, or external sibling preflight named by the task.
 The standard-library Pages builder, projection validator, aggregate, and static
 preview need the uv-provided interpreter rather than the local package, so
 their commands omit `--with-editable .`.
@@ -93,10 +103,12 @@ macOS route and whenever the task requires a uv-provisioned interpreter.
 
 ### Rule: Lockfile presence bounds the evidence claim
 
-The current command uses `--isolated --no-project --with-editable .` so
-validation can install the local package while lock creation remains with a
-future dependency-policy decision. Record the materially relevant dependency
-versions beside the result.
+Both local profiles use `--isolated --no-project`, keeping lock creation with a
+future dependency-policy decision. Focused source checks install the package
+with `--with-editable .`; the complete suite uses `--with .` and
+`--with-requirements requirements-test.txt` for installed-package and test
+dependencies. Record the materially relevant dependency versions beside the
+result.
 
 If Program later accepts a current `uv.lock`, prefer a project run that asserts
 the lock remains current:
