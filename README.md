@@ -617,7 +617,7 @@ rule–path–fingerprint binding. See
 and its bounded authority.
 
 Source guidance:
-[Semantic Attractor Design — Negation-Aware Instructions](https://app.notion.com/p/abcb29b960a842ce8f1a409408a29257).
+The local writing contract above preserves the operative guidance. The authorized private resolver retains its source lineage under `repository-boundary-source-001`.
 
 ## Confined container job
 
