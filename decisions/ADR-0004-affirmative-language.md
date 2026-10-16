@@ -25,7 +25,7 @@ limits, output formats, and exit semantics.
 
 ## Source
 
-[Semantic Attractor Design — Negation-Aware Instructions](https://app.notion.com/p/abcb29b960a842ce8f1a409408a29257)
+The repository-local rules and examples preserve the operative writing guidance. The authorized private resolver retains its upstream lineage under `repository-boundary-source-001`.
 
 ## Examples
 
