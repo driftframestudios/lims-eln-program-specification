@@ -141,7 +141,7 @@ def validate_administrative_example_projections() -> int:
 
 PROGRAM_RELEASE = "0.3.1"
 PROGRAM_TAG = f"spec-v{PROGRAM_RELEASE}"
-PACKAGE_RELEASE = "0.5.0"
+PACKAGE_RELEASE = "0.7.0"
 PACKAGE_SOURCE_DIGEST_ALGORITHM = "path-length-bytes-sha256-v1"
 PACKAGE_SOURCE_DIGEST_CANONICALIZATION = {
     "file_selection": (
@@ -914,6 +914,8 @@ def validate_contract_package_coordinate(coordinate: dict) -> None:
         "the implementation and simulation shaped observations load",
         "the canonical external administrative contract bundle and three examples load",
         "every released schema in SCHEMA_RESOURCE_NAMES loads as a JSON object",
+        "authored lifecycle and capability schemas match their reviewed bytes",
+        "the lifecycle extra admits independently authored receiver expectations",
     }:
         raise ValueError("contract package consumer observations differ")
 

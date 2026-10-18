@@ -1,0 +1,2 @@
+# Repository checks use this profile alongside the accepted runtime package.
+jsonschema>=4.23,<5
