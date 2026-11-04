@@ -2802,6 +2802,8 @@ raise SystemExit(0 if document.get('schema_release') == '2.0.1' else 1)
             author_job,
         )
         self.assertIn("inputs.confirm_run", author_job)
+        self.assertIn("run: python3 .vale/qualify.py", author_job)
+        self.assertNotIn("qualify_program.py", author_job)
         self.assertIn("continue-on-error: true", author_job)
         self.assertIn(
             "VALE_ARCHIVE: vale_3.15.2_Linux_64-bit.tar.gz",

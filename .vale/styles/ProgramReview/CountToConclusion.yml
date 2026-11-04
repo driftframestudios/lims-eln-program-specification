@@ -1,0 +1,13 @@
+extends: existence
+message: "What did the inventory establish? Read the nearby evidence before carrying this conclusion into a decision."
+level: suggestion
+scope:
+  - sentence
+  - list
+  - table.cell
+ignorecase: true
+# Locate the verb on its source line even when the count wraps in a list item.
+raw:
+  - '\b(?:counted|inventoried|catalogued|cataloged|listed|reviewed)\b'
+  - '(?=\s+(?:all\s+)?[0-9]+\b[^.!?]{0,90}?(?:,\s*(?:so|establishing|proving|confirming|demonstrating)\b|\btherefore\b)'
+  - '[^.!?]{0,75}?\b(?:complete|completed|ready|equivalent|equivalence|accepted|validated|proven|successful)\b)'

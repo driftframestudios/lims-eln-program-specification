@@ -30,7 +30,9 @@ python3 -m unittest discover -s tests -v
 ```
 
 Vale `3.15.2` can provide advisory author feedback with
-`vale --config=.vale.ini .`. The deterministic commands above remain the
+`vale --config=.vale.ini --no-global .`. The [author guide](docs/AUTHOR_FEEDBACK.md)
+includes the optional Program review for a selected Markdown file. The
+deterministic commands above remain the
 candidate-eligibility controls.
 
 The external preflight establishes coordinate readiness without requiring
