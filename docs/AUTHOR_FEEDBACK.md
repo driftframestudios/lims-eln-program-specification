@@ -6,6 +6,34 @@ for candidate eligibility. Authors and accountable reviewers decide what a
 passage means. A quiet Vale run establishes only that its enabled patterns
 returned no alert in the text Vale examined.
 
+## Try one comparison passage
+
+A reviewer can use a field count to check coverage. Deciding whether two
+scientific methods agree requires evidence about the analyte, value and unit.
+The first sentence claims equivalence from a count. The next paragraph tells
+the reader that three fields differ and identifies what to compare. The
+example expects a suggestion on line 1.
+
+```pycon
+>>> from pathlib import Path
+>>> from qualify import qualify
+>>> passage = ("We reviewed all 17 fields, establishing measurement equivalence.\n\n"
+...            "Three fields differ. Compare their analyte, value and unit.")
+>>> qualify(Path(".vale/program.ini"), {
+...     "comparison.md": (passage, [(1, "ProgramReview.CountToConclusion", "suggestion")])
+... })
+
+```
+
+With Vale 3.15.2 on the path, run the example from the repository root.
+
+```sh
+PYTHONPATH=.vale python3 -m doctest docs/AUTHOR_FEEDBACK.md
+```
+
+A successful run confirms the expected suggestion and its location. The
+scientific reviewer decides what those three differences mean.
+
 ## Shared profile
 
 For a changed document or Python file, select its path. To run the shared
@@ -96,6 +124,36 @@ missing binary, wrong version, or unmatched expectation calls for a check of
 the tool or rule before interpreting its output. The Program check includes
 an inventory with a scientific purpose, a literal term that merits retention,
 an isolated claim that needs human review, code, and quotations.
+
+The shared report checker also has a standard-library example. It exercises
+the recorded finding types and multiplicities without starting Vale.
+
+```sh
+python3 -m doctest .vale/qualify.py
+```
+
+When changing qualification code or a Program rule switch, run the focused
+pytest cases in a temporary Python 3.12 environment. The commands below use
+`uv` to install the pinned test wheels with hash verification. Keep Vale 3.15.2 on the path for the two
+Program cases, which each use their own temporary profile. Both start with
+one passage that triggers both cues, then retire one rule and check which
+suggestion the author receives.
+
+```sh
+vale_test_dir="$(mktemp -d)"
+uv venv --python 3.12 --managed-python "$vale_test_dir/venv"
+uv pip install --python "$vale_test_dir/venv/bin/python" --require-hashes \
+  --only-binary=:all: -r .vale/requirements-pytest.txt
+PYTHONPATH=.vale "$vale_test_dir/venv/bin/python" -m pytest -q -p no:cacheprovider --doctest-modules \
+  --doctest-glob='AUTHOR_FEEDBACK.md' .vale/qualify.py .vale/test_qualify.py \
+  .vale/test_program_review.py docs/AUTHOR_FEEDBACK.md
+```
+
+Each profile batches its passages into one Vale scan. Qualification reports a
+missing or unexpected executable, an engine failure, or a malformed
+report separately from an unexpected finding. The Python-only tests exercise
+those failures with synthetic inputs. The real profiles establish which
+suggestions the pinned engine emits.
 
 The hosted `author-feedback` job runs only through the manual validation
 workflow with `ENABLE_GITHUB_ACTIONS=true` and the dispatcher's confirmation.

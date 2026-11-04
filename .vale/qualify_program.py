@@ -10,7 +10,20 @@ COUNT = "ProgramReview.CountToConclusion"
 WORDING = "ProgramReview.ContextualWording"
 CLAIM = "We inventoried all 17 observations, so the comparison is complete."
 
+OVERLAP = (
+    "- The review instrument inventoried\n"
+    "  all 17 fields, establishing measurement equivalence.\n"
+    "- The laboratory instrument measured the sample concentration."
+)
+
 CASES = {
+    "overlapping-cues.md": (
+        OVERLAP,
+        [
+            (1, "ProgramReview.CountToConclusion", "suggestion"),
+            (1, "ProgramReview.ContextualWording", "suggestion"),
+        ],
+    ),
     "review-claim.md": (
         CLAIM + "\n\n"
         "Of the 17 observations, 10 agree, four have explained variation and three "

@@ -61,6 +61,7 @@ relations. Governance 2.1.0 remains the current schema authority.
 | Build or inspect Program Pages | [`pages/README.md`](pages/README.md) | [`pages/program-content.json`](pages/program-content.json) and [Program Pages](#program-pages-candidate) |
 | Select a reproducible researcher environment | [Researcher environments](docs/RESEARCHER_ENVIRONMENTS.md) | Installed/editable profiles, exact receiver pins, native/container entry, and recovery |
 | Receive an external benchmark or evolve an administrative contract | [Program runbooks](.agents/runbooks/README.md) | [External benchmark reception](.agents/skills/external-benchmark-reception/SKILL.md) and the named receiving Issue |
+| Review a claim based on a field count | [Try one comparison passage](docs/AUTHOR_FEEDBACK.md#try-one-comparison-passage) | [Qualify the authoring tools](docs/AUTHOR_FEEDBACK.md#reproduce-or-diagnose-the-feedback) |
 | Contribute a reviewed change | [`AGENTS.md`](AGENTS.md) | [`CONTRIBUTING.md`](CONTRIBUTING.md), [`BRANCHING.md`](BRANCHING.md), and [Validation](#validation) |
 
 ## Ten-minute proof
