@@ -33,8 +33,9 @@ Governance. Review a shared change there and exercise the accepted files here.
 
 ## Optional Program review
 
-Select an authored Markdown file already receiving review. This profile
-enables two independently selectable suggestions. The ordinary shared profile
+Run this profile locally on one authored Markdown file already receiving
+review. It examines sentences, list items and table cells. Each of the two
+suggestions can be selected independently. The ordinary shared profile
 remains available through the commands above.
 
 ```sh
@@ -42,8 +43,8 @@ vale --config=.vale/program.ini --no-global docs/README.md
 ```
 
 - **CountToConclusion** highlights selected sentences that connect a numbered
-  inventory to completion, readiness, equivalence, validation, or acceptance. Ask what the
-  inventory established and which observation supports the decision. An
+  inventory to completion, readiness, equivalence, validation, or acceptance.
+  Ask what the inventory established and which observation supports the decision. An
   exhaustive count can answer a coverage question. The pattern looks for
   digits and a causal link within one sentence. A conclusion in another
   sentence or a count spelled out in words returns to a reader.
@@ -59,9 +60,11 @@ vale --config=.vale/program.ini --no-global docs/README.md
 Consider a comparison of 17 observations. Ten agree, four have explained
 variation, and three differ on analyte, value, and unit. That count tells a
 scientific reviewer which measurements need inspection. If a summary instead
-says that inventorying all 17 completed the comparison, look for the evidence
-that disposed of each difference. An author can preserve the inventory and
-identify the scientific decision still open.
+says that inventorying all 17 completed the comparison, ask which stage
+“complete” describes and what evidence establishes that stage. A comparison
+report can be complete while the scientific dispositions remain open. The
+author can name the completed report and the scientist who will evaluate
+equivalence.
 
 Try the passage as a paragraph. Record what the reader understands before
 showing the alerts, then read the sentence that could travel on its own. A
@@ -101,7 +104,8 @@ the Vale 3.15.2 Linux archive and verifies SHA-256
 `fc72e64454d6bd7af91905d4faebbf411bae3eec17bb572f4101311212bc0d9e`
 before extraction. It exercises the shared synthetic qualification before
 scanning the repository. Its advisory result stays outside the stable aggregate.
-Automatic pull-request validation runs the Program checks. The repository
+Automatic pull-request validation runs the Python Program proof. The two
+Program-specific prompts run locally on the author's selected file. The repository
 maintainer reviews changes to the styles, engine pin, and workflows.
 
 [Manual workflow](../.github/workflows/validate.yml) ·

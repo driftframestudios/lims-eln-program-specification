@@ -1,7 +1,12 @@
 extends: existence
 message: "For '%s', can this reader identify the object, action or consequence? Keep an exact or explained use."
 level: suggestion
-scope: sentence
+scope:
+  - sentence
+  - list
+  - table.cell
 ignorecase: true
 raw:
-  - '\b(?:load[- ‐‑]bearing|owners?\s+of\s+the\s+seam|(?:coordination|collaboration|evidence|decision|review)\s+(?:seams?|rooms?|moves?|surfaces?|instruments?)|(?:evidence|authority|clarity|context)\s+(?:arrives?|surfaces?))\b'
+  - '\b(?:load[- ‐‑]bearing|owners?\s+of\s+the\s+seam'
+  - '|(?:coordination|collaboration|evidence|decision|review)\s+(?:seams?|rooms?|moves?|surfaces?|instruments?)'
+  - '|(?:evidence|authority|clarity|context)\s+(?:arrives?|surfaces?))\b'
