@@ -31,9 +31,30 @@ CASES = {
         "The proposal covers the decision surfaces.\n\n"
         "The review instrument needs a name.\n\n"
         "The load-bearing assumption still holds.\n\n"
-        "Name the owner of the seam.\n\n"
+        "Name the owner\nof the seam.\n\n"
         "Name the owner of the specimen record. Inspect the welded seam.",
         [(line, WORDING, "suggestion") for line in (1, 3, 5, 7, 9, 11, 13, 15)],
+    ),
+    "list-and-table.md": (
+        "- We cataloged all 22 assay names, confirming the study is complete.\n"
+        "- The owner of the seam receives the question.\n"
+        "- We reviewed 13 laboratory\n"
+        "  records, establishing measurement equivalence.\n"
+        "- Keep the scientific instrument ID.\n\n"
+        "| Review | Description |\n"
+        "| --- | --- |\n"
+        "| Inventory | We listed 10 alternatives, so the design is ready. |\n"
+        "| Reader question | Identify the decision surface. |\n"
+        "| Chemical sample | The instrument measured sodium. |\n\n"
+        "- We reviewed 20 records,\n"
+        "- so the methods are equivalent.\n\n"
+        "| We reviewed 38 fields, | so the study is ready. |\n"
+        "| --- | --- |",
+        [
+            (1, COUNT, "suggestion"), (2, WORDING, "suggestion"),
+            (3, COUNT, "suggestion"), (9, COUNT, "suggestion"),
+            (10, WORDING, "suggestion"),
+        ],
     ),
     "laboratory-language.md": (
         "The review room houses a biosafety cabinet.\n\n"
