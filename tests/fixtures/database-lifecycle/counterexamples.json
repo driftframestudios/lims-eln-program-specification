@@ -1,0 +1,240 @@
+[
+  {
+    "name": "wrong-owner",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "operations",
+          1,
+          "authority",
+          "owner_ref"
+        ],
+        "value": "ref:other-owner"
+      }
+    ],
+    "expected_code": "wrong_owner"
+  },
+  {
+    "name": "external-launcher-cleanup",
+    "example": "external",
+    "changes": [
+      {
+        "path": [
+          "operations"
+        ],
+        "value": [
+          {
+            "operation_ref": "ref:forbidden-external-cleanup",
+            "action": "cleanup",
+            "from_state": "present",
+            "to_state": "removed",
+            "outcome": "succeeded",
+            "authority": {
+              "owner_ref": "ref:external-owner",
+              "actor_ref": "ref:launcher",
+              "decision_ref": "ref:decision-forbidden-external-cleanup",
+              "basis": "invocation_owned",
+              "destructive_authorized": true
+            },
+            "compatibility": {
+              "state": "not_observed",
+              "engine_major": null,
+              "migration_ref": null,
+              "observation_ref": null
+            },
+            "evidence_ref": "ref:evidence-forbidden-external-cleanup",
+            "failure_code": null
+          }
+        ]
+      },
+      {
+        "path": [
+          "resource",
+          "state"
+        ],
+        "value": "removed"
+      }
+    ],
+    "expected_code": "external_cleanup_forbidden"
+  },
+  {
+    "name": "retained-automatic-restore",
+    "example": "retained",
+    "changes": [
+      {
+        "path": [
+          "operations",
+          1,
+          "authority",
+          "basis"
+        ],
+        "value": "invocation_owned"
+      }
+    ],
+    "expected_code": "owner_decision_required"
+  },
+  {
+    "name": "another-invocation",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "resource",
+          "created_by_invocation_ref"
+        ],
+        "value": "ref:earlier-invocation"
+      }
+    ],
+    "expected_code": "ownership_profile"
+  },
+  {
+    "name": "unowned-cleanup",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "operations"
+        ],
+        "value": [
+          {
+            "operation_ref": "ref:unowned-cleanup",
+            "action": "cleanup",
+            "from_state": "absent",
+            "to_state": "removed",
+            "outcome": "succeeded",
+            "authority": {
+              "owner_ref": "ref:launcher",
+              "actor_ref": "ref:launcher",
+              "decision_ref": "ref:decision-unowned-cleanup",
+              "basis": "invocation_owned",
+              "destructive_authorized": true
+            },
+            "compatibility": {
+              "state": "not_observed",
+              "engine_major": null,
+              "migration_ref": null,
+              "observation_ref": null
+            },
+            "evidence_ref": "ref:evidence-unowned-cleanup",
+            "failure_code": null
+          }
+        ]
+      }
+    ],
+    "expected_code": "unowned_cleanup"
+  },
+  {
+    "name": "destructive-authority-absent",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "operations",
+          2,
+          "authority",
+          "destructive_authorized"
+        ],
+        "value": false
+      }
+    ],
+    "expected_code": "destructive_authority_required"
+  },
+  {
+    "name": "cleanup-failure-erased",
+    "example": "cleanup-failed",
+    "changes": [
+      {
+        "path": [
+          "operations",
+          1,
+          "to_state"
+        ],
+        "value": "removed"
+      },
+      {
+        "path": [
+          "resource",
+          "state"
+        ],
+        "value": "removed"
+      },
+      {
+        "path": [
+          "unresolved_resource_refs"
+        ],
+        "value": []
+      }
+    ],
+    "expected_code": "invalid_transition"
+  },
+  {
+    "name": "unresolved-resource-omitted",
+    "example": "unresolved",
+    "changes": [
+      {
+        "path": [
+          "unresolved_resource_refs"
+        ],
+        "value": []
+      }
+    ],
+    "expected_code": "unresolved_resources"
+  },
+  {
+    "name": "stale-source",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "source",
+          "revision"
+        ],
+        "value": "2222222222222222222222222222222222222222"
+      }
+    ],
+    "expected_code": "stale_source"
+  },
+  {
+    "name": "stale-schema",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "schema_ref"
+        ],
+        "value": "urn:driftframe:lims-eln:database-lifecycle-profile:0.9.0"
+      }
+    ],
+    "expected_code": "stale_schema"
+  },
+  {
+    "name": "unsupported-version",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "schema_version"
+        ],
+        "value": "2.0.0"
+      }
+    ],
+    "expected_code": "unsupported_version"
+  },
+  {
+    "name": "wrong-migration-set",
+    "example": "disposable",
+    "changes": [
+      {
+        "path": [
+          "operations",
+          1,
+          "compatibility",
+          "migration_ref"
+        ],
+        "value": "ref:other-migrations"
+      }
+    ],
+    "expected_code": "compatibility_mismatch"
+  }
+]

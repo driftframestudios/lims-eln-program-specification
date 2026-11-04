@@ -65,6 +65,8 @@ from .golden_specimen import (
 )
 from .observation import ObservationEnvelope
 from .resources import (
+    AUTHORED_SCHEMA_RESOURCE_NAMES,
+    authored_schema_bytes,
     SCHEMA_RESOURCE_NAMES,
     generated_schema_bytes,
     load_administrative_adapter_contract_example,
@@ -87,10 +89,18 @@ from .administrative_study import (
     compare_administrative_study,
 )
 
-__version__ = "0.5.0"
+from .study_interpretation import StudyAnalysisProfile, StudyInterpretation, StudyProfileError, interpret_administrative_study
+
+__version__ = "0.7.0"
 CONTRACT_VERSION = "1.0.0"
 
 __all__ = [
+    "AUTHORED_SCHEMA_RESOURCE_NAMES",
+    "authored_schema_bytes",
+    "StudyAnalysisProfile",
+    "StudyInterpretation",
+    "StudyProfileError",
+    "interpret_administrative_study",
     "AdministrativeStudy",
     "StudyComparisonReport",
     "admit_administrative_study",

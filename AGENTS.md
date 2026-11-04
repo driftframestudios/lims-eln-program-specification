@@ -119,7 +119,9 @@ it here.
 ## Validate the material behavior
 
 Use the repository-local uv skill to select Python 3.12 and install the local
-package in an isolated environment before running the complete proof:
+package in an isolated environment before running the complete proof. Focused
+source checks use an editable package; the complete suite installs the local
+package and test profile to exercise installed-wheel provenance as well:
 
 ```sh
 uv run --isolated --no-project --python 3.12 --managed-python \
@@ -139,7 +141,8 @@ uv run --isolated --no-project --python 3.12 --managed-python \
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_administrative_examples.py --check
 uv run --isolated --no-project --python 3.12 --managed-python \
-  --with-editable . -- python -m unittest discover -s tests -v
+  --with . --with-requirements requirements-test.txt \
+  -- python -m unittest discover -s tests -v
 ```
 
 The external preflight establishes that every sibling coordinate is complete

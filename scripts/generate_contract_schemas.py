@@ -12,6 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from lims_eln_contracts.resources import AUTHORED_SCHEMA_RESOURCE_NAMES  # noqa: E402
 from lims_eln_contracts.schema_artifacts import rendered_schema_artifacts  # noqa: E402
 
 
@@ -30,12 +31,15 @@ def main() -> int:
     arguments = parser.parse_args()
 
     artifacts = rendered_schema_artifacts()
+    authored_root = ROOT / "src/lims_eln_contracts/resources/authored-schemas"
+    authored = {name: (ROOT / "schemas" / name).read_bytes() for name in AUTHORED_SCHEMA_RESOURCE_NAMES}
+    destinations = {SCHEMA_ROOT / name: data for name, data in artifacts.items()}
+    destinations.update({authored_root / name: data for name, data in authored.items()})
     if arguments.check:
         divergent = [
-            filename
-            for filename, expected in artifacts.items()
-            if not (SCHEMA_ROOT / filename).exists()
-            or (SCHEMA_ROOT / filename).read_bytes() != expected
+            path.relative_to(ROOT).as_posix()
+            for path, expected in destinations.items()
+            if not path.exists() or path.read_bytes() != expected
         ]
         if divergent:
             print(
@@ -52,19 +56,19 @@ def main() -> int:
             return 1
         print(
             json.dumps(
-                {"status": "schemas_current", "artifacts": len(artifacts)},
+                {"status": "schemas_current", "artifacts": len(artifacts), "authored_companions": len(authored)},
                 indent=2,
                 sort_keys=True,
             )
         )
         return 0
 
-    SCHEMA_ROOT.mkdir(parents=True, exist_ok=True)
-    for filename, content in artifacts.items():
-        (SCHEMA_ROOT / filename).write_bytes(content)
+    for path, content in destinations.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
     print(
         json.dumps(
-            {"status": "schemas_rendered", "artifacts": len(artifacts)},
+            {"status": "schemas_rendered", "artifacts": len(artifacts), "authored_companions": len(authored)},
             indent=2,
             sort_keys=True,
         )

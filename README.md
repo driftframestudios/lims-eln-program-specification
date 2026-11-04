@@ -61,6 +61,7 @@ relations. Governance 2.1.0 remains the current schema authority.
 | Build or inspect Program Pages | [`pages/README.md`](pages/README.md) | [`pages/program-content.json`](pages/program-content.json) and [Program Pages](#program-pages-candidate) |
 | Select a reproducible researcher environment | [Researcher environments](docs/RESEARCHER_ENVIRONMENTS.md) | Installed/editable profiles, exact receiver pins, native/container entry, and recovery |
 | Receive an external benchmark or evolve an administrative contract | [Program runbooks](.agents/runbooks/README.md) | [External benchmark reception](.agents/skills/external-benchmark-reception/SKILL.md) and the named receiving Issue |
+| Review a claim based on a field count | [Try one comparison passage](docs/AUTHOR_FEEDBACK.md#try-one-comparison-passage) | [Qualify the authoring tools](docs/AUTHOR_FEEDBACK.md#reproduce-or-diagnose-the-feedback) |
 | Contribute a reviewed change | [`AGENTS.md`](AGENTS.md) | [`CONTRIBUTING.md`](CONTRIBUTING.md), [`BRANCHING.md`](BRANCHING.md), and [Validation](#validation) |
 
 ## Ten-minute proof
@@ -446,6 +447,9 @@ the `closed_in_future_reality` → `closed_in_simulation` and observed
 
 ## Validation
 
+Focused source checks use an editable package. The complete suite installs the
+local package and test profile to exercise installed-wheel provenance as well.
+
 ```sh
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/validate_program.py
@@ -464,7 +468,8 @@ uv run --isolated --no-project --python 3.12 --managed-python \
 uv run --isolated --no-project --python 3.12 --managed-python \
   --with-editable . -- python scripts/generate_administrative_examples.py --check
 uv run --isolated --no-project --python 3.12 --managed-python \
-  --with-editable . -- python -m unittest discover -s tests -v
+  --with . --with-requirements requirements-test.txt \
+  -- python -m unittest discover -s tests -v
 ```
 
 The external preflight confirms that every sibling release coordinate is ready

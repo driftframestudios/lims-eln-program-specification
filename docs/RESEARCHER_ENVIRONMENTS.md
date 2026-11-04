@@ -22,17 +22,17 @@ joins shared contract identity to each receiver's explicit adoption.
 
 ## Runtime and dependency choices
 
-The matrix below describes the reviewed source as of 2026-10-05. Each linked
-declaration remains the owner of later changes. An interpreter declaration
+The package handoffs below were reviewed on 2026-10-14. Each linked dependency
+declaration remains the owner of profile changes. An interpreter declaration
 describes admissible versions; a passing observation names the particular
 platform, interpreter, dependencies, and profile actually exercised.
 
 | Receiver and source owner | Effective Python profile | Dependency and installation choice | First evidence route |
 | --- | --- | --- | --- |
-| [Program](../pyproject.toml) | Python 3.12 or newer | Ranged library dependencies; isolated uv execution. The library retains its current lockless policy. | Program validator and packaged-resource tests; installed consumption through Enterprise's handoff check |
-| [Enterprise](https://github.com/driftframestudios/lims-eln-enterprise-implementation/blob/develop/pyproject.toml) | Python 3.12 or newer; maintained local selection is 3.12 | Application `uv.lock`; `contracts`, `postgres`, and `test` extras select distinct needs. `uv sync --locked --no-editable` supplies the installed profile. | Native entry, container entry, protected export, and configured PostgreSQL checks |
-| [Simulation](https://github.com/driftframestudios/lims-eln-simulated-final-state/blob/develop/pyproject.toml) | Core: 3.11 or newer. Optional Program conformance: 3.12 or newer. | Standard-library core; optional exact-commit `contract-conformance` extra. Current extra retains the earlier Program package coordinate. | Independent selected-future artifact and resource checks in its README |
-| [Comparative](https://github.com/driftframestudios/lims-eln-comparative-evidence/blob/develop/pyproject.toml) | Core/validation: 3.11 or newer. Optional Program conformance: 3.12 or newer. | Standard-library core, separately pinned `validation` extra, optional exact-commit `contract-conformance` extra. | Independent normalization, artifact, and report checks in its README |
+| [Program](../pyproject.toml) | Python 3.12 or newer | Ranged library dependencies; repository checks add `requirements-test.txt`. Isolated uv execution preserves the library's lockless policy. | Program validator and packaged-resource tests; installed consumption through Enterprise's handoff check |
+| [Enterprise](https://github.com/driftframestudios/lims-eln-enterprise-implementation/blob/83889fa87b740d824e82f5c9ffb0c515e6823148/pyproject.toml) | Python 3.12 or newer; maintained local selection is 3.12 | Application `uv.lock`; `contracts`, `postgres`, and `test` extras select distinct needs. Use the documented locked installed entry with the task's selected extras. | Native entry, container entry, protected export, and configured PostgreSQL checks |
+| [Simulation](https://github.com/driftframestudios/lims-eln-simulated-final-state/blob/9914bbc9b3ba14510d97dc6b9b25d2398ef379d1/pyproject.toml) | Core: 3.11 or newer. Either Program-consuming profile: 3.12 or newer. | Standard-library core; optional `administrative-study` and retained `contract-conformance` extras select different exact Program coordinates. | Independent selected-future artifact and resource checks in its README |
+| [Comparative](https://github.com/driftframestudios/lims-eln-comparative-evidence/blob/209622d1300efa8f0f36bb654895b5f24de2b080/pyproject.toml) | Core/validation: 3.11 or newer. Either Program-consuming profile: 3.12 or newer. | Standard-library core; separately pinned `validation` extra; `administrative-study` selects paired Program/Simulation inputs, while `contract-conformance` retains its earlier Program coordinate. | Independent normalization, artifact, and report checks in its README |
 | [Governance](https://github.com/driftframestudios/site-reading-governance/blob/develop/README.md) | Source-owned validator: 3.11 or newer | Dependency-free JSON validation; complete projection checks install `requirements-projections.txt` with `--require-hashes` in an isolated environment. | `tools/validate_governance.py` or the named `make check` profile |
 
 Choose the interpreter for the **complete selected profile**. Simulation and
@@ -41,26 +41,45 @@ raises the effective floor to 3.12. Keep separate environments for distinct
 profiles so a previously installed optional package cannot silently broaden a
 core-only result.
 
-Enterprise consumes Program package `0.4.0` at the full commit in
-[the accepted `0.4.0` binding](https://github.com/driftframestudios/lims-eln-program-specification/blob/a307f422596e5098ac5efca29968212b5e24da0b/release/contract-package-coordinate.json).
-[The current package coordinate](../release/contract-package-coordinate.json)
-tracks the successor's separate review and adoption standing.
-Simulation and Comparative's present conformance extras retain
-`4d06eeb7f96910311fbcb7f51547c978b6a07290`. Their receivers adopt a successor
-through their own contract and scenario checks. Shared contract version
-`1.0.0` alone establishes neither identical package content nor an accepted
-receiver upgrade.
+Enterprise's `contracts` profile and Simulation and Comparative's
+`administrative-study` profiles select Program package `0.6.1` at
+`83a97deb76b9a5636cc7da484d350d5556c51661`.
+[The immutable `0.6.1` coordinate](https://github.com/driftframestudios/lims-eln-program-specification/blob/d4f0d40faa14a2ed2accb30a54fa652e4d359a50/release/contract-package-coordinate.json)
+owns that reviewed source, scoped digest and receiving conformance requirements.
+These integration-source handoffs leave historical repository releases and
+site identities intact. The earlier
+[accepted `0.4.0` binding](https://github.com/driftframestudios/lims-eln-program-specification/blob/a307f422596e5098ac5efca29968212b5e24da0b/release/contract-package-coordinate.json)
+remains a historical handoff, rather than the current installed entry below.
+
+Simulation and Comparative's retained `contract-conformance` extras select
+`4d06eeb7f96910311fbcb7f51547c978b6a07290`. Select `administrative-study` and
+`contract-conformance` in separate environments: they request different exact
+commits of the same distribution. The core profile remains independently
+usable without either optional Program dependency. Comparative's
+`administrative-study` profile also selects Simulation source
+`8c31ab403207c1797da0cb55b5aaee0cf690aa75`; its dependency declaration owns both
+inputs. Preserve that reviewed pair rather than substituting a latest branch.
+
+Each receiver adopts a successor through its own contract and scenario checks.
+Shared contract version `1.0.0` alone establishes neither identical package
+content nor an accepted receiver upgrade. Program `0.7.0` adds the installed
+database lifecycle admission API through its `lifecycle` extra. It carries two
+exact authored schemas alongside the twelve generated schemas. Enterprise and
+Governance receive this API in separate proof environments while the application
+and administrative-study profiles retain their accepted `0.6.1` pins.
 
 ## Installed consumption and editable development
 
+### Retained administrative profile
+
 The first Program resource check can run independently of a sibling checkout.
-From any authorized working directory, use the current reviewed source
-requirement:
+From any authorized working directory, select the reviewed `0.6.1` source used
+by the application and administrative-study profiles:
 
 ~~~sh
 uv run --isolated --no-project --python 3.12 --managed-python \
-  --with 'lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@d8f41d0ce98a75120c99f0a23d00796ae8a8b913' \
-  -- python -I -c 'from importlib.metadata import version; import lims_eln_contracts as c; assert version("lims-eln-program-specification") == "0.4.0"; assert c.__version__ == "0.4.0"; assert c.CONTRACT_VERSION == "1.0.0"; assert c.SCHEMA_RESOURCE_NAMES; assert all(isinstance(c.load_generated_schema(name), dict) for name in c.SCHEMA_RESOURCE_NAMES); print("Installed package and schema resources: passed")'
+  --with 'lims-eln-program-specification @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@83a97deb76b9a5636cc7da484d350d5556c51661' \
+  -- python -I -c 'from importlib.metadata import version; import lims_eln_contracts as c; assert version("lims-eln-program-specification") == "0.6.1"; assert c.__version__ == "0.6.1"; assert c.CONTRACT_VERSION == "1.0.0"; assert len(c.SCHEMA_RESOURCE_NAMES) == 12; assert all(isinstance(c.load_generated_schema(name), dict) for name in c.SCHEMA_RESOURCE_NAMES); print("Installed package and schema resources: passed")'
 ~~~
 
 Python's `-I` mode resolves imports through the selected installed environment
@@ -77,6 +96,40 @@ adds PEP 610 commit identity, scoped source digest, and the complete required
 resource observations. Its explicit `--program-source` argument supplies a
 verification source; ordinary installed application execution resolves its
 resources from the installed package.
+
+### Lifecycle receiving profile
+
+Use a separate environment for the Program `0.7.0` lifecycle receiver. The
+[current package coordinate](../release/contract-package-coordinate.json)
+binds its exact source and scoped digest. The accepted
+[Enterprise profile](https://github.com/driftframestudios/lims-eln-enterprise-implementation/blob/bd217270425d80705a602ac7985db6c7d338d6eb/requirements-lifecycle.txt)
+and [Governance profile](https://github.com/driftframestudios/site-reading-governance/blob/23fd0db0374e15660931142a094370a72680625d/requirements-lifecycle.txt)
+select that same source with the `lifecycle` extra. From an authorized working
+directory, check installed API and authored-resource availability:
+
+~~~sh
+uv run --isolated --no-project --python 3.12 --managed-python \
+  --with 'lims-eln-program-specification[lifecycle] @ git+https://github.com/driftframestudios/lims-eln-program-specification.git@ea0140036a3392557eed78124cdf9e3831bff999' \
+  -- python -I - <<'PY'
+from importlib.metadata import version
+import lims_eln_contracts as contracts
+from lims_eln_contracts import database_lifecycle
+
+assert version("lims-eln-program-specification") == contracts.__version__ == "0.7.0"
+assert len(contracts.SCHEMA_RESOURCE_NAMES) == 12
+assert contracts.authored_schema_bytes("database-lifecycle-profile.v1.schema.json") == database_lifecycle.SCHEMA_BYTES
+assert contracts.authored_schema_bytes("workbench-capabilities.v1.schema.json") == database_lifecycle.CAPABILITY_SCHEMA_BYTES
+print("Installed lifecycle API and authored schema resources: passed")
+PY
+~~~
+
+This check establishes installed API and resource availability. The
+[lifecycle receiving guide](migrations/0.6.1-to-contract-package-0.7.0.md) supplies
+the provenance, exact schema/source, independent-record and recovery checks for
+the handoff. The [lifecycle guide](DATABASE_LIFECYCLE.md) separates documentary
+admission from configured database actions and accountable acceptance.
+
+### Program source development
 
 For Program source work, use the
 [uv execution skill](../.agents/skills/uv-backed-python-execution/SKILL.md) and
@@ -114,7 +167,9 @@ Use the existing Enterprise owners in sequence:
 
 | Observed surface | Environment and evidence owner | What the result establishes |
 | --- | --- | --- |
-| Exact Program package handoff | [Program PR #56](https://github.com/driftframestudios/lims-eln-program-specification/pull/56) and [Enterprise PR #44](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/44) | Reviewed full commit/scoped digest and first installed-resource consumption |
+| Historical `0.4.0` package handoff | [Program PR #56](https://github.com/driftframestudios/lims-eln-program-specification/pull/56) and [Enterprise PR #44](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/44) | Reviewed full commit/scoped digest and first installed-resource consumption |
+| Reviewed `0.6.1` package handoff | [Program PR #75](https://github.com/driftframestudios/lims-eln-program-specification/pull/75) and [Enterprise PR #59](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/59) | Successor source binding and receiving adoption; configured behavior retains its separate observation |
+| Installed `0.7.0` lifecycle handoff | [Program PR #83](https://github.com/driftframestudios/lims-eln-program-specification/pull/83), [Enterprise PR #80](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/80), and [Governance PR #58](https://github.com/driftframestudios/site-reading-governance/pull/58) | Exact installed source and schema bindings with independently authored lifecycle expectations; runtime effects retain their own owners |
 | Native durable workbench | [Enterprise PR #46](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/46), local macOS with Python 3.12 and configured PostgreSQL | Declared Golden Specimen result, explicit adapter/readiness, retained replay and conflict behavior |
 | Confined container workbench | [Enterprise PR #47](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/47), Linux arm64 under a local macOS/Colima receiver | Same declared journey contract through pinned application/migration images, retained state and credential recovery |
 | Typed export and contention | [Enterprise PR #48](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/48) and [PR #49](https://github.com/driftframestudios/lims-eln-enterprise-implementation/pull/49) | Exact-byte export, bounded recovery, deterministic serialization-conflict observation, and unchanged accepted replay |
@@ -164,8 +219,9 @@ Use the existing receiving PR for source/lock/interpreter/platform/image/input
 identities, normalized check result, evidence scope, and next receiver.
 Private paths, raw output, credentials, and payloads stay local. Public skill
 packages keep their referenced material available through existing repository
-routes; a new hosted projection waits for the accepted immutable site tag and
-complete carrier. The [runbook index](../.agents/runbooks/README.md) and
+routes. Use the [tagged site-release route](../.agents/runbooks/tagged-site-release.v0.1.md)
+for immutable publication-commit tags, complete carriers and separately
+authorized publication. The [runbook index](../.agents/runbooks/README.md) and
 [root README](../README.md) supply return routes.
 
 The environment coordination step completes when a collaborator can choose

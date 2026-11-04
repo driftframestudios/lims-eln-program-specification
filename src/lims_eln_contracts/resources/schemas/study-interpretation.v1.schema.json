@@ -1,0 +1,433 @@
+{
+  "$defs": {
+    "ControlCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "a": {
+          "$ref": "#/$defs/StudyFactor"
+        },
+        "b": {
+          "$ref": "#/$defs/StudyFactor"
+        }
+      },
+      "required": [
+        "a",
+        "b"
+      ],
+      "title": "ControlCoverage",
+      "type": "object"
+    },
+    "PairEligibility": {
+      "additionalProperties": false,
+      "properties": {
+        "controls": {
+          "items": {
+            "$ref": "#/$defs/ControlCoverage"
+          },
+          "maxItems": 32,
+          "title": "Controls",
+          "type": "array"
+        },
+        "declared_input_equal": {
+          "title": "Declared Input Equal",
+          "type": "boolean"
+        },
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "execution": {
+          "enum": [
+            "matched",
+            "mismatched",
+            "unavailable"
+          ],
+          "title": "Execution",
+          "type": "string"
+        },
+        "expected_pair_available": {
+          "title": "Expected Pair Available",
+          "type": "boolean"
+        },
+        "pair_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Pair Id",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 36,
+          "title": "Reasons",
+          "type": "array"
+        },
+        "usable_arms": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Usable Arms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "pair_id",
+        "controls",
+        "declared_input_equal",
+        "execution",
+        "usable_arms",
+        "expected_pair_available",
+        "reasons",
+        "eligible"
+      ],
+      "title": "PairEligibility",
+      "type": "object"
+    },
+    "StudyAnalysisProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "default": "declared-input-comparison",
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "require_expected_pair": {
+          "default": false,
+          "title": "Require Expected Pair",
+          "type": "boolean"
+        },
+        "required_specified_controls": {
+          "default": [],
+          "items": {
+            "maxLength": 96,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Required Specified Controls",
+          "type": "array"
+        },
+        "version": {
+          "default": "1.0.0",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "title": "StudyAnalysisProfile",
+      "type": "object"
+    },
+    "StudyComparisonReport": {
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "const": "urn:driftframe:lims-eln:administrative-study-comparison:1.0.0",
+          "title": "$Schema",
+          "type": "string"
+        },
+        "abstained": {
+          "maximum": 512,
+          "minimum": 0,
+          "title": "Abstained",
+          "type": "integer"
+        },
+        "attempted": {
+          "maximum": 512,
+          "minimum": 0,
+          "title": "Attempted",
+          "type": "integer"
+        },
+        "cancelled": {
+          "maximum": 512,
+          "minimum": 0,
+          "title": "Cancelled",
+          "type": "integer"
+        },
+        "comparisons": {
+          "items": {
+            "$ref": "#/$defs/StudyPairComparison"
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Comparisons",
+          "type": "array"
+        },
+        "completed": {
+          "maximum": 512,
+          "minimum": 0,
+          "title": "Completed",
+          "type": "integer"
+        },
+        "evidence_scope": {
+          "const": "synthetic_output_identity_comparison",
+          "default": "synthetic_output_identity_comparison",
+          "title": "Evidence Scope",
+          "type": "string"
+        },
+        "excluded": {
+          "maximum": 512,
+          "minimum": 0,
+          "title": "Excluded",
+          "type": "integer"
+        },
+        "failed": {
+          "maximum": 512,
+          "minimum": 0,
+          "title": "Failed",
+          "type": "integer"
+        },
+        "pending": {
+          "maximum": 512,
+          "minimum": 0,
+          "title": "Pending",
+          "type": "integer"
+        },
+        "planned": {
+          "maximum": 512,
+          "minimum": 2,
+          "title": "Planned",
+          "type": "integer"
+        },
+        "study_digest": {
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "title": "Study Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "$schema",
+        "study_digest",
+        "planned",
+        "attempted",
+        "completed",
+        "pending",
+        "abstained",
+        "failed",
+        "cancelled",
+        "excluded",
+        "comparisons"
+      ],
+      "title": "StudyComparisonReport",
+      "type": "object"
+    },
+    "StudyFactor": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "standing": {
+          "enum": [
+            "specified",
+            "unknown",
+            "omitted",
+            "unmeasured",
+            "withheld"
+          ],
+          "title": "Standing",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maxLength": 1024,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "name",
+        "standing"
+      ],
+      "title": "StudyFactor",
+      "type": "object"
+    },
+    "StudyPairComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "administrative_changed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Administrative Changed"
+        },
+        "expected_invariant_violations": {
+          "items": {
+            "enum": [
+              "scientific",
+              "administrative"
+            ],
+            "type": "string"
+          },
+          "title": "Expected Invariant Violations",
+          "type": "array"
+        },
+        "oracle_agrees": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Oracle Agrees"
+        },
+        "pair_id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{1,126}[A-Za-z0-9]$",
+          "title": "Pair Id",
+          "type": "string"
+        },
+        "reason_fields": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Reason Fields",
+          "type": "array"
+        },
+        "scientific_changed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Scientific Changed"
+        },
+        "standing": {
+          "enum": [
+            "comparable",
+            "controlled_input_mismatch",
+            "execution_mismatch",
+            "incomplete"
+          ],
+          "title": "Standing",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pair_id",
+        "standing",
+        "reason_fields",
+        "scientific_changed",
+        "administrative_changed",
+        "expected_invariant_violations",
+        "oracle_agrees"
+      ],
+      "title": "StudyPairComparison",
+      "type": "object"
+    }
+  },
+  "$id": "urn:driftframe:lims-eln:study-interpretation:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "urn:driftframe:lims-eln:study-interpretation:1.0.0",
+      "title": "$Schema",
+      "type": "string"
+    },
+    "comparison": {
+      "$ref": "#/$defs/StudyComparisonReport"
+    },
+    "eligible_pairs": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Eligible Pairs",
+      "type": "integer"
+    },
+    "evidence_scope": {
+      "const": "declared_controls_and_recorded_execution",
+      "default": "declared_controls_and_recorded_execution",
+      "title": "Evidence Scope",
+      "type": "string"
+    },
+    "excluded_pairs": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Excluded Pairs",
+      "type": "integer"
+    },
+    "expected_pairs_available": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Expected Pairs Available",
+      "type": "integer"
+    },
+    "pairs": {
+      "items": {
+        "$ref": "#/$defs/PairEligibility"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Pairs",
+      "type": "array"
+    },
+    "planned_pairs": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Planned Pairs",
+      "type": "integer"
+    },
+    "profile": {
+      "$ref": "#/$defs/StudyAnalysisProfile"
+    },
+    "study_digest": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "title": "Study Digest",
+      "type": "string"
+    },
+    "usable_runs": {
+      "maximum": 512,
+      "minimum": 0,
+      "title": "Usable Runs",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "$schema",
+    "study_digest",
+    "profile",
+    "comparison",
+    "pairs",
+    "planned_pairs",
+    "eligible_pairs",
+    "excluded_pairs",
+    "expected_pairs_available",
+    "usable_runs"
+  ],
+  "title": "StudyInterpretation",
+  "type": "object",
+  "x-semantic-invariants": [
+    "pair eligibility and aggregate denominators agree with the profile and digest-bound study"
+  ]
+}

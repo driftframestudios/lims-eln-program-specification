@@ -46,6 +46,8 @@ jobs:
           tar --extract --gzip --file "$RUNNER_TEMP/$VALE_ARCHIVE" \
             --directory "$RUNNER_TEMP/vale"
           echo "$RUNNER_TEMP/vale" >> "$GITHUB_PATH"
+      - name: Qualify the shared Vale rules on synthetic prose
+        run: python3 .vale/qualify.py
       - name: Review authored prose and comments
         continue-on-error: true
         run: >-
@@ -77,7 +79,7 @@ jobs:
           cache: ""
 
       - name: Install the contract model boundary
-        run: python -m pip install --disable-pip-version-check .
+        run: python -m pip install --disable-pip-version-check . -r requirements-test.txt
 
       - name: Validate stable identifiers and trace links
         run: python scripts/validate_program.py
