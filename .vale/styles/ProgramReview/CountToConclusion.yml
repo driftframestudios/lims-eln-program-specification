@@ -6,8 +6,8 @@ scope:
   - list
   - table.cell
 ignorecase: true
-# Highlight the inventory phrase so Vale locates a wrapped list item on its source line.
+# Locate the verb on its source line even when the count wraps in a list item.
 raw:
-  - '\b(?:counted|inventoried|catalogued|cataloged|listed|reviewed)\s+(?:all\s+)?[0-9]+\b'
-  - '(?=[^.!?]{0,90}?(?:,\s*(?:so|establishing|proving|confirming|demonstrating)\b|\btherefore\b)'
+  - '\b(?:counted|inventoried|catalogued|cataloged|listed|reviewed)\b'
+  - '(?=\s+(?:all\s+)?[0-9]+\b[^.!?]{0,90}?(?:,\s*(?:so|establishing|proving|confirming|demonstrating)\b|\btherefore\b)'
   - '[^.!?]{0,75}?\b(?:complete|completed|ready|equivalent|equivalence|accepted|validated|proven|successful)\b)'

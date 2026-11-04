@@ -1,12 +1,13 @@
 extends: existence
-message: "For '%s', can this reader identify the object, action or consequence? Keep an exact or explained use."
+message: "Read the phrase beginning with '%s'. Which object, action or consequence does it name here? Keep a literal or explained use."
 level: suggestion
 scope:
   - sentence
   - list
   - table.cell
 ignorecase: true
+# Locate the first word. Vale normalizes continuation indentation before matching.
 raw:
-  - '\b(?:load[- ‐‑]bearing|owners?\s+of\s+the\s+seam'
-  - '|(?:coordination|collaboration|evidence|decision|review)\s+(?:seams?|rooms?|moves?|surfaces?|instruments?)'
-  - '|(?:evidence|authority|clarity|context)\s+(?:arrives?|surfaces?))\b'
+  - '\b(?:load(?=(?:[-‐‑]\s*|\s+)bearing\b)|owners?(?=\s+of\s+the\s+seam\b)'
+  - '|(?:coordination|collaboration|evidence|decision|review)(?=\s+(?:seams?|rooms?|moves?|surfaces?|instruments?)\b)'
+  - '|(?:evidence|authority|clarity|context)(?=\s+(?:arrives?|surfaces?)\b))\b'
