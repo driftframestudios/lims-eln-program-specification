@@ -3,7 +3,7 @@ name: contextual-jargon-scan
 description: Classifies specialist and collaboration-local wording in a bounded Program Specification corpus and revises replaceable shorthand into ordinary language. Applies in stride when public orientation, contracts, release prose, or cross-repository instructions may assume context the reader does not share.
 metadata:
   source_band: public_possible
-  skill_version: 0.1.0
+  skill_version: 0.2.0
   upstream_repository: https://github.com/driftframestudios/human-ai-systems-exemplars.git
   upstream_path: .agents/skills/contextual-jargon-scan/SKILL.md
   upstream_revision: 0c023343e46cd9b1333a63c2d509787352fbad14
@@ -40,6 +40,30 @@ word families. Keep an in-stride scan within the active Program surface.
 Search inflections and nearby forms with enough context to read their role.
 Counts locate repeated language; contextual reading establishes whether a
 revision helps.
+
+### Rule: Read a count alongside its claim
+
+When an author uses an inventory to support readiness or completion, ask what
+changed for this reader. A count can establish coverage of a named set or send
+a scientist to specific discrepant measurements. A claim of equivalence asks
+for the comparison, methods, and units that support that claim. Keep the
+smaller supported result when the evidence establishes coverage alone.
+
+### Rule: Give a reader enough context to decide
+
+Use the optional Program Vale profile on a selected authored Markdown passage.
+Read a suggestion with the surrounding paragraph, then read the excerpt a
+receiver may see on its own. Identify the actor, actual object or action, and
+the decision that would change. Keep literal terms such as a laboratory
+instrument, define a useful metaphor near first use, or replace shorthand
+with its concrete meaning. A repository with a different vocabulary can give
+the same word a different job.
+
+When interpretation changes scientific meaning, preserve the original and
+return one specific question to the accountable scientist. An author can
+finish after a passage supports its reader's task. One consequential deferred
+question can travel with the existing review. Counts of suggestions or
+rewrites provide no additional evidence of reader understanding.
 
 ### Rule: Classify each material occurrence
 

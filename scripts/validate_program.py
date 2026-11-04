@@ -50,7 +50,7 @@ COLLABORATION_SKILL_CONTRACTS = {
     },
     "contextual-jargon-scan": {
         "source_band": "public_possible",
-        "skill_version": "0.1.0",
+        "skill_version": "0.2.0",
         "adaptation_relation": "repository_local_derivative",
         "upstream_repository": (
             "https://github.com/driftframestudios/"
