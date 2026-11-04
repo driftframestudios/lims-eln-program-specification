@@ -35,6 +35,28 @@ CASES = {
         "Name the owner of the specimen record. Inspect the welded seam.",
         [(line, WORDING, "suggestion") for line in (1, 3, 5, 7, 9, 11, 13, 15)],
     ),
+    "wrapped-trigger.md": (
+        "- We inventoried\n"
+        "  all 17 fields, establishing that the comparison is complete.\n"
+        "- Record how the coordination\n"
+        "  seam was handled.\n"
+        "- Ask the owner\n"
+        "  of the seam to describe it.\n"
+        "- Document the load\n"
+        "  bearing assumption.\n"
+        "- Check how the evidence\n"
+        "  arrives.\n"
+        "- Verify the load-\n"
+        "  bearing assumption.\n"
+        "- Locate the load‑bearing wall.\n"
+        "- Explain whether the review\n"
+        "  instrument is suitable.\n"
+        "- A load cell on the instrument measures force.\n"
+        "- We inventoried\n"
+        "  all 21 sample tubes to plan refrigerator space.",
+        [(1, COUNT, "suggestion")]
+        + [(line, WORDING, "suggestion") for line in (3, 5, 7, 9, 11, 13, 14)],
+    ),
     "list-and-table.md": (
         "- We cataloged all 22 assay names, confirming the study is complete.\n"
         "- The owner of the seam receives the question.\n"
