@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added executable qualification for shared Vale feedback and an optional
+  Markdown profile for reviewing inventory claims and laboratory wording. Each
+  suggestion returns to the author or scientific reviewer for interpretation.
+
 - Prepared the independently versioned `lims_eln_contracts` 0.4.0 successor
   with strict source-neutral-adapter, administrative-context, raw-preserving
   classification, coverage-enrollment, declared-policy, reviewed-decision,

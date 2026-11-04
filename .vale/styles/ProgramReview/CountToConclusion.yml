@@ -1,0 +1,7 @@
+extends: existence
+message: "What did the inventory establish? Read the nearby evidence before carrying this conclusion into a decision."
+level: suggestion
+scope: sentence
+ignorecase: true
+raw:
+  - '\b(?:counted|inventoried|catalogued|cataloged|listed|reviewed)\s+(?:all\s+)?[0-9]+\b[^.!?]{0,90}?(?:,\s*(?:so|establishing|proving|confirming|demonstrating)\b|\btherefore\b)[^.!?]{0,75}?\b(?:complete|completed|ready|equivalent|equivalence|accepted|validated|proven|successful)\b'
