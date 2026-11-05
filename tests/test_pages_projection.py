@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest import mock
 
 from scripts import pages_projection as pages
@@ -201,6 +202,27 @@ class PagesProjectionTests(unittest.TestCase):
                 verification,
             )
             self.assertNotIn('target="_blank"', index)
+
+
+    def test_first_reading_precedes_release_detail_with_semantic_diagram(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = self.build(Path(temporary))
+            document = (output / "index.html").read_text(encoding="utf-8")
+            self.assertLess(document.index('id="public-routes-heading"'),
+                            document.index('id="release-heading"'))
+            self.assertIn("laboratory information management system (LIMS)", document)
+            self.assertIn("electronic laboratory notebook (ELN)", document)
+            self.assertIn("Repository home (collaborator access)", document)
+            self.assertIn('href="https://fieldformlab.org/"', document)
+            figure = ET.fromstring(re.search(r"<svg\b.*?</svg>", document, re.S).group())
+            namespace = {"s": "http://www.w3.org/2000/svg"}
+            self.assertEqual("img", figure.attrib["role"])
+            self.assertEqual("owners-title owners-desc", figure.attrib["aria-labelledby"])
+            labels = " ".join("".join(element.itertext()) for element in figure.findall(".//s:text", namespace))
+            for owner in ("Program", "Enterprise", "Simulation", "Comparison", "Governance"):
+                self.assertIn(owner, labels)
+            self.assertIn("conceptual handoffs", figure.find("s:desc", namespace).text)
+            self.assertIn('tabindex="0" aria-label="Repository responsibility diagram"', document)
 
     def test_fixture_standing_requires_explicit_test_authority(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

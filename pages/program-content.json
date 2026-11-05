@@ -2,7 +2,7 @@
   "contentVersion": "1.0.0",
   "site": {
     "title": "LIMS/ELN Program Specification",
-    "description": "A source-bound guide to the five repositories that share the LIMS/ELN program contract."
+    "description": "Explore a synthetic laboratory workflow through shared contracts, implementation examples, comparison evidence and accountable review."
   },
   "release": {
     "version": "0.3.1",

@@ -10,6 +10,25 @@ projection. Use the root [`README`](../README.md) for Program intent and the
 [`schema index`](../schemas/README.md) for contract retrieval. Generated Pages
 remain a delivery view of those sources.
 
+## Visitor route and visual ownership
+
+The overview starts with a public example and a concrete reading task, then
+maps the five repository owners. Exact build coordinates and release standing
+follow the useful starting routes. Repository links identify collaborator
+access; public reports and projected contracts provide the first inspection.
+
+The inline SVG in `scripts/pages_projection.py` is a responsibility map.
+Its text, title, description and ordinary-HTML role cards carry the same
+meaning. Lines describe conceptual handoffs. Execution observations retain
+their own source and scope. The existing stylesheet owns the figure's local
+scroll region, keyboard focus and print behavior; the builder adds no remote
+font, script or stylesheet dependency.
+
+Keep mutable release copy in `program-content.json` and its existing source
+bindings. A feature illustration describes the selected example rather than
+promoting pending application work. The existing tagged-site-release runbook
+owns review, immutable publication tags, activation and recovery.
+
 ## Source and state
 
 | Input | Contribution to the projection |
